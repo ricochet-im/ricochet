@@ -10,12 +10,12 @@ TARGET = TorIM
 TEMPLATE = app
 
 
-SOURCES += main.cpp\
-        MainWindow.cpp \
-    ChatWidget.cpp
+SOURCES += src/main.cpp\
+        src/ui/MainWindow.cpp \
+    src/ui/ChatWidget.cpp
 
-HEADERS  += MainWindow.h \
-    ChatWidget.h
+HEADERS  += src/ui/MainWindow.h \
+    src/ui/ChatWidget.h
 
 OTHER_FILES += \
     res/user--plus.png
