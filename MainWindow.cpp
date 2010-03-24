@@ -4,6 +4,7 @@
 #include <QBoxLayout>
 #include <QTreeView>
 #include <QTabWidget>
+#include <QFrame>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -19,6 +20,11 @@ MainWindow::MainWindow(QWidget *parent)
 
 	QTreeView *contactsView = createContacts();
 	layout->addWidget(contactsView);
+
+	/* Separator line */
+	QFrame *line = new QFrame;
+	line->setFrameStyle(QFrame::VLine | QFrame::Sunken);
+	layout->addWidget(line);
 
 	QTabWidget *chatArea = createChatArea();
 	layout->addWidget(chatArea);
