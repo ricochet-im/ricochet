@@ -11,6 +11,8 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        MainWindow.cpp
+        MainWindow.cpp \
+    ChatWidget.cpp
 
-HEADERS  += MainWindow.h
+HEADERS  += MainWindow.h \
+    ChatWidget.h

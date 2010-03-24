@@ -1,4 +1,5 @@
 #include "MainWindow.h"
+#include "ChatWidget.h"
 #include <QToolBar>
 #include <QBoxLayout>
 #include <QTreeView>
@@ -22,8 +23,8 @@ MainWindow::MainWindow(QWidget *parent)
 	QTabWidget *chatArea = createChatArea();
 	layout->addWidget(chatArea);
 
-	chatArea->addTab(new QWidget, "Test");
-	chatArea->addTab(new QWidget, "Abit");
+	chatArea->addTab(new ChatWidget, "Test");
+	chatArea->addTab(new ChatWidget, "Abit");
 }
 
 MainWindow::~MainWindow()
