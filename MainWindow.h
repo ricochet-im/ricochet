@@ -10,6 +10,11 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
+
+private:
+	void createToolbar();
+	class QTreeView *createContacts();
+	class QTabWidget *createChatArea();
 };
 
 #endif // MAINWINDOW_H
