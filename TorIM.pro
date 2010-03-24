@@ -16,3 +16,9 @@ SOURCES += main.cpp\
 
 HEADERS  += MainWindow.h \
     ChatWidget.h
+
+OTHER_FILES += \
+    res/user--plus.png
+
+RESOURCES += \
+    res/resources.qrc

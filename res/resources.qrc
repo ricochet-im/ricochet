@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file alias="user-add">user--plus.png</file>
+    </qresource>
+</RCC>

@@ -44,7 +44,7 @@ void MainWindow::createToolbar()
 	toolbar->setAllowedAreas(Qt::TopToolBarArea);
 	toolbar->setFloatable(false);
 	toolbar->setMovable(false);
-	toolbar->addAction("Action");
+	toolbar->addAction(QIcon(":/icons/user-add"), tr("Add Contact"));
 }
 
 QTreeView *MainWindow::createContacts()
