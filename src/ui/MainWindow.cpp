@@ -1,4 +1,5 @@
 #include "MainWindow.h"
+#include "ContactsModel.h"
 #include "ChatWidget.h"
 #include <QToolBar>
 #include <QBoxLayout>
@@ -54,6 +55,8 @@ QTreeView *MainWindow::createContacts()
 	contactsView->setHeaderHidden(true);
 	contactsView->setFixedWidth(170);
 	contactsView->setFrameStyle(QFrame::NoFrame);
+
+	contactsView->setModel(new ContactsModel(contactsView));
 
 	return contactsView;
 }

@@ -9,13 +9,16 @@ QT       += core gui
 TARGET = TorIM
 TEMPLATE = app
 
+INCLUDEPATH += src
 
 SOURCES += src/main.cpp\
         src/ui/MainWindow.cpp \
-    src/ui/ChatWidget.cpp
+    src/ui/ChatWidget.cpp \
+    src/ContactsModel.cpp
 
 HEADERS  += src/ui/MainWindow.h \
-    src/ui/ChatWidget.h
+    src/ui/ChatWidget.h \
+    src/ContactsModel.h
 
 OTHER_FILES += \
     res/user--plus.png
