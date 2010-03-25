@@ -33,7 +33,7 @@ QVariant ContactsModel::data(const QModelIndex &index, int role) const
 			return QString("BestFriend");
 		else if (role == Qt::DecorationRole)
 		{
-			QImage img(QSize(40, 40), QImage::Format_ARGB32_Premultiplied);
+			QImage img(QSize(35, 35), QImage::Format_ARGB32_Premultiplied);
 			img.fill(QColor(Qt::darkGray).rgba());
 			return img;
 		}

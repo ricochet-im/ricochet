@@ -55,7 +55,7 @@ QTreeView *MainWindow::createContacts()
 	QTreeView *contactsView = new QTreeView;
 	contactsView->setRootIsDecorated(false);
 	contactsView->setHeaderHidden(true);
-	contactsView->setFixedWidth(170);
+	contactsView->setFixedWidth(175);
 	contactsView->setFrameStyle(QFrame::NoFrame);
 
 	contactsView->setModel(new ContactsModel(contactsView));
