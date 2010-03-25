@@ -84,6 +84,9 @@ void TorControlManager::createHiddenService(const QString &path, const QHostAddr
 	QList<QPair<QByteArray,QByteArray> > settings;
 	settings.append(qMakePair(QByteArray("HiddenServiceDir"), dir.absolutePath().toLocal8Bit()));
 	settings.append(qMakePair(QByteArray("HiddenServicePort"), target.toLatin1()));
+#if 0
+	settings.append(qMakePair(QByteArray("HiddenServiceAuthorizeClient"), QByteArray("stealth bob")));
+#endif
 
 	SetConfCommand *command = new SetConfCommand;
 	socket->sendCommand(command, command->build(settings));
