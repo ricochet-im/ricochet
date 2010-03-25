@@ -2,6 +2,8 @@
 #include "TorControlSocket.h"
 #include <QHostAddress>
 
+using namespace Tor;
+
 TorControlManager::TorControlManager(QObject *parent) :
     QObject(parent)
 {

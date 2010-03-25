@@ -3,6 +3,9 @@
 
 #include <QObject>
 
+namespace Tor
+{
+
 class TorControlManager : public QObject
 {
 Q_OBJECT
@@ -18,5 +21,7 @@ private slots:
 private:
 	class TorControlSocket *socket;
 };
+
+}
 
 #endif // TORCONTROLMANAGER_H

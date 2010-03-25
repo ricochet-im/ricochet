@@ -17,14 +17,18 @@ SOURCES += src/main.cpp\
     src/ContactsModel.cpp \
     src/ui/ContactItemDelegate.cpp \
     src/tor/TorControlManager.cpp \
-    src/tor/TorControlSocket.cpp
+    src/tor/TorControlSocket.cpp \
+    src/tor/TorControlCommand.cpp \
+    src/tor/ProtocolInfoCommand.cpp
 
 HEADERS  += src/ui/MainWindow.h \
     src/ui/ChatWidget.h \
     src/ContactsModel.h \
     src/ui/ContactItemDelegate.h \
     src/tor/TorControlManager.h \
-    src/tor/TorControlSocket.h
+    src/tor/TorControlSocket.h \
+    src/tor/TorControlCommand.h \
+    src/tor/ProtocolInfoCommand.h
 
 OTHER_FILES += \
     res/user--plus.png

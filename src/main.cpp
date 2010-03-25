@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
     MainWindow w;
     w.show();
 
-	TorControlManager *torManager = new TorControlManager;
+	Tor::TorControlManager *torManager = new Tor::TorControlManager;
 	torManager->connect();
 
     return a.exec();
