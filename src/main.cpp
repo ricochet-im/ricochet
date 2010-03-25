@@ -3,6 +3,8 @@
 #include "ui/MainWindow.h"
 #include "tor/TorControlManager.h"
 
+static bool connectTorControl();
+
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
@@ -14,8 +16,23 @@ int main(int argc, char *argv[])
     MainWindow w;
     w.show();
 
-	Tor::TorControlManager *torManager = new Tor::TorControlManager;
-	torManager->connect();
+	bool configured = connectTorControl();
+	if (!configured)
+		qFatal("Tor control settings aren't configured");
 
     return a.exec();
+}
+
+static bool connectTorControl()
+{
+	QSettings settings;
+	QHostAddress address(settings.value("tor/controlIp").value<QString>());
+	quint16 port = (quint16)settings.value("tor/controlPort", 0).toUInt();
+
+	if (address.isNull() || !port)
+		return false;
+
+	Tor::TorControlManager *torManager = new Tor::TorControlManager;
+	torManager->setAuthPassword(settings.value("tor/authPassword").toByteArray());
+	torManager->connect(address, port);
 }

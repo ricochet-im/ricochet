@@ -18,9 +18,14 @@ TorControlManager::TorControlManager(QObject *parent) :
 	QObject::connect(socket, SIGNAL(connected()), this, SLOT(queryInfo()));
 }
 
-void TorControlManager::connect()
+void TorControlManager::setAuthPassword(const QByteArray &password)
 {
-	socket->connectToHost(QHostAddress(QString("127.0.0.1")), 9051);
+	pAuthPassword = password;
+}
+
+void TorControlManager::connect(const QHostAddress &address, quint16 port)
+{
+	socket->connectToHost(address, port);
 }
 
 void TorControlManager::commandFinished(TorControlCommand *command)
@@ -64,7 +69,15 @@ void TorControlManager::authenticate()
 	else if (pAuthMethods.testFlag(AuthHashedPassword))
 	{
 		qDebug() << "torctrl: Using hashed password authentication";
-		data = command->build(QByteArray("test"));
+
+		if (pAuthPassword.isEmpty())
+		{
+			qWarning() << "torctrl: Password authentication required and no password is configured";
+			delete command;
+			return;
+		}
+
+		data = command->build(pAuthPassword);
 	}
 	else
 	{

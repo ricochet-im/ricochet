@@ -26,10 +26,10 @@ public:
 	QFlags<AuthMethod> authMethods() const { return pAuthMethods; }
 	QByteArray torVersion() const { return pTorVersion; }
 
-	void createHiddenService(const QString &path, const QHostAddress &address, quint16 port);
+	void setAuthPassword(const QByteArray &password);
 
-public slots:
-	void connect();
+	void connect(const QHostAddress &address, quint16 port);
+	void createHiddenService(const QString &path, const QHostAddress &address, quint16 port);
 
 private slots:
 	void queryInfo();
@@ -39,7 +39,7 @@ private slots:
 private:
 	class TorControlSocket *socket;
 	QFlags<AuthMethod> pAuthMethods;
-	QByteArray pTorVersion;
+	QByteArray pTorVersion, pAuthPassword;
 
 	void authenticate();
 };
