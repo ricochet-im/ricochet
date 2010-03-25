@@ -1,5 +1,6 @@
 #include "ContactItemDelegate.h"
 #include <QPainter>
+#include <QApplication>
 
 ContactItemDelegate::ContactItemDelegate(QObject *parent) :
     QStyledItemDelegate(parent)
@@ -8,18 +9,23 @@ ContactItemDelegate::ContactItemDelegate(QObject *parent) :
 
 QSize ContactItemDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-	return QSize(160, 45);
+	return QSize(160, 50);
 }
 
 void ContactItemDelegate::paint(QPainter *p, const QStyleOptionViewItem &opt,
 								const QModelIndex &index) const
 {
-	QRect r = opt.rect.adjusted(5, 5, -5, 0);
+	QStyleOptionViewItemV4 ropt = opt;
+
+	QRect r = opt.rect.adjusted(5, 5, -5, -5);
 
 	p->save();
 
+	ropt.rect = QRect(opt.rect.topLeft() + QPoint(1, 1), QSize(48, 48));
+	qApp->style()->drawPrimitive(QStyle::PE_PanelItemViewItem, &ropt, p, ropt.widget);
+
 	p->fillRect(QRect(r.topLeft(), QSize(40, 40)), Qt::green);
-	r.adjust(44, 0, 0, 0);
+	r.adjust(46, 0, 0, 0);
 
 	/* Draw nickname */
 	QString nickname = index.data().toString();
