@@ -1,6 +1,6 @@
 #include <QtGui/QApplication>
 #include "ui/MainWindow.h"
-#include "core/TorControlManager.h"
+#include "tor/TorControlManager.h"
 
 int main(int argc, char *argv[])
 {
