@@ -1,4 +1,6 @@
 #include "ContactsModel.h"
+#include <QImage>
+#include <QColor>
 
 ContactsModel::ContactsModel(QObject *parent) :
     QAbstractListModel(parent)
@@ -29,6 +31,12 @@ QVariant ContactsModel::data(const QModelIndex &index, int role) const
 	case 0:
 		if (role == Qt::DisplayRole)
 			return QString("BestFriend");
+		else if (role == Qt::DecorationRole)
+		{
+			QImage img(QSize(40, 40), QImage::Format_ARGB32_Premultiplied);
+			img.fill(QColor(Qt::darkGray).rgba());
+			return img;
+		}
 		break;
 	case 1:
 		if (role == Qt::DisplayRole)

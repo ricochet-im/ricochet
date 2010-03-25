@@ -9,7 +9,7 @@ ContactItemDelegate::ContactItemDelegate(QObject *parent) :
 
 QSize ContactItemDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-	return QSize(160, 50);
+	return QSize(160, 53);
 }
 
 void ContactItemDelegate::paint(QPainter *p, const QStyleOptionViewItem &opt,
@@ -17,14 +17,21 @@ void ContactItemDelegate::paint(QPainter *p, const QStyleOptionViewItem &opt,
 {
 	QStyleOptionViewItemV4 ropt = opt;
 
-	QRect r = opt.rect.adjusted(5, 5, -5, -5);
+	QRect r = opt.rect.adjusted(5, 5, -5, -8);
 
 	p->save();
 
+	/* Selection (behind the avatar) */
 	ropt.rect = QRect(opt.rect.topLeft() + QPoint(1, 1), QSize(48, 48));
 	qApp->style()->drawPrimitive(QStyle::PE_PanelItemViewItem, &ropt, p, ropt.widget);
 
-	p->fillRect(QRect(r.topLeft(), QSize(40, 40)), Qt::green);
+	/* Avatar */
+	QPixmap avatar = index.data(Qt::DecorationRole).value<QPixmap>();
+	if (avatar.width() > 40 || avatar.height() > 40)
+		avatar = avatar.scaled(QSize(40, 40), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+
+	p->drawPixmap(r.x() + (40 - avatar.width()) / 2, r.y() + (40 - avatar.height()) / 2,
+				 avatar);
 	r.adjust(46, 0, 0, 0);
 
 	/* Draw nickname */
