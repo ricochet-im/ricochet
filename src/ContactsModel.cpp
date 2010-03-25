@@ -1,24 +1,35 @@
 #include "ContactsModel.h"
+#include "core/ContactsManager.h"
 #include <QImage>
 #include <QColor>
 
 ContactsModel::ContactsModel(QObject *parent) :
     QAbstractListModel(parent)
 {
+	populate();
+}
+
+void ContactsModel::populate()
+{
+	beginResetModel();
+	contacts = contactsManager->contacts();
+	endResetModel();
 }
 
 int ContactsModel::rowCount(const QModelIndex &parent) const
 {
-	if (!parent.isValid())
-		return 2;
-	return 0;
+	if (parent.isValid())
+		return 0;
+	else
+		return contacts.size();
 }
 
 int ContactsModel::columnCount(const QModelIndex &parent) const
 {
-	if (!parent.isValid())
+	if (parent.isValid())
+		return 0;
+	else
 		return 2;
-	return 0;
 }
 
 QVariant ContactsModel::data(const QModelIndex &index, int role) const
@@ -26,11 +37,15 @@ QVariant ContactsModel::data(const QModelIndex &index, int role) const
 	if (!index.isValid())
 		return QVariant();
 
+	ContactUser *user = contacts[index.row()];
+
 	switch (index.column())
 	{
 	case 0:
 		if (role == Qt::DisplayRole)
-			return QString("BestFriend");
+		{
+			return user->nickname();
+		}
 		else if (role == Qt::DecorationRole)
 		{
 			QImage img(QSize(35, 35), QImage::Format_ARGB32_Premultiplied);
@@ -40,7 +55,7 @@ QVariant ContactsModel::data(const QModelIndex &index, int role) const
 		break;
 	case 1:
 		if (role == Qt::DisplayRole)
-			return QString("fi93k293k49023qz");
+			return user->uniqueID;
 		break;
 	}
 

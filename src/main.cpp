@@ -1,6 +1,7 @@
 #include <QApplication>
 #include <QSettings>
 #include "ui/MainWindow.h"
+#include "core/ContactsManager.h"
 #include "tor/TorControlManager.h"
 
 static bool connectTorControl();
@@ -13,12 +14,16 @@ int main(int argc, char *argv[])
 	QSettings::setDefaultFormat(QSettings::IniFormat);
 	QSettings::setPath(QSettings::IniFormat, QSettings::UserScope, a.applicationDirPath());
 
-    MainWindow w;
-    w.show();
+	/* Initialization */
+	contactsManager = new ContactsManager;
 
 	bool configured = connectTorControl();
 	if (!configured)
 		qFatal("Tor control settings aren't configured");
+
+	/* Window */
+    MainWindow w;
+    w.show();
 
     return a.exec();
 }
@@ -35,4 +40,6 @@ static bool connectTorControl()
 	Tor::TorControlManager *torManager = new Tor::TorControlManager;
 	torManager->setAuthPassword(settings.value("tor/authPassword").toByteArray());
 	torManager->connect(address, port);
+
+	return true;
 }

@@ -2,6 +2,7 @@
 #define CONTACTSMODEL_H
 
 #include <QAbstractListModel>
+#include <QList>
 
 class ContactsModel : public QAbstractListModel
 {
@@ -13,6 +14,11 @@ public:
 	virtual int columnCount(const QModelIndex &parent = QModelIndex()) const;
 
 	virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
+
+private:
+	QList<class ContactUser*> contacts;
+
+	void populate();
 };
 
 #endif // CONTACTSMODEL_H

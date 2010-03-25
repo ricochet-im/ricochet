@@ -22,7 +22,9 @@ SOURCES += src/main.cpp\
     src/tor/ProtocolInfoCommand.cpp \
     src/tor/AuthenticateCommand.cpp \
     src/tor/SetConfCommand.cpp \
-    src/utils/StringUtil.cpp
+    src/utils/StringUtil.cpp \
+    src/core/ContactsManager.cpp \
+    src/core/ContactUser.cpp
 
 HEADERS  += src/ui/MainWindow.h \
     src/ui/ChatWidget.h \
@@ -34,7 +36,9 @@ HEADERS  += src/ui/MainWindow.h \
     src/tor/ProtocolInfoCommand.h \
     src/tor/AuthenticateCommand.h \
     src/tor/SetConfCommand.h \
-    src/utils/StringUtil.h
+    src/utils/StringUtil.h \
+    src/core/ContactsManager.h \
+    src/core/ContactUser.h
 
 OTHER_FILES += \
     res/user--plus.png
