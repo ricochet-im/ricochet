@@ -18,6 +18,8 @@ public slots:
 private slots:
 	void authenticate();
 
+	void commandFinished(class TorControlCommand *command);
+
 private:
 	class TorControlSocket *socket;
 };
