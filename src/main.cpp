@@ -1,14 +1,16 @@
 #include <QtGui/QApplication>
 #include "ui/MainWindow.h"
+#include "core/TorControlManager.h"
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+
     MainWindow w;
-#if defined(Q_WS_S60) || defined(Q_WS_MAEMO_5)
-    w.showMaximized();
-#else
     w.show();
-#endif
+
+	TorControlManager *torManager = new TorControlManager;
+	torManager->connect();
+
     return a.exec();
 }

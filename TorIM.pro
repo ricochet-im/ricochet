@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui network
 
 TARGET = TorIM
 TEMPLATE = app
@@ -15,12 +15,16 @@ SOURCES += src/main.cpp\
         src/ui/MainWindow.cpp \
     src/ui/ChatWidget.cpp \
     src/ContactsModel.cpp \
-    src/ui/ContactItemDelegate.cpp
+    src/ui/ContactItemDelegate.cpp \
+    src/core/TorControlManager.cpp \
+    src/core/TorControlSocket.cpp
 
 HEADERS  += src/ui/MainWindow.h \
     src/ui/ChatWidget.h \
     src/ContactsModel.h \
-    src/ui/ContactItemDelegate.h
+    src/ui/ContactItemDelegate.h \
+    src/core/TorControlManager.h \
+    src/core/TorControlSocket.h
 
 OTHER_FILES += \
     res/user--plus.png
