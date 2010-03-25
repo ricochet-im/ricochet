@@ -19,7 +19,8 @@ SOURCES += src/main.cpp\
     src/tor/TorControlManager.cpp \
     src/tor/TorControlSocket.cpp \
     src/tor/TorControlCommand.cpp \
-    src/tor/ProtocolInfoCommand.cpp
+    src/tor/ProtocolInfoCommand.cpp \
+    src/tor/AuthenticateCommand.cpp
 
 HEADERS  += src/ui/MainWindow.h \
     src/ui/ChatWidget.h \
@@ -28,7 +29,8 @@ HEADERS  += src/ui/MainWindow.h \
     src/tor/TorControlManager.h \
     src/tor/TorControlSocket.h \
     src/tor/TorControlCommand.h \
-    src/tor/ProtocolInfoCommand.h
+    src/tor/ProtocolInfoCommand.h \
+    src/tor/AuthenticateCommand.h
 
 OTHER_FILES += \
     res/user--plus.png

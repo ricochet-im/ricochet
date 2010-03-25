@@ -7,25 +7,20 @@
 namespace Tor
 {
 
+class TorControlManager;
+
 class ProtocolInfoCommand : public TorControlCommand
 {
 public:
-	enum AuthMethod
-	{
-		AuthUnknown = 0,
-		AuthNull = 0x1,
-		AuthHashedPassword = 0x2,
-		AuthCookie = 0x4
-	};
-	QFlags<AuthMethod> authMethod;
-	QByteArray torVersion;
-
-    ProtocolInfoCommand();
+    ProtocolInfoCommand(TorControlManager *manager);
 
 	QByteArray build();
 
 protected:
 	virtual void handleReply(int code, QByteArray &data, bool end);
+
+private:
+	TorControlManager *manager;
 };
 
 }

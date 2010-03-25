@@ -1,10 +1,11 @@
 #include "ProtocolInfoCommand.h"
+#include "TorControlManager.h"
 #include <QList>
 
 using namespace Tor;
 
-ProtocolInfoCommand::ProtocolInfoCommand()
-	: TorControlCommand("PROTOCOLINFO"), authMethod(AuthUnknown)
+ProtocolInfoCommand::ProtocolInfoCommand(TorControlManager *m)
+	: TorControlCommand("PROTOCOLINFO"), manager(m)
 {
 }
 
@@ -20,19 +21,23 @@ void ProtocolInfoCommand::handleReply(int code, QByteArray &data, bool end)
 
 	if (data.startsWith("AUTH METHODS="))
 	{
-		QList<QByteArray> methods = data.mid(13, data.indexOf(' ', 13)).split(',');
-		for (QList<QByteArray>::Iterator it = methods.begin(); it != methods.end(); ++it)
+		QFlags<TorControlManager::AuthMethod> authMethods;
+
+		QList<QByteArray> textMethods = data.mid(13, data.indexOf(' ', 13)).split(',');
+		for (QList<QByteArray>::Iterator it = textMethods.begin(); it != textMethods.end(); ++it)
 		{
 			if (*it == "NULL")
-				authMethod |= AuthNull;
+				authMethods |= TorControlManager::AuthNull;
 			else if (*it == "HASHEDPASSWORD")
-				authMethod |= AuthHashedPassword;
+				authMethods |= TorControlManager::AuthHashedPassword;
 			else if (*it == "COOKIE")
-				authMethod |= AuthCookie;
+				authMethods |= TorControlManager::AuthCookie;
 		}
+
+		manager->pAuthMethods = authMethods;
 	}
 	else if (data.startsWith("VERSION Tor="))
 	{
-		torVersion = data.mid(12, data.indexOf(' ', 12));
+		manager->pTorVersion = data.mid(12, data.indexOf(' ', 12));
 	}
 }

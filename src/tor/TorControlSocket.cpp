@@ -67,7 +67,12 @@ void TorControlSocket::process()
 		if (end)
 		{
 			commandQueue.takeFirst();
+
+			if (command)
+				command->setStatusCode(code);
+
 			emit commandFinished(command);
+			delete command;
 		}
 	}
 }
