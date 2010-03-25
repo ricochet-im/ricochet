@@ -1,5 +1,6 @@
 #include "TorControlManager.h"
 #include "TorControlSocket.h"
+#include "ProtocolInfoCommand.h"
 #include <QHostAddress>
 
 using namespace Tor;
@@ -19,5 +20,6 @@ void TorControlManager::connect()
 void TorControlManager::authenticate()
 {
 	qDebug("Connected");
-	socket->write("PROTOCOLINFO 1\r\n");
+	ProtocolInfoCommand *command = new ProtocolInfoCommand;
+	socket->sendCommand(command, command->build());
 }

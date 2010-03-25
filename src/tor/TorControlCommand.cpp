@@ -3,6 +3,6 @@
 using namespace Tor;
 
 TorControlCommand::TorControlCommand(const char *kw)
-	: keyword(kw)
+	: keyword(kw), pStatusCode(0)
 {
 }
