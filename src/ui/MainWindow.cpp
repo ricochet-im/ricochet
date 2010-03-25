@@ -1,11 +1,13 @@
 #include "MainWindow.h"
 #include "ContactsModel.h"
+#include "ContactItemDelegate.h"
 #include "ChatWidget.h"
 #include <QToolBar>
 #include <QBoxLayout>
 #include <QTreeView>
 #include <QTabWidget>
 #include <QFrame>
+#include <QHeaderView>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -57,6 +59,13 @@ QTreeView *MainWindow::createContacts()
 	contactsView->setFrameStyle(QFrame::NoFrame);
 
 	contactsView->setModel(new ContactsModel(contactsView));
+	contactsView->setItemDelegate(new ContactItemDelegate(contactsView));
+
+	QHeaderView *header = contactsView->header();
+	for (int i = 1; i < header->count(); ++i)
+		header->hideSection(i);
+
+	header->setResizeMode(0, QHeaderView::Stretch);
 
 	return contactsView;
 }

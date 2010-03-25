@@ -14,11 +14,13 @@ INCLUDEPATH += src
 SOURCES += src/main.cpp\
         src/ui/MainWindow.cpp \
     src/ui/ChatWidget.cpp \
-    src/ContactsModel.cpp
+    src/ContactsModel.cpp \
+    src/ui/ContactItemDelegate.cpp
 
 HEADERS  += src/ui/MainWindow.h \
     src/ui/ChatWidget.h \
-    src/ContactsModel.h
+    src/ContactsModel.h \
+    src/ui/ContactItemDelegate.h
 
 OTHER_FILES += \
     res/user--plus.png
