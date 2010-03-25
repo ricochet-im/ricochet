@@ -22,7 +22,8 @@ void ContactItemDelegate::paint(QPainter *p, const QStyleOptionViewItem &opt,
 	p->save();
 
 	/* Selection (behind the avatar) */
-	ropt.rect = QRect(opt.rect.topLeft() + QPoint(1, 1), QSize(43, 43));
+	ropt.rect.adjust(0, 0, 0, -3);
+	ropt.state |= QStyle::State_Active;
 	qApp->style()->drawPrimitive(QStyle::PE_PanelItemViewItem, &ropt, p, ropt.widget);
 
 	/* Avatar */

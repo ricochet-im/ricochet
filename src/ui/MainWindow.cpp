@@ -5,7 +5,7 @@
 #include <QToolBar>
 #include <QBoxLayout>
 #include <QTreeView>
-#include <QTabWidget>
+#include <QStackedWidget>
 #include <QFrame>
 #include <QHeaderView>
 
@@ -21,6 +21,7 @@ MainWindow::MainWindow(QWidget *parent)
 	layout->setMargin(0);
 	layout->setSpacing(0);
 
+	/* Contacts */
 	QTreeView *contactsView = createContacts();
 	layout->addWidget(contactsView);
 
@@ -29,11 +30,11 @@ MainWindow::MainWindow(QWidget *parent)
 	line->setFrameStyle(QFrame::VLine | QFrame::Sunken);
 	layout->addWidget(line);
 
-	QTabWidget *chatArea = createChatArea();
+	/* Chat area */
+	createChatArea();
 	layout->addWidget(chatArea);
 
-	chatArea->addTab(new ChatWidget, "Test");
-	chatArea->addTab(new ChatWidget, "Abit");
+	chatArea->addWidget(new ChatWidget);
 }
 
 MainWindow::~MainWindow()
@@ -70,10 +71,8 @@ QTreeView *MainWindow::createContacts()
 	return contactsView;
 }
 
-QTabWidget *MainWindow::createChatArea()
+void MainWindow::createChatArea()
 {
-	QTabWidget *chatArea = new QTabWidget;
-	chatArea->setDocumentMode(true);
-
-	return chatArea;
+	chatArea = new QStackedWidget;
+	chatArea->setContentsMargins(4, 6, 4, 6);
 }

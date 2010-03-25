@@ -12,9 +12,11 @@ public:
     ~MainWindow();
 
 private:
+	class QStackedWidget *chatArea;
+
 	void createToolbar();
 	class QTreeView *createContacts();
-	class QTabWidget *createChatArea();
+	void createChatArea();
 };
 
 #endif // MAINWINDOW_H

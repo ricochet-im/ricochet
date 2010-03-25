@@ -20,7 +20,6 @@ void ChatWidget::createTextArea()
 {
 	textArea = new QTextEdit;
 	textArea->setReadOnly(true);
-	textArea->setFrameStyle(QFrame::NoFrame);
 }
 
 void ChatWidget::createTextInput()
