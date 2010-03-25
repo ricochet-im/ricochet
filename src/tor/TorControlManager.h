@@ -2,6 +2,7 @@
 #define TORCONTROLMANAGER_H
 
 #include <QObject>
+#include <QHostAddress>
 
 namespace Tor
 {
@@ -24,6 +25,8 @@ public:
 
 	QFlags<AuthMethod> authMethods() const { return pAuthMethods; }
 	QByteArray torVersion() const { return pTorVersion; }
+
+	void createHiddenService(const QString &path, const QHostAddress &address, quint16 port);
 
 public slots:
 	void connect();

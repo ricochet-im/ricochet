@@ -2,7 +2,9 @@
 #include "TorControlSocket.h"
 #include "ProtocolInfoCommand.h"
 #include "AuthenticateCommand.h"
+#include "SetConfCommand.h"
 #include <QHostAddress>
+#include <QDir>
 #include <QDebug>
 
 using namespace Tor;
@@ -32,9 +34,12 @@ void TorControlManager::commandFinished(TorControlCommand *command)
 	else if (command->keyword == QLatin1String("AUTHENTICATE"))
 	{
 		if (command->statusCode() != 250)
+		{
 			qWarning() << "torctrl: Authentication failed with code" << command->statusCode();
-		else
-			qDebug() << "torctrl: Authentication successful";
+			return;
+		}
+
+		qDebug() << "torctrl: Authentication successful";
 	}
 }
 
@@ -69,4 +74,17 @@ void TorControlManager::authenticate()
 	}
 
 	socket->sendCommand(command, data);
+}
+
+void TorControlManager::createHiddenService(const QString &path, const QHostAddress &address, quint16 port)
+{
+	QDir dir(path);
+	QString target = QString("9800 %1:%2").arg(address.toString()).arg(port);
+
+	QList<QPair<QByteArray,QByteArray> > settings;
+	settings.append(qMakePair(QByteArray("HiddenServiceDir"), dir.absolutePath().toLocal8Bit()));
+	settings.append(qMakePair(QByteArray("HiddenServicePort"), target.toLatin1()));
+
+	SetConfCommand *command = new SetConfCommand;
+	socket->sendCommand(command, command->build(settings));
 }

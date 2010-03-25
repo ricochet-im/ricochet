@@ -20,7 +20,9 @@ SOURCES += src/main.cpp\
     src/tor/TorControlSocket.cpp \
     src/tor/TorControlCommand.cpp \
     src/tor/ProtocolInfoCommand.cpp \
-    src/tor/AuthenticateCommand.cpp
+    src/tor/AuthenticateCommand.cpp \
+    src/tor/SetConfCommand.cpp \
+    src/utils/StringUtil.cpp
 
 HEADERS  += src/ui/MainWindow.h \
     src/ui/ChatWidget.h \
@@ -30,7 +32,9 @@ HEADERS  += src/ui/MainWindow.h \
     src/tor/TorControlSocket.h \
     src/tor/TorControlCommand.h \
     src/tor/ProtocolInfoCommand.h \
-    src/tor/AuthenticateCommand.h
+    src/tor/AuthenticateCommand.h \
+    src/tor/SetConfCommand.h \
+    src/utils/StringUtil.h
 
 OTHER_FILES += \
     res/user--plus.png
