@@ -1,8 +1,9 @@
-#include <QApplication>
-#include <QSettings>
 #include "ui/MainWindow.h"
 #include "core/ContactsManager.h"
 #include "tor/TorControlManager.h"
+#include <QApplication>
+#include <QSettings>
+#include <QTime>
 
 static bool connectTorControl();
 
@@ -13,6 +14,11 @@ int main(int argc, char *argv[])
 
 	QSettings::setDefaultFormat(QSettings::IniFormat);
 	QSettings::setPath(QSettings::IniFormat, QSettings::UserScope, a.applicationDirPath());
+
+	{
+		QTime now = QTime::currentTime();
+		qsrand(unsigned(now.second()) * now.msec() * unsigned(a.applicationPid()));
+	}
 
 	/* Initialization */
 	contactsManager = new ContactsManager;
