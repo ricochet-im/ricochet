@@ -5,6 +5,9 @@
 #include <QSettings>
 #include <QTime>
 
+#include "protocol/ProtocolManager.h"
+#include "protocol/PingCommand.h"
+
 static bool connectTorControl();
 
 int main(int argc, char *argv[])
@@ -26,6 +29,12 @@ int main(int argc, char *argv[])
 	bool configured = connectTorControl();
 	if (!configured)
 		qFatal("Tor control settings aren't configured");
+
+	ProtocolManager *testManager = new ProtocolManager(QString("192.168.1.1"), 7777);
+	testManager->connectPrimary();
+
+	PingCommand *command = new PingCommand;
+	command->send(testManager);
 
 	/* Window */
     MainWindow w;

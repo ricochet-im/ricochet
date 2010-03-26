@@ -36,13 +36,16 @@ bool ProtocolManager::isAnyConnected() const
 
 void ProtocolManager::connectPrimary()
 {
-	if (isPrimaryConnected() || primarySocket->state() != QAbstractSocket::UnconnectedState)
+	if (primarySocket && primarySocket->state() != QAbstractSocket::UnconnectedState)
 		return;
 
 	if (!primarySocket)
 	{
 		primarySocket = new QTcpSocket(this);
 		connect(primarySocket, SIGNAL(connected()), this, SLOT(socketConnected()));
+		connect(primarySocket, SIGNAL(disconnected()), this, SLOT(socketDisconnected()));
+		connect(primarySocket, SIGNAL(error(QAbstractSocket::SocketError)), this,
+				SLOT(socketError(QAbstractSocket::SocketError)));
 		connect(primarySocket, SIGNAL(readyRead()), this, SLOT(socketReadable()));
 	}
 
@@ -55,6 +58,45 @@ void ProtocolManager::connectAnother()
 	qFatal("ProtocolManager::ConnectAnother - not implemented");
 }
 
+quint16 ProtocolManager::getIdentifier() const
+{
+	/* There is a corner case for the very unlucky where the RNG will take a very long time
+	 * to find an available ID. This could be considered a BUG. */
+	if (pendingCommands.size() >= 50000)
+		return 0;
+
+	quint16 re;
+	do
+	{
+		re = (qrand() % 65535) + 1;
+	} while (pendingCommands.contains(re));
+
+	return re;
+}
+
+void ProtocolManager::sendCommand(ProtocolCommand *command, bool ordered)
+{
+	Q_ASSERT(!pendingCommands.contains(command->identifier()));
+
+	pendingCommands.insert(command->identifier(), command);
+
+	if (ordered)
+	{
+		if (!isPrimaryConnected())
+		{
+			commandQueue.append(command);
+			return;
+		}
+
+		Q_ASSERT(commandQueue.isEmpty());
+		primarySocket->write(command->commandBuffer);
+	}
+	else
+	{
+		qFatal("Not implemented");
+	}
+}
+
 void ProtocolManager::socketConnected()
 {
 	QTcpSocket *socket = qobject_cast<QTcpSocket*>(sender());
@@ -65,21 +107,27 @@ void ProtocolManager::socketConnected()
 	}
 
 	if (socket == primarySocket)
+	{
+		qDebug() << "Primary socket connected";
+
+		while (!commandQueue.isEmpty())
+			primarySocket->write(commandQueue.takeFirst()->commandBuffer);
+
 		emit primaryConnected();
+	}
+}
+
+void ProtocolManager::socketDisconnected()
+{
+	qDebug() << "Socket disconnected";
+}
+
+void ProtocolManager::socketError(QAbstractSocket::SocketError error)
+{
+	qDebug() << "Socket error:" << error;
 }
 
 void ProtocolManager::socketReadable()
 {
 	qDebug() << "Socket readable";
-}
-
-quint16 ProtocolManager::getIdentifier() const
-{
-	quint16 re;
-	do
-	{
-		re = (qrand() % 65535) + 1;
-	} while (pendingCommands.contains(re));
-
-	return re;
 }

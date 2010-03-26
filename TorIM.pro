@@ -26,7 +26,8 @@ SOURCES += src/main.cpp\
     src/core/ContactsManager.cpp \
     src/core/ContactUser.cpp \
     src/protocol/ProtocolCommand.cpp \
-    src/protocol/ProtocolManager.cpp
+    src/protocol/ProtocolManager.cpp \
+    src/protocol/PingCommand.cpp
 
 HEADERS  += src/ui/MainWindow.h \
     src/ui/ChatWidget.h \
@@ -42,7 +43,8 @@ HEADERS  += src/ui/MainWindow.h \
     src/core/ContactsManager.h \
     src/core/ContactUser.h \
     src/protocol/ProtocolCommand.h \
-    src/protocol/ProtocolManager.h
+    src/protocol/ProtocolManager.h \
+    src/protocol/PingCommand.h
 
 OTHER_FILES += \
     res/user--plus.png

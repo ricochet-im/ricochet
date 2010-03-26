@@ -5,6 +5,7 @@
 #include <QList>
 #include <QQueue>
 #include <QHash>
+#include <QAbstractSocket>
 
 class QTcpSocket;
 class ProtocolCommand;
@@ -41,6 +42,8 @@ signals:
 
 private slots:
 	void socketConnected();
+	void socketDisconnected();
+	void socketError(QAbstractSocket::SocketError error);
 	void socketReadable();
 
 private:
