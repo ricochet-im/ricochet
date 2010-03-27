@@ -70,4 +70,7 @@ private:
 					 unsigned dataSize);
 };
 
+/* Do not change this, as it breaks backwards compatibility. Hopefully, it will never be necessary. */
+static const quint8 protocolVersion = 0x00;
+
 #endif // PROTOCOLMANAGER_H

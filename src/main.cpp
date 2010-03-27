@@ -1,6 +1,7 @@
 #include "ui/MainWindow.h"
 #include "core/ContactsManager.h"
 #include "tor/TorControlManager.h"
+#include "protocol/IncomingSocket.h"
 #include <QApplication>
 #include <QSettings>
 #include <QTime>
@@ -29,6 +30,10 @@ int main(int argc, char *argv[])
 	bool configured = connectTorControl();
 	if (!configured)
 		qFatal("Tor control settings aren't configured");
+
+	IncomingSocket *incoming = new IncomingSocket;
+	if (!incoming->listen(QHostAddress(QString("127.0.0.1")), 7777))
+		qFatal("Failed to open incoming socket: %s", qPrintable(incoming->errorString()));
 
 	ProtocolManager *testManager = new ProtocolManager(QString("192.168.1.1"), 7777);
 	testManager->connectPrimary();
