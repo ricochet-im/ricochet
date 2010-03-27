@@ -1,6 +1,7 @@
 #include "ProtocolManager.h"
 #include "ProtocolCommand.h"
 #include <QTcpSocket>
+#include <QtEndian>
 
 ProtocolManager::ProtocolManager(const QString &host, quint16 port, QObject *parent)
 	: QObject(parent), primarySocket(0), pHost(host), pPort(port)
@@ -130,4 +131,38 @@ void ProtocolManager::socketError(QAbstractSocket::SocketError error)
 void ProtocolManager::socketReadable()
 {
 	qDebug() << "Socket readable";
+
+	QTcpSocket *socket = qobject_cast<QTcpSocket*>(sender());
+	if (!socket)
+		return;
+
+	qint64 available = socket->bytesAvailable();
+
+	while (available >= 6)
+	{
+		quint16 msgLength;
+		if (socket->peek(reinterpret_cast<char*>(&msgLength), sizeof(msgLength)) < 2)
+			return;
+
+		msgLength = qFromBigEndian(msgLength);
+		if (!msgLength)
+			qFatal("Unbuffered protocol replies are not implemented");
+
+		/* Message length is one more than the actual data length, and does not include the header. */
+		msgLength--;
+		if ((available - 6) < msgLength)
+			break;
+
+		QByteArray data;
+		data.resize(msgLength + 6);
+
+		qint64 re = socket->read(data.data(), msgLength + 6);
+		Q_ASSERT(re == msgLength + 6);
+
+		callCommand(data[2], data[3],
+					qFromBigEndian<quint16>(reinterpret_cast<const uchar*>(data.constData())+4),
+					reinterpret_cast<const uchar*>(data.constData()), msgLength);
+
+		available -= msgLength + 6;
+	}
 }

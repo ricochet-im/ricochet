@@ -27,7 +27,8 @@ SOURCES += src/main.cpp\
     src/core/ContactUser.cpp \
     src/protocol/ProtocolCommand.cpp \
     src/protocol/ProtocolManager.cpp \
-    src/protocol/PingCommand.cpp
+    src/protocol/PingCommand.cpp \
+    src/protocol/DispatchCommand.cpp
 
 HEADERS  += src/ui/MainWindow.h \
     src/ui/ChatWidget.h \

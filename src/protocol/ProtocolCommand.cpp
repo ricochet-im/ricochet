@@ -57,7 +57,7 @@ bool ProtocolCommand::beginUnbufferedReply(quint8 state)
 	return false;
 }
 
-int ProtocolCommand::processUnbufferedReply(const char *data, unsigned dataSize)
+int ProtocolCommand::processUnbufferedReply(const uchar *data, unsigned dataSize)
 {
 	Q_UNUSED(data);
 	Q_UNUSED(dataSize);

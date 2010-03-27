@@ -10,6 +10,8 @@
 class QTcpSocket;
 class ProtocolCommand;
 
+typedef unsigned char uchar;
+
 class ProtocolManager : public QObject
 {
 	Q_OBJECT
@@ -19,7 +21,7 @@ class ProtocolManager : public QObject
 	Q_PROPERTY(quint16 port READ port WRITE setPort STORED true)
 
 public:
-    explicit ProtocolManager(const QString &host, quint16 port, QObject *parent = 0);
+	explicit ProtocolManager(const QString &host, quint16 port, QObject *parent = 0);
 
 	QString host() const { return pHost; }
 	void setHost(const QString &host);
@@ -63,6 +65,9 @@ private:
 
 	QString pHost;
 	quint16 pPort;
+
+	void callCommand(quint8 command, quint8 state, quint16 identifier, const unsigned char *data,
+					 unsigned dataSize);
 };
 
 #endif // PROTOCOLMANAGER_H

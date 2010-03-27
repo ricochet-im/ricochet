@@ -15,8 +15,10 @@ public:
 
 	void send(ProtocolManager *to);
 
+	static void process(quint8 state, quint16 identifier, const uchar *data, unsigned dataSize);
+
 protected:
-	virtual void processReply(quint8 state, const char *data, unsigned dataSize);
+	virtual void processReply(quint8 state, const uchar *data, unsigned dataSize);
 };
 
 #endif // PINGCOMMAND_H

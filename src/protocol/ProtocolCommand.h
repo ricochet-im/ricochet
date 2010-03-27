@@ -22,14 +22,14 @@ protected:
 	QByteArray commandBuffer;
 	quint16 pIdentifier;
 
-	virtual void processReply(quint8 state, const char *data, unsigned dataSize) = 0;
+	virtual void processReply(quint8 state, const uchar *data, unsigned dataSize) = 0;
 
 	/* Return value of false indicates that this cannot be handled and is a severe error */
 	virtual bool beginUnbufferedReply(quint8 state);
 	/* Consume data during an unbuffered reply; -1 indicates fatal error (use sparingly),
 	 * 0 indicates that all data was consumed and more is expected, and any positive value indicates
 	 * that the given number of bytes were consumed and the reply is now finished. */
-	virtual int processUnbufferedReply(const char *data, unsigned dataSize);
+	virtual int processUnbufferedReply(const uchar *data, unsigned dataSize);
 
 	/* Returns the index of commandBuffer at which data begins; safe to call more than once */
 	int prepareCommand(quint8 state, unsigned reserveSize = 0);

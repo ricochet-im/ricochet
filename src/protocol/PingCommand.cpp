@@ -7,13 +7,22 @@ PingCommand::PingCommand(QObject *parent)
 
 void PingCommand::send(ProtocolManager *to)
 {
-	int p = prepareCommand(commandState(0));
+	prepareCommand(commandState(0));
 	sendCommand(to, true);
 
 	qDebug() << "Sent ping";
 }
 
-void PingCommand::processReply(quint8 state, const char *data, unsigned dataSize)
+void PingCommand::process(quint8 state, quint16 identifier, const uchar *data, unsigned dataSize)
+{
+	Q_UNUSED(state);
+	Q_UNUSED(data);
+	Q_UNUSED(dataSize);
+
+	qDebug() << "Received ping with identifier" << identifier;
+}
+
+void PingCommand::processReply(quint8 state, const uchar *data, unsigned dataSize)
 {
 	Q_UNUSED(state);
 	Q_UNUSED(data);
