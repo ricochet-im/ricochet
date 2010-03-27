@@ -25,10 +25,16 @@ ContactInfoPage::ContactInfoPage(ContactUser *u, QWidget *parent)
 	mainLayout->addWidget(notesEdit);
 }
 
+ContactInfoPage::~ContactInfoPage()
+{
+	saveNotes();
+}
+
 void ContactInfoPage::createAvatar()
 {
 	avatar = new QLabel;
 	avatar->setPixmap(user->avatar(ContactUser::FullAvatar));
+	avatar->setFrameStyle(QFrame::Panel | QFrame::Sunken);
 }
 
 void ContactInfoPage::createNickname()
@@ -46,4 +52,21 @@ void ContactInfoPage::createNickname()
 void ContactInfoPage::createNotes()
 {
 	notesEdit = new QTextEdit;
+	notesEdit->insertPlainText(user->notesText());
+	notesEdit->setFont(QFont("Helvetica", 9));
+}
+
+void ContactInfoPage::saveNotes()
+{
+	if (!notesEdit->document()->isModified())
+		return;
+
+	user->setNotesText(notesEdit->document()->toPlainText());
+	notesEdit->document()->setModified(false);
+}
+
+void ContactInfoPage::hideEvent(QHideEvent *ev)
+{
+	saveNotes();
+	QWidget::hideEvent(ev);
 }

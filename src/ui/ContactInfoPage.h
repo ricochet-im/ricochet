@@ -16,6 +16,13 @@ public:
 	ContactUser * const user;
 
 	explicit ContactInfoPage(ContactUser *user, QWidget *parent = 0);
+	~ContactInfoPage();
+
+public slots:
+	void saveNotes();
+
+protected:
+	virtual void hideEvent(QHideEvent *);
 
 private:
 	QLabel *avatar, *nickname;

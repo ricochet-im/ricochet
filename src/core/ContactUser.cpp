@@ -11,6 +11,14 @@ ContactUser::ContactUser(const QString &id, QObject *parent)
 	loadSettings();
 }
 
+void ContactUser::loadSettings()
+{
+	QSettings settings;
+	settings.beginGroup(QString("contacts/").append(uniqueID));
+
+	pNickname = settings.value(QString("nickname"), uniqueID).toString();
+}
+
 void ContactUser::setNickname(const QString &nickname)
 {
 	if (pNickname == nickname)
@@ -64,10 +72,19 @@ void ContactUser::setAvatar(QImage image)
 		QPixmapCache::remove(cachedAvatar[i]);
 }
 
-void ContactUser::loadSettings()
+QString ContactUser::notesText() const
 {
 	QSettings settings;
-	settings.beginGroup(QString("contacts/").append(uniqueID));
+	return settings.value(QString("contacts/%1/notes").arg(uniqueID)).toString();
+}
 
-	pNickname = settings.value(QString("nickname"), uniqueID).toString();
+void ContactUser::setNotesText(const QString &text)
+{
+	QSettings settings;
+	QString key = QString("contacts/%1/notes").arg(uniqueID);
+
+	if (text.isEmpty())
+		settings.remove(key);
+	else
+		settings.setValue(key, text);
 }

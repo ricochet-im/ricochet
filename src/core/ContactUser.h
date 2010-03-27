@@ -26,12 +26,14 @@ public:
 	explicit ContactUser(const QString &uniqueID, QObject *parent = 0);
 
 	const QString &nickname() const { return pNickname; }
+	QString notesText() const;
 
 	QPixmap avatar(AvatarSize size);
 
 public slots:
 	void setNickname(const QString &nickname);
 	void setAvatar(QImage image);
+	void setNotesText(const QString &notesText);
 
 private:
 	QString pNickname;
