@@ -2,6 +2,8 @@
 #include "ContactsModel.h"
 #include "ContactItemDelegate.h"
 #include "ChatWidget.h"
+#include "ContactInfoPage.h"
+#include "core/ContactsManager.h"
 #include <QToolBar>
 #include <QBoxLayout>
 #include <QTreeView>
@@ -47,7 +49,8 @@ MainWindow::MainWindow(QWidget *parent)
 	createChatArea();
 	layout->addWidget(chatArea);
 
-	chatArea->addWidget(new ChatWidget);
+	//chatArea->addWidget(new ChatWidget);
+	chatArea->addWidget(new ContactInfoPage(contactsManager->contacts()[0]));
 }
 
 MainWindow::~MainWindow()
