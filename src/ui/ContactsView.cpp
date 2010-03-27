@@ -41,6 +41,28 @@ ContactPage ContactsView::activeContactPage() const
 	return activePage;
 }
 
+void ContactsView::mousePressEvent(QMouseEvent *event)
+{
+	QTreeView::mousePressEvent(event);
+
+	QModelIndex index = indexAt(event->pos());
+	if (!index.isValid())
+		return;
+
+	ContactItemDelegate *delegate = qobject_cast<ContactItemDelegate*>(this->itemDelegate(index));
+	if (!delegate)
+		return;
+
+	QRect itemRect = visualRect(index);
+	QPoint innerPos = event->pos() - itemRect.topLeft();
+
+	if (delegate->pageHitTest(itemRect.size(), innerPos, activePage))
+	{
+		update(index);
+		emit activePageChanged(activeContact(), activeContactPage());
+	}
+}
+
 void ContactsView::mouseMoveEvent(QMouseEvent *event)
 {
 	QModelIndex index = indexAt(event->pos());

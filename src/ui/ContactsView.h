@@ -22,6 +22,7 @@ signals:
 	void activePageChanged(ContactUser *user, ContactPage page);
 
 protected:
+	virtual void mousePressEvent(QMouseEvent *event);
 	virtual void mouseMoveEvent(QMouseEvent *event);
 
 private slots:

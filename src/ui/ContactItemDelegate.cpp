@@ -1,17 +1,40 @@
 #include "ContactItemDelegate.h"
+#include "ContactsView.h"
 #include <QPainter>
 #include <QApplication>
 #include <QCursor>
 
-ContactItemDelegate::ContactItemDelegate(QObject *parent) :
-    QStyledItemDelegate(parent)
+ContactItemDelegate::ContactItemDelegate(ContactsView *view)
+	: QStyledItemDelegate(view), contactsView(view)
 {
+	Q_ASSERT(view);
 }
 
 QSize ContactItemDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-	qDebug("Size hint");
 	return QSize(160, 48);
+}
+
+bool ContactItemDelegate::pageHitTest(const QSize &size, const QPoint &point, ContactPage &hitPage)
+{
+	/* Point is from an origin of 0,0 in an item of the given size. Perform hit testing on
+	 * the page switch buttons. */
+
+	QRect chatRect(size.width()-5-16+1, 5-1, 16, 16);
+	QRect infoRect(size.width()-5-16+1, size.height()-8-16+1, 16, 16);
+
+	if (chatRect.contains(point))
+	{
+		hitPage = ChatPage;
+		return true;
+	}
+	else if (infoRect.contains(point))
+	{
+		hitPage = InfoPage;
+		return true;
+	}
+	else
+		return false;
 }
 
 void ContactItemDelegate::paint(QPainter *p, const QStyleOptionViewItem &opt,
@@ -58,22 +81,27 @@ void ContactItemDelegate::paint(QPainter *p, const QStyleOptionViewItem &opt,
 	p->setPen(Qt::gray);
 	p->drawText(r.bottomLeft() - QPoint(0, 1), infoText);
 
-	/* Icons */
+	/* Page switch buttons */
 	if ((opt.state & QStyle::State_Selected) || (opt.state & QStyle::State_MouseOver))
 	{
+		ContactPage activePage = contactsView->activeContactPage();
+		bool isActive = (contactsView->currentIndex() == index);
+
+		/* Chat page */
 		QRect iconRect(r.right()-16+1, r.top()-1, 16, 16);
 		QPixmap pm;
-		//if (opt.state & QStyle::State_Selected)
-			//pm = QPixmap(":/icons/chat-active.png");
-		if (iconRect.contains(ropt.widget->mapFromGlobal(QCursor::pos())))
+		if (isActive && activePage == ChatPage)
+			pm = QPixmap(":/icons/chat-active.png");
+		else if (iconRect.contains(ropt.widget->mapFromGlobal(QCursor::pos())))
 			pm = QPixmap(":/icons/chat-hover.png");
 		else
 			pm = QPixmap(":/icons/chat-inactive.png");
 
 		p->drawPixmap(iconRect.topLeft(), pm);
 
+		/* Info page */
 		iconRect = QRect(r.right()-16+1, r.bottom()-16+1, 16, 16);
-		if (opt.state & QStyle::State_Selected)
+		if (isActive && activePage == InfoPage)
 			pm = QPixmap(":/icons/info-active.png");
 		else if (iconRect.contains(ropt.widget->mapFromGlobal(QCursor::pos())))
 			pm = QPixmap(":/icons/info-hover.png");

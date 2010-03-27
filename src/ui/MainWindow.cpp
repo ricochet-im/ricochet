@@ -87,20 +87,23 @@ void MainWindow::contactPageChanged(ContactUser *user, ContactPage page)
 	/* TODO: Keep widgets around when relevant */
 
 	QWidget *old = chatArea->currentWidget();
+	QWidget *newWidget = 0;
 
 	switch (page)
 	{
 	case ChatPage:
-		chatArea->addWidget(new ChatWidget);
+		newWidget = new ChatWidget;
 		break;
 	case InfoPage:
-		chatArea->addWidget(new ContactInfoPage(user));
+		newWidget = new ContactInfoPage(user);
 		break;
 	default:
 		Q_ASSERT_X(false, "contactPageChanged", "Called for unimplemented page type");
-		return;
 	}
 
 	if (old)
 		old->deleteLater();
+
+	if (newWidget)
+		chatArea->setCurrentIndex(chatArea->addWidget(newWidget));
 }
