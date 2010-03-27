@@ -21,6 +21,22 @@ ContactInfoPage::ContactInfoPage(ContactUser *u, QWidget *parent)
 	infoLayout->addWidget(nickname);
 	infoLayout->addStretch();
 
+	/* Notes */
+	QLabel *notesHeader = new QLabel(tr("Private notes:"));
+	notesHeader->setAlignment(Qt::AlignLeft | Qt::AlignBottom);
+	notesHeader->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+	notesHeader->setContentsMargins(1, 0, 0, 0);
+
+	QFont font = notesHeader->font();
+	font.setBold(true);
+	notesHeader->setFont(font);
+
+	QPalette p = notesHeader->palette();
+	p.setColor(QPalette::WindowText, Qt::darkGray);
+	notesHeader->setPalette(p);
+
+	mainLayout->addWidget(notesHeader);
+
 	createNotes();
 	mainLayout->addWidget(notesEdit);
 }

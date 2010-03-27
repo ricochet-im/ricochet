@@ -1,15 +1,12 @@
 #include "MainWindow.h"
-#include "ContactsModel.h"
-#include "ContactItemDelegate.h"
+#include "ContactsView.h"
 #include "ChatWidget.h"
 #include "ContactInfoPage.h"
 #include "core/ContactsManager.h"
 #include <QToolBar>
 #include <QBoxLayout>
-#include <QTreeView>
 #include <QStackedWidget>
 #include <QFrame>
-#include <QHeaderView>
 #include <QSettings>
 
 MainWindow::MainWindow(QWidget *parent)
@@ -37,7 +34,8 @@ MainWindow::MainWindow(QWidget *parent)
 	layout->setSpacing(0);
 
 	/* Contacts */
-	QTreeView *contactsView = createContacts();
+	ContactsView *contactsView = new ContactsView;
+	contactsView->setFixedWidth(175);
 	layout->addWidget(contactsView);
 
 	/* Separator line */
@@ -65,26 +63,6 @@ void MainWindow::createToolbar()
 	toolbar->setFloatable(false);
 	toolbar->setMovable(false);
 	toolbar->addAction(QIcon(":/icons/user-add"), tr("Add Contact"));
-}
-
-QTreeView *MainWindow::createContacts()
-{
-	QTreeView *contactsView = new QTreeView;
-	contactsView->setRootIsDecorated(false);
-	contactsView->setHeaderHidden(true);
-	contactsView->setFixedWidth(175);
-	contactsView->setFrameStyle(QFrame::NoFrame);
-
-	contactsView->setModel(new ContactsModel(contactsView));
-	contactsView->setItemDelegate(new ContactItemDelegate(contactsView));
-
-	QHeaderView *header = contactsView->header();
-	for (int i = 1; i < header->count(); ++i)
-		header->hideSection(i);
-
-	header->setResizeMode(0, QHeaderView::Stretch);
-
-	return contactsView;
 }
 
 void MainWindow::createChatArea()

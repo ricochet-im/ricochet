@@ -1,5 +1,11 @@
 <RCC>
     <qresource prefix="/icons">
         <file alias="user-add">user--plus.png</file>
+        <file>chat-active.png</file>
+        <file>chat-hover.png</file>
+        <file>chat-inactive.png</file>
+        <file>info-active.png</file>
+        <file>info-hover.png</file>
+        <file>info-inactive.png</file>
     </qresource>
 </RCC>

@@ -29,7 +29,8 @@ SOURCES += src/main.cpp\
     src/protocol/ProtocolManager.cpp \
     src/protocol/PingCommand.cpp \
     src/protocol/DispatchCommand.cpp \
-    src/ui/ContactInfoPage.cpp
+    src/ui/ContactInfoPage.cpp \
+    src/ui/ContactsView.cpp
 
 HEADERS  += src/ui/MainWindow.h \
     src/ui/ChatWidget.h \
@@ -47,10 +48,17 @@ HEADERS  += src/ui/MainWindow.h \
     src/protocol/ProtocolCommand.h \
     src/protocol/ProtocolManager.h \
     src/protocol/PingCommand.h \
-    src/ui/ContactInfoPage.h
+    src/ui/ContactInfoPage.h \
+    src/ui/ContactsView.h
 
 OTHER_FILES += \
-    res/user--plus.png
+    res/user--plus.png \
+    res/info-inactive.png \
+    res/info-hover.png \
+    res/info-active.png \
+    res/chat-inactive.png \
+    res/chat-hover.png \
+    res/chat-active.png
 
 RESOURCES += \
     res/resources.qrc
