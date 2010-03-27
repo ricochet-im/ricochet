@@ -22,3 +22,16 @@ void ContactsManager::loadFromSettings()
 		pContacts.append(user);
 	}
 }
+
+ContactUser *ContactsManager::lookupSecret(const QByteArray &secret) const
+{
+	Q_ASSERT(secret.size() == 16);
+
+	for (QList<ContactUser*>::ConstIterator it = pContacts.begin(); it != pContacts.end(); ++it)
+	{
+		if ((*it)->secret() == secret)
+			return *it;
+	}
+
+	return 0;
+}

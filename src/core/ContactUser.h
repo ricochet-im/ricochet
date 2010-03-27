@@ -27,17 +27,20 @@ public:
 	explicit ContactUser(const QString &uniqueID, QObject *parent = 0);
 
 	const QString &nickname() const { return pNickname; }
+	const QByteArray &secret() const { return pSecret; }
 	QString notesText() const;
 
 	QPixmap avatar(AvatarSize size);
 
 public slots:
 	void setNickname(const QString &nickname);
+	void setSecret(const QByteArray &secret);
 	void setAvatar(QImage image);
 	void setNotesText(const QString &notesText);
 
 private:
 	QString pNickname;
+	QByteArray pSecret;
 	QPixmapCache::Key cachedAvatar[2];
 
 	void loadSettings();

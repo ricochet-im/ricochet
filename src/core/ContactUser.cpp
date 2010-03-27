@@ -17,6 +17,7 @@ void ContactUser::loadSettings()
 	settings.beginGroup(QString("contacts/").append(uniqueID));
 
 	pNickname = settings.value(QString("nickname"), uniqueID).toString();
+	pSecret = settings.value(QString("secret")).toByteArray();
 }
 
 void ContactUser::setNickname(const QString &nickname)
@@ -28,6 +29,18 @@ void ContactUser::setNickname(const QString &nickname)
 
 	QSettings settings;
 	settings.setValue(QString("contacts/%1/nickname").arg(uniqueID), nickname);
+}
+
+void ContactUser::setSecret(const QByteArray &secret)
+{
+	if (pSecret == secret)
+		return;
+
+	Q_ASSERT(secret.size() == 16);
+	pSecret = secret;
+
+	QSettings settings;
+	settings.setValue(QString("contacts/%1/secret").arg(uniqueID), secret);
 }
 
 QPixmap ContactUser::avatar(AvatarSize size)

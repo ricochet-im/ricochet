@@ -1,5 +1,6 @@
 #include "IncomingSocket.h"
 #include "ProtocolManager.h"
+#include "core/ContactsManager.h"
 #include <QTcpServer>
 #include <QTcpSocket>
 #include <QtDebug>
@@ -73,8 +74,20 @@ void IncomingSocket::readSocket()
 	if (available < 19)
 		return;
 
-	qDebug() << "Authentication data is available for a socket!";
-	removeSocket(socket);
+	QByteArray data = socket->read(19);
+	Q_ASSERT(data.size() == 19);
+	data.remove(0, 3);
+
+	ContactUser *user = contactsManager->lookupSecret(data);
+
+	if (!user)
+	{
+		qDebug() << "Connection authentication failed: no match for secret";
+		removeSocket(socket);
+		return;
+	}
+
+	qDebug() << "Connection authentication successful for" << user->nickname();
 }
 
 void IncomingSocket::removeSocket(QTcpSocket *socket)
