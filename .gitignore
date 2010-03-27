@@ -1,6 +1,7 @@
 Makefile
 Makefile.*
 *.user
+*.user.*
 debug
 *.pdb
 notes
