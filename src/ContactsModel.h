@@ -4,9 +4,11 @@
 #include <QAbstractListModel>
 #include <QList>
 
+class ContactUser;
+
 class ContactsModel : public QAbstractListModel
 {
-Q_OBJECT
+	Q_OBJECT
 public:
 	enum
 	{
@@ -15,13 +17,15 @@ public:
 
 	explicit ContactsModel(QObject *parent = 0);
 
+	QModelIndex indexOfContact(ContactUser *user) const;
+
 	virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
 	virtual int columnCount(const QModelIndex &parent = QModelIndex()) const;
 
 	virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
 
 private:
-	QList<class ContactUser*> contacts;
+	QList<ContactUser*> contacts;
 
 	void populate();
 };

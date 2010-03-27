@@ -16,6 +16,12 @@ void ContactsModel::populate()
 	endResetModel();
 }
 
+QModelIndex ContactsModel::indexOfContact(ContactUser *user) const
+{
+	int row = contacts.indexOf(user);
+	return index(row, 0);
+}
+
 int ContactsModel::rowCount(const QModelIndex &parent) const
 {
 	if (parent.isValid())
