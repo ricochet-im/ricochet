@@ -43,15 +43,9 @@ QVariant ContactsModel::data(const QModelIndex &index, int role) const
 	{
 	case 0:
 		if (role == Qt::DisplayRole)
-		{
 			return user->nickname();
-		}
 		else if (role == Qt::DecorationRole)
-		{
-			QImage img(QSize(35, 35), QImage::Format_ARGB32_Premultiplied);
-			img.fill(QColor(Qt::darkGray).rgba());
-			return img;
-		}
+			return user->avatarCache(QSize(35, 35));
 		break;
 	case 1:
 		if (role == Qt::DisplayRole)
