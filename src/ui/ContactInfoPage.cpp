@@ -28,7 +28,7 @@ ContactInfoPage::ContactInfoPage(ContactUser *u, QWidget *parent)
 void ContactInfoPage::createAvatar()
 {
 	avatar = new QLabel;
-	avatar->setPixmap(user->avatarCache(QSize(160, 160)));
+	avatar->setPixmap(user->avatar(ContactUser::FullAvatar));
 }
 
 void ContactInfoPage::createNickname()
@@ -39,7 +39,7 @@ void ContactInfoPage::createNickname()
 	nickname->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 
 	QFont font = nickname->font();
-	font.setPointSize(14);
+	font.setPointSize(13);
 	nickname->setFont(font);
 }
 

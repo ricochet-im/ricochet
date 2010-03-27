@@ -15,30 +15,29 @@ class ContactUser : public QObject
 	Q_PROPERTY(QString nickname READ nickname WRITE setNickname STORED true)
 
 public:
+	enum AvatarSize
+	{
+		FullAvatar, /* 160x160 */
+		TinyAvatar /* 35x35 */
+	};
+
 	const QString uniqueID;
 
 	explicit ContactUser(const QString &uniqueID, QObject *parent = 0);
 
 	const QString &nickname() const { return pNickname; }
 
-	QImage avatar(const QSize &size = QSize()) const;
-	QPixmap avatarCache(const QSize &size);
+	QPixmap avatar(AvatarSize size);
 
 public slots:
 	void setNickname(const QString &nickname);
-	void setAvatar(const QImage &image);
+	void setAvatar(QImage image);
 
 private:
 	QString pNickname;
-	QHash<QSize,QPixmapCache::Key> cachedAvatars;
+	QPixmapCache::Key cachedAvatar[2];
 
 	void loadSettings();
-	void clearCachedAvatars();
 };
-
-inline uint qHash(const QSize &size)
-{
-	return (unsigned(size.width()) << 16) | (unsigned(size.height()) & 0xffff);
-}
 
 #endif // CONTACTUSER_H
