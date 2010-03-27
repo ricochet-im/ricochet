@@ -56,11 +56,17 @@ void ContactItemDelegate::paint(QPainter *p, const QStyleOptionViewItem &opt,
 	if (avatar.width() > 35 || avatar.height() > 35)
 		avatar = avatar.scaled(QSize(35, 35), Qt::KeepAspectRatio, Qt::SmoothTransformation);
 
-	p->drawPixmap(r.x() + (35 - avatar.width()) / 2, r.y() + (35 - avatar.height()) / 2,
-				 avatar);
-	r.adjust(41, 0, 0, 0);
+	QPoint avatarPos(r.x() + (35 - avatar.width()) / 2, r.y() + (35 - avatar.height()) / 2);
+	p->drawPixmap(avatarPos, avatar);
+
+	/* Status */
+	QPixmap status(":/icons/status-online.png");
+
+	p->drawPixmap(avatarPos - QPoint(status.width()/2-1, status.height()/2-1), status);
 
 	/* Draw nickname */
+	r.adjust(41, 0, 0, 0);
+
 	QString nickname = index.data().toString();
 
 	QFont nickFont = QFont("Calibri", 11);

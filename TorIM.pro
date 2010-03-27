@@ -1,18 +1,14 @@
-#-------------------------------------------------
-#
+# -------------------------------------------------
 # Project created by QtCreator 2010-03-24T15:47:07
-#
-#-------------------------------------------------
-
-QT       += core gui network
-
+# -------------------------------------------------
+QT += core \
+    gui \
+    network
 TARGET = TorIM
 TEMPLATE = app
-
 INCLUDEPATH += src
-
-SOURCES += src/main.cpp\
-        src/ui/MainWindow.cpp \
+SOURCES += src/main.cpp \
+    src/ui/MainWindow.cpp \
     src/ui/ChatWidget.cpp \
     src/ContactsModel.cpp \
     src/ui/ContactItemDelegate.cpp \
@@ -31,8 +27,7 @@ SOURCES += src/main.cpp\
     src/protocol/DispatchCommand.cpp \
     src/ui/ContactInfoPage.cpp \
     src/ui/ContactsView.cpp
-
-HEADERS  += src/ui/MainWindow.h \
+HEADERS += src/ui/MainWindow.h \
     src/ui/ChatWidget.h \
     src/ContactsModel.h \
     src/ui/ContactItemDelegate.h \
@@ -50,15 +45,13 @@ HEADERS  += src/ui/MainWindow.h \
     src/protocol/PingCommand.h \
     src/ui/ContactInfoPage.h \
     src/ui/ContactsView.h
-
-OTHER_FILES += \
-    res/user--plus.png \
+OTHER_FILES += res/user--plus.png \
     res/info-inactive.png \
     res/info-hover.png \
     res/info-active.png \
     res/chat-inactive.png \
     res/chat-hover.png \
-    res/chat-active.png
-
-RESOURCES += \
-    res/resources.qrc
+    res/chat-active.png \
+    res/status-online.png \
+    res/status-offline.png
+RESOURCES += res/resources.qrc

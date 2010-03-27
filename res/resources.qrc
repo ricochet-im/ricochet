@@ -7,5 +7,7 @@
         <file>info-active.png</file>
         <file>info-hover.png</file>
         <file>info-inactive.png</file>
+        <file>status-offline.png</file>
+        <file>status-online.png</file>
     </qresource>
 </RCC>
