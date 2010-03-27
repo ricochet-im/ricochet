@@ -9,6 +9,10 @@ ContactUser::ContactUser(const QString &id, QObject *parent)
 	Q_ASSERT(!uniqueID.isEmpty());
 
 	loadSettings();
+
+	QString host = readSetting("hostname").toString();
+	quint16 port = (quint16)readSetting("port", 13535).toUInt();
+	pConn = new ProtocolManager(host, port, this);
 }
 
 void ContactUser::loadSettings()
@@ -18,6 +22,12 @@ void ContactUser::loadSettings()
 
 	pNickname = settings.value(QString("nickname"), uniqueID).toString();
 	pSecret = settings.value(QString("secret")).toByteArray();
+}
+
+QVariant ContactUser::readSetting(const QString &key, const QVariant &defaultValue)
+{
+	QSettings settings;
+	return settings.value(QString("contacts/%1/%2").arg(uniqueID, key), defaultValue);
 }
 
 void ContactUser::setNickname(const QString &nickname)

@@ -59,6 +59,37 @@ void ProtocolManager::connectAnother()
 	qFatal("ProtocolManager::ConnectAnother - not implemented");
 }
 
+void ProtocolManager::addSocket(QTcpSocket *socket, quint8 purpose)
+{
+	Q_ASSERT(socket->state() == QAbstractSocket::ConnectedState);
+
+	socket->setParent(this);
+
+	if (purpose == 0x00)
+	{
+		/* Primary, serial connection. This is not required to be the same connection on
+		 * both ends, but you cannot use a connection as the primary when the other end
+		 * does not consider it to be one. */
+		if (!isPrimaryConnected())
+		{
+			if (primarySocket)
+			{
+				primarySocket->abort();
+				primarySocket->deleteLater();
+			}
+
+			primarySocket = socket;
+		}
+	}
+	else
+	{
+		/* Nothing yet */
+		qFatal("Non-primary sockets are not implemented");
+	}
+
+	socketConnected(socket);
+}
+
 quint16 ProtocolManager::getIdentifier() const
 {
 	/* There is a corner case for the very unlucky where the RNG will take a very long time
@@ -98,13 +129,16 @@ void ProtocolManager::sendCommand(ProtocolCommand *command, bool ordered)
 	}
 }
 
-void ProtocolManager::socketConnected()
+void ProtocolManager::socketConnected(QTcpSocket *socket)
 {
-	QTcpSocket *socket = qobject_cast<QTcpSocket*>(sender());
 	if (!socket)
 	{
-		Q_ASSERT_X(false, "ProtocolManager", "socketConnected signal from an unexpected source");
-		return;
+		socket = qobject_cast<QTcpSocket*>(sender());
+		if (!socket)
+		{
+			Q_ASSERT_X(false, "ProtocolManager", "socketConnected signal from an unexpected source");
+			return;
+		}
 	}
 
 	if (socket == primarySocket)

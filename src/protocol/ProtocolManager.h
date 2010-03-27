@@ -17,6 +17,8 @@ class ProtocolManager : public QObject
 	Q_OBJECT
 	Q_DISABLE_COPY(ProtocolManager)
 
+	friend class IncomingSocket;
+
 	Q_PROPERTY(QString host READ host WRITE setHost STORED true)
 	Q_PROPERTY(quint16 port READ port WRITE setPort STORED true)
 
@@ -43,7 +45,7 @@ signals:
 	void primaryConnected();
 
 private slots:
-	void socketConnected();
+	void socketConnected(QTcpSocket *socket = 0);
 	void socketDisconnected();
 	void socketError(QAbstractSocket::SocketError error);
 	void socketReadable();
@@ -65,6 +67,8 @@ private:
 
 	QString pHost;
 	quint16 pPort;
+
+	virtual void addSocket(QTcpSocket *socket, quint8 purpose);
 
 	void callCommand(quint8 command, quint8 state, quint16 identifier, const unsigned char *data,
 					 unsigned dataSize);

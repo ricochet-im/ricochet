@@ -43,7 +43,7 @@ void IncomingSocket::readSocket()
 	if (!socket)
 		return;
 
-	/* 0x49 0x4D [1*version] [16*cookie] - expecting 19 bytes, check after 3 for version */
+	/* 0x49 0x4D [1*version] [16*cookie] [1*purpose] */
 	qint64 available = socket->bytesAvailable();
 
 	if (available < 3)
@@ -71,14 +71,13 @@ void IncomingSocket::readSocket()
 	}
 
 	/* Wait until the full introduction is available */
-	if (available < 19)
+	if (available < 20)
 		return;
 
-	QByteArray data = socket->read(19);
-	Q_ASSERT(data.size() == 19);
-	data.remove(0, 3);
+	QByteArray data = socket->read(20);
+	Q_ASSERT(data.size() == 20);
 
-	ContactUser *user = contactsManager->lookupSecret(data);
+	ContactUser *user = contactsManager->lookupSecret(data.mid(3, 16));
 
 	if (!user)
 	{
@@ -87,7 +86,18 @@ void IncomingSocket::readSocket()
 		return;
 	}
 
-	qDebug() << "Connection authentication successful for" << user->nickname();
+	qDebug() << "Connection authentication successful for" << user->nickname()
+			<< "purpose" << hex << (int)data[19];
+
+	char response = 0x01;
+	socket->write(&response, 1);
+
+	pendingSockets.removeOne(socket);
+	socket->disconnect(this);
+
+	/* The protocolmanager also takes ownership */
+	user->conn()->addSocket(socket, data[19]);
+	Q_ASSERT(socket->parent() != this);
 }
 
 void IncomingSocket::removeSocket(QTcpSocket *socket)

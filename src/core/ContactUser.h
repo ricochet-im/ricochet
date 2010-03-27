@@ -7,6 +7,8 @@
 #include <QHash>
 #include <QPixmapCache>
 #include <QMetaType>
+#include <QVariant>
+#include "protocol/ProtocolManager.h"
 
 class ContactUser : public QObject
 {
@@ -26,11 +28,14 @@ public:
 
 	explicit ContactUser(const QString &uniqueID, QObject *parent = 0);
 
+	ProtocolManager *conn() const { return pConn; }
+
 	const QString &nickname() const { return pNickname; }
 	const QByteArray &secret() const { return pSecret; }
 	QString notesText() const;
-
 	QPixmap avatar(AvatarSize size);
+
+	QVariant readSetting(const QString &key, const QVariant &defaultValue = QVariant());
 
 public slots:
 	void setNickname(const QString &nickname);
@@ -39,6 +44,7 @@ public slots:
 	void setNotesText(const QString &notesText);
 
 private:
+	ProtocolManager *pConn;
 	QString pNickname;
 	QByteArray pSecret;
 	QPixmapCache::Key cachedAvatar[2];
