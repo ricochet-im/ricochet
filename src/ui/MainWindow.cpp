@@ -38,6 +38,9 @@ MainWindow::MainWindow(QWidget *parent)
 	contactsView->setFixedWidth(175);
 	layout->addWidget(contactsView);
 
+	connect(contactsView, SIGNAL(activePageChanged(ContactUser*,ContactPage)), this,
+			SLOT(contactPageChanged(ContactUser*,ContactPage)));
+
 	/* Separator line */
 	QFrame *line = new QFrame;
 	line->setFrameStyle(QFrame::VLine | QFrame::Sunken);
@@ -47,8 +50,7 @@ MainWindow::MainWindow(QWidget *parent)
 	createChatArea();
 	layout->addWidget(chatArea);
 
-	//chatArea->addWidget(new ChatWidget);
-	chatArea->addWidget(new ContactInfoPage(contactsManager->contacts()[0]));
+	contactPageChanged(contactsView->activeContact(), contactsView->activeContactPage());
 }
 
 MainWindow::~MainWindow()
@@ -78,4 +80,27 @@ void MainWindow::closeEvent(QCloseEvent *ev)
 	settings.setValue("ui/main/windowPosition", pos());
 
 	QMainWindow::closeEvent(ev);
+}
+
+void MainWindow::contactPageChanged(ContactUser *user, ContactPage page)
+{
+	/* TODO: Keep widgets around when relevant */
+
+	QWidget *old = chatArea->currentWidget();
+
+	switch (page)
+	{
+	case ChatPage:
+		chatArea->addWidget(new ChatWidget);
+		break;
+	case InfoPage:
+		chatArea->addWidget(new ContactInfoPage(user));
+		break;
+	default:
+		Q_ASSERT_X(false, "contactPageChanged", "Called for unimplemented page type");
+		return;
+	}
+
+	if (old)
+		old->deleteLater();
 }

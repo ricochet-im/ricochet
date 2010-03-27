@@ -3,6 +3,14 @@
 
 #include <QtGui/QMainWindow>
 
+enum ContactPage
+{
+	ChatPage,
+	InfoPage
+};
+
+class ContactUser;
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -13,6 +21,9 @@ public:
 
 protected:
 	virtual void closeEvent(QCloseEvent *);
+
+private slots:
+	void contactPageChanged(ContactUser *user, ContactPage page);
 
 private:
 	class QStackedWidget *chatArea;

@@ -6,6 +6,7 @@
 #include <QPixmap>
 #include <QHash>
 #include <QPixmapCache>
+#include <QMetaType>
 
 class ContactUser : public QObject
 {
@@ -41,5 +42,7 @@ private:
 
 	void loadSettings();
 };
+
+Q_DECLARE_METATYPE(ContactUser*)
 
 #endif // CONTACTUSER_H

@@ -39,6 +39,9 @@ QVariant ContactsModel::data(const QModelIndex &index, int role) const
 
 	ContactUser *user = contacts[index.row()];
 
+	if (role == ContactUserRole)
+		return QVariant::fromValue(user);
+
 	switch (index.column())
 	{
 	case 0:
