@@ -11,18 +11,14 @@
 
 QSettings *config = 0;
 
+static void initSettings();
 static bool connectTorControl();
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-	/* Settings */
-	a.setOrganizationName(QString("TorIM"));
-	QSettings::setDefaultFormat(QSettings::IniFormat);
-	QSettings::setPath(QSettings::IniFormat, QSettings::UserScope, a.applicationDirPath());
-
-	config = new QSettings;
+	initSettings();
 
 	/* Seed RNG */
 	{
@@ -52,6 +48,21 @@ int main(int argc, char *argv[])
     w.show();
 
     return a.exec();
+}
+
+static void initSettings()
+{
+	/* Defaults */
+	qApp->setOrganizationName(QString("TorIM"));
+	QSettings::setDefaultFormat(QSettings::IniFormat);
+	QSettings::setPath(QSettings::IniFormat, QSettings::UserScope, qApp->applicationDirPath());
+
+	/* Commandline */
+	QStringList args = qApp->arguments();
+	if (args.size() > 1)
+		config = new QSettings(args[1], QSettings::IniFormat);
+	else
+		config = new QSettings;
 }
 
 static bool connectTorControl()
