@@ -6,9 +6,6 @@
 #include <QSettings>
 #include <QTime>
 
-#include "protocol/ProtocolManager.h"
-#include "protocol/PingCommand.h"
-
 QSettings *config = 0;
 
 static void initSettings();
@@ -38,12 +35,8 @@ int main(int argc, char *argv[])
 	if (!configured)
 		qFatal("Tor control settings aren't configured");
 
-	/* Temporary */
-	ProtocolManager *testManager = new ProtocolManager(QString("192.168.1.1"), 7777);
-	testManager->connectPrimary();
-
-	PingCommand *command = new PingCommand;
-	command->send(testManager);
+	/* Try to connect to contacts */
+	contactsManager->connectToAll();
 
 	/* Window */
     MainWindow w;

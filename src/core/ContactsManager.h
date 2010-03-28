@@ -14,8 +14,9 @@ public:
     explicit ContactsManager();
 
 	const QList<ContactUser*> &contacts() const { return pContacts; }
-
 	ContactUser *lookupSecret(const QByteArray &secret) const;
+
+	void connectToAll();
 
 private:
 	QList<ContactUser*> pContacts;
