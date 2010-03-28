@@ -94,7 +94,7 @@ void MainWindow::contactPageChanged(ContactUser *user, ContactPage page)
 	switch (page)
 	{
 	case ChatPage:
-		newWidget = new ChatWidget;
+		newWidget = new ChatWidget(user);
 		break;
 	case InfoPage:
 		newWidget = new ContactInfoPage(user);
