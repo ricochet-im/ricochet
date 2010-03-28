@@ -1,3 +1,4 @@
+#include "main.h"
 #include "MainWindow.h"
 #include "ContactsView.h"
 #include "ChatWidget.h"
@@ -7,7 +8,6 @@
 #include <QBoxLayout>
 #include <QStackedWidget>
 #include <QFrame>
-#include <QSettings>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -15,10 +15,8 @@ MainWindow::MainWindow(QWidget *parent)
 	setWindowTitle(QString("TorIM"));
 
 	/* Saved geometry */
-	QSettings settings;
-
-	resize(settings.value("ui/main/windowSize", QSize(730, 400)).toSize());
-	QPoint pos = settings.value("ui/main/windowPosition").toPoint();
+	resize(config->value("ui/main/windowSize", QSize(730, 400)).toSize());
+	QPoint pos = config->value("ui/main/windowPosition").toPoint();
 	if (!pos.isNull())
 		move(pos);
 
@@ -75,9 +73,8 @@ void MainWindow::createChatArea()
 
 void MainWindow::closeEvent(QCloseEvent *ev)
 {
-	QSettings settings;
-	settings.setValue("ui/main/windowSize", size());
-	settings.setValue("ui/main/windowPosition", pos());
+	config->setValue("ui/main/windowSize", size());
+	config->setValue("ui/main/windowPosition", pos());
 
 	QMainWindow::closeEvent(ev);
 }

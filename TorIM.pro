@@ -46,7 +46,8 @@ HEADERS += src/ui/MainWindow.h \
     src/protocol/PingCommand.h \
     src/ui/ContactInfoPage.h \
     src/ui/ContactsView.h \
-    src/protocol/IncomingSocket.h
+    src/protocol/IncomingSocket.h \
+    src/main.h
 OTHER_FILES += res/user--plus.png \
     res/info-inactive.png \
     res/info-hover.png \
