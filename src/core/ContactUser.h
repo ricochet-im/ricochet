@@ -29,6 +29,7 @@ public:
 	explicit ContactUser(const QString &uniqueID, QObject *parent = 0);
 
 	ProtocolManager *conn() const { return pConn; }
+	bool isConnected() const { return pConn->isPrimaryConnected(); }
 
 	const QString &nickname() const { return pNickname; }
 	QString notesText() const;
@@ -41,6 +42,10 @@ public slots:
 	void setNickname(const QString &nickname);
 	void setAvatar(QImage image);
 	void setNotesText(const QString &notesText);
+
+signals:
+	void connected();
+	void disconnected();
 
 private:
 	ProtocolManager *pConn;

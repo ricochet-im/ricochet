@@ -45,6 +45,7 @@ public slots:
 
 signals:
 	void primaryConnected();
+	void primaryDisconnected();
 
 private slots:
 	void socketConnected(QTcpSocket *socket = 0);

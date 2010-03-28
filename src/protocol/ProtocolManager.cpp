@@ -191,6 +191,20 @@ void ProtocolManager::socketAuthenticated(QTcpSocket *socket)
 void ProtocolManager::socketDisconnected()
 {
 	qDebug() << "Socket disconnected";
+
+	QTcpSocket *socket = qobject_cast<QTcpSocket*>(sender());
+	if (!socket)
+		return;
+
+	if (socket == primarySocket)
+	{
+		qDebug() << "Primary socket disconnected";
+
+		emit primaryDisconnected();
+
+		primarySocket = 0;
+		socket->deleteLater();
+	}
 }
 
 void ProtocolManager::socketError(QAbstractSocket::SocketError error)

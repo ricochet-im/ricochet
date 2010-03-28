@@ -1,5 +1,6 @@
 #include "ContactItemDelegate.h"
 #include "ContactsView.h"
+#include "ContactsModel.h"
 #include <QPainter>
 #include <QApplication>
 #include <QCursor>
@@ -64,8 +65,9 @@ void ContactItemDelegate::paint(QPainter *p, const QStyleOptionViewItem &opt,
 	}
 
 	/* Status */
-	QPixmap status(":/icons/status-online.png");
-	p->drawPixmap(avatarPos - QPoint(status.width()/2-1, status.height()/2-1), status);
+	QPixmap status = index.data(ContactsModel::StatusIndicator).value<QPixmap>();
+	if (!status.isNull())
+		p->drawPixmap(avatarPos - QPoint(status.width()/2-1, status.height()/2-1), status);
 
 	/* Draw nickname */
 	r.adjust(41, 0, 0, 0);

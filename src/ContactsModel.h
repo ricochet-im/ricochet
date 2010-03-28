@@ -12,7 +12,8 @@ class ContactsModel : public QAbstractListModel
 public:
 	enum
 	{
-		ContactUserRole = Qt::UserRole
+		ContactUserRole = Qt::UserRole,
+		StatusIndicator
 	};
 
 	explicit ContactsModel(QObject *parent = 0);
@@ -23,6 +24,9 @@ public:
 	virtual int columnCount(const QModelIndex &parent = QModelIndex()) const;
 
 	virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
+
+private slots:
+	void updateUser(ContactUser *user = 0);
 
 private:
 	QList<ContactUser*> contacts;

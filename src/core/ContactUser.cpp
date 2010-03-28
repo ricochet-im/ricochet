@@ -15,6 +15,9 @@ ContactUser::ContactUser(const QString &id, QObject *parent)
 	pConn = new ProtocolManager(host, port, this);
 
 	pConn->setSecret(readSetting("remoteSecret").toByteArray());
+
+	connect(pConn, SIGNAL(primaryConnected()), this, SIGNAL(connected()));
+	connect(pConn, SIGNAL(primaryDisconnected()), this, SIGNAL(disconnected()));
 }
 
 void ContactUser::loadSettings()
