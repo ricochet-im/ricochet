@@ -3,6 +3,7 @@
 #include "core/ContactsManager.h"
 #include <QTcpServer>
 #include <QTcpSocket>
+#include <QDateTime>
 #include <QtDebug>
 
 IncomingSocket::IncomingSocket(QObject *parent)
@@ -33,8 +34,31 @@ void IncomingSocket::incomingConnection()
 		connect(conn, SIGNAL(disconnected()), this, SLOT(removeSocket()));
 
 		conn->setParent(this);
+		conn->setProperty("startTime", QDateTime::currentDateTime());
 		pendingSockets.append(conn);
+
+		if (!expireTimer.isActive())
+			expireTimer.start(10000, this);
 	}
+}
+
+void IncomingSocket::timerEvent(QTimerEvent *)
+{
+	QDateTime now = QDateTime::currentDateTime();
+
+	for (int i = 0; i < pendingSockets.size(); ++i)
+	{
+		QDateTime started = pendingSockets[i]->property("startTime").toDateTime();
+		if (started.secsTo(now) >= 30)
+		{
+			/* time is up. */
+			removeSocket(pendingSockets[i]);
+			--i;
+		}
+	}
+
+	if (pendingSockets.isEmpty())
+		expireTimer.stop();
 }
 
 void IncomingSocket::readSocket()

@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QHostAddress>
 #include <QList>
+#include <QBasicTimer>
 
 class QTcpServer;
 class QTcpSocket;
@@ -25,9 +26,13 @@ private slots:
 	void readSocket();
 	void removeSocket(QTcpSocket *socket = 0);
 
+protected:
+	virtual void timerEvent(QTimerEvent *);
+
 private:
 	QTcpServer *server;
 	QList<QTcpSocket*> pendingSockets;
+	QBasicTimer expireTimer;
 };
 
 #endif // INCOMINGSOCKET_H
