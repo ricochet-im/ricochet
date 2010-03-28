@@ -69,8 +69,8 @@ static void initSettings()
 
 static void initIncomingSocket()
 {
-	QHostAddress address(config->value("core/listenIp", QString("0.0.0.0")).toString());
-	quint16 port = (quint16)config->value("core/listenPort", 13535).toUInt();
+	QHostAddress address(config->value("core/listenIp", QString("127.0.0.1")).toString());
+	quint16 port = (quint16)config->value("core/listenPort", 0).toUInt();
 
 	IncomingSocket *incoming = new IncomingSocket;
 	if (!incoming->listen(address, port))
