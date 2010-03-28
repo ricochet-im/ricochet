@@ -12,6 +12,7 @@
 QSettings *config = 0;
 
 static void initSettings();
+static void initIncomingSocket();
 static bool connectTorControl();
 
 int main(int argc, char *argv[])
@@ -26,17 +27,18 @@ int main(int argc, char *argv[])
 		qsrand(unsigned(now.second()) * now.msec() * unsigned(a.applicationPid()));
 	}
 
-	/* Initialization */
+	/* Contacts */
 	contactsManager = new ContactsManager;
 
+	/* Incoming socket */
+	initIncomingSocket();
+
+	/* Tor control manager */
 	bool configured = connectTorControl();
 	if (!configured)
 		qFatal("Tor control settings aren't configured");
 
-	IncomingSocket *incoming = new IncomingSocket;
-	if (!incoming->listen(QHostAddress(QString("127.0.0.1")), 7777))
-		qFatal("Failed to open incoming socket: %s", qPrintable(incoming->errorString()));
-
+	/* Temporary */
 	ProtocolManager *testManager = new ProtocolManager(QString("192.168.1.1"), 7777);
 	testManager->connectPrimary();
 
@@ -63,6 +65,16 @@ static void initSettings()
 		config = new QSettings(args[1], QSettings::IniFormat);
 	else
 		config = new QSettings;
+}
+
+static void initIncomingSocket()
+{
+	QHostAddress address(config->value("core/listenIp", QString("0.0.0.0")).toString());
+	quint16 port = (quint16)config->value("core/listenPort", 13535).toUInt();
+
+	IncomingSocket *incoming = new IncomingSocket;
+	if (!incoming->listen(address, port))
+		qFatal("Failed to open incoming socket: %s", qPrintable(incoming->errorString()));
 }
 
 static bool connectTorControl()
