@@ -1,6 +1,7 @@
 #include "ProtocolManager.h"
 
 #include "PingCommand.h"
+#include "ChatMessageCommand.h"
 
 void ProtocolManager::callCommand(quint8 command, quint8 state, quint16 identifier,
 								  const uchar *data, unsigned dataSize)
@@ -11,6 +12,9 @@ void ProtocolManager::callCommand(quint8 command, quint8 state, quint16 identifi
 	{
 	case 0x00:
 		handler = &PingCommand::process;
+		break;
+	case 0x10:
+		handler = &ChatMessageCommand::process;
 		break;
 	}
 

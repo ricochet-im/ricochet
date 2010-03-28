@@ -80,6 +80,7 @@ void ProtocolManager::addSocket(QTcpSocket *socket, quint8 purpose)
 		{
 			if (primarySocket)
 			{
+				qDebug() << "Replacing unconnected primary socket with incoming socket";
 				primarySocket->abort();
 				primarySocket->deleteLater();
 			}
@@ -122,12 +123,14 @@ void ProtocolManager::sendCommand(ProtocolCommand *command, bool ordered)
 	{
 		if (!isPrimaryConnected())
 		{
+			qDebug() << "Queued command for primary connection";
 			commandQueue.append(command);
 			return;
 		}
 
 		Q_ASSERT(commandQueue.isEmpty());
-		primarySocket->write(command->commandBuffer);
+		qint64 re = primarySocket->write(command->commandBuffer);
+		Q_ASSERT(re == command->commandBuffer.size());
 	}
 	else
 	{
@@ -263,7 +266,7 @@ void ProtocolManager::socketReadable()
 
 		callCommand(data[2], data[3],
 					qFromBigEndian<quint16>(reinterpret_cast<const uchar*>(data.constData())+4),
-					reinterpret_cast<const uchar*>(data.constData()), msgLength);
+					reinterpret_cast<const uchar*>(data.constData()+6), msgLength);
 
 		available -= msgLength + 6;
 	}

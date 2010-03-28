@@ -9,12 +9,8 @@ ProtocolCommand::ProtocolCommand(QObject *parent)
 
 int ProtocolCommand::prepareCommand(quint8 state, unsigned reserveSize)
 {
-	if (!reserveSize)
-		reserveSize = 12;
-
-	commandBuffer.reserve(12);
+	commandBuffer.reserve(reserveSize + 6);
 	commandBuffer.resize(6);
-	Q_ASSERT(commandBuffer.capacity() >= 12);
 
 	commandBuffer[2] = command();
 	commandBuffer[3] = state;
@@ -27,12 +23,12 @@ void ProtocolCommand::sendCommand(ProtocolManager *to, bool ordered)
 	Q_ASSERT(commandBuffer.size() >= 6);
 	Q_ASSERT(to);
 
-	if (commandBuffer.size() > 65540)
+	if (commandBuffer.size() > maxCommandData)
 	{
 		Q_ASSERT_X(false, metaObject()->className(), "Command data too large, would be truncated");
 		qWarning() << "Truncated command" << metaObject()->className() << " (size " << commandBuffer.size()
 				<< ")";
-		commandBuffer.resize(65540);
+		commandBuffer.resize(maxCommandData);
 	}
 
 	/* [2*length][1*command][1*state][2*identifier] */

@@ -1,5 +1,6 @@
 #include "ChatWidget.h"
 #include "core/ContactUser.h"
+#include "protocol/ChatMessageCommand.h"
 #include <QBoxLayout>
 #include <QTextEdit>
 #include <QLineEdit>
@@ -67,7 +68,12 @@ void ChatWidget::sendInputMessage()
 		return;
 	textInput->clear();
 
-	appendChatMessage(QDateTime::currentDateTime(), NULL, text);
+	QDateTime when = QDateTime::currentDateTime();
+
+	ChatMessageCommand *command = new ChatMessageCommand;
+	command->send(user->conn(), when, text);
+
+	appendChatMessage(when, NULL, text);
 }
 
 void ChatWidget::appendChatMessage(const QDateTime &when, ContactUser *from, const QString &text)

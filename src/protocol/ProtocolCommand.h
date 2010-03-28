@@ -13,6 +13,8 @@ class ProtocolCommand : public QObject
 	friend ProtocolManager;
 
 public:
+	static const int maxCommandData = 65540;
+
     explicit ProtocolCommand(QObject *parent = 0);
 
 	virtual quint8 command() const = 0;

@@ -27,7 +27,8 @@ SOURCES += src/main.cpp \
     src/protocol/DispatchCommand.cpp \
     src/ui/ContactInfoPage.cpp \
     src/ui/ContactsView.cpp \
-    src/protocol/IncomingSocket.cpp
+    src/protocol/IncomingSocket.cpp \
+    src/protocol/ChatMessageCommand.cpp
 HEADERS += src/ui/MainWindow.h \
     src/ui/ChatWidget.h \
     src/ContactsModel.h \
@@ -47,7 +48,8 @@ HEADERS += src/ui/MainWindow.h \
     src/ui/ContactInfoPage.h \
     src/ui/ContactsView.h \
     src/protocol/IncomingSocket.h \
-    src/main.h
+    src/main.h \
+    src/protocol/ChatMessageCommand.h
 OTHER_FILES += res/user--plus.png \
     res/info-inactive.png \
     res/info-hover.png \
