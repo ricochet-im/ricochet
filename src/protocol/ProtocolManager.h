@@ -29,6 +29,8 @@ public:
 	void setHost(const QString &host);
 	quint16 port() const { return pPort; }
 	void setPort(quint16 port);
+	QByteArray secret() const { return pSecret; }
+	void setSecret(const QByteArray &secret);
 
 	bool isPrimaryConnected() const;
 	bool isAnyConnected() const;
@@ -66,6 +68,7 @@ private:
 	QHash<quint16,ProtocolCommand*> pendingCommands;
 
 	QString pHost;
+	QByteArray pSecret;
 	quint16 pPort;
 
 	virtual void addSocket(QTcpSocket *socket, quint8 purpose);

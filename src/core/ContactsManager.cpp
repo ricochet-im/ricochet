@@ -28,7 +28,7 @@ ContactUser *ContactsManager::lookupSecret(const QByteArray &secret) const
 
 	for (QList<ContactUser*>::ConstIterator it = pContacts.begin(); it != pContacts.end(); ++it)
 	{
-		if ((*it)->secret() == secret)
+		if ((*it)->readSetting("localSecret") == secret)
 			return *it;
 	}
 

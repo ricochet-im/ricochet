@@ -18,6 +18,12 @@ void ProtocolManager::setPort(quint16 port)
 	pPort = port;
 }
 
+void ProtocolManager::setSecret(const QByteArray &secret)
+{
+	Q_ASSERT(secret.size() == 16);
+	pSecret = secret;
+}
+
 bool ProtocolManager::isPrimaryConnected() const
 {
 	return primarySocket ? (primarySocket->state() == QAbstractSocket::ConnectedState) : false;
@@ -87,7 +93,7 @@ void ProtocolManager::addSocket(QTcpSocket *socket, quint8 purpose)
 		qFatal("Non-primary sockets are not implemented");
 	}
 
-	socketConnected(socket);
+	socketAuthenticated(socket);
 }
 
 quint16 ProtocolManager::getIdentifier() const
@@ -141,6 +147,9 @@ void ProtocolManager::socketConnected(QTcpSocket *socket)
 		}
 	}
 
+	if (pSecret.size() != 16)
+		qFatal("Invalid secret set for ProtocolManager");
+
 	quint8 purpose;
 	if (socket == primarySocket)
 		purpose = 0x00;
@@ -155,6 +164,10 @@ void ProtocolManager::socketConnected(QTcpSocket *socket)
 	intro[1] = 0x4D;
 	intro[2] = protocolVersion;
 	intro[19] = purpose;
+
+	memcpy(intro.data()+3, pSecret.constData(), qMin(16, pSecret.size()));
+	if (pSecret.size() < 16)
+		memset(intro.data()+3+pSecret.size(), 0, 16-pSecret.size());
 
 	socket->setProperty("authPending", true);
 	qint64 re = socket->write(intro);

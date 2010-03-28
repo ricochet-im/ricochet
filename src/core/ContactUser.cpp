@@ -13,6 +13,8 @@ ContactUser::ContactUser(const QString &id, QObject *parent)
 	QString host = readSetting("hostname").toString();
 	quint16 port = (quint16)readSetting("port", 13535).toUInt();
 	pConn = new ProtocolManager(host, port, this);
+
+	pConn->setSecret(readSetting("remoteSecret").toByteArray());
 }
 
 void ContactUser::loadSettings()
@@ -20,7 +22,6 @@ void ContactUser::loadSettings()
 	config->beginGroup(QString("contacts/").append(uniqueID));
 
 	pNickname = config->value(QString("nickname"), uniqueID).toString();
-	pSecret = config->value(QString("secret")).toByteArray();
 
 	config->endGroup();
 }
@@ -28,6 +29,11 @@ void ContactUser::loadSettings()
 QVariant ContactUser::readSetting(const QString &key, const QVariant &defaultValue)
 {
 	return config->value(QString("contacts/%1/%2").arg(uniqueID, key), defaultValue);
+}
+
+void ContactUser::writeSetting(const QString &key, const QVariant &value)
+{
+	config->setValue(QString("contacts/%1/%2").arg(uniqueID, key), value);
 }
 
 void ContactUser::setNickname(const QString &nickname)
@@ -38,17 +44,6 @@ void ContactUser::setNickname(const QString &nickname)
 	pNickname = nickname;
 
 	config->setValue(QString("contacts/%1/nickname").arg(uniqueID), nickname);
-}
-
-void ContactUser::setSecret(const QByteArray &secret)
-{
-	if (pSecret == secret)
-		return;
-
-	Q_ASSERT(secret.size() == 16);
-	pSecret = secret;
-
-	config->setValue(QString("contacts/%1/secret").arg(uniqueID), secret);
 }
 
 QPixmap ContactUser::avatar(AvatarSize size)
