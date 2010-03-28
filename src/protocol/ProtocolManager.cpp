@@ -141,6 +141,29 @@ void ProtocolManager::socketConnected(QTcpSocket *socket)
 		}
 	}
 
+	quint8 purpose;
+	if (socket == primarySocket)
+		purpose = 0x00;
+	else
+		purpose = 0xff;
+
+	/* Introduction; 0x49 0x4D [1*version] [16*cookie] [1*purpose] */
+	QByteArray intro;
+	intro.resize(20);
+
+	intro[0] = 0x49;
+	intro[1] = 0x4D;
+	intro[2] = protocolVersion;
+	intro[19] = purpose;
+
+	socket->setProperty("authPending", true);
+	qint64 re = socket->write(intro);
+	Q_ASSERT(re == intro.size());
+}
+
+
+void ProtocolManager::socketAuthenticated(QTcpSocket *socket)
+{
 	if (socket == primarySocket)
 	{
 		qDebug() << "Primary socket connected";
@@ -171,6 +194,24 @@ void ProtocolManager::socketReadable()
 		return;
 
 	qint64 available = socket->bytesAvailable();
+
+	if (available && socket->property("authPending").toBool())
+	{
+		char reply;
+		qint64 re = socket->read(&reply, 1);
+		Q_ASSERT(re);
+
+		if (reply != 0x01)
+		{
+			socket->close();
+			return;
+		}
+
+		socket->setProperty("authPending", QVariant());
+		socketAuthenticated(socket);
+
+		available--;
+	}
 
 	while (available >= 6)
 	{

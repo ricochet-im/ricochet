@@ -69,6 +69,7 @@ private:
 	quint16 pPort;
 
 	virtual void addSocket(QTcpSocket *socket, quint8 purpose);
+	void socketAuthenticated(QTcpSocket *socket);
 
 	void callCommand(quint8 command, quint8 state, quint16 identifier, const unsigned char *data,
 					 unsigned dataSize);
