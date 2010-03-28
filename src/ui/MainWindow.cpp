@@ -41,7 +41,12 @@ MainWindow::MainWindow(QWidget *parent)
 
 	/* Separator line */
 	QFrame *line = new QFrame;
-	line->setFrameStyle(QFrame::VLine | QFrame::Sunken);
+	line->setFrameStyle(QFrame::VLine | QFrame::Plain);
+
+	QPalette p = line->palette();
+	p.setColor(QPalette::WindowText, p.color(QPalette::Dark));
+	line->setPalette(p);
+
 	layout->addWidget(line);
 
 	/* Chat area */
