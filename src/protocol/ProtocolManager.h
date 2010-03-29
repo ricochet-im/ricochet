@@ -74,9 +74,6 @@ private:
 
 	virtual void addSocket(QTcpSocket *socket, quint8 purpose);
 	void socketAuthenticated(QTcpSocket *socket);
-
-	void callCommand(quint8 command, quint8 state, quint16 identifier, const unsigned char *data,
-					 unsigned dataSize);
 };
 
 /* Do not change this, as it breaks backwards compatibility. Hopefully, it will never be necessary. */

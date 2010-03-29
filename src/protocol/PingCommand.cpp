@@ -1,5 +1,7 @@
 #include "PingCommand.h"
 
+REGISTER_COMMAND_HANDLER(0x00, PingCommand)
+
 PingCommand::PingCommand(QObject *parent)
 	: ProtocolCommand(parent)
 {
@@ -13,13 +15,10 @@ void PingCommand::send(ProtocolManager *to)
 	qDebug() << "Sent ping";
 }
 
-void PingCommand::process(quint8 state, quint16 identifier, const uchar *data, unsigned dataSize)
+void PingCommand::process(CommandHandler &command)
 {
-	Q_UNUSED(state);
-	Q_UNUSED(data);
-	Q_UNUSED(dataSize);
-
-	qDebug() << "Received ping with identifier" << identifier;
+	qDebug() << "Received ping with identifier" << command.identifier;
+	command.sendReply(0x00);
 }
 
 void PingCommand::processReply(quint8 state, const uchar *data, unsigned dataSize)

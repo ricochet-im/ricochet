@@ -15,7 +15,7 @@ public:
 
 	void send(ProtocolManager *to, const QDateTime &timestamp, const QString &text);
 
-	static void process(quint8 state, quint16 identifier, const uchar *data, unsigned dataSize);
+	static void process(CommandHandler &command);
 
 protected:
 	virtual void processReply(quint8 state, const uchar *data, unsigned dataSize);

@@ -264,9 +264,7 @@ void ProtocolManager::socketReadable()
 		qint64 re = socket->read(data.data(), msgLength + 6);
 		Q_ASSERT(re == msgLength + 6);
 
-		callCommand(data[2], data[3],
-					qFromBigEndian<quint16>(reinterpret_cast<const uchar*>(data.constData())+4),
-					reinterpret_cast<const uchar*>(data.constData()+6), msgLength);
+		CommandHandler handler(0, socket, reinterpret_cast<const uchar*>(data.constData()), msgLength + 6);
 
 		available -= msgLength + 6;
 	}

@@ -2,6 +2,8 @@
 #include <QDateTime>
 #include <QDataStream>
 
+REGISTER_COMMAND_HANDLER(0x00, ChatMessageCommand)
+
 ChatMessageCommand::ChatMessageCommand(QObject *parent)
 	: ProtocolCommand(parent)
 {
@@ -26,16 +28,9 @@ void ChatMessageCommand::send(ProtocolManager *to, const QDateTime &timestamp, c
 	sendCommand(to, true);
 }
 
-void ChatMessageCommand::process(quint8 state, quint16 identifier, const uchar *data, unsigned dataSize)
+void ChatMessageCommand::process(CommandHandler &command)
 {
-	if (state != 0x00)
-	{
-		/* XXX send reply */
-		return;
-	}
-
-	QByteArray dataArray = QByteArray::fromRawData((const char*)data, dataSize);
-	QDataStream stream(&dataArray, QIODevice::ReadOnly);
+	QDataStream stream(const_cast<QByteArray*>(&command.data), QIODevice::ReadOnly);
 	stream.setVersion(QDataStream::Qt_4_6);
 
 	quint32 timestamp;

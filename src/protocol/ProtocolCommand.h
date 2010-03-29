@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QByteArray>
 #include "ProtocolManager.h"
+#include "CommandHandler.h"
 
 class ProtocolCommand : public QObject
 {
@@ -40,18 +41,29 @@ protected:
 
 inline quint8 commandState(quint8 value)
 {
-	Q_ASSERT(!(value & 0x80));
-	return value & (~0x80);
+	Q_ASSERT(!(value & 0xc0));
+	return (value & (~0x80)) | 0x40;
 }
 
-inline quint8 replyState(bool success, quint8 value)
+inline quint8 replyState(bool success, bool final, quint8 value)
 {
-	Q_ASSERT(success || !(value & 0x20));
-	Q_ASSERT(((value & 0x40) == 0x40) == success);
-	if (success)
-		return value | 0xc0;
+	Q_ASSERT(!(value & 0xe0));
+	if (!success)
+		Q_ASSERT(!(value & 0xf0));
+
+	value |= 0x80;
+
+	if (final)
+		value |= 0x40;
 	else
-		return (value | 0x80) & (~0x40);
+		value &= ~0x40;
+
+	if (success)
+		value |= 0x20;
+	else
+		value &= ~0x20;
+
+	return value;
 }
 
 inline bool isReply(quint8 state)
@@ -61,7 +73,12 @@ inline bool isReply(quint8 state)
 
 inline bool isSuccess(quint8 state)
 {
-	return (state & 0xc0) == 0xc0;
+	return (state & 0xa0) == 0xa0;
+}
+
+inline bool isFinal(quint8 state)
+{
+	return (state & 0x40) == 0x40;
 }
 
 #endif // PROTOCOLCOMMAND_H
