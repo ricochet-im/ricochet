@@ -3,8 +3,8 @@
 #include <QTcpSocket>
 #include <QtEndian>
 
-ProtocolManager::ProtocolManager(const QString &host, quint16 port, QObject *parent)
-	: QObject(parent), primarySocket(0), pHost(host), pPort(port)
+ProtocolManager::ProtocolManager(ContactUser *u, const QString &host, quint16 port)
+	: QObject(u), user(u), primarySocket(0), pHost(host), pPort(port)
 {
 }
 
@@ -271,7 +271,7 @@ void ProtocolManager::socketReadable()
 		qint64 re = socket->read(data.data(), msgLength + 6);
 		Q_ASSERT(re == msgLength + 6);
 
-		CommandHandler handler(0, socket, reinterpret_cast<const uchar*>(data.constData()), msgLength + 6);
+		CommandHandler handler(user, socket, reinterpret_cast<const uchar*>(data.constData()), msgLength + 6);
 
 		available -= msgLength + 6;
 	}

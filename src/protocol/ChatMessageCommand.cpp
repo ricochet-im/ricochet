@@ -1,5 +1,6 @@
 #include "ChatMessageCommand.h"
 #include "CommandDataParser.h"
+#include "ui/ChatWidget.h"
 #include <QDateTime>
 #include <QBuffer>
 
@@ -12,7 +13,7 @@ ChatMessageCommand::ChatMessageCommand(QObject *parent)
 
 void ChatMessageCommand::send(ProtocolManager *to, const QDateTime &timestamp, const QString &text)
 {
-	int p = prepareCommand(0x00, 1024);
+	prepareCommand(0x00, 1024);
 	CommandDataParser builder(&commandBuffer);
 
 	builder << (quint32)timestamp.secsTo(QDateTime::currentDateTime());
@@ -32,6 +33,9 @@ void ChatMessageCommand::process(CommandHandler &command)
 		return;
 
 	qDebug() << "Received chat message (time delta" << timestamp << "):" << text;
+
+	ChatWidget *chat = ChatWidget::widgetForUser(command.user);
+	chat->addChatMessage(command.user, QDateTime::currentDateTime().addSecs(-(int)timestamp), text);
 }
 
 void ChatMessageCommand::processReply(quint8 state, const uchar *data, unsigned dataSize)

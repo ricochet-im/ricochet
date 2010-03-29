@@ -12,19 +12,26 @@ Q_OBJECT
 public:
 	ContactUser * const user;
 
-    explicit ChatWidget(ContactUser *user, QWidget *parent = 0);
+	static ChatWidget *widgetForUser(ContactUser *user);
+
+	~ChatWidget();
+
+	void addChatMessage(ContactUser *user, const QDateTime &when, const QString &text);
 
 private slots:
 	void sendInputMessage();
 
 private:
+	static QHash<ContactUser*,ChatWidget*> userMap;
+
 	class QTextEdit *textArea;
 	class QLineEdit *textInput;
+
+	explicit ChatWidget(ContactUser *user);
 
 	void createTextArea();
 	void createTextInput();
 
-	void appendChatMessage(const QDateTime &when, ContactUser *user, const QString &text);
 	void scrollToBottom();
 };
 

@@ -94,7 +94,7 @@ void MainWindow::contactPageChanged(ContactUser *user, ContactPage page)
 	switch (page)
 	{
 	case ChatPage:
-		newWidget = new ChatWidget(user);
+		newWidget = ChatWidget::widgetForUser(user);
 		break;
 	case InfoPage:
 		newWidget = new ContactInfoPage(user);
@@ -103,7 +103,10 @@ void MainWindow::contactPageChanged(ContactUser *user, ContactPage page)
 		Q_ASSERT_X(false, "contactPageChanged", "Called for unimplemented page type");
 	}
 
-	if (old)
+	if (old == newWidget)
+		return;
+
+	if (old && !qobject_cast<ChatWidget*>(old))
 		old->deleteLater();
 
 	if (newWidget)

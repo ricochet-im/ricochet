@@ -12,7 +12,7 @@ ContactUser::ContactUser(const QString &id, QObject *parent)
 
 	QString host = readSetting("hostname").toString();
 	quint16 port = (quint16)readSetting("port", 13535).toUInt();
-	pConn = new ProtocolManager(host, port, this);
+	pConn = new ProtocolManager(this, host, port);
 
 	pConn->setSecret(readSetting("remoteSecret").toByteArray());
 

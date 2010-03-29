@@ -9,9 +9,25 @@
 #include <QLabel>
 #include <QScrollBar>
 
-ChatWidget::ChatWidget(ContactUser *u, QWidget *parent)
-	: QWidget(parent), user(u)
+QHash<ContactUser*,ChatWidget*> ChatWidget::userMap;
+
+ChatWidget *ChatWidget::widgetForUser(ContactUser *u)
 {
+	ChatWidget *widget = userMap.value(u);
+	if (!widget)
+	{
+		widget = new ChatWidget(u);
+		userMap.insert(u, widget);
+	}
+
+	return widget;
+}
+
+ChatWidget::ChatWidget(ContactUser *u)
+	: user(u)
+{
+	Q_ASSERT(user);
+
 	QBoxLayout *layout = new QVBoxLayout(this);
 	layout->setMargin(0);
 
@@ -20,9 +36,6 @@ ChatWidget::ChatWidget(ContactUser *u, QWidget *parent)
 
 	createTextInput();
 //	layout->addWidget(textInput);
-
-	appendChatMessage(QDateTime::currentDateTime(), 0, "I wrote some text!");
-	appendChatMessage(QDateTime::currentDateTime().addSecs(35), user, "And I replied to it.");
 
 	QBoxLayout *testLayout = new QHBoxLayout;
 	layout->addLayout(testLayout);
@@ -44,6 +57,13 @@ ChatWidget::ChatWidget(ContactUser *u, QWidget *parent)
 	testLayout->addStretch();
 
 	layout->addWidget(textInput);
+}
+
+ChatWidget::~ChatWidget()
+{
+	QHash<ContactUser*,ChatWidget*>::Iterator it = userMap.find(user);
+	if (*it == this)
+		userMap.erase(it);
 }
 
 void ChatWidget::createTextArea()
@@ -73,10 +93,10 @@ void ChatWidget::sendInputMessage()
 	ChatMessageCommand *command = new ChatMessageCommand;
 	command->send(user->conn(), when, text);
 
-	appendChatMessage(when, NULL, text);
+	addChatMessage(NULL, when, text);
 }
 
-void ChatWidget::appendChatMessage(const QDateTime &when, ContactUser *from, const QString &text)
+void ChatWidget::addChatMessage(ContactUser *from, const QDateTime &when, const QString &text)
 {
 	QTextCursor cursor(textArea->document());
 	cursor.movePosition(QTextCursor::End);

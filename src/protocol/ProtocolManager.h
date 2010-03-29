@@ -7,6 +7,7 @@
 #include <QHash>
 #include <QAbstractSocket>
 
+class ContactUser;
 class QTcpSocket;
 class ProtocolCommand;
 
@@ -23,7 +24,9 @@ class ProtocolManager : public QObject
 	Q_PROPERTY(quint16 port READ port WRITE setPort STORED true)
 
 public:
-	explicit ProtocolManager(const QString &host, quint16 port, QObject *parent = 0);
+	ContactUser * const user;
+
+	explicit ProtocolManager(ContactUser *user, const QString &host, quint16 port);
 
 	QString host() const { return pHost; }
 	void setHost(const QString &host);
