@@ -13,7 +13,7 @@ ChatMessageCommand::ChatMessageCommand(QObject *parent)
 void ChatMessageCommand::send(ProtocolManager *to, const QDateTime &timestamp, const QString &text)
 {
 	int p = prepareCommand(0x00, 1024);
-	CommandDataParser builder(&commandBuffer, CommandDataParser::Write);
+	CommandDataParser builder(&commandBuffer);
 
 	builder << (quint32)timestamp.secsTo(QDateTime::currentDateTime());
 	builder << text;
@@ -26,10 +26,10 @@ void ChatMessageCommand::process(CommandHandler &command)
 	quint32 timestamp;
 	QString text;
 
-	qDebug() << "command data:" << command.data.toHex();
-
-	CommandDataParser parser(const_cast<QByteArray*>(&command.data), CommandDataParser::Read);
+	CommandDataParser parser(&command.data);
 	parser >> timestamp >> text;
+	if (!parser)
+		return;
 
 	qDebug() << "Received chat message (time delta" << timestamp << "):" << text;
 }

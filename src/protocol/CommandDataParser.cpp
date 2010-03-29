@@ -2,8 +2,13 @@
 #include <QtEndian>
 #include <QString>
 
-CommandDataParser::CommandDataParser(QByteArray *data, ParserMode m)
-	: mode(m), d(data), p(0)
+CommandDataParser::CommandDataParser(QByteArray *data)
+	: d(data), p(0), writable(true), error(false)
+{
+}
+
+CommandDataParser::CommandDataParser(const QByteArray *data)
+	: d(const_cast<QByteArray*>(data)), p(0), writable(false), error(false)
 {
 }
 
@@ -11,11 +16,19 @@ void CommandDataParser::setData(QByteArray *data)
 {
 	d = data;
 	p = 0;
+	writable = true;
+	error = false;
+}
+
+void CommandDataParser::setData(const QByteArray *data)
+{
+	d = const_cast<QByteArray*>(data);
+	p = 0;
+	writable = error = false;
 }
 
 void CommandDataParser::setPos(int pos)
 {
-	Q_ASSERT(mode == Read);
 	Q_ASSERT(pos >= 0 && pos < d->size());
 	p = pos;
 }
@@ -23,7 +36,12 @@ void CommandDataParser::setPos(int pos)
 /* Helpers */
 template<typename T> bool CommandDataParser::appendInt(T value)
 {
-	Q_ASSERT(mode == Write);
+	Q_ASSERT(writable);
+	if (!writable || d->size() + sizeof(T) > maxCommandSize)
+	{
+		error = true;
+		return false;
+	}
 
 	value = qToBigEndian(value);
 	d->append(reinterpret_cast<const char*>(&value), sizeof(T));
@@ -33,7 +51,12 @@ template<typename T> bool CommandDataParser::appendInt(T value)
 
 template<> bool CommandDataParser::appendInt<quint8>(quint8 value)
 {
-	Q_ASSERT(mode == Write);
+	Q_ASSERT(writable);
+	if (!writable || d->size() == maxCommandSize)
+	{
+		error = true;
+		return false;
+	}
 
 	d->append(static_cast<char>(value));
 	return true;
@@ -41,10 +64,11 @@ template<> bool CommandDataParser::appendInt<quint8>(quint8 value)
 
 template<typename T> bool CommandDataParser::takeInt(T &value)
 {
-	Q_ASSERT(mode == Read);
-
 	if (p + sizeof(T) > d->size())
+	{
+		error = true;
 		return false;
+	}
 
 	value = qFromBigEndian<T>(reinterpret_cast<const uchar*>(d->constData()) + p);
 	p += sizeof(T);
@@ -54,10 +78,11 @@ template<typename T> bool CommandDataParser::takeInt(T &value)
 
 template<> bool CommandDataParser::takeInt<quint8>(quint8 &value)
 {
-	Q_ASSERT(mode == Read);
-
 	if (p == d->size())
+	{
+		error = true;
 		return false;
+	}
 
 	value = *((quint8*)(d->constData() + p));
 	p++;
@@ -122,13 +147,25 @@ CommandDataParser &CommandDataParser::operator<<(quint64 value)
 /* Input */
 CommandDataParser &CommandDataParser::operator<<(const QString &string)
 {
-	QByteArray encoded = string.toUtf8();
-	if (encoded.size() > 65535)
-		encoded.resize(65535);
+	Q_ASSERT(writable);
+	if (!writable || maxCommandSize - d->size() < 2)
+	{
+		error = true;
+		return *this;
+	}
 
-	d->reserve(2 + encoded.size());
+	QByteArray encoded = string.toUtf8();
+	if (encoded.size() > (maxCommandSize - d->size() - 2))
+	{
+		error = true;
+		encoded.resize(maxCommandSize - d->size() - 2);
+	}
+
+	d->reserve(d->size() + encoded.size() + 2);
 	appendInt((quint16)encoded.size());
 	d->append(encoded);
+
+	Q_ASSERT(d->size() <= maxCommandSize);
 
 	return *this;
 }
@@ -196,6 +233,8 @@ CommandDataParser &CommandDataParser::operator>>(QString &string)
 		string = QString::fromUtf8(d->constData() + p, length);
 		p += length;
 	}
+	else
+		error = true;
 
 	return *this;
 }
