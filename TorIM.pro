@@ -28,7 +28,8 @@ SOURCES += src/main.cpp \
     src/ui/ContactsView.cpp \
     src/protocol/IncomingSocket.cpp \
     src/protocol/ChatMessageCommand.cpp \
-    src/protocol/CommandHandler.cpp
+    src/protocol/CommandHandler.cpp \
+    src/protocol/CommandDataParser.cpp
 HEADERS += src/ui/MainWindow.h \
     src/ui/ChatWidget.h \
     src/ContactsModel.h \
@@ -50,7 +51,8 @@ HEADERS += src/ui/MainWindow.h \
     src/protocol/IncomingSocket.h \
     src/main.h \
     src/protocol/ChatMessageCommand.h \
-    src/protocol/CommandHandler.h
+    src/protocol/CommandHandler.h \
+    src/protocol/CommandDataParser.h
 OTHER_FILES += res/user--plus.png \
     res/info-inactive.png \
     res/info-hover.png \

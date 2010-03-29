@@ -5,12 +5,14 @@
 CommandHandler::CommandFunc CommandHandler::handlerMap[256] = { 0 };
 
 CommandHandler::CommandHandler(ContactUser *u, QTcpSocket *s, const uchar *m, unsigned mS)
-	: user(u), data(QByteArray::fromRawData(reinterpret_cast<const char*>(m), mS)), socket(s)
+	: user(u),
+	  data((mS > 6) ? QByteArray::fromRawData(reinterpret_cast<const char*>(m+6), mS-6) : QByteArray()),
+	  socket(s)
 {
-	Q_ASSERT(data.size() >= 6);
-	command = data[2];
-	state = data[3];
-	identifier = qFromBigEndian<quint16>(reinterpret_cast<const uchar*>(data.constData())+4);
+	Q_ASSERT(mS >= 6);
+	command = m[2];
+	state = m[3];
+	identifier = qFromBigEndian<quint16>(m+4);
 
 	CommandFunc handler = handlerMap[command];
 
