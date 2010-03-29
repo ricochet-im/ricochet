@@ -70,6 +70,11 @@ void ProtocolManager::addSocket(QTcpSocket *socket, quint8 purpose)
 	Q_ASSERT(socket->state() == QAbstractSocket::ConnectedState);
 
 	socket->setParent(this);
+	connect(socket, SIGNAL(connected()), this, SLOT(socketConnected()));
+	connect(socket, SIGNAL(disconnected()), this, SLOT(socketDisconnected()));
+	connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this,
+			SLOT(socketError(QAbstractSocket::SocketError)));
+	connect(socket, SIGNAL(readyRead()), this, SLOT(socketReadable()));
 
 	if (purpose == 0x00)
 	{
@@ -131,6 +136,8 @@ void ProtocolManager::sendCommand(ProtocolCommand *command, bool ordered)
 		Q_ASSERT(commandQueue.isEmpty());
 		qint64 re = primarySocket->write(command->commandBuffer);
 		Q_ASSERT(re == command->commandBuffer.size());
+
+		qDebug() << "Wrote command:" << command->commandBuffer.toHex();
 	}
 	else
 	{

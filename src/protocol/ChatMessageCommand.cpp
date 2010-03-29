@@ -1,8 +1,9 @@
 #include "ChatMessageCommand.h"
 #include <QDateTime>
 #include <QDataStream>
+#include <QBuffer>
 
-REGISTER_COMMAND_HANDLER(0x00, ChatMessageCommand)
+REGISTER_COMMAND_HANDLER(0x10, ChatMessageCommand)
 
 ChatMessageCommand::ChatMessageCommand(QObject *parent)
 	: ProtocolCommand(parent)
@@ -21,6 +22,7 @@ void ChatMessageCommand::send(ProtocolManager *to, const QDateTime &timestamp, c
 	prepareCommand(0x00, encodedText.size() + 6);
 
 	QDataStream stream(&commandBuffer, QIODevice::WriteOnly);
+	qobject_cast<QBuffer*>(stream.device())->seek(6);
 	stream.setVersion(QDataStream::Qt_4_6);
 	stream << (quint32)timestamp.secsTo(QDateTime::currentDateTime());
 	stream << encodedText;
