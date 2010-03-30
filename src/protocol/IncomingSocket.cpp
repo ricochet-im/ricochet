@@ -25,6 +25,16 @@ QString IncomingSocket::errorString() const
 	return server->errorString();
 }
 
+QHostAddress IncomingSocket::serverAddress() const
+{
+	return server->serverAddress();
+}
+
+quint16 IncomingSocket::serverPort() const
+{
+	return server->serverPort();
+}
+
 void IncomingSocket::incomingConnection()
 {
 	while (server->hasPendingConnections())

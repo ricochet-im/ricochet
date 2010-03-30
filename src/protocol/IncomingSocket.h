@@ -20,6 +20,9 @@ public:
 	bool listen(const QHostAddress &address, quint16 port);
 	QString errorString() const;
 
+	QHostAddress serverAddress() const;
+	quint16 serverPort() const;
+
 private slots:
 	void incomingConnection();
 

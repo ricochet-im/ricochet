@@ -1,4 +1,3 @@
-
 #include "TorControlManager.h"
 #include "TorControlSocket.h"
 #include "ProtocolInfoCommand.h"
@@ -9,10 +8,12 @@
 #include <QDir>
 #include <QDebug>
 
+Tor::TorControlManager *torManager = 0;
+
 using namespace Tor;
 
-TorControlManager::TorControlManager(QObject *parent) :
-    QObject(parent), pStatus(NotConnected)
+TorControlManager::TorControlManager(QObject *parent)
+	: QObject(parent), pStatus(NotConnected)
 {
 	socket = new TorControlSocket;
 	QObject::connect(socket, SIGNAL(commandFinished(TorControlCommand*)), this,
@@ -147,8 +148,8 @@ void TorControlManager::publishServices()
 		QList<QPair<QByteArray,QByteArray> > settings;
 		settings.append(qMakePair(QByteArray("HiddenServiceDir"), dir.absolutePath().toLocal8Bit()));
 
-		for (QList<HiddenService::Target>::ConstIterator tit = service->targets().begin();
-		tit != service->targets().end(); ++service)
+		const QList<HiddenService::Target> &targets = service->targets();
+		for (QList<HiddenService::Target>::ConstIterator tit = targets.begin(); tit != targets.end(); ++tit)
 		{
 			QString target = QString("%1 %2:%3").arg(tit->servicePort).arg(tit->targetAddress.toString())
 							 .arg(tit->targetPort);

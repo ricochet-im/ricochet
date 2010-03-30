@@ -5,8 +5,11 @@
 #include <QApplication>
 #include <QSettings>
 #include <QTime>
+#include <QDir>
 
 QSettings *config = 0;
+
+static IncomingSocket *incomingSocket = 0;
 
 static void initSettings();
 static void initIncomingSocket();
@@ -15,6 +18,8 @@ static bool connectTorControl();
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+
+	QDir::setCurrent(a.applicationDirPath());
 
 	initSettings();
 
@@ -65,22 +70,33 @@ static void initIncomingSocket()
 	QHostAddress address(config->value("core/listenIp", QString("127.0.0.1")).toString());
 	quint16 port = (quint16)config->value("core/listenPort", 0).toUInt();
 
-	IncomingSocket *incoming = new IncomingSocket;
-	if (!incoming->listen(address, port))
-		qFatal("Failed to open incoming socket: %s", qPrintable(incoming->errorString()));
+	incomingSocket = new IncomingSocket;
+	if (!incomingSocket->listen(address, port))
+		qFatal("Failed to open incoming socket: %s", qPrintable(incomingSocket->errorString()));
 }
 
 static bool connectTorControl()
 {
+	torManager = new Tor::TorControlManager;
+
+	/* Authentication */
+	torManager->setAuthPassword(config->value("tor/authPassword").toByteArray());
+
+	/* Hidden service */
+	QString serviceDir = config->value("core/serviceDirectory", QString("data")).toString();
+
+	Tor::HiddenService *service = new Tor::HiddenService(serviceDir);
+	service->addTarget(13535, incomingSocket->serverAddress(), incomingSocket->serverPort());
+
+	torManager->addHiddenService(service);
+
+	/* Connect */
 	QHostAddress address(config->value("tor/controlIp").value<QString>());
 	quint16 port = (quint16)config->value("tor/controlPort", 0).toUInt();
 
 	if (address.isNull() || !port)
 		return false;
 
-	Tor::TorControlManager *torManager = new Tor::TorControlManager;
-	torManager->setAuthPassword(config->value("tor/authPassword").toByteArray());
 	torManager->connect(address, port);
-
 	return true;
 }

@@ -107,4 +107,6 @@ private:
 
 }
 
+extern Tor::TorControlManager *torManager;
+
 #endif // TORCONTROLMANAGER_H
