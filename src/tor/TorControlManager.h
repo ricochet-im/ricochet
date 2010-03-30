@@ -7,6 +7,19 @@
 namespace Tor
 {
 
+class HiddenService
+{
+	friend class TorControlManager;
+
+public:
+	QString dataPath;
+	QHostAddress targetAddress;
+	quint16 servicePort, targetPort;
+
+private:
+	HiddenService(const QString &path, const QHostAddress &address, quint16 port);
+};
+
 class TorControlManager : public QObject
 {
 	Q_OBJECT
@@ -21,25 +34,52 @@ public:
 		AuthCookie = 0x4
 	};
 
+	enum Status
+	{
+		Error = -1,
+		NotConnected,
+		Connecting,
+		Authenticating,
+		Connected
+	};
+
     explicit TorControlManager(QObject *parent = 0);
 
-	QFlags<AuthMethod> authMethods() const { return pAuthMethods; }
-	QByteArray torVersion() const { return pTorVersion; }
+	/* Information */
+	Status status() const { return pStatus; }
+	QString torVersion() const { return pTorVersion; }
 
+	/* Authentication */
+	QFlags<AuthMethod> authMethods() const { return pAuthMethods; }
 	void setAuthPassword(const QByteArray &password);
 
+	/* Connection */
+	bool isConnected() const;
 	void connect(const QHostAddress &address, quint16 port);
-	void createHiddenService(const QString &path, const QHostAddress &address, quint16 port);
+
+	/* Hidden Services */
+	HiddenService *createHiddenService(const QString &path, const QHostAddress &address, quint16 port);
+	const QList<HiddenService*> &hiddenServices() const;
+
+signals:
+	void statusChanged(Status newStatus, Status oldStatus);
+	void connected();
+	void disconnected();
 
 private slots:
-	void queryInfo();
+	void socketConnected();
 
 	void commandFinished(class TorControlCommand *command);
 
 private:
 	class TorControlSocket *socket;
+	QString pTorVersion;
+	QByteArray pAuthPassword;
+	QList<HiddenService*> pHiddenServices;
 	QFlags<AuthMethod> pAuthMethods;
-	QByteArray pTorVersion, pAuthPassword;
+	Status pStatus;
+
+	void setStatus(Status status);
 
 	void authenticate();
 };

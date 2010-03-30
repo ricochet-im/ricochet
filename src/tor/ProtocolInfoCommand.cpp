@@ -1,5 +1,6 @@
 #include "ProtocolInfoCommand.h"
 #include "TorControlManager.h"
+#include "utils/StringUtil.h"
 #include <QList>
 
 using namespace Tor;
@@ -38,6 +39,6 @@ void ProtocolInfoCommand::handleReply(int code, QByteArray &data, bool end)
 	}
 	else if (data.startsWith("VERSION Tor="))
 	{
-		manager->pTorVersion = data.mid(12, data.indexOf(' ', 12));
+		manager->pTorVersion = unquotedString(data.mid(12, data.indexOf(' ', 12)));
 	}
 }

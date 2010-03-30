@@ -1,8 +1,10 @@
+
 #include "TorControlManager.h"
 #include "TorControlSocket.h"
 #include "ProtocolInfoCommand.h"
 #include "AuthenticateCommand.h"
 #include "SetConfCommand.h"
+#include "utils/StringUtil.h"
 #include <QHostAddress>
 #include <QDir>
 #include <QDebug>
@@ -10,12 +12,28 @@
 using namespace Tor;
 
 TorControlManager::TorControlManager(QObject *parent) :
-    QObject(parent)
+    QObject(parent), pStatus(NotConnected)
 {
 	socket = new TorControlSocket;
 	QObject::connect(socket, SIGNAL(commandFinished(TorControlCommand*)), this,
 					 SLOT(commandFinished(TorControlCommand*)));
-	QObject::connect(socket, SIGNAL(connected()), this, SLOT(queryInfo()));
+	QObject::connect(socket, SIGNAL(connected()), this, SLOT(socketConnected()));
+}
+
+void TorControlManager::setStatus(Status n)
+{
+	if (n == pStatus)
+		return;
+
+	Status old = pStatus;
+	pStatus = n;
+
+	emit statusChanged(pStatus, old);
+
+	if (pStatus == Connected && old < Connected)
+		emit connected();
+	else if (pStatus < Connected && old >= Connected)
+		emit disconnected();
 }
 
 void TorControlManager::setAuthPassword(const QByteArray &password)
@@ -25,19 +43,27 @@ void TorControlManager::setAuthPassword(const QByteArray &password)
 
 void TorControlManager::connect(const QHostAddress &address, quint16 port)
 {
+	socket->abort();
 	socket->connectToHost(address, port);
+
+	setStatus(Connecting);
 }
 
 void TorControlManager::commandFinished(TorControlCommand *command)
 {
 	if (command->keyword == QLatin1String("PROTOCOLINFO"))
 	{
+		Q_ASSERT(status() == Authenticating);
+
 		qDebug() << "torctrl: Tor version is" << torVersion();
 
-		authenticate();
+		if (status() == Authenticating)
+			authenticate();
 	}
 	else if (command->keyword == QLatin1String("AUTHENTICATE"))
 	{
+		Q_ASSERT(status() == Authenticating);
+
 		if (command->statusCode() != 250)
 		{
 			qWarning() << "torctrl: Authentication failed with code" << command->statusCode();
@@ -45,12 +71,16 @@ void TorControlManager::commandFinished(TorControlCommand *command)
 		}
 
 		qDebug() << "torctrl: Authentication successful";
+		setStatus(Connected);
 	}
 }
 
-void TorControlManager::queryInfo()
+void TorControlManager::socketConnected()
 {
-	qDebug() << "torctrl: Connected";
+	Q_ASSERT(status() == Connecting);
+
+	qDebug() << "torctrl: Connected socket; querying information";
+	setStatus(Authenticating);
 
 	ProtocolInfoCommand *command = new ProtocolInfoCommand(this);
 	socket->sendCommand(command, command->build());
@@ -58,12 +88,14 @@ void TorControlManager::queryInfo()
 
 void TorControlManager::authenticate()
 {
+	Q_ASSERT(status() == Authenticating);
+
 	AuthenticateCommand *command = new AuthenticateCommand;
 	QByteArray data;
 
 	if (pAuthMethods.testFlag(AuthNull))
 	{
-		qDebug() << "torctrl: Using 'NULL' authentication";
+		qDebug() << "torctrl: Using null authentication";
 		data = command->build();
 	}
 	else if (pAuthMethods.testFlag(AuthHashedPassword))
@@ -89,7 +121,7 @@ void TorControlManager::authenticate()
 	socket->sendCommand(command, data);
 }
 
-void TorControlManager::createHiddenService(const QString &path, const QHostAddress &address, quint16 port)
+HiddenService *TorControlManager::createHiddenService(const QString &path, const QHostAddress &address, quint16 port)
 {
 	QDir dir(path);
 	QString target = QString("9800 %1:%2").arg(address.toString()).arg(port);
@@ -103,4 +135,6 @@ void TorControlManager::createHiddenService(const QString &path, const QHostAddr
 
 	SetConfCommand *command = new SetConfCommand;
 	socket->sendCommand(command, command->build(settings));
+
+	return 0;
 }
