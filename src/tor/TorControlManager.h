@@ -9,15 +9,35 @@ namespace Tor
 
 class HiddenService
 {
-	friend class TorControlManager;
+	Q_DISABLE_COPY(HiddenService)
 
 public:
-	QString dataPath;
-	QHostAddress targetAddress;
-	quint16 servicePort, targetPort;
+	struct Target
+	{
+		QHostAddress targetAddress;
+		quint16 servicePort, targetPort;
+	};
+
+	enum Status
+	{
+		Offline,
+		Published,
+		Online
+	};
+
+	const QString dataPath;
+
+	HiddenService(const QString &dataPath);
+
+	Status status() const { return pStatus; }
+
+	const QList<Target> &targets() const { return pTargets; }
+	void addTarget(const Target &target);
+	void addTarget(quint16 servicePort, QHostAddress targetAddress, quint16 targetPort);
 
 private:
-	HiddenService(const QString &path, const QHostAddress &address, quint16 port);
+	QList<Target> pTargets;
+	Status pStatus;
 };
 
 class TorControlManager : public QObject
@@ -54,12 +74,12 @@ public:
 	void setAuthPassword(const QByteArray &password);
 
 	/* Connection */
-	bool isConnected() const;
+	bool isConnected() const { return status() == Connected; }
 	void connect(const QHostAddress &address, quint16 port);
 
 	/* Hidden Services */
-	HiddenService *createHiddenService(const QString &path, const QHostAddress &address, quint16 port);
-	const QList<HiddenService*> &hiddenServices() const;
+	const QList<HiddenService*> &hiddenServices() const { return pServices; }
+	void addHiddenService(HiddenService *service);
 
 signals:
 	void statusChanged(Status newStatus, Status oldStatus);
@@ -75,13 +95,14 @@ private:
 	class TorControlSocket *socket;
 	QString pTorVersion;
 	QByteArray pAuthPassword;
-	QList<HiddenService*> pHiddenServices;
+	QList<HiddenService*> pServices;
 	QFlags<AuthMethod> pAuthMethods;
 	Status pStatus;
 
 	void setStatus(Status status);
 
 	void authenticate();
+	void publishServices();
 };
 
 }

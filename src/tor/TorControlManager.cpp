@@ -72,6 +72,8 @@ void TorControlManager::commandFinished(TorControlCommand *command)
 
 		qDebug() << "torctrl: Authentication successful";
 		setStatus(Connected);
+
+		publishServices();
 	}
 }
 
@@ -121,20 +123,57 @@ void TorControlManager::authenticate()
 	socket->sendCommand(command, data);
 }
 
-HiddenService *TorControlManager::createHiddenService(const QString &path, const QHostAddress &address, quint16 port)
+void TorControlManager::addHiddenService(HiddenService *service)
 {
-	QDir dir(path);
-	QString target = QString("9800 %1:%2").arg(address.toString()).arg(port);
+	if (pServices.contains(service))
+		return;
 
-	QList<QPair<QByteArray,QByteArray> > settings;
-	settings.append(qMakePair(QByteArray("HiddenServiceDir"), dir.absolutePath().toLocal8Bit()));
-	settings.append(qMakePair(QByteArray("HiddenServicePort"), target.toLatin1()));
-#if 0
-	settings.append(qMakePair(QByteArray("HiddenServiceAuthorizeClient"), QByteArray("stealth bob")));
-#endif
+	pServices.append(service);
+}
 
-	SetConfCommand *command = new SetConfCommand;
-	socket->sendCommand(command, command->build(settings));
+void TorControlManager::publishServices()
+{
+	Q_ASSERT(isConnected());
+	if (pServices.isEmpty())
+		return;
 
-	return 0;
+	for (QList<HiddenService*>::Iterator it = pServices.begin(); it != pServices.end(); ++it)
+	{
+		HiddenService *service = *it;
+		QDir dir(service->dataPath);
+
+		qDebug() << "torctrl: Configuring hidden service at" << service->dataPath;
+
+		QList<QPair<QByteArray,QByteArray> > settings;
+		settings.append(qMakePair(QByteArray("HiddenServiceDir"), dir.absolutePath().toLocal8Bit()));
+
+		for (QList<HiddenService::Target>::ConstIterator tit = service->targets().begin();
+		tit != service->targets().end(); ++service)
+		{
+			QString target = QString("%1 %2:%3").arg(tit->servicePort).arg(tit->targetAddress.toString())
+							 .arg(tit->targetPort);
+			settings.append(qMakePair(QByteArray("HiddenServicePort"), target.toLatin1()));
+		}
+
+		//settings.append(qMakePair(QByteArray("HiddenServiceAuthorizeClient"), QByteArray("stealth bob")));
+
+		SetConfCommand *command = new SetConfCommand;
+		socket->sendCommand(command, command->build(settings));
+	}
+}
+
+HiddenService::HiddenService(const QString &p)
+	: dataPath(p), pStatus(Offline)
+{
+}
+
+void HiddenService::addTarget(const Target &target)
+{
+	pTargets.append(target);
+}
+
+void HiddenService::addTarget(quint16 servicePort, QHostAddress targetAddress, quint16 targetPort)
+{
+	Target t = { targetAddress, servicePort, targetPort };
+	pTargets.append(t);
 }
