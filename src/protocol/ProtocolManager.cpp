@@ -2,6 +2,7 @@
 #include "ProtocolCommand.h"
 #include <QTcpSocket>
 #include <QtEndian>
+#include <QNetworkProxy>
 
 ProtocolManager::ProtocolManager(ContactUser *u, const QString &host, quint16 port)
 	: QObject(u), user(u), primarySocket(0), pHost(host), pPort(port)

@@ -3,6 +3,7 @@
 #include "ContactsView.h"
 #include "ChatWidget.h"
 #include "ContactInfoPage.h"
+#include "HomeScreen.h"
 #include "core/ContactsManager.h"
 #include <QToolBar>
 #include <QBoxLayout>
@@ -53,7 +54,9 @@ MainWindow::MainWindow(QWidget *parent)
 	createChatArea();
 	layout->addWidget(chatArea);
 
-	contactPageChanged(contactsView->activeContact(), contactsView->activeContactPage());
+	//contactPageChanged(contactsView->activeContact(), contactsView->activeContactPage());
+	HomeScreen *home = new HomeScreen;
+	chatArea->setCurrentIndex(chatArea->addWidget(home));
 }
 
 MainWindow::~MainWindow()
