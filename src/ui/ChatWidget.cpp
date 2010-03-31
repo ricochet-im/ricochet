@@ -77,6 +77,7 @@ void ChatWidget::createTextInput()
 {
 	textInput = new QLineEdit;
 	textInput->setFont(QFont("Calibri", 10));
+	textInput->setMaxLength(512);
 
 	connect(textInput, SIGNAL(returnPressed()), this, SLOT(sendInputMessage()));
 }
