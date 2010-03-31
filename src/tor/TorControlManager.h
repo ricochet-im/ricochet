@@ -4,6 +4,8 @@
 #include <QObject>
 #include <QHostAddress>
 
+class QNetworkProxy;
+
 namespace Tor
 {
 
@@ -68,6 +70,11 @@ public:
 	/* Information */
 	Status status() const { return pStatus; }
 	QString torVersion() const { return pTorVersion; }
+
+	bool isSocksReady() const { return !pSocksAddress.isNull(); }
+	QHostAddress socksAddress() const { return pSocksAddress; }
+	quint16 socksPort() const { return pSocksPort; }
+	QNetworkProxy connectionProxy();
 
 	/* Authentication */
 	QFlags<AuthMethod> authMethods() const { return pAuthMethods; }

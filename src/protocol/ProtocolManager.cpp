@@ -1,5 +1,6 @@
 #include "ProtocolManager.h"
 #include "ProtocolCommand.h"
+#include "tor/TorControlManager.h"
 #include <QTcpSocket>
 #include <QtEndian>
 #include <QNetworkProxy>
@@ -50,6 +51,7 @@ void ProtocolManager::connectPrimary()
 	if (!primarySocket)
 	{
 		primarySocket = new QTcpSocket(this);
+		primarySocket->setProxy(torManager->connectionProxy());
 		connect(primarySocket, SIGNAL(connected()), this, SLOT(socketConnected()));
 		connect(primarySocket, SIGNAL(disconnected()), this, SLOT(socketDisconnected()));
 		connect(primarySocket, SIGNAL(error(QAbstractSocket::SocketError)), this,

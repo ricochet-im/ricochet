@@ -40,8 +40,7 @@ int main(int argc, char *argv[])
 	if (!configured)
 		qFatal("Tor control settings aren't configured");
 
-	/* Try to connect to contacts */
-	contactsManager->connectToAll();
+	QObject::connect(torManager, SIGNAL(socksReady()), contactsManager, SLOT(connectToAll()));
 
 	/* Window */
     MainWindow w;

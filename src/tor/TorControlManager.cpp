@@ -8,6 +8,7 @@
 #include "utils/StringUtil.h"
 #include <QHostAddress>
 #include <QDir>
+#include <QNetworkProxy>
 #include <QDebug>
 
 Tor::TorControlManager *torManager = 0;
@@ -22,6 +23,11 @@ TorControlManager::TorControlManager(QObject *parent)
 					 SLOT(commandFinished(TorControlCommand*)));
 	QObject::connect(socket, SIGNAL(connected()), this, SLOT(socketConnected()));
 	QObject::connect(socket, SIGNAL(disconnected()), this, SLOT(socketDisconnected()));
+}
+
+QNetworkProxy TorControlManager::connectionProxy()
+{
+	return QNetworkProxy(QNetworkProxy::Socks5Proxy, pSocksAddress.toString(), pSocksPort);
 }
 
 void TorControlManager::setStatus(Status n)
