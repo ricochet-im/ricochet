@@ -10,4 +10,7 @@
         <file>status-offline.png</file>
         <file>status-online.png</file>
     </qresource>
+    <qresource prefix="/graphics">
+        <file>avatar-placeholder.png</file>
+    </qresource>
 </RCC>

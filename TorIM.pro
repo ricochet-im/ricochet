@@ -65,5 +65,6 @@ OTHER_FILES += res/user--plus.png \
     res/chat-hover.png \
     res/chat-active.png \
     res/status-online.png \
-    res/status-offline.png
+    res/status-offline.png \
+    res/avatar-placeholder.png
 RESOURCES += res/resources.qrc

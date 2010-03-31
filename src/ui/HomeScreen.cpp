@@ -24,10 +24,13 @@ HomeScreen::HomeScreen(QWidget *parent)
 void HomeScreen::createAvatar()
 {
 	avatar = new QLabel;
+	avatar->setAlignment(Qt::AlignTop | Qt::AlignLeft);
 
 	QImage image = config->value("core/avatar").value<QImage>();
-	//avatar->setPixmap(QPixmap::fromImage(image));
-	avatar->setText("HI");
+	if (!image.isNull())
+		avatar->setPixmap(QPixmap::fromImage(image));
+	else
+		avatar->setPixmap(QPixmap(":/graphics/avatar-placeholder.png"));
 }
 
 QLayout *HomeScreen::createButtons()
@@ -47,6 +50,8 @@ QLayout *HomeScreen::createButtons()
 	btn->setIcon(QIcon("C:/Users/John/Documents/Icons/Fugue/icons-shadowless/image--pencil.png"));
 	btn->setAutoRaise(true);
 	layout->addWidget(btn);
+
+	layout->addStretch();
 
 	return layout;
 }
