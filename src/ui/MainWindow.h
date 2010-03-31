@@ -28,7 +28,6 @@ private slots:
 private:
 	class QStackedWidget *chatArea;
 
-	void createToolbar();
 	void createChatArea();
 };
 

@@ -1,6 +1,5 @@
 <RCC>
     <qresource prefix="/icons">
-        <file alias="user-add">user--plus.png</file>
         <file>chat-active.png</file>
         <file>chat-hover.png</file>
         <file>chat-inactive.png</file>
@@ -9,6 +8,15 @@
         <file>info-inactive.png</file>
         <file>status-offline.png</file>
         <file>status-online.png</file>
+        <file>folder-open-image.png</file>
+        <file>gear.png</file>
+        <file>globe-green.png</file>
+        <file>image--pencil.png</file>
+        <file>wall--pencil.png</file>
+        <file>user--plus.png</file>
+        <file>exclamation.png</file>
+        <file>exclamation-red.png</file>
+        <file>tick-circle.png</file>
     </qresource>
     <qresource prefix="/graphics">
         <file>avatar-placeholder.png</file>

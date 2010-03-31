@@ -14,8 +14,14 @@ public:
 private:
 	class QLabel *avatar;
 
+	QList<QAction*> buttonActions;
+	class QAction *actAddContact, *actChangeAvatar, *actOpenDownloads, *actTestConnection, *actOptions;
+	class QAction *actTorConfig;
+
 	void createAvatar();
+	void createActions();
 	class QLayout *createButtons();
+	class QLayout *createStatus();
 };
 
 #endif // HOMESCREEN_H

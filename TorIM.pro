@@ -66,5 +66,14 @@ OTHER_FILES += res/user--plus.png \
     res/chat-active.png \
     res/status-online.png \
     res/status-offline.png \
-    res/avatar-placeholder.png
+    res/avatar-placeholder.png \
+    res/wall--pencil.png \
+    res/user--plus.png \
+    res/image--pencil.png \
+    res/globe-green.png \
+    res/gear.png \
+    res/folder-open-image.png \
+    res/tick-circle.png \
+    res/exclamation-red.png \
+    res/exclamation.png
 RESOURCES += res/resources.qrc

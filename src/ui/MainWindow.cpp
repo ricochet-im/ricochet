@@ -21,9 +21,6 @@ MainWindow::MainWindow(QWidget *parent)
 	if (!pos.isNull())
 		move(pos);
 
-	/* Toolbar */
-	createToolbar();
-
 	/* Center widget */
 	QWidget *center = new QWidget;
 	setCentralWidget(center);
@@ -62,15 +59,6 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
 
-}
-
-void MainWindow::createToolbar()
-{
-	QToolBar *toolbar = addToolBar(tr("Main"));
-	toolbar->setAllowedAreas(Qt::TopToolBarArea);
-	toolbar->setFloatable(false);
-	toolbar->setMovable(false);
-	toolbar->addAction(QIcon(":/icons/user-add"), tr("Add Contact"));
 }
 
 void MainWindow::createChatArea()
