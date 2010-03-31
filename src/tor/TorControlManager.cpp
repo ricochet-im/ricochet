@@ -252,6 +252,12 @@ void TorControlManager::publishServices()
 	if (pServices.isEmpty())
 		return;
 
+	if (config->value(QString("core/neverPublishService"), false).toBool())
+	{
+		qDebug() << "torctrl: Skipping service publication because neverPublishService is enabled";
+		return;
+	}
+
 	for (QList<HiddenService*>::Iterator it = pServices.begin(); it != pServices.end(); ++it)
 	{
 		HiddenService *service = *it;
