@@ -68,17 +68,22 @@ void HomeScreen::createActions()
 	buttonActions << actTestConnection << actOptions << actTorConfig;
 }
 
+#include <QGridLayout>
+
 QLayout *HomeScreen::createButtons()
 {
-	QBoxLayout *layout = new QVBoxLayout;
+	QGridLayout *layout = new QGridLayout;
 	layout->setSpacing(0);
 
+	int row = 0, column = 0;
 	for (QList<QAction*>::ConstIterator it = buttonActions.begin(); it != buttonActions.end(); ++it)
 	{
 		if ((*it)->isSeparator())
 		{
-			layout->addSpacing(8);
-			layout->addStretch();
+			//layout->addSpacing(8);
+			//layout->addStretch();
+			column++;
+			row = 0;
 			continue;
 		}
 
@@ -88,8 +93,10 @@ QLayout *HomeScreen::createButtons()
 		btn->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 		btn->setAutoRaise(true);
 		btn->setDefaultAction(*it);
-		layout->addWidget(btn);
+		layout->addWidget(btn, row++, column, 1, 1, Qt::AlignTop | Qt::AlignLeft);
 	}
+
+	layout->setRowStretch(layout->rowCount()-1, 1);
 
 	return layout;
 }
