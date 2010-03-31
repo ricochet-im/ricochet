@@ -102,6 +102,7 @@ private:
 	void setStatus(Status status);
 
 	void authenticate();
+	void getSocksInfo();
 	void publishServices();
 };
 

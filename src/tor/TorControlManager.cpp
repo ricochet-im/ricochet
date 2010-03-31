@@ -3,6 +3,7 @@
 #include "ProtocolInfoCommand.h"
 #include "AuthenticateCommand.h"
 #include "SetConfCommand.h"
+#include "GetConfCommand.h"
 #include "utils/StringUtil.h"
 #include <QHostAddress>
 #include <QDir>
@@ -74,6 +75,7 @@ void TorControlManager::commandFinished(TorControlCommand *command)
 		qDebug() << "torctrl: Authentication successful";
 		setStatus(Connected);
 
+		getSocksInfo();
 		publishServices();
 	}
 }
@@ -122,6 +124,20 @@ void TorControlManager::authenticate()
 	}
 
 	socket->sendCommand(command, data);
+}
+
+void TorControlManager::getSocksInfo()
+{
+	Q_ASSERT(isConnected());
+
+	qDebug() << "torctrl: Querying for SOCKS connection settings";
+
+	GetConfCommand *command = new GetConfCommand;
+
+	QList<QByteArray> options;
+	options << QByteArray("SocksPort") << QByteArray("SocksListenAddress");
+
+	socket->sendCommand(command, command->build(options));
 }
 
 void TorControlManager::addHiddenService(HiddenService *service)
