@@ -62,17 +62,14 @@ void TorControlSocket::process()
 				<< (command ? command->keyword : "???") << "-" << code << line.mid(4, line.size() - 6);
 
 		if (command)
-			command->handleReply(code, line.mid(4, line.size() - 6), end);
+			command->inputReply(code, line.mid(4, line.size() - 6), end);
 
 		if (end)
 		{
 			commandQueue.takeFirst();
 
-			if (command)
-				command->setStatusCode(code);
-
 			emit commandFinished(command);
-			delete command;
+			command->deleteLater();
 		}
 	}
 }

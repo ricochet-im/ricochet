@@ -1,13 +1,17 @@
 #ifndef TORCONTROLCOMMAND_H
 #define TORCONTROLCOMMAND_H
 
+#include <QObject>
 #include <QByteArray>
 
 namespace Tor
 {
 
-class TorControlCommand
+class TorControlCommand : public QObject
 {
+	Q_OBJECT
+	Q_DISABLE_COPY(TorControlCommand)
+
 	friend class TorControlSocket;
 
 public:
@@ -17,13 +21,16 @@ public:
 
 	int statusCode() const { return pStatusCode; }
 
+signals:
+	void replyFinished();
+
 protected:
 	virtual void handleReply(int code, QByteArray &data, bool end) = 0;
 
-	void setStatusCode(int c) { pStatusCode = c; }
-
 private:
 	int pStatusCode;
+
+	void inputReply(int code, QByteArray &data, bool end);
 };
 
 }

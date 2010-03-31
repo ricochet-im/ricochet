@@ -10,6 +10,9 @@ namespace Tor
 
 class GetConfCommand : public TorControlCommand
 {
+	Q_OBJECT
+	Q_DISABLE_COPY(GetConfCommand)
+
 public:
     GetConfCommand();
 
@@ -17,7 +20,7 @@ public:
 	QByteArray build(const QList<QByteArray> &keys);
 
 	const QMultiHash<QByteArray,QByteArray> &results() const { return pResults; }
-	const QByteArray &get(const QByteArray &key) const;
+	bool get(const QByteArray &key, QByteArray &value) const;
 	QList<QByteArray> getList(const QByteArray &key) const;
 
 protected:

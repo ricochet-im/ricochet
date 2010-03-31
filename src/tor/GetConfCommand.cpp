@@ -35,9 +35,14 @@ void GetConfCommand::handleReply(int code, QByteArray &data, bool end)
 	pResults.insertMulti(data.mid(0, kep), (kep >= 0) ? data.mid(kep+1) : QByteArray());
 }
 
-const QByteArray &GetConfCommand::get(const QByteArray &key) const
+bool GetConfCommand::get(const QByteArray &key, QByteArray &value) const
 {
-	return pResults.value(key);
+	QMultiHash<QByteArray,QByteArray>::ConstIterator it = pResults.find(key);
+	if (it == pResults.end())
+		return false;
+
+	value = *it;
+	return true;
 }
 
 QList<QByteArray> GetConfCommand::getList(const QByteArray &key) const

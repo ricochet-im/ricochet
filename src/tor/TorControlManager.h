@@ -85,17 +85,23 @@ signals:
 	void statusChanged(Status newStatus, Status oldStatus);
 	void connected();
 	void disconnected();
+	void socksReady();
 
 private slots:
 	void socketConnected();
+	void socketDisconnected();
 
 	void commandFinished(class TorControlCommand *command);
+
+	void getSocksInfoReply();
 
 private:
 	class TorControlSocket *socket;
 	QString pTorVersion;
 	QByteArray pAuthPassword;
+	QHostAddress pSocksAddress;
 	QList<HiddenService*> pServices;
+	quint16 pSocksPort;
 	QFlags<AuthMethod> pAuthMethods;
 	Status pStatus;
 
