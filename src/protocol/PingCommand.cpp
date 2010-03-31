@@ -18,7 +18,7 @@ void PingCommand::send(ProtocolManager *to)
 void PingCommand::process(CommandHandler &command)
 {
 	qDebug() << "Received ping with identifier" << command.identifier;
-	command.sendReply(0x00);
+	command.sendReply(replyState(true, true, 0x00));
 }
 
 void PingCommand::processReply(quint8 state, const uchar *data, unsigned dataSize)
@@ -27,5 +27,5 @@ void PingCommand::processReply(quint8 state, const uchar *data, unsigned dataSiz
 	Q_UNUSED(data);
 	Q_UNUSED(dataSize);
 
-	qDebug() << "Received ping reply!";
+	qDebug() << "Received ping reply with state" << state;
 }

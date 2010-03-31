@@ -274,7 +274,27 @@ void ProtocolManager::socketReadable()
 		qint64 re = socket->read(data.data(), msgLength + 6);
 		Q_ASSERT(re == msgLength + 6);
 
-		CommandHandler handler(user, socket, reinterpret_cast<const uchar*>(data.constData()), msgLength + 6);
+		if (isReply(data[3]))
+		{
+			quint16 identifier = qFromBigEndian<quint16>(reinterpret_cast<const uchar*>(data.constData())+4);
+			QHash<quint16,ProtocolCommand*>::Iterator it = pendingCommands.find(identifier);
+
+			if (it != pendingCommands.end())
+			{
+				(*it)->processReply(data[3], reinterpret_cast<const uchar*>(data.constData())+6, msgLength);
+				if (isFinal(data[3]))
+				{
+					qDebug() << "Received final reply for identifier" << identifier;
+					(*it)->deleteLater();
+					pendingCommands.erase(it);
+				}
+			}
+		}
+		else
+		{
+			CommandHandler handler(user, socket, reinterpret_cast<const uchar*>(data.constData()),
+								   msgLength + 6);
+		}
 
 		available -= msgLength + 6;
 	}

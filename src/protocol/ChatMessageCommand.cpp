@@ -30,12 +30,17 @@ void ChatMessageCommand::process(CommandHandler &command)
 	CommandDataParser parser(&command.data);
 	parser >> timestamp >> text;
 	if (!parser)
+	{
+		command.sendReply(CommandSyntaxError);
 		return;
+	}
 
 	qDebug() << "Received chat message (time delta" << timestamp << "):" << text;
 
 	ChatWidget *chat = ChatWidget::widgetForUser(command.user);
 	chat->addChatMessage(command.user, QDateTime::currentDateTime().addSecs(-(int)timestamp), text);
+
+	command.sendReply(replyState(true, true, 0x00));
 }
 
 void ChatMessageCommand::processReply(quint8 state, const uchar *data, unsigned dataSize)
@@ -43,4 +48,6 @@ void ChatMessageCommand::processReply(quint8 state, const uchar *data, unsigned 
 	Q_UNUSED(state);
 	Q_UNUSED(data);
 	Q_UNUSED(dataSize);
+
+	qDebug() << "Received chat message reply" << hex << state;
 }

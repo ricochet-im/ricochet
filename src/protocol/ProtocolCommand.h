@@ -16,6 +16,19 @@ class ProtocolCommand : public QObject
 public:
 	static const int maxCommandData = 65540;
 
+	/* These are flagged as final; you can unset that manually if desired */
+	enum StandardReply
+	{
+		GenericError = 0xd0,
+		UnknownCommand = 0xd1,
+		UnknownState = 0xd2,
+		MessageSyntaxError = 0xd3,
+		CommandSyntaxError = 0xd4,
+		InternalError = 0xd5,
+		PermanentInternalError = 0xd6,
+		ConnectionError = 0xd7
+	};
+
     explicit ProtocolCommand(QObject *parent = 0);
 
 	virtual quint8 command() const = 0;
