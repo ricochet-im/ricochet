@@ -17,11 +17,11 @@ HomeScreen::HomeScreen(QWidget *parent)
 	createActions();
 
 	createAvatar();
-	topLayout->addWidget(avatar);
 
 	topLayout->addLayout(createButtons());
 
 	topLayout->addStretch(1);
+	topLayout->addWidget(avatar);
 	layout->addStretch(1);
 
 	QFrame *line = new QFrame;
@@ -74,8 +74,15 @@ QLayout *HomeScreen::createButtons()
 {
 	QGridLayout *layout = new QGridLayout;
 	layout->setSpacing(0);
+	layout->setHorizontalSpacing(12);
 
 	int row = 0, column = 0;
+
+	QLabel *heading = new QLabel;
+	heading->setPixmap(QPixmap("../res/logotext.png"));
+	heading->setContentsMargins(0, 0, 0, 14);
+	layout->addWidget(heading, row++, column, 1, 2, Qt::AlignTop | Qt::AlignHCenter);
+
 	for (QList<QAction*>::ConstIterator it = buttonActions.begin(); it != buttonActions.end(); ++it)
 	{
 		if ((*it)->isSeparator())
@@ -83,7 +90,7 @@ QLayout *HomeScreen::createButtons()
 			//layout->addSpacing(8);
 			//layout->addStretch();
 			column++;
-			row = 0;
+			row = 1;
 			continue;
 		}
 
