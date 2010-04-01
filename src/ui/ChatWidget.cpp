@@ -11,6 +11,7 @@
 #include <QLabel>
 #include <QScrollBar>
 #include <QApplication>
+#include <QPropertyAnimation>
 
 QHash<ContactUser*,ChatWidget*> ChatWidget::userMap;
 
@@ -66,6 +67,8 @@ void ChatWidget::createTextArea()
 	textArea = new QTextEdit;
 	textArea->setReadOnly(true);
 	textArea->setFont(QFont("Calibri", 10));
+
+	connect(textArea->verticalScrollBar(), SIGNAL(rangeChanged(int,int)), this, SLOT(scrollToBottom()));
 }
 
 void ChatWidget::createTextInput()
@@ -239,9 +242,11 @@ void ChatWidget::showOfflineNotice()
 
 	QLabel *icon = new QLabel;
 	icon->setPixmap(QPixmap(":/icons/information.png"));
+	icon->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 	layout->addWidget(icon);
 
 	QLabel *message = new QLabel;
+	message->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 	message->setText(tr("<b>%1</b> is not online. Your messages will be delivered as soon as possible.")
 					 .arg(Qt::escape(user->nickname())));
 
@@ -251,6 +256,13 @@ void ChatWidget::showOfflineNotice()
 
 	layout->addWidget(message);
 	layout->addStretch();
+
+	/* Create the size animation */
+	offlineNotice->setMaximumHeight(0);
+
+	QPropertyAnimation *ani = new QPropertyAnimation(offlineNotice, QByteArray("maximumHeight"), offlineNotice);
+	ani->setEndValue(offlineNotice->sizeHint().height());
+	ani->setDuration(300);
 
 	/* Add to the window */
 	QBoxLayout *windowLayout = qobject_cast<QBoxLayout*>(this->layout());
@@ -263,9 +275,25 @@ void ChatWidget::showOfflineNotice()
 	}
 
 	windowLayout->insertWidget(1, offlineNotice);
+	ani->start(QAbstractAnimation::DeleteWhenStopped);
 }
 
 void ChatWidget::clearOfflineNotice()
+{
+	if (!offlineNotice)
+		return;
+
+	/* Animate out */
+	QPropertyAnimation *ani = new QPropertyAnimation(offlineNotice, QByteArray("maximumHeight"), offlineNotice);
+	ani->setEndValue(0);
+	ani->setDuration(300);
+
+	connect(ani, SIGNAL(finished()), this, SLOT(clearOfflineNoticeInstantly()));
+
+	ani->start(QAbstractAnimation::DeleteWhenStopped);
+}
+
+void ChatWidget::clearOfflineNoticeInstantly()
 {
 	if (!offlineNotice)
 		return;

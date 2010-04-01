@@ -22,8 +22,11 @@ private slots:
 	void sendInputMessage();
 	void messageReply();
 
+	void scrollToBottom();
+
 	void showOfflineNotice();
 	void clearOfflineNotice();
+	void clearOfflineNoticeInstantly();
 
 private:
 	static QHash<ContactUser*,ChatWidget*> userMap;
@@ -36,8 +39,6 @@ private:
 
 	void createTextArea();
 	void createTextInput();
-
-	void scrollToBottom();
 
 	void addChatMessage(ContactUser *user, const QDateTime &when, const QString &text, int identifier = 0);
 	bool findBlockIdentifier(int identifier, class QTextBlock &block);
