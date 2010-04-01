@@ -34,6 +34,9 @@ public:
 	virtual quint8 command() const = 0;
 	quint16 identifier() const { return pIdentifier; }
 
+signals:
+	void commandFinished();
+
 protected:
 	QByteArray commandBuffer;
 	quint16 pIdentifier;

@@ -6,6 +6,7 @@
 #include <QLineEdit>
 #include <QDateTime>
 #include <QTextDocument>
+#include <QTextBlock>
 #include <QLabel>
 #include <QScrollBar>
 
@@ -92,12 +93,46 @@ void ChatWidget::sendInputMessage()
 	QDateTime when = QDateTime::currentDateTime();
 
 	ChatMessageCommand *command = new ChatMessageCommand;
+	connect(command, SIGNAL(commandFinished()), this, SLOT(messageReply()));
 	command->send(user->conn(), when, text);
 
-	addChatMessage(NULL, when, text);
+	addChatMessage(NULL, when, text, command->identifier());
 }
 
-void ChatWidget::addChatMessage(ContactUser *from, const QDateTime &when, const QString &text)
+void ChatWidget::messageReply()
+{
+	ChatMessageCommand *command = qobject_cast<ChatMessageCommand*>(sender());
+	if (!command)
+		return;
+
+	QTextBlock block;
+	if (findBlockIdentifier(command->identifier(), block))
+	{
+		block.setUserState(0);
+
+		/* Loop through the fragments in this block, and see if any have alternate text colors.
+		 * If they do, set that color. */
+		QTextCursor cursor(textArea->document());
+		for (QTextBlock::iterator it = block.begin(); !it.atEnd(); ++it)
+		{
+			QTextFragment fragment = it.fragment();
+			if (fragment.isValid())
+			{
+				QTextCharFormat format = fragment.charFormat();
+				if (!format.hasProperty(QTextFormat::UserProperty))
+					continue;
+
+				format.setForeground(QColor(format.property(QTextFormat::UserProperty).value<QRgb>()));
+
+				cursor.setPosition(fragment.position());
+				cursor.setPosition(fragment.position() + fragment.length(), QTextCursor::KeepAnchor);
+				cursor.setCharFormat(format);
+			}
+		}
+	}
+}
+
+void ChatWidget::addChatMessage(ContactUser *from, const QDateTime &when, const QString &text, int identifier)
 {
 	QTextCursor cursor(textArea->document());
 	cursor.movePosition(QTextCursor::End);
@@ -105,29 +140,41 @@ void ChatWidget::addChatMessage(ContactUser *from, const QDateTime &when, const 
 	if (!cursor.atBlockStart())
 		cursor.insertBlock();
 
-	bool light = false;
-	if (!from && !user->isConnected())
-		light = true; //alpha = 120;
-#if 0
-	{
-		QTextBlockFormat blockFormat;
-		blockFormat.setBackground(QColor(235, 235, 235));
-		cursor.setBlockFormat(blockFormat);
-	}
-#endif
+	if (identifier)
+		cursor.block().setUserState(identifier);
+
+	/* These are the colors used for the timestamp, nickname, and text. Each has two colors;
+	 * the full color, and the 'faded' color for when the message hasn't been received yet. */
+	static const QRgb tsColor[] = { qRgb(160, 160, 164), qRgb(200, 200, 202) };
+	static const QRgb myNickColor[] = { qRgb(0, 94, 173), qRgb(135, 185, 227) };
+	static const QRgb nickColor[] = { qRgb(174, 0, 0), qRgb(227, 135, 135) };
+	static const QRgb textColor[] = { qRgb(0, 0, 0), qRgb(135, 135, 135) };
+	
+	bool light = (from == 0);
 
 	/* Timestamp */
 	QTextCharFormat tsFormat;
-	tsFormat.setForeground(light ? QColor(200, 200, 202) : QColor(160, 160, 164));
+	tsFormat.setForeground(QColor(tsColor[light]));
+	if (light)
+		tsFormat.setProperty(QTextFormat::UserProperty, tsColor[!light]);
+
 	cursor.insertText(when.time().toString(QString("(HH:mm:ss) ")), tsFormat);
 
 	/* Nickname */
 	QTextCharFormat nickFormat;
 	nickFormat.setFontWeight(QFont::Bold);
 	if (!from)
-		nickFormat.setForeground(light ? QColor(135, 185, 227) : QColor(0, 94, 173));
+	{
+		nickFormat.setForeground(QColor(myNickColor[light]));
+		if (light)
+			nickFormat.setProperty(QTextFormat::UserProperty, myNickColor[!light]);
+	}
 	else
-		nickFormat.setForeground(light ? QColor(227, 135, 135) : QColor(174, 0, 0));
+	{
+		nickFormat.setForeground(QColor(nickColor[light]));
+		if (light)
+			nickFormat.setProperty(QTextFormat::UserProperty, nickColor[!light]);
+	}
 
 	QString nickname = from ? from->nickname() : tr("Me");
 
@@ -135,7 +182,10 @@ void ChatWidget::addChatMessage(ContactUser *from, const QDateTime &when, const 
 
 	/* Text */
 	QTextCharFormat textFormat;
-	textFormat.setForeground(light ? QColor(135, 135, 135) : QColor(0, 0, 0));
+	textFormat.setForeground(QColor(textColor[light]));
+	if (light)
+		textFormat.setProperty(QTextFormat::UserProperty, textColor[!light]);
+
 	cursor.insertText(text, textFormat);
 
 	scrollToBottom();
@@ -144,4 +194,27 @@ void ChatWidget::addChatMessage(ContactUser *from, const QDateTime &when, const 
 void ChatWidget::scrollToBottom()
 {
 	textArea->verticalScrollBar()->setValue(textArea->verticalScrollBar()->maximum());
+}
+
+bool ChatWidget::findBlockIdentifier(int identifier, QTextBlock &dst)
+{
+	if (!identifier)
+		return false;
+
+	QTextBlock b = textArea->document()->lastBlock();
+	for (;;)
+	{
+		if (b.userState() == identifier)
+		{
+			dst = b;
+			return true;
+		}
+
+		if (b == textArea->document()->begin())
+			break;
+
+		b = b.previous();
+	}
+
+	return false;
 }

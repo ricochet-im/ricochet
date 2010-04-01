@@ -16,10 +16,11 @@ public:
 
 	~ChatWidget();
 
-	void addChatMessage(ContactUser *user, const QDateTime &when, const QString &text);
+	void addChatMessage(ContactUser *user, const QDateTime &when, const QString &text, int identifier = 0);
 
 private slots:
 	void sendInputMessage();
+	void messageReply();
 
 private:
 	static QHash<ContactUser*,ChatWidget*> userMap;
@@ -33,6 +34,8 @@ private:
 	void createTextInput();
 
 	void scrollToBottom();
+
+	bool findBlockIdentifier(int identifier, class QTextBlock &block);
 };
 
 #endif // CHATWIDGET_H

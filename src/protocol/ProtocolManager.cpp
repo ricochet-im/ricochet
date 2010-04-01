@@ -285,6 +285,7 @@ void ProtocolManager::socketReadable()
 				if (isFinal(data[3]))
 				{
 					qDebug() << "Received final reply for identifier" << identifier;
+					emit (*it)->commandFinished();
 					(*it)->deleteLater();
 					pendingCommands.erase(it);
 				}
