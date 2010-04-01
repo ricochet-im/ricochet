@@ -47,7 +47,7 @@ ChatWidget::ChatWidget(ContactUser *u)
 	testLayout->addStretch();
 
 	QLabel *icon = new QLabel;
-	icon->setPixmap(QPixmap("C:\\Users\\John\\Documents\\Icons\\Fugue\\icons-shadowless\\information.png"));
+	icon->setPixmap(QPixmap(":/icons/information.png"));
 	testLayout->addWidget(icon);
 
 	QLabel *test = new QLabel;

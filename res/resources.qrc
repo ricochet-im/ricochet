@@ -17,8 +17,10 @@
         <file>exclamation.png</file>
         <file>exclamation-red.png</file>
         <file>tick-circle.png</file>
+        <file>information.png</file>
     </qresource>
     <qresource prefix="/graphics">
         <file>avatar-placeholder.png</file>
+        <file>logotext.png</file>
     </qresource>
 </RCC>

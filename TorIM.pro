@@ -75,5 +75,7 @@ OTHER_FILES += res/user--plus.png \
     res/folder-open-image.png \
     res/tick-circle.png \
     res/exclamation-red.png \
-    res/exclamation.png
+    res/exclamation.png \
+    res/logotext.png \
+    res/information.png
 RESOURCES += res/resources.qrc

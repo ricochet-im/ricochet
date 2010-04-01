@@ -79,7 +79,7 @@ QLayout *HomeScreen::createButtons()
 	int row = 0, column = 0;
 
 	QLabel *heading = new QLabel;
-	heading->setPixmap(QPixmap("../res/logotext.png"));
+	heading->setPixmap(QPixmap(":/graphics/logotext.png"));
 	heading->setContentsMargins(0, 0, 0, 14);
 	layout->addWidget(heading, row++, column, 1, 2, Qt::AlignTop | Qt::AlignHCenter);
 
