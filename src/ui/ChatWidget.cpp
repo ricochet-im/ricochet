@@ -28,9 +28,11 @@ ChatWidget *ChatWidget::widgetForUser(ContactUser *u)
 }
 
 ChatWidget::ChatWidget(ContactUser *u)
-	: user(u)
+	: user(u), offlineNotice(0)
 {
 	Q_ASSERT(user);
+	connect(user, SIGNAL(connected()), this, SLOT(clearOfflineNotice()));
+	connect(user, SIGNAL(disconnected()), this, SLOT(showOfflineNotice()));
 
 	QBoxLayout *layout = new QVBoxLayout(this);
 	layout->setMargin(0);
@@ -46,21 +48,10 @@ ChatWidget::ChatWidget(ContactUser *u)
 
 	testLayout->addStretch();
 
-	QLabel *icon = new QLabel;
-	icon->setPixmap(QPixmap(":/icons/information.png"));
-	testLayout->addWidget(icon);
-
-	QLabel *test = new QLabel;
-	test->setText("<b>Aaron</b> is not online. Your messages will be delivered as soon as possible.");
-
-	QPalette p = test->palette();
-	p.setColor(QPalette::WindowText, Qt::darkGray);
-	test->setPalette(p);
-
-	testLayout->addWidget(test);
-	testLayout->addStretch();
-
 	layout->addWidget(textInput);
+
+	if (!user->isConnected())
+		showOfflineNotice();
 }
 
 ChatWidget::~ChatWidget()
@@ -230,4 +221,56 @@ bool ChatWidget::findBlockIdentifier(int identifier, QTextBlock &dst)
 	}
 
 	return false;
+}
+
+void ChatWidget::showOfflineNotice()
+{
+	if (offlineNotice)
+		return;
+
+	/* Create widget */
+	offlineNotice = new QWidget;
+	offlineNotice->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+
+	QBoxLayout *layout = new QHBoxLayout(offlineNotice);
+	layout->setMargin(0);
+	layout->setSpacing(3);
+	layout->addStretch();
+
+	QLabel *icon = new QLabel;
+	icon->setPixmap(QPixmap(":/icons/information.png"));
+	layout->addWidget(icon);
+
+	QLabel *message = new QLabel;
+	message->setText(tr("<b>%1</b> is not online. Your messages will be delivered as soon as possible.")
+					 .arg(Qt::escape(user->nickname())));
+
+	QPalette p = message->palette();
+	p.setColor(QPalette::WindowText, Qt::darkGray);
+	message->setPalette(p);
+
+	layout->addWidget(message);
+	layout->addStretch();
+
+	/* Add to the window */
+	QBoxLayout *windowLayout = qobject_cast<QBoxLayout*>(this->layout());
+	Q_ASSERT(windowLayout);
+	if (!windowLayout)
+	{
+		delete offlineNotice;
+		offlineNotice = 0;
+		return;
+	}
+
+	windowLayout->insertWidget(1, offlineNotice);
+}
+
+void ChatWidget::clearOfflineNotice()
+{
+	if (!offlineNotice)
+		return;
+
+	offlineNotice->hide();
+	offlineNotice->deleteLater();
+	offlineNotice = 0;
 }

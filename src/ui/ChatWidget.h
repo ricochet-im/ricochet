@@ -22,11 +22,15 @@ private slots:
 	void sendInputMessage();
 	void messageReply();
 
+	void showOfflineNotice();
+	void clearOfflineNotice();
+
 private:
 	static QHash<ContactUser*,ChatWidget*> userMap;
 
 	class QTextEdit *textArea;
 	class QLineEdit *textInput;
+	class QWidget *offlineNotice;
 
 	explicit ChatWidget(ContactUser *user);
 
