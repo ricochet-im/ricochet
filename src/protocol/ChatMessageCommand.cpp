@@ -38,7 +38,7 @@ void ChatMessageCommand::process(CommandHandler &command)
 	qDebug() << "Received chat message (time delta" << timestamp << "):" << text;
 
 	ChatWidget *chat = ChatWidget::widgetForUser(command.user);
-	chat->addChatMessage(command.user, QDateTime::currentDateTime().addSecs(-(int)timestamp), text);
+	chat->receiveMessage(QDateTime::currentDateTime().addSecs(-(int)timestamp), text);
 
 	command.sendReply(replyState(true, true, 0x00));
 }

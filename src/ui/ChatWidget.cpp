@@ -1,6 +1,7 @@
 #include "ChatWidget.h"
 #include "core/ContactUser.h"
 #include "protocol/ChatMessageCommand.h"
+#include "ui/MainWindow.h"
 #include <QBoxLayout>
 #include <QTextEdit>
 #include <QLineEdit>
@@ -9,6 +10,7 @@
 #include <QTextBlock>
 #include <QLabel>
 #include <QScrollBar>
+#include <QApplication>
 
 QHash<ContactUser*,ChatWidget*> ChatWidget::userMap;
 
@@ -19,6 +21,7 @@ ChatWidget *ChatWidget::widgetForUser(ContactUser *u)
 	{
 		widget = new ChatWidget(u);
 		userMap.insert(u, widget);
+		uiMain->addChatWidget(widget);
 	}
 
 	return widget;
@@ -97,6 +100,16 @@ void ChatWidget::sendInputMessage()
 	command->send(user->conn(), when, text);
 
 	addChatMessage(NULL, when, text, command->identifier());
+}
+
+void ChatWidget::receiveMessage(const QDateTime &when, const QString &text)
+{
+	addChatMessage(user, when, text);
+
+	if (!isVisible() || !window()->isActiveWindow() || window()->isMinimized())
+	{
+		qApp->alert(window(), 0);
+	}
 }
 
 void ChatWidget::messageReply()

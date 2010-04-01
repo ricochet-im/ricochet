@@ -15,6 +15,8 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
+	friend class ChatWidget;
+
 public:
 	MainWindow(QWidget *parent = 0);
 	~MainWindow();
@@ -29,6 +31,9 @@ private:
 	class QStackedWidget *chatArea;
 
 	void createChatArea();
+	void addChatWidget(ChatWidget *widget);
 };
+
+extern MainWindow *uiMain;
 
 #endif // MAINWINDOW_H

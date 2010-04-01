@@ -16,7 +16,7 @@ public:
 
 	~ChatWidget();
 
-	void addChatMessage(ContactUser *user, const QDateTime &when, const QString &text, int identifier = 0);
+	void receiveMessage(const QDateTime &when, const QString &text);
 
 private slots:
 	void sendInputMessage();
@@ -35,6 +35,7 @@ private:
 
 	void scrollToBottom();
 
+	void addChatMessage(ContactUser *user, const QDateTime &when, const QString &text, int identifier = 0);
 	bool findBlockIdentifier(int identifier, class QTextBlock &block);
 };
 

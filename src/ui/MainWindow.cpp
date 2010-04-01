@@ -10,9 +10,14 @@
 #include <QStackedWidget>
 #include <QFrame>
 
+MainWindow *uiMain = 0;
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
+	Q_ASSERT(!uiMain);
+	uiMain = this;
+
 	setWindowTitle(QString("TorIM"));
 
 	/* Saved geometry */
@@ -75,10 +80,13 @@ void MainWindow::closeEvent(QCloseEvent *ev)
 	QMainWindow::closeEvent(ev);
 }
 
+void MainWindow::addChatWidget(ChatWidget *widget)
+{
+	chatArea->addWidget(widget);
+}
+
 void MainWindow::contactPageChanged(ContactUser *user, ContactPage page)
 {
-	/* TODO: Keep widgets around when relevant */
-
 	QWidget *old = chatArea->currentWidget();
 	QWidget *newWidget = 0;
 
