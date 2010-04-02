@@ -1,6 +1,7 @@
 #include "main.h"
 #include "MainWindow.h"
 #include "ContactsView.h"
+#include "HomeContactWidget.h"
 #include "ChatWidget.h"
 #include "ContactInfoPage.h"
 #include "HomeScreen.h"
@@ -35,12 +36,15 @@ MainWindow::MainWindow(QWidget *parent)
 	layout->setSpacing(0);
 
 	/* Contacts */
-	ContactsView *contactsView = new ContactsView;
-	contactsView->setFixedWidth(175);
-	layout->addWidget(contactsView);
+	QBoxLayout *contactsLayout = new QVBoxLayout;
+	layout->addLayout(contactsLayout);
 
-	connect(contactsView, SIGNAL(activePageChanged(ContactUser*,ContactPage)), this,
-			SLOT(contactPageChanged(ContactUser*,ContactPage)));
+	createContactsView();
+	contactsLayout->addWidget(contactsView);
+
+	/* Home contact */
+	createHomeContact();
+	contactsLayout->addWidget(homeContact);
 
 	/* Separator line */
 	QFrame *line = new QFrame;
@@ -64,6 +68,20 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
 
+}
+
+void MainWindow::createContactsView()
+{
+	contactsView = new ContactsView;
+	contactsView->setFixedWidth(175);
+
+	connect(contactsView, SIGNAL(activePageChanged(ContactUser*,ContactPage)), this,
+			SLOT(contactPageChanged(ContactUser*,ContactPage)));
+}
+
+void MainWindow::createHomeContact()
+{
+	homeContact = new HomeContactWidget;
 }
 
 void MainWindow::createChatArea()

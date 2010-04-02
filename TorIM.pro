@@ -31,7 +31,8 @@ SOURCES += src/main.cpp \
     src/protocol/CommandHandler.cpp \
     src/protocol/CommandDataParser.cpp \
     src/ui/HomeScreen.cpp \
-    src/tor/GetConfCommand.cpp
+    src/tor/GetConfCommand.cpp \
+    src/ui/HomeContactWidget.cpp
 HEADERS += src/ui/MainWindow.h \
     src/ui/ChatWidget.h \
     src/ContactsModel.h \
@@ -56,7 +57,8 @@ HEADERS += src/ui/MainWindow.h \
     src/protocol/CommandHandler.h \
     src/protocol/CommandDataParser.h \
     src/ui/HomeScreen.h \
-    src/tor/GetConfCommand.h
+    src/tor/GetConfCommand.h \
+    src/ui/HomeContactWidget.h
 OTHER_FILES += res/user--plus.png \
     res/info-inactive.png \
     res/info-hover.png \

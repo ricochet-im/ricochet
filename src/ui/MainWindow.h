@@ -28,8 +28,12 @@ private slots:
 	void contactPageChanged(ContactUser *user, ContactPage page);
 
 private:
+	class ContactsView *contactsView;
+	class HomeContactWidget *homeContact;
 	class QStackedWidget *chatArea;
 
+	void createContactsView();
+	void createHomeContact();
 	void createChatArea();
 	void addChatWidget(ChatWidget *widget);
 };
