@@ -2,6 +2,7 @@
 #include "ContactUser.h"
 #include <QPixmapCache>
 #include <QtDebug>
+#include <QBuffer>
 
 ContactUser::ContactUser(const QString &id, QObject *parent)
 	: QObject(parent), uniqueID(id)
@@ -59,7 +60,7 @@ QPixmap ContactUser::avatar(AvatarSize size)
 	if (size == TinyAvatar)
 		settingsKey.append("-tiny");
 
-	re = QPixmap::fromImage(config->value(settingsKey).value<QImage>());
+	re.loadFromData(config->value(settingsKey).toByteArray());
 
 	cachedAvatar[size] = QPixmapCache::insert(re);
 	return re;
@@ -72,17 +73,30 @@ void ContactUser::setAvatar(QImage image)
 
 	QString key = QString("contacts/%1/avatar").arg(uniqueID);
 
+	if (!image.isNull())
+	{
+		QBuffer buffer;
+		buffer.open(QBuffer::ReadWrite);
+		if (image.save(&buffer, "jpeg", 100))
+		{
+			config->setValue(key, buffer.buffer());
+
+			QImage tiny = image.scaled(QSize(35, 35), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+			buffer.close();
+			buffer.open(QBuffer::ReadWrite);
+			if (tiny.save(&buffer, "jpeg", 100))
+				config->setValue(key + "-tiny", buffer.buffer());
+			else
+				image = QImage();
+		}
+		else
+			image = QImage();
+	}
+
 	if (image.isNull())
 	{
 		config->remove(key);
 		config->remove(key + "-tiny");
-	}
-	else
-	{
-		config->setValue(key, image);
-
-		QImage tiny = image.scaled(QSize(35, 35), Qt::KeepAspectRatio, Qt::SmoothTransformation);
-		config->setValue(key + "-tiny", tiny);
 	}
 
 	for (int i = 0; i < 2; ++i)
