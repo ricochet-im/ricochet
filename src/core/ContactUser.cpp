@@ -1,5 +1,6 @@
 #include "main.h"
 #include "ContactUser.h"
+#include "utils/DateUtil.h"
 #include <QPixmapCache>
 #include <QtDebug>
 #include <QBuffer>
@@ -50,7 +51,9 @@ QString ContactUser::statusLine() const
 	else
 	{
 		QDateTime lastConnected = readSetting(QString("lastConnected")).toDateTime();
-		return lastConnected.toString();
+		if (lastConnected.isNull())
+			return tr("Never connected");
+		return timeDifferenceString(lastConnected, QDateTime::currentDateTime());
 	}
 }
 
