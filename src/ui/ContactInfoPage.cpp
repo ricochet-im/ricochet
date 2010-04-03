@@ -53,7 +53,7 @@ void ContactInfoPage::createAvatar()
 	if (!image.isNull())
 	{
 		/* Shadow data (temporary) */
-		static const quint32 topData[] =
+		static const quint32 topCornerData[] =
 		{
 			0x07000000u, 0x04000000u, 0x02000000u, 0x01000000u,
 			0x14000000u, 0x0c000000u, 0x06000000u, 0x02000000u,
@@ -62,21 +62,24 @@ void ContactInfoPage::createAvatar()
 			0x55000000u, 0x33000000u, 0x1a000000u, 0x09000000u,
 			0x62000000u, 0x3b000000u, 0x1e000000u, 0x0a000000u
 		};
-		QImage top(reinterpret_cast<const uchar*>(topData), 4, 6, QImage::Format_ARGB32);
+		QImage topCorner(reinterpret_cast<const uchar*>(topCornerData), 4, 6, QImage::Format_ARGB32);
 
-		static const quint32 bottomData[] =
+		static const quint32 bottomCornerData[] =
 		{
-			0x62000000u, 0x3b000000u, 0x1e000000u, 0x0a000000u,
-			0x55000000u, 0x33000000u, 0x1a000000u, 0x09000000u,
-			0x42000000u, 0x28000000u, 0x14000000u, 0x07000000u,
-			0x28000000u, 0x18000000u, 0x0c000000u, 0x04000000u,
-			0x14000000u, 0x0c000000u, 0x06000000u, 0x02000000u,
-			0x07000000u, 0x04000000u, 0x02000000u, 0x01000000u
+			0x00000000u, 0x00000000u, 0x62000000u, 0x3b000000u, 0x1e000000u, 0x0a000000u,
+			0x80000000u, 0x6f000000u, 0x55000000u, 0x33000000u, 0x1a000000u, 0x09000000u,
+			0x62000000u, 0x55000000u, 0x42000000u, 0x28000000u, 0x14000000u, 0x07000000u,
+			0x3b000000u, 0x33000000u, 0x28000000u, 0x18000000u, 0x0c000000u, 0x04000000u,
+			0x1e000000u, 0x1a000000u, 0x14000000u, 0x0c000000u, 0x06000000u, 0x02000000u,
+			0x0a000000u, 0x09000000u, 0x07000000u, 0x04000000u, 0x02000000u, 0x01000000u
 		};
-		QImage bottom(reinterpret_cast<const uchar*>(bottomData), 4, 6, QImage::Format_ARGB32);
+		QImage bottomCorner(reinterpret_cast<const uchar*>(bottomCornerData), 6, 6, QImage::Format_ARGB32);
 
-		static const quint32 repeatData[] = { 0x69000000u, 0x3f000000u, 0x20000000u, 0x0b000000u };
-		QImage repeat(reinterpret_cast<const uchar*>(repeatData), 4, 1, QImage::Format_ARGB32);
+		static const quint32 rightData[] = { 0x69000000u, 0x3f000000u, 0x20000000u, 0x0b000000u };
+		QImage right(reinterpret_cast<const uchar*>(rightData), 4, 1, QImage::Format_ARGB32);
+
+		static const quint32 bottomData[] = { 0x88000000u, 0x69000000u, 0x3f000000u, 0x20000000u, 0x0b000000u };
+		QImage bottom(reinterpret_cast<const uchar*>(bottomData), 1, 5, QImage::Format_ARGB32);
 
 		/* Shadowed image */
 		QImage shadowAvatar(image.width() + 4, image.height() + 6, QImage::Format_ARGB32_Premultiplied);
@@ -87,13 +90,16 @@ void ContactInfoPage::createAvatar()
 		p.drawPixmap(0, 1, image);
 
 		/* Draw top-right corner */
-		p.drawImage(image.width(), 0, top);
+		p.drawImage(image.width(), 0, topCorner);
 
 		/* Draw right-side repeat */
-		p.drawTiledPixmap(QRect(image.width(), 6, 4, image.height() - 7), QPixmap::fromImage(repeat));
+		p.drawTiledPixmap(QRect(image.width(), 6, 4, image.height() - 7), QPixmap::fromImage(right));
 
 		/* Draw bottom-right corner */
-		p.drawImage(image.width(), image.height() - 1, bottom);
+		p.drawImage(image.width() - 2, image.height() - 1, bottomCorner);
+
+		/* Draw bottom repeat */
+		p.drawTiledPixmap(QRect(0, image.height(), image.width() - 2, 5), QPixmap::fromImage(bottom));
 		p.end();
 
 		avatar->setPixmap(QPixmap::fromImage(shadowAvatar));
