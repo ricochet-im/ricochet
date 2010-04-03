@@ -25,12 +25,16 @@ protected:
 	virtual void hideEvent(QHideEvent *);
 
 private:
+	class QAction *renameAction, *deleteAction;
+
 	QLabel *avatar, *nickname;
 	QTextEdit *notesEdit;
 
+	void createActions();
 	void createAvatar();
 	void createNickname();
-	void createNotes();
+	class QLayout *createButtons();
+	void createNotes(class QBoxLayout *layout);
 };
 
 #endif // CONTACTINFOPAGE_H
