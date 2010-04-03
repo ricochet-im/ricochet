@@ -61,26 +61,6 @@ HEADERS += src/ui/MainWindow.h \
     src/tor/GetConfCommand.h \
     src/ui/HomeContactWidget.h \
     src/utils/DateUtil.h
-OTHER_FILES += res/user--plus.png \
-    res/info-inactive.png \
-    res/info-hover.png \
-    res/info-active.png \
-    res/chat-inactive.png \
-    res/chat-hover.png \
-    res/chat-active.png \
-    res/status-online.png \
-    res/status-offline.png \
-    res/avatar-placeholder.png \
-    res/wall--pencil.png \
-    res/user--plus.png \
-    res/image--pencil.png \
-    res/globe-green.png \
-    res/gear.png \
-    res/folder-open-image.png \
-    res/tick-circle.png \
-    res/exclamation-red.png \
-    res/exclamation.png \
-    res/logotext.png \
-    res/information.png
-RESOURCES += res/resources.qrc
-TRANSLATIONS = torim.ts
+RESOURCES += res/resources.qrc \
+    translation/embedded.qrc
+TRANSLATIONS = translation/torim.ts

@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/lang">
+        <file>torim.qm</file>
+    </qresource>
+</RCC>

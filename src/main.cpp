@@ -13,6 +13,7 @@ QSettings *config = 0;
 static IncomingSocket *incomingSocket = 0;
 
 static void initSettings();
+static void initTranslation();
 static void initIncomingSocket();
 static bool connectTorControl();
 
@@ -20,13 +21,10 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-	QTranslator translator;
-	translator.load(QString("torim_") + QLocale::system().name(), a.applicationDirPath());
-	a.installTranslator(&translator);
-
 	QDir::setCurrent(a.applicationDirPath());
 
 	initSettings();
+	initTranslation();
 
 	/* Seed RNG */
 	{
@@ -67,6 +65,37 @@ static void initSettings()
 		config = new QSettings(args[1], QSettings::IniFormat);
 	else
 		config = new QSettings;
+}
+
+static void initTranslation()
+{
+	QTranslator *translator = new QTranslator;
+
+	bool ok = false;
+	QString appPath = qApp->applicationDirPath();
+
+	/* First, try to load the user's configured language */
+	QString configLang = config->value("core/language").toString();
+	if (!configLang.isEmpty())
+	{
+		/* Look in the application directory */
+		ok = translator->load(QString("torim.") + configLang, appPath, QString("_"));
+		/* Look in the resources */
+		if (!ok)
+			ok = translator->load(QString("torim.") + configLang, QString(":/lang/"), QString("_"));
+	}
+
+	/* Next, try to load the system locale language, and allow it to fall back to the english default */
+	if (!ok)
+	{
+		QString locale = QLocale::system().name();
+		ok = translator->load(QString("torim.") + configLang, appPath);
+		if (!ok)
+			ok = translator->load(QString("torim.") + configLang, QString(":/lang/"));
+	}
+
+	if (ok)
+		qApp->installTranslator(translator);
 }
 
 static void initIncomingSocket()
