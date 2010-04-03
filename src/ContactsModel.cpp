@@ -22,6 +22,7 @@ void ContactsModel::populate()
 	{
 		connect(*it, SIGNAL(connected()), this, SLOT(updateUser()));
 		connect(*it, SIGNAL(disconnected()), this, SLOT(updateUser()));
+		connect(*it, SIGNAL(statusLineChanged()), this, SLOT(updateUser()));
 	}
 
 	endResetModel();

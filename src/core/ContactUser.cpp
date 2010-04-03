@@ -1,5 +1,6 @@
 #include "main.h"
 #include "ContactUser.h"
+#include "ui/ChatWidget.h"
 #include "utils/DateUtil.h"
 #include <QPixmapCache>
 #include <QtDebug>
@@ -46,6 +47,9 @@ QString ContactUser::statusLine() const
 {
 	if (isConnected())
 	{
+		ChatWidget *chat = ChatWidget::widgetForUser(const_cast<ContactUser*>(this), false);
+		if (chat && chat->unreadMessages())
+			return tr("%n new message(s)", 0, chat->unreadMessages());
 		return tr("Online");
 	}
 	else
@@ -55,6 +59,11 @@ QString ContactUser::statusLine() const
 			return tr("Never connected");
 		return timeDifferenceString(lastConnected, QDateTime::currentDateTime());
 	}
+}
+
+void ContactUser::updateStatusLine()
+{
+	emit statusLineChanged();
 }
 
 void ContactUser::onConnected()

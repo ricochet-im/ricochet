@@ -12,11 +12,20 @@ Q_OBJECT
 public:
 	ContactUser * const user;
 
-	static ChatWidget *widgetForUser(ContactUser *user);
+	static ChatWidget *widgetForUser(ContactUser *user, bool create = true);
 
 	~ChatWidget();
 
 	void receiveMessage(const QDateTime &when, const QString &text);
+
+	int unreadMessages() const { return pUnread; }
+
+public slots:
+	void clearUnreadMessages();
+
+signals:
+	void messageReceived();
+	void unreadMessagesChanged(int unread);
 
 private slots:
 	void sendInputMessage();
@@ -28,12 +37,17 @@ private slots:
 	void clearOfflineNotice();
 	void clearOfflineNoticeInstantly();
 
+protected:
+	virtual bool event(QEvent *event);
+
 private:
 	static QHash<ContactUser*,ChatWidget*> userMap;
 
 	class QTextEdit *textArea;
 	class QLineEdit *textInput;
 	class QWidget *offlineNotice;
+
+	int pUnread;
 
 	explicit ChatWidget(ContactUser *user);
 

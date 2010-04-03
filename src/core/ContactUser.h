@@ -45,9 +45,13 @@ public slots:
 	void setAvatar(QImage image);
 	void setNotesText(const QString &notesText);
 
+	void updateStatusLine();
+
 signals:
 	void connected();
 	void disconnected();
+
+	void statusLineChanged();
 
 private slots:
 	void onConnected();

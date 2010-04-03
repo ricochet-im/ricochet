@@ -15,10 +15,10 @@
 
 QHash<ContactUser*,ChatWidget*> ChatWidget::userMap;
 
-ChatWidget *ChatWidget::widgetForUser(ContactUser *u)
+ChatWidget *ChatWidget::widgetForUser(ContactUser *u, bool create)
 {
 	ChatWidget *widget = userMap.value(u);
-	if (!widget)
+	if (!widget && create)
 	{
 		widget = new ChatWidget(u);
 		userMap.insert(u, widget);
@@ -29,11 +29,13 @@ ChatWidget *ChatWidget::widgetForUser(ContactUser *u)
 }
 
 ChatWidget::ChatWidget(ContactUser *u)
-	: user(u), offlineNotice(0)
+	: user(u), offlineNotice(0), pUnread(0)
 {
 	Q_ASSERT(user);
 	connect(user, SIGNAL(connected()), this, SLOT(clearOfflineNotice()));
 	connect(user, SIGNAL(disconnected()), this, SLOT(showOfflineNotice()));
+
+	connect(this, SIGNAL(unreadMessagesChanged(int)), user, SLOT(updateStatusLine()));
 
 	QBoxLayout *layout = new QVBoxLayout(this);
 	layout->setMargin(0);
@@ -99,11 +101,23 @@ void ChatWidget::sendInputMessage()
 void ChatWidget::receiveMessage(const QDateTime &when, const QString &text)
 {
 	addChatMessage(user, when, text);
+	emit messageReceived();
 
 	if (!isVisible() || !window()->isActiveWindow() || window()->isMinimized())
 	{
+		pUnread++;
+		emit unreadMessagesChanged(pUnread);
 		qApp->alert(window(), 0);
 	}
+}
+
+void ChatWidget::clearUnreadMessages()
+{
+	if (!pUnread)
+		return;
+
+	pUnread = 0;
+	emit unreadMessagesChanged(pUnread);
 }
 
 void ChatWidget::messageReply()
@@ -301,4 +315,12 @@ void ChatWidget::clearOfflineNoticeInstantly()
 	offlineNotice->hide();
 	offlineNotice->deleteLater();
 	offlineNotice = 0;
+}
+
+bool ChatWidget::event(QEvent *event)
+{
+	if (pUnread && event->type() == QEvent::Show || event->type() == QEvent::WindowActivate)
+		clearUnreadMessages();
+
+	return QWidget::event(event);
 }
