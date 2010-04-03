@@ -84,7 +84,7 @@ void ContactItemDelegate::paint(QPainter *p, const QStyleOptionViewItem &opt,
 	p->drawText(r.topLeft() + QPoint(0, nickRect.height()+1), nickname);
 
 	/* Draw info text */
-	QString infoText("11 months ago");
+	QString infoText = index.model()->index(index.row(), 2, index.parent()).data(Qt::DisplayRole).toString();
 
 	QFont infoFont = QFont("Arial", 8);
 	p->setFont(infoFont);

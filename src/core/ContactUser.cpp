@@ -3,6 +3,7 @@
 #include <QPixmapCache>
 #include <QtDebug>
 #include <QBuffer>
+#include <QDateTime>
 
 ContactUser::ContactUser(const QString &id, QObject *parent)
 	: QObject(parent), uniqueID(id)
@@ -17,8 +18,8 @@ ContactUser::ContactUser(const QString &id, QObject *parent)
 
 	pConn->setSecret(readSetting("remoteSecret").toByteArray());
 
-	connect(pConn, SIGNAL(primaryConnected()), this, SIGNAL(connected()));
-	connect(pConn, SIGNAL(primaryDisconnected()), this, SIGNAL(disconnected()));
+	connect(pConn, SIGNAL(primaryConnected()), this, SLOT(onConnected()));
+	connect(pConn, SIGNAL(primaryDisconnected()), this, SLOT(onDisconnected()));
 }
 
 void ContactUser::loadSettings()
@@ -30,7 +31,7 @@ void ContactUser::loadSettings()
 	config->endGroup();
 }
 
-QVariant ContactUser::readSetting(const QString &key, const QVariant &defaultValue)
+QVariant ContactUser::readSetting(const QString &key, const QVariant &defaultValue) const
 {
 	return config->value(QString("contacts/%1/%2").arg(uniqueID, key), defaultValue);
 }
@@ -38,6 +39,33 @@ QVariant ContactUser::readSetting(const QString &key, const QVariant &defaultVal
 void ContactUser::writeSetting(const QString &key, const QVariant &value)
 {
 	config->setValue(QString("contacts/%1/%2").arg(uniqueID, key), value);
+}
+
+QString ContactUser::statusLine() const
+{
+	if (isConnected())
+	{
+		return tr("Online");
+	}
+	else
+	{
+		QDateTime lastConnected = readSetting(QString("lastConnected")).toDateTime();
+		return lastConnected.toString();
+	}
+}
+
+void ContactUser::onConnected()
+{
+	emit connected();
+
+	writeSetting(QString("lastConnected"), QDateTime::currentDateTime());
+}
+
+void ContactUser::onDisconnected()
+{
+	emit disconnected();
+
+	writeSetting(QString("lastConnected"), QDateTime::currentDateTime());
 }
 
 void ContactUser::setNickname(const QString &nickname)

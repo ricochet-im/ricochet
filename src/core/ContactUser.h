@@ -35,7 +35,9 @@ public:
 	QString notesText() const;
 	QPixmap avatar(AvatarSize size);
 
-	QVariant readSetting(const QString &key, const QVariant &defaultValue = QVariant());
+	QString statusLine() const;
+
+	QVariant readSetting(const QString &key, const QVariant &defaultValue = QVariant()) const;
 	void writeSetting(const QString &key, const QVariant &value);
 
 public slots:
@@ -46,6 +48,10 @@ public slots:
 signals:
 	void connected();
 	void disconnected();
+
+private slots:
+	void onConnected();
+	void onDisconnected();
 
 private:
 	ProtocolManager *pConn;

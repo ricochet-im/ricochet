@@ -65,7 +65,7 @@ int ContactsModel::columnCount(const QModelIndex &parent) const
 	if (parent.isValid())
 		return 0;
 	else
-		return 2;
+		return 3;
 }
 
 QVariant ContactsModel::data(const QModelIndex &index, int role) const
@@ -96,6 +96,9 @@ QVariant ContactsModel::data(const QModelIndex &index, int role) const
 	case 1:
 		if (role == Qt::DisplayRole)
 			return user->uniqueID;
+	case 2:
+		if (role == Qt::DisplayRole)
+			return user->statusLine();
 		break;
 	}
 
