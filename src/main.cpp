@@ -6,6 +6,7 @@
 #include <QSettings>
 #include <QTime>
 #include <QDir>
+#include <QTranslator>
 
 QSettings *config = 0;
 
@@ -18,6 +19,10 @@ static bool connectTorControl();
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+
+	QTranslator translator;
+	translator.load(QString("torim_") + QLocale::system().name(), a.applicationDirPath());
+	a.installTranslator(&translator);
 
 	QDir::setCurrent(a.applicationDirPath());
 

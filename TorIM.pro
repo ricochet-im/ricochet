@@ -83,3 +83,4 @@ OTHER_FILES += res/user--plus.png \
     res/logotext.png \
     res/information.png
 RESOURCES += res/resources.qrc
+TRANSLATIONS = torim.ts
