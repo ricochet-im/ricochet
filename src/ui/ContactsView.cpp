@@ -92,7 +92,6 @@ void ContactsView::mousePressEvent(QMouseEvent *event)
 
 	/* Contact user for that index */
 	ContactUser *user = index.data(ContactsModel::ContactUserRole).value<ContactUser*>();
-	Q_ASSERT(user);
 
 	if (user)
 	{
