@@ -6,7 +6,7 @@
 #include <QMouseEvent>
 
 ContactsView::ContactsView(QWidget *parent)
-	: QTreeView(parent), blockSelectionChanges(false)
+	: QTreeView(parent), clickSetCurrent(false), clickItemMoved(false)
 {
 	setRootIsDecorated(false);
 	setHeaderHidden(true);
@@ -29,15 +29,6 @@ ContactsView::ContactsView(QWidget *parent)
 		selectionModel()->setCurrentIndex(model()->index(0, 0), QItemSelectionModel::Select);
 }
 
-ContactUser *ContactsView::activeContact() const
-{
-	QModelIndex index = selectionModel()->currentIndex();
-	if (!index.isValid())
-		return 0;
-
-	return index.data(ContactsModel::ContactUserRole).value<ContactUser*>();
-}
-
 ContactPage ContactsView::activeContactPage() const
 {
 	return activePage.value(activeContact(), InfoPage);
@@ -50,13 +41,29 @@ void ContactsView::setActiveContact(ContactUser *user)
 		return;
 
 	QModelIndex index = cmodel->indexOfContact(user);
-	if (index.isValid())
-		setCurrentIndex(index);
+	if (!index.isValid())
+		return;
+
+	pActiveContact = user;
+	if (!activePage.contains(pActiveContact))
+		activePage[pActiveContact] = InfoPage;
+
+	setCurrentIndex(index);
+
+	emit activeContactChanged(pActiveContact);
+	emit activePageChanged(pActiveContact, activeContactPage());
 }
 
 void ContactsView::setActivePage(ContactPage page)
 {
 	setContactPage(activeContact(), page);
+}
+
+void ContactsView::contactSelected(const QModelIndex &current)
+{
+	ContactUser *user = current.data(ContactsModel::ContactUserRole).value<ContactUser*>();
+	if (user != activeContact())
+		setActiveContact(user);
 }
 
 void ContactsView::setContactPage(ContactUser *user, ContactPage page)
@@ -73,41 +80,81 @@ void ContactsView::setContactPage(ContactUser *user, ContactPage page)
 
 void ContactsView::mousePressEvent(QMouseEvent *event)
 {
-	/* Note that the actual press event hasn't happened yet, so current may not be changed. */
-
+	/* Only clicks that change the current contact are handled as press events; clicks on an
+	 * already selected contact (to change page, etc) are handled within the release event, which
+	 * enables more natural behavior when dragging. */
+	clickSetCurrent = clickItemMoved = false;
+	
+	/* Index that was clicked on */
 	QModelIndex index = indexAt(event->pos());
 	dragIndex = index;
 
-	blockSelectionChanges = true;
+	/* Contact user for that index */
+	ContactUser *user = index.data(ContactsModel::ContactUserRole).value<ContactUser*>();
+	Q_ASSERT(user);
+
+	if (user)
+	{
+		ContactItemDelegate *delegate = qobject_cast<ContactItemDelegate*>(this->itemDelegate(index));
+		Q_ASSERT(delegate);
+
+		if (delegate)
+		{
+			/* Hit test for the page switch buttons and set the contact's page if one is matched */
+			QRect itemRect = visualRect(index);
+			QPoint innerPos = event->pos() - itemRect.topLeft();
+			ContactPage hitPage;
+
+			if (delegate->pageHitTest(itemRect.size(), innerPos, hitPage))
+				setContactPage(user, hitPage);
+		}
+	}
+
+	/* Index that was selected before the event */
+	QModelIndex oldCurrent = currentIndex();
+
 	QTreeView::mousePressEvent(event);
+
+	/* New selected index; if this is different, set a flag to indicate that for the release event */
+	if (oldCurrent != currentIndex())
+		clickSetCurrent = true;
 }
 
 void ContactsView::mouseReleaseEvent(QMouseEvent *event)
 {
-	blockSelectionChanges = false;
+	if (event->button() != Qt::LeftButton || clickSetCurrent || clickItemMoved)
+	{
+		clickSetCurrent = clickItemMoved = false;
+		QTreeView::mouseReleaseEvent(event);
+		return;
+	}
 
-	if (event->button() != Qt::LeftButton)
+	/* The index we're dealing with is the same as the index that was clicked on.
+	 * dragIndex provides a shortcut to that. */
+	QModelIndex index = dragIndex;
+	if (!index.isValid())
 	{
 		QTreeView::mouseReleaseEvent(event);
 		return;
 	}
 
-	QModelIndex index = indexAt(event->pos());
-	if (!index.isValid())
-		return;
+	/* Reset click state */
+	clickSetCurrent = clickItemMoved = false;
+	dragIndex = QModelIndex();
 
-	bool wasAlreadyActive = (index == currentIndex());
-
-	qDebug() << "Released" << index << wasAlreadyActive;
-
-	ContactUser *user = index.data(ContactsModel::ContactUserRole).value<ContactUser*>();
-	Q_ASSERT(user);
+	ContactUser *user = activeContact();
 	if (!user)
+	{
+		QTreeView::mouseReleaseEvent(event);
 		return;
+	}
 
 	ContactItemDelegate *delegate = qobject_cast<ContactItemDelegate*>(this->itemDelegate(index));
 	if (!delegate)
+	{
+		QTreeView::mouseReleaseEvent(event);
 		return;
+	}
 
 	QRect itemRect = visualRect(index);
 	QPoint innerPos = event->pos() - itemRect.topLeft();
@@ -117,7 +164,7 @@ void ContactsView::mouseReleaseEvent(QMouseEvent *event)
 	{
 		setContactPage(user, hitPage);
 	}
-	else if (wasAlreadyActive)
+	else
 	{
 		/* Clicking on an already selected contact, but not on the page buttons,
 		 * causes the page to toggle. */
@@ -133,23 +180,6 @@ void ContactsView::mouseReleaseEvent(QMouseEvent *event)
 	QTreeView::mouseReleaseEvent(event);
 }
 
-void ContactsView::mouseDoubleClickEvent(QMouseEvent *event)
-{
-	QModelIndex index = indexAt(event->pos());
-	if (!index.isValid())
-		return;
-
-	ContactUser *user = index.data(ContactsModel::ContactUserRole).value<ContactUser*>();
-	Q_ASSERT(user);
-	if (!user)
-		return;
-
-	/* Double click goes to chat, always */
-	setContactPage(user, ChatPage);
-
-	QTreeView::mouseDoubleClickEvent(event);
-}
-
 void ContactsView::mouseMoveEvent(QMouseEvent *event)
 {
 	QModelIndex index = indexAt(event->pos());
@@ -159,7 +189,7 @@ void ContactsView::mouseMoveEvent(QMouseEvent *event)
 		update(index);
 
 		/* Drag and drop */
-		if (event->buttons() & Qt::LeftButton && dragIndex.isValid())
+		if (event->buttons() & Qt::LeftButton && dragIndex.isValid() && dragIndex != index)
 		{
 			ContactsModel *cmodel = qobject_cast<ContactsModel*>(model());
 			Q_ASSERT(cmodel);
@@ -167,25 +197,10 @@ void ContactsView::mouseMoveEvent(QMouseEvent *event)
 			cmodel->moveRow(dragIndex.row(), index.row());
 			dragIndex = cmodel->index(index.row(), 0);
 			Q_ASSERT(indexAt(event->pos()) == dragIndex);
+
+			clickItemMoved = true;
 		}
 	}
 
 	QTreeView::mouseMoveEvent(event);
-}
-
-void ContactsView::contactSelected(const QModelIndex &current)
-{
-	Q_UNUSED(current);
-
-	if (blockSelectionChanges)
-		return;
-
-	qDebug() << "Updating selected contact";
-
-	ContactUser *user = activeContact();
-	if (!activePage.contains(user))
-		activePage[user] = InfoPage;
-
-	emit activeContactChanged(user);
-	emit activePageChanged(user, activeContactPage());
 }

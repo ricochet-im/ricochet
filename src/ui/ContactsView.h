@@ -15,7 +15,7 @@ class ContactsView : public QTreeView
 public:
 	explicit ContactsView(QWidget *parent = 0);
 
-	ContactUser *activeContact() const;
+	ContactUser *activeContact() const { return pActiveContact; }
 	ContactPage activeContactPage() const;
 
 public slots:
@@ -29,7 +29,6 @@ signals:
 protected:
 	virtual void mousePressEvent(QMouseEvent *event);
 	virtual void mouseReleaseEvent(QMouseEvent *event);
-	virtual void mouseDoubleClickEvent(QMouseEvent *event);
 	virtual void mouseMoveEvent(QMouseEvent *event);
 
 private slots:
@@ -37,8 +36,9 @@ private slots:
 
 private:
 	QHash<ContactUser*,ContactPage> activePage;
+	ContactUser *pActiveContact;
 	QModelIndex dragIndex;
-	bool blockSelectionChanges;
+	bool clickSetCurrent, clickItemMoved;
 
 	void setContactPage(ContactUser *user, ContactPage page);
 };
