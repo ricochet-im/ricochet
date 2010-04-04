@@ -21,6 +21,9 @@ public:
 	MainWindow(QWidget *parent = 0);
 	~MainWindow();
 
+public slots:
+	void showHomeScreen();
+
 protected:
 	virtual void closeEvent(QCloseEvent *);
 
@@ -29,6 +32,7 @@ private slots:
 
 private:
 	class ContactsView *contactsView;
+	class HomeScreen *homeScreen;
 	class HomeContactWidget *homeContact;
 	class QStackedWidget *chatArea;
 

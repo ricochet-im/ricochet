@@ -60,9 +60,10 @@ MainWindow::MainWindow(QWidget *parent)
 	createChatArea();
 	layout->addWidget(chatArea);
 
-	//contactPageChanged(contactsView->activeContact(), contactsView->activeContactPage());
-	HomeScreen *home = new HomeScreen;
-	chatArea->setCurrentIndex(chatArea->addWidget(home));
+	homeScreen = new HomeScreen;
+	chatArea->addWidget(homeScreen);
+
+	showHomeScreen();
 }
 
 MainWindow::~MainWindow()
@@ -82,6 +83,7 @@ void MainWindow::createContactsView()
 void MainWindow::createHomeContact()
 {
 	homeContact = new HomeContactWidget;
+	connect(homeContact, SIGNAL(selected()), this, SLOT(showHomeScreen()));
 }
 
 void MainWindow::createChatArea()
@@ -103,10 +105,26 @@ void MainWindow::addChatWidget(ChatWidget *widget)
 	chatArea->addWidget(widget);
 }
 
+void MainWindow::showHomeScreen()
+{
+	if (!homeContact->isSelected())
+	{
+		homeContact->setSelected(true);
+		return;
+	}
+
+	contactsView->selectionModel()->clearSelection();
+	contactsView->setCurrentIndex(QModelIndex());
+
+	chatArea->setCurrentWidget(homeScreen);
+}
+
 void MainWindow::contactPageChanged(ContactUser *user, ContactPage page)
 {
 	QWidget *old = chatArea->currentWidget();
 	QWidget *newWidget = 0;
+
+	homeContact->clearSelected();
 
 	switch (page)
 	{
@@ -123,7 +141,7 @@ void MainWindow::contactPageChanged(ContactUser *user, ContactPage page)
 	if (old == newWidget)
 		return;
 
-	if (old && !qobject_cast<ChatWidget*>(old))
+	if (old && !qobject_cast<ChatWidget*>(old) && old != homeScreen)
 		old->deleteLater();
 
 	if (newWidget)

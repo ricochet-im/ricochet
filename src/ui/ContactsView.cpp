@@ -42,17 +42,16 @@ void ContactsView::setActiveContact(ContactUser *user)
 		return;
 
 	QModelIndex index = cmodel->indexOfContact(user);
-	if (!index.isValid())
-		return;
 
 	pActiveContact = user;
-	if (!activePage.contains(pActiveContact))
+	if (pActiveContact && !activePage.contains(pActiveContact))
 		activePage[pActiveContact] = InfoPage;
 
 	setCurrentIndex(index);
 
 	emit activeContactChanged(pActiveContact);
-	emit activePageChanged(pActiveContact, activeContactPage());
+	if (pActiveContact)
+		emit activePageChanged(pActiveContact, activeContactPage());
 }
 
 void ContactsView::setActivePage(ContactPage page)
