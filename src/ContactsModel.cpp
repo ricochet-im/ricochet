@@ -3,6 +3,18 @@
 #include <QImage>
 #include <QColor>
 
+static inline bool contactSort(const ContactUser *u1, const ContactUser *u2)
+{
+	int p1 = u1->readSetting(QString("listPosition"), -1).toInt();
+	int p2 = u2->readSetting(QString("listPosition"), -1).toInt();
+	if (p2 < 0)
+		return true;
+	else if (p1 < 0)
+		return false;
+	else
+		return (p1 < p2);
+}
+
 ContactsModel::ContactsModel(QObject *parent) :
     QAbstractListModel(parent)
 {
@@ -17,6 +29,7 @@ void ContactsModel::populate()
 		(*it)->disconnect(this);
 
 	contacts = contactsManager->contacts();
+	qSort(contacts.begin(), contacts.end(), contactSort);
 
 	for (QList<ContactUser*>::Iterator it = contacts.begin(); it != contacts.end(); ++it)
 	{
@@ -53,6 +66,24 @@ void ContactsModel::updateUser(ContactUser *user)
 	emit dataChanged(index(row, 0), index(row, columnCount()-1));
 }
 
+void ContactsModel::moveRow(int from, int to)
+{
+	if (from < 0 || from >= contacts.size() || to < 0 || to >= contacts.size() || from == to)
+		return;
+
+	emit layoutAboutToBeChanged();
+	/* A shortcut is taken here by not changing persistent indexes for everything, but it isn't necessary
+	 * as used right now. */
+	for (int i = 0; i < columnCount(); ++i)
+	{
+		changePersistentIndex(index(from, i, QModelIndex()), index(to, i, QModelIndex()));
+		changePersistentIndex(index(to, i, QModelIndex()), index(from, i, QModelIndex()));
+	}
+
+	contacts.move(from, to);
+	emit layoutChanged();
+}
+
 int ContactsModel::rowCount(const QModelIndex &parent) const
 {
 	if (parent.isValid())
@@ -67,6 +98,19 @@ int ContactsModel::columnCount(const QModelIndex &parent) const
 		return 0;
 	else
 		return 3;
+}
+
+Qt::DropActions ContactsModel::supportedDropActions() const
+{
+	return Qt::MoveAction;
+}
+
+Qt::ItemFlags ContactsModel::flags(const QModelIndex &index) const
+{
+	if (index.isValid())
+		return Qt::ItemIsSelectable | Qt::ItemIsEnabled;
+	else
+		return 0;//Qt::ItemIsDropEnabled;
 }
 
 QVariant ContactsModel::data(const QModelIndex &index, int role) const

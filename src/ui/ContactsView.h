@@ -28,6 +28,7 @@ signals:
 
 protected:
 	virtual void mousePressEvent(QMouseEvent *event);
+	virtual void mouseReleaseEvent(QMouseEvent *event);
 	virtual void mouseDoubleClickEvent(QMouseEvent *event);
 	virtual void mouseMoveEvent(QMouseEvent *event);
 
@@ -36,6 +37,8 @@ private slots:
 
 private:
 	QHash<ContactUser*,ContactPage> activePage;
+	QModelIndex dragIndex;
+	bool blockSelectionChanges;
 
 	void setContactPage(ContactUser *user, ContactPage page);
 };

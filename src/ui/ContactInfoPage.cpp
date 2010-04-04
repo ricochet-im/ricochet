@@ -99,7 +99,7 @@ void ContactInfoPage::createAvatar()
 		p.drawImage(image.width() - 2, image.height() - 1, bottomCorner);
 
 		/* Draw bottom repeat */
-		p.drawTiledPixmap(QRect(0, image.height(), image.width() - 2, 5), QPixmap::fromImage(bottom));
+		p.drawTiledPixmap(QRect(0, image.height()+1, image.width() - 2, 5), QPixmap::fromImage(bottom));
 		p.end();
 
 		avatar->setPixmap(QPixmap::fromImage(shadowAvatar));

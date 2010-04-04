@@ -6,7 +6,7 @@
 #include <QMouseEvent>
 
 ContactsView::ContactsView(QWidget *parent)
-	: QTreeView(parent)
+	: QTreeView(parent), blockSelectionChanges(false)
 {
 	setRootIsDecorated(false);
 	setHeaderHidden(true);
@@ -14,6 +14,8 @@ ContactsView::ContactsView(QWidget *parent)
 	setModel(new ContactsModel(this));
 	setItemDelegate(new ContactItemDelegate(this));
 	setMouseTracking(true);
+	setDragEnabled(true);
+	setAcceptDrops(true);
 
 	QHeaderView *head = header();
 	for (int i = 1; i < head->count(); ++i)
@@ -74,10 +76,29 @@ void ContactsView::mousePressEvent(QMouseEvent *event)
 	/* Note that the actual press event hasn't happened yet, so current may not be changed. */
 
 	QModelIndex index = indexAt(event->pos());
+	dragIndex = index;
+
+	blockSelectionChanges = true;
+	QTreeView::mousePressEvent(event);
+}
+
+void ContactsView::mouseReleaseEvent(QMouseEvent *event)
+{
+	blockSelectionChanges = false;
+
+	if (event->button() != Qt::LeftButton)
+	{
+		QTreeView::mouseReleaseEvent(event);
+		return;
+	}
+
+	QModelIndex index = indexAt(event->pos());
 	if (!index.isValid())
 		return;
 
 	bool wasAlreadyActive = (index == currentIndex());
+
+	qDebug() << "Released" << index << wasAlreadyActive;
 
 	ContactUser *user = index.data(ContactsModel::ContactUserRole).value<ContactUser*>();
 	Q_ASSERT(user);
@@ -109,7 +130,7 @@ void ContactsView::mousePressEvent(QMouseEvent *event)
 		setContactPage(user, hitPage);
 	}
 
-	QTreeView::mousePressEvent(event);
+	QTreeView::mouseReleaseEvent(event);
 }
 
 void ContactsView::mouseDoubleClickEvent(QMouseEvent *event)
@@ -133,7 +154,21 @@ void ContactsView::mouseMoveEvent(QMouseEvent *event)
 {
 	QModelIndex index = indexAt(event->pos());
 	if (index.isValid())
+	{
+		/* Update the index for hover styles */
 		update(index);
+
+		/* Drag and drop */
+		if (event->buttons() & Qt::LeftButton && dragIndex.isValid())
+		{
+			ContactsModel *cmodel = qobject_cast<ContactsModel*>(model());
+			Q_ASSERT(cmodel);
+
+			cmodel->moveRow(dragIndex.row(), index.row());
+			dragIndex = cmodel->index(index.row(), 0);
+			Q_ASSERT(indexAt(event->pos()) == dragIndex);
+		}
+	}
 
 	QTreeView::mouseMoveEvent(event);
 }
@@ -141,6 +176,11 @@ void ContactsView::mouseMoveEvent(QMouseEvent *event)
 void ContactsView::contactSelected(const QModelIndex &current)
 {
 	Q_UNUSED(current);
+
+	if (blockSelectionChanges)
+		return;
+
+	qDebug() << "Updating selected contact";
 
 	ContactUser *user = activeContact();
 	if (!activePage.contains(user))
