@@ -18,6 +18,7 @@
         <file>exclamation-red.png</file>
         <file>tick-circle.png</file>
         <file>information.png</file>
+        <file>home.png</file>
     </qresource>
     <qresource prefix="/graphics">
         <file>avatar-placeholder.png</file>
