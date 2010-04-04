@@ -81,6 +81,14 @@ void ContactsModel::moveRow(int from, int to)
 	}
 
 	contacts.move(from, to);
+
+	/* Update the stored positions */
+	for (int i = 0; i < contacts.size(); ++i)
+	{
+		if (contacts[i]->readSetting(QString("listPosition"), -1).toInt() != i)
+			contacts[i]->writeSetting(QString("listPosition"), i);
+	}
+
 	emit layoutChanged();
 }
 
