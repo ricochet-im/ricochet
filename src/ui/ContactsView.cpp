@@ -2,6 +2,7 @@
 #include "ContactsModel.h"
 #include "ContactItemDelegate.h"
 #include "core/ContactUser.h"
+#include "ui/ChatWidget.h"
 #include <QHeaderView>
 #include <QMouseEvent>
 
@@ -108,6 +109,11 @@ void ContactsView::mousePressEvent(QMouseEvent *event)
 			if (delegate->pageHitTest(itemRect.size(), innerPos, hitPage))
 				setContactPage(user, hitPage);
 		}
+
+		/* If there are any unread messages from the user, always go to chat */
+		ChatWidget *chat = ChatWidget::widgetForUser(user, false);
+		if (chat && chat->unreadMessages() > 0)
+			setContactPage(user, ChatPage);
 	}
 
 	/* Index that was selected before the event */
