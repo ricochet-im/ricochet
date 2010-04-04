@@ -5,6 +5,7 @@
 #include <QTextEdit>
 #include <QAction>
 #include <QToolButton>
+#include <QApplication>
 
 ContactInfoPage::ContactInfoPage(ContactUser *u, QWidget *parent)
 	: QWidget(parent), user(u)
@@ -44,6 +45,56 @@ void ContactInfoPage::createActions()
 
 #include <QPainter>
 
+/* 6x6 */
+static const quint32 topLeftData[] =
+{
+	0x1000000u, 0x2000000u, 0x4000000u, 0x7000000u, 0x9000000u, 0xa000000u,
+	0x2000000u, 0x6000000u, 0x0u, 0x0u, 0x0u, 0x0u,
+	0x4000000u, 0xc000000u, 0x0u, 0x0u, 0x0u, 0x0u,
+	0x7000000u, 0x14000000u, 0x0u, 0x0u, 0x0u, 0x0u,
+	0x9000000u, 0x1a000000u, 0x0u, 0x0u, 0x0u, 0x0u,
+	0xa000000u, 0x1e000000u, 0x0u, 0x0u, 0x0u, 0x0u
+};
+/* 6x6 */
+static const quint32 topRightData[] =
+{
+	0xa000000u, 0x9000000u, 0x7000000u, 0x4000000u, 0x2000000u, 0x1000000u,
+	0x0u, 0x0u, 0x14000000u, 0xc000000u, 0x6000000u, 0x2000000u,
+	0x0u, 0x0u, 0x28000000u, 0x18000000u, 0xc000000u, 0x4000000u,
+	0x0u, 0x0u, 0x42000000u, 0x28000000u, 0x14000000u, 0x7000000u,
+	0x0u, 0x0u, 0x55000000u, 0x33000000u, 0x1a000000u, 0x9000000u,
+	0x0u, 0x0u, 0x62000000u, 0x3b000000u, 0x1e000000u, 0xa000000u
+};
+/* 6x6 */
+static const quint32 bottomRightData[] =
+{
+	0x0u, 0x0u, 0x62000000u, 0x3b000000u, 0x1e000000u, 0xa000000u,
+	0x80000000u, 0x6f000000u, 0x55000000u, 0x33000000u, 0x1a000000u, 0x9000000u,
+	0x62000000u, 0x55000000u, 0x42000000u, 0x28000000u, 0x14000000u, 0x7000000u,
+	0x3b000000u, 0x33000000u, 0x28000000u, 0x18000000u, 0xc000000u, 0x4000000u,
+	0x1e000000u, 0x1a000000u, 0x14000000u, 0xc000000u, 0x6000000u, 0x2000000u,
+	0xa000000u, 0x9000000u, 0x7000000u, 0x4000000u, 0x2000000u, 0x1000000u
+};
+/* 6x6 */
+static const quint32 bottomLeftData[] =
+{
+	0xa000000u, 0x1e000000u, 0x0u, 0x0u, 0x0u, 0x0u,
+	0x9000000u, 0x1a000000u, 0x33000000u, 0x55000000u, 0x6f000000u, 0x80000000u,
+	0x7000000u, 0x14000000u, 0x28000000u, 0x42000000u, 0x55000000u, 0x62000000u,
+	0x4000000u, 0xc000000u, 0x18000000u, 0x28000000u, 0x33000000u, 0x3b000000u,
+	0x2000000u, 0x6000000u, 0xc000000u, 0x14000000u, 0x1a000000u, 0x1e000000u,
+	0x1000000u, 0x2000000u, 0x4000000u, 0x7000000u, 0x9000000u, 0xa000000u
+};
+/* 1x5 */
+static const quint32 bottomData[] =
+{
+	0x88000000u,
+	0x69000000u,
+	0x3f000000u,
+	0x20000000u,
+	0xb000000u
+};
+
 void ContactInfoPage::createAvatar()
 {
 	avatar = new QLabel;
@@ -52,54 +103,54 @@ void ContactInfoPage::createAvatar()
 	QPixmap image = user->avatar(ContactUser::FullAvatar);
 	if (!image.isNull())
 	{
-		/* Shadow data (temporary) */
-		static const quint32 topCornerData[] =
-		{
-			0x07000000u, 0x04000000u, 0x02000000u, 0x01000000u,
-			0x14000000u, 0x0c000000u, 0x06000000u, 0x02000000u,
-			0x28000000u, 0x18000000u, 0x0c000000u, 0x04000000u,
-			0x42000000u, 0x28000000u, 0x14000000u, 0x07000000u,
-			0x55000000u, 0x33000000u, 0x1a000000u, 0x09000000u,
-			0x62000000u, 0x3b000000u, 0x1e000000u, 0x0a000000u
-		};
-		QImage topCorner(reinterpret_cast<const uchar*>(topCornerData), 4, 6, QImage::Format_ARGB32);
-
-		static const quint32 bottomCornerData[] =
-		{
-			0x00000000u, 0x00000000u, 0x62000000u, 0x3b000000u, 0x1e000000u, 0x0a000000u,
-			0x80000000u, 0x6f000000u, 0x55000000u, 0x33000000u, 0x1a000000u, 0x09000000u,
-			0x62000000u, 0x55000000u, 0x42000000u, 0x28000000u, 0x14000000u, 0x07000000u,
-			0x3b000000u, 0x33000000u, 0x28000000u, 0x18000000u, 0x0c000000u, 0x04000000u,
-			0x1e000000u, 0x1a000000u, 0x14000000u, 0x0c000000u, 0x06000000u, 0x02000000u,
-			0x0a000000u, 0x09000000u, 0x07000000u, 0x04000000u, 0x02000000u, 0x01000000u
-		};
-		QImage bottomCorner(reinterpret_cast<const uchar*>(bottomCornerData), 6, 6, QImage::Format_ARGB32);
+		QImage topLeft(reinterpret_cast<const uchar*>(topLeftData), 6, 6, QImage::Format_ARGB32);
+		QImage topRight(reinterpret_cast<const uchar*>(topRightData), 6, 6, QImage::Format_ARGB32);
+		QImage bottomRight(reinterpret_cast<const uchar*>(bottomRightData), 6, 6, QImage::Format_ARGB32);
+		QImage bottomLeft(reinterpret_cast<const uchar*>(bottomLeftData), 6, 6, QImage::Format_ARGB32);
 
 		static const quint32 rightData[] = { 0x69000000u, 0x3f000000u, 0x20000000u, 0x0b000000u };
 		QImage right(reinterpret_cast<const uchar*>(rightData), 4, 1, QImage::Format_ARGB32);
 
-		static const quint32 bottomData[] = { 0x88000000u, 0x69000000u, 0x3f000000u, 0x20000000u, 0x0b000000u };
 		QImage bottom(reinterpret_cast<const uchar*>(bottomData), 1, 5, QImage::Format_ARGB32);
 
 		/* Shadowed image */
-		QImage shadowAvatar(image.width() + 4, image.height() + 6, QImage::Format_ARGB32_Premultiplied);
+		QImage shadowAvatar(image.width() + 6, image.height() + 6, QImage::Format_ARGB32_Premultiplied);
 		shadowAvatar.fill(qRgb(240, 240, 240));
 		QPainter p(&shadowAvatar);
 
+		QRect imageRect(2, 1, image.width(), image.height());
+
 		/* Draw avatar */
-		p.drawPixmap(0, 1, image);
+		p.drawPixmap(imageRect.topLeft(), image);
+
+		/* Draw top-left corner */
+		p.drawImage(0, 0, topLeft);
+
+		/* Draw top */
+		p.setPen(QColor(0, 0, 0, 11));
+		p.drawLine(6, 0, imageRect.right() - 2, 0);
+
+		/* Draw left */
+		p.drawLine(0, 6, 0, imageRect.bottom() - 1);
+
+		p.setPen(QColor(0, 0, 0, 32));
+		p.drawLine(1, 6, 1, imageRect.bottom() - 1);
 
 		/* Draw top-right corner */
-		p.drawImage(image.width(), 0, topCorner);
+		p.drawImage(imageRect.right() - 1, 0, topRight);
 
 		/* Draw right-side repeat */
-		p.drawTiledPixmap(QRect(image.width(), 6, 4, image.height() - 7), QPixmap::fromImage(right));
+		p.drawTiledPixmap(QRect(imageRect.right()+1, 6, 4, imageRect.height() - 6), QPixmap::fromImage(right));
 
 		/* Draw bottom-right corner */
-		p.drawImage(image.width() - 2, image.height() - 1, bottomCorner);
+		p.drawImage(imageRect.right() - 1, imageRect.bottom(), bottomRight);
 
 		/* Draw bottom repeat */
-		p.drawTiledPixmap(QRect(0, image.height()+1, image.width() - 2, 5), QPixmap::fromImage(bottom));
+		p.drawTiledPixmap(QRect(6, imageRect.bottom()+1, image.width() - 6, 5), QPixmap::fromImage(bottom));
+
+		/* Draw bottom-left corner */
+		p.drawImage(0, imageRect.bottom(), bottomLeft);
+
 		p.end();
 
 		avatar->setPixmap(QPixmap::fromImage(shadowAvatar));
@@ -131,11 +182,15 @@ QLayout *ContactInfoPage::createButtons()
 	layout->setMargin(0);
 	layout->setSpacing(0);
 
+	QPalette p = QApplication::palette();
+	p.setColor(QPalette::ButtonText, QColor(104, 104, 104));
+
 	QToolButton *btn = new QToolButton;
 	btn->setFixedHeight(23);
 	btn->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 	btn->setAutoRaise(true);
 	btn->setDefaultAction(renameAction);
+	btn->setPalette(p);
 	layout->addWidget(btn);
 
 	btn = new QToolButton;
@@ -143,6 +198,7 @@ QLayout *ContactInfoPage::createButtons()
 	btn->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 	btn->setAutoRaise(true);
 	btn->setDefaultAction(deleteAction);
+	btn->setPalette(p);
 	layout->addWidget(btn);
 
 	layout->addStretch();
