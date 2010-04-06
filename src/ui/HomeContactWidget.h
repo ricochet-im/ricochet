@@ -8,6 +8,10 @@ class HomeContactWidget : public QWidget
 	Q_OBJECT
 	Q_DISABLE_COPY(HomeContactWidget)
 
+	friend class QPropertyAnimation;
+
+	Q_PROPERTY(int iconOffset READ iconOffset WRITE setIconOffset)
+
 public:
 	explicit HomeContactWidget(QWidget *parent = 0);
 
@@ -32,6 +36,10 @@ protected:
 
 private:
 	bool pSelected;
+	int pIconOffset;
+
+	int iconOffset() const { return pIconOffset; }
+	void setIconOffset(int offset);
 };
 
 #endif // HOMECONTACTWIDGET_H

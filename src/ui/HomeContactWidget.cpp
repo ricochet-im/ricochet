@@ -3,9 +3,10 @@
 #include <QMouseEvent>
 #include <QPainter>
 #include <QCursor>
+#include <QPropertyAnimation>
 
 HomeContactWidget::HomeContactWidget(QWidget *parent)
-	: QWidget(parent), pSelected(false)
+	: QWidget(parent), pSelected(false), pIconOffset(0)
 {
 	setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
 	setBackgroundRole(QPalette::Base);
@@ -21,11 +22,40 @@ void HomeContactWidget::setSelected(bool value)
 	pSelected = value;
 
 	emit selectionChanged(pSelected);
+
 	if (pSelected)
 		emit selected();
 	else
 		emit deselected();
 
+	if (!isVisible())
+		return;
+
+	QPropertyAnimation *ani = new QPropertyAnimation(this, QByteArray("iconOffset"), this);
+	ani->setEndValue(0);
+
+	if (pSelected)
+	{
+		ani->setStartValue(-((width() - 16) / 2 - 5));
+		ani->setDuration(200);
+		ani->setEasingCurve(QEasingCurve::OutBack);
+	}
+	else
+	{
+		ani->setStartValue(((width() - 16) / 2 - 5));
+		ani->setDuration(250);
+		ani->setEasingCurve(QEasingCurve::InCubic);
+	}
+
+	ani->start(QAbstractAnimation::DeleteWhenStopped);
+}
+
+void HomeContactWidget::setIconOffset(int offset)
+{
+	if (pIconOffset == offset)
+		return;
+
+	pIconOffset = offset;
 	update();
 }
 
@@ -70,7 +100,7 @@ void HomeContactWidget::paintEvent(QPaintEvent *event)
 
 	if (isSelected())
 	{
-		//p.fillRect(r, Qt::blue);
+		p.fillRect(r, Qt::blue);
 		xpos /= 2;
 	}
 	else if (!QRect(mapToGlobal(QPoint(0,0)), size()).contains(QCursor::pos()))
@@ -80,6 +110,8 @@ void HomeContactWidget::paintEvent(QPaintEvent *event)
 	}
 	else
 		xpos -= 5;
+
+	xpos -= iconOffset();
 
 	p.drawPixmap(xpos, (r.height() - icon.height() - 4), icon);
 }
