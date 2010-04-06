@@ -27,6 +27,8 @@ signals:
 protected:
 	virtual void paintEvent(QPaintEvent *event);
 	virtual void mousePressEvent(QMouseEvent *event);
+	virtual void enterEvent(QEvent *event);
+	virtual void leaveEvent(QEvent *event);
 
 private:
 	bool pSelected;
