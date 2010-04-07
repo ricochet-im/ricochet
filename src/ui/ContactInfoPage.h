@@ -27,12 +27,13 @@ protected:
 private:
 	class QAction *renameAction, *deleteAction;
 
-	QLabel *avatar, *nickname;
+	QLabel *avatar, *nickname, *infoText;
 	QTextEdit *notesEdit;
 
 	void createActions();
 	void createAvatar();
 	void createNickname();
+	void createInfoText();
 	class QLayout *createButtons();
 	void createNotes(class QBoxLayout *layout);
 };

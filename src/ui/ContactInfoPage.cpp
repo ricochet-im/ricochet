@@ -1,14 +1,17 @@
 #include "ContactInfoPage.h"
 #include "core/ContactUser.h"
+#include "utils/DateUtil.h"
 #include <QBoxLayout>
 #include <QLabel>
 #include <QTextEdit>
 #include <QAction>
 #include <QToolButton>
 #include <QApplication>
+#include <QTextStream>
+#include <QDateTime>
 
 ContactInfoPage::ContactInfoPage(ContactUser *u, QWidget *parent)
-	: QWidget(parent), user(u)
+	: QWidget(parent), user(u), infoText(0)
 {
 	createActions();
 
@@ -22,10 +25,17 @@ ContactInfoPage::ContactInfoPage(ContactUser *u, QWidget *parent)
 	createAvatar();
 	infoLayout->addWidget(avatar, Qt::AlignTop | Qt::AlignLeft);
 
-	createNickname();
-	infoLayout->addWidget(nickname);
-	infoLayout->addStretch();
+	QBoxLayout *textLayout = new QVBoxLayout;
+	infoLayout->addLayout(textLayout);
 
+	createNickname();
+	textLayout->addWidget(nickname);
+
+	createInfoText();
+	textLayout->addWidget(infoText);
+	textLayout->addStretch();
+
+	infoLayout->addStretch();
 	infoLayout->addLayout(createButtons());
 
 	/* Notes */
@@ -174,6 +184,32 @@ void ContactInfoPage::createNickname()
 	QPalette p = nickname->palette();
 	p.setColor(QPalette::WindowText, QColor(28, 128, 205));
 	nickname->setPalette(p);
+}
+
+void ContactInfoPage::createInfoText()
+{
+	if (!infoText)
+	{
+		infoText = new QLabel;
+		infoText->setTextFormat(Qt::RichText);
+		infoText->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+	}
+
+	QString text;
+	QTextStream builder(&text);
+
+	QDateTime lastConnect = user->readSetting(QString("lastConnected")).toDateTime();
+	QString lastConnectStr;
+	if (lastConnect.isNull())
+		lastConnectStr = tr("Never connected");
+	else
+		lastConnectStr = tr("%1 (%2)").arg(timeDifferenceString(lastConnect, QDateTime::currentDateTime()))
+						 .arg(lastConnect.toString(Qt::SystemLocaleShortDate));
+
+	builder << "<span style=''>" << tr("Last seen:") << "</span> <span style='color: #6e6e6e;'>"
+			<< lastConnectStr << "</span>";
+
+	infoText->setText(text);
 }
 
 QLayout *ContactInfoPage::createButtons()
