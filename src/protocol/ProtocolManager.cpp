@@ -4,6 +4,7 @@
 #include <QTcpSocket>
 #include <QtEndian>
 #include <QNetworkProxy>
+#include <QTimer>
 
 ProtocolManager::ProtocolManager(ContactUser *u, const QString &host, quint16 port)
 	: QObject(u), user(u), primarySocket(0), pHost(host), pPort(port)
@@ -222,7 +223,16 @@ void ProtocolManager::socketDisconnected()
 
 void ProtocolManager::socketError(QAbstractSocket::SocketError error)
 {
+	QTcpSocket *socket = qobject_cast<QTcpSocket*>(sender());
+	if (!socket)
+		return;
+
 	qDebug() << "Socket error:" << error;
+
+	if (socket == primarySocket && socket->state() != QAbstractSocket::ConnectedState)
+	{
+		QTimer::singleShot(60000, this, SLOT(connectPrimary()));
+	}
 }
 
 void ProtocolManager::socketReadable()
