@@ -11,12 +11,17 @@ class HomeScreen : public QWidget
 public:
 	explicit HomeScreen(QWidget *parent = 0);
 
+private slots:
+	void updateTorStatus();
+
 private:
 	class QLabel *avatar;
 
 	QList<QAction*> buttonActions;
 	class QAction *actAddContact, *actChangeAvatar, *actOpenDownloads, *actTestConnection, *actOptions;
 	class QAction *actTorConfig;
+
+	QLabel *torStatus, *torInfo;
 
 	void createAvatar();
 	void createActions();

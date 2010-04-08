@@ -21,6 +21,8 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
+	a.setApplicationVersion(QString("1.0.0"));
+
 	QDir::setCurrent(a.applicationDirPath());
 
 	initSettings();

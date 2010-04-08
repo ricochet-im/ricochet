@@ -1,5 +1,7 @@
 #include "main.h"
 #include "HomeScreen.h"
+#include "tor/TorControlManager.h"
+#include <QApplication>
 #include <QBoxLayout>
 #include <QLabel>
 #include <QToolButton>
@@ -121,22 +123,38 @@ QLayout *HomeScreen::createStatus()
 	statusIcon->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
 	layout->addWidget(statusIcon);
 
-	QLabel *torStatus = new QLabel("Connected to Tor. Everything is working correctly.");
+	torStatus = new QLabel;
 	torStatus->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
 	torStatus->setFont(font);
 	torStatus->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 	layout->addWidget(torStatus);
 
-	QLabel *info = new QLabel("TorIM 1.0.0\nTor 0.2.1.23 (Vidalia)\nStealth mode enabled");
-	info->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+	torInfo = new QLabel;
+	torInfo->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
 	font.setBold(true);
-	info->setFont(font);
+	torInfo->setFont(font);
 
-	QPalette p = info->palette();
+	QPalette p = torInfo->palette();
 	p.setColor(QPalette::WindowText, QColor(171, 171, 171));
-	info->setPalette(p);
+	torInfo->setPalette(p);
 
-	layout->addWidget(info);
+	layout->addWidget(torInfo);
+
+	connect(torManager, SIGNAL(statusChanged(Status,Status)), this, SLOT(updateTorStatus()));
+	updateTorStatus();
 
 	return layout;
+}
+
+void HomeScreen::updateTorStatus()
+{
+	QString infoText = QLatin1String("TorIM ") + QApplication::applicationVersion();
+
+	QString torVersion = torManager->torVersion();
+	if (!torVersion.isEmpty())
+		infoText.append(QLatin1String("\nTor ") + torVersion);
+
+	torInfo->setText(infoText);
+
+	torStatus->setText(torManager->statusText());
 }

@@ -46,6 +46,24 @@ void TorControlManager::setStatus(Status n)
 		emit disconnected();
 }
 
+QString TorControlManager::statusText() const
+{
+	switch (pStatus)
+	{
+	case Error:
+		return tr("An unknown error occurred");
+	case NotConnected:
+		return tr("Not connected to Tor");
+	case Connecting:
+	case Authenticating:
+		return tr("Connecting to Tor");
+	case Connected:
+		return tr("Connected to Tor");
+	default:
+		return QString();
+	}
+}
+
 void TorControlManager::setAuthPassword(const QByteArray &password)
 {
 	pAuthPassword = password;

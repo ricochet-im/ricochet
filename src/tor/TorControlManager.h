@@ -70,6 +70,7 @@ public:
 	/* Information */
 	Status status() const { return pStatus; }
 	QString torVersion() const { return pTorVersion; }
+	QString statusText() const;
 
 	bool isSocksReady() const { return !pSocksAddress.isNull(); }
 	QHostAddress socksAddress() const { return pSocksAddress; }
