@@ -274,8 +274,16 @@ void TorControlManager::publishServices()
 	if (config->value(QString("core/neverPublishService"), false).toBool())
 	{
 		qDebug() << "torctrl: Skipping service publication because neverPublishService is enabled";
+
+		/* Call servicePublished under the assumption that they're published externally. */
+		for (QList<HiddenService*>::Iterator it = pServices.begin(); it != pServices.end(); ++it)
+			(*it)->servicePublished();
+
 		return;
 	}
+
+	SetConfCommand *command = new SetConfCommand;
+	QList<QPair<QByteArray,QByteArray> > settings;
 
 	for (QList<HiddenService*>::Iterator it = pServices.begin(); it != pServices.end(); ++it)
 	{
@@ -284,7 +292,6 @@ void TorControlManager::publishServices()
 
 		qDebug() << "torctrl: Configuring hidden service at" << service->dataPath;
 
-		QList<QPair<QByteArray,QByteArray> > settings;
 		settings.append(qMakePair(QByteArray("HiddenServiceDir"), dir.absolutePath().toLocal8Bit()));
 
 		const QList<HiddenService::Target> &targets = service->targets();
@@ -297,7 +304,8 @@ void TorControlManager::publishServices()
 
 		//settings.append(qMakePair(QByteArray("HiddenServiceAuthorizeClient"), QByteArray("stealth bob")));
 
-		SetConfCommand *command = new SetConfCommand;
-		socket->sendCommand(command, command->build(settings));
+		QObject::connect(command, SIGNAL(setConfSucceeded()), service, SLOT(servicePublished()));
 	}
+
+	socket->sendCommand(command, command->build(settings));
 }

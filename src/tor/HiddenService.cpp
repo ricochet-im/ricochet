@@ -1,10 +1,28 @@
 #include "HiddenService.h"
+#include "TorControlManager.h"
+#include "TorServiceTest.h"
+#include <QFile>
+#include <QTimer>
 
 using namespace Tor;
 
 HiddenService::HiddenService(const QString &p)
-	: dataPath(p), pStatus(Offline)
+	: dataPath(p), selfTest(0), pStatus(Offline)
 {
+}
+
+void HiddenService::setStatus(Status newStatus)
+{
+	if (pStatus == newStatus)
+		return;
+
+	Status old = pStatus;
+	pStatus = newStatus;
+
+	emit statusChanged(pStatus, old);
+
+	if (pStatus == Online)
+		emit serviceOnline();
 }
 
 void HiddenService::addTarget(const Target &target)
@@ -16,4 +34,95 @@ void HiddenService::addTarget(quint16 servicePort, QHostAddress targetAddress, q
 {
 	Target t = { targetAddress, servicePort, targetPort };
 	pTargets.append(t);
+}
+
+void HiddenService::readHostname()
+{
+	pHostname.clear();
+
+	QFile file(dataPath + QLatin1String("/hostname"));
+	if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+	{
+		qDebug() << "Failed to open hostname file for hidden service" << dataPath << "-" << file.errorString();
+		return;
+	}
+
+	QByteArray data;
+	data.resize(32);
+
+	int rd = file.readLine(data.data(), data.size());
+	if (rd < 0)
+	{
+		qDebug() << "Failed to read hostname file for hidden service" << dataPath << "-" << file.errorString();
+		return;
+	}
+
+	data.resize(rd);
+
+	int sep = data.lastIndexOf('.');
+	if (sep != 16 || data.mid(sep) != ".onion\n")
+	{
+		qDebug() << "Failed to read hostname file for hidden service" << dataPath << "- invalid contents";
+		return;
+	}
+
+	pHostname = QString::fromLatin1(data.constData(), sep) + QLatin1String(".onion");
+	qDebug() << "Hidden service hostname is" << pHostname;
+}
+
+void HiddenService::startSelfTest()
+{
+	if (pHostname.isEmpty() || pTargets.isEmpty())
+	{
+		if (selfTest)
+		{
+			delete selfTest;
+			selfTest = 0;
+		}
+
+		return;
+	}
+
+	if (!selfTest)
+	{
+		selfTest = new TorServiceTest(torManager);
+		connect(selfTest, SIGNAL(success()), this, SLOT(selfTestSucceeded()));
+		connect(selfTest, SIGNAL(failure()), this, SLOT(selfTestFailed()));
+	}
+
+	/* XXX Should probably try all targets */
+	selfTest->connectToHost(hostname(), pTargets[0].servicePort);
+}
+
+void HiddenService::servicePublished()
+{
+	readHostname();
+
+	if (pHostname.isEmpty())
+	{
+		qDebug() << "Failed to read hidden service hostname";
+		return;
+	}
+
+	qDebug() << "Hidden service published successfully";
+	setStatus(Published);
+
+	startSelfTest();
+}
+
+void HiddenService::selfTestSucceeded()
+{
+	qDebug() << "Hidden service self-test completed successfully";
+	setStatus(Online);
+
+	selfTest->deleteLater();
+	selfTest = 0;
+}
+
+void HiddenService::selfTestFailed()
+{
+	qDebug() << "Hidden service self-test failed; trying again in 60 seconds";
+	setStatus(Published);
+
+	QTimer::singleShot(60000, this, SLOT(startSelfTest()));
 }

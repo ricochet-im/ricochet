@@ -36,5 +36,12 @@ void SetConfCommand::handleReply(int code, QByteArray &data, bool end)
 	Q_UNUSED(code);
 
 	if (end)
+	{
 		statusMessage = data;
+
+		if (code == 250)
+			emit setConfSucceeded();
+		else
+			emit setConfFailed(code);
+	}
 }

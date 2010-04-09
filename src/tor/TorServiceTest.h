@@ -33,8 +33,12 @@ private slots:
 	void socketConnected();
 	void socketError(QAbstractSocket::SocketError error);
 
+	void socksReady();
+
 private:
 	QTcpSocket *socket;
+	QString host;
+	quint16 port;
 	int state;
 };
 
