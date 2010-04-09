@@ -1,6 +1,7 @@
 #include "ui/MainWindow.h"
 #include "core/ContactsManager.h"
 #include "tor/TorControlManager.h"
+#include "tor/HiddenService.h"
 #include "protocol/IncomingSocket.h"
 #include <QApplication>
 #include <QSettings>
