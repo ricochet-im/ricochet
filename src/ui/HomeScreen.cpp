@@ -130,6 +130,7 @@ QLayout *HomeScreen::createStatus()
 	layout->addWidget(torStatus);
 
 	torInfo = new QLabel;
+	torInfo->setTextFormat(Qt::PlainText);
 	torInfo->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
 	font.setBold(true);
 	torInfo->setFont(font);
