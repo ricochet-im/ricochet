@@ -35,7 +35,10 @@ SOURCES += src/main.cpp \
     src/ui/HomeContactWidget.cpp \
     src/utils/DateUtil.cpp \
     src/tor/TorServiceTest.cpp \
-    src/tor/HiddenService.cpp
+    src/tor/HiddenService.cpp \
+    src/ui/torconfig/TorConfigWizard.cpp \
+    src/ui/torconfig/IntroPage.cpp \
+    src/ui/torconfig/ManualConfigPage.cpp
 HEADERS += src/ui/MainWindow.h \
     src/ui/ChatWidget.h \
     src/ContactsModel.h \
@@ -64,7 +67,10 @@ HEADERS += src/ui/MainWindow.h \
     src/ui/HomeContactWidget.h \
     src/utils/DateUtil.h \
     src/tor/TorServiceTest.h \
-    src/tor/HiddenService.h
+    src/tor/HiddenService.h \
+    src/ui/torconfig/TorConfigWizard.h \
+    src/ui/torconfig/IntroPage.h \
+    src/ui/torconfig/ManualConfigPage.h
 RESOURCES += res/resources.qrc \
     translation/embedded.qrc
 TRANSLATIONS = translation/torim.ts

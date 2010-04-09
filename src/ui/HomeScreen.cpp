@@ -1,6 +1,7 @@
 #include "main.h"
 #include "HomeScreen.h"
 #include "tor/TorControlManager.h"
+#include "torconfig/TorConfigWizard.h"
 #include <QApplication>
 #include <QBoxLayout>
 #include <QLabel>
@@ -61,6 +62,7 @@ void HomeScreen::createActions()
 	actTestConnection = new QAction(QIcon(":/icons/globe-green.png"), tr("Test Connection"), this);
 	actOptions = new QAction(QIcon(":/icons/gear.png"), tr("Options"), this);
 	actTorConfig = new QAction(QIcon(":/icons/wall--pencil.png"), tr("Configure Tor"), this);
+	connect(actTorConfig, SIGNAL(triggered()), SLOT(startTorConfig()));
 
 	QAction *separator = new QAction(this);
 	separator->setSeparator(true);
@@ -158,4 +160,10 @@ void HomeScreen::updateTorStatus()
 	torInfo->setText(infoText);
 
 	torStatus->setText(torManager->statusText());
+}
+
+void HomeScreen::startTorConfig()
+{
+	TorConfigWizard wizard(window());
+	wizard.exec();
 }

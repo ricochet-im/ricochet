@@ -14,6 +14,8 @@ public:
 private slots:
 	void updateTorStatus();
 
+	void startTorConfig();
+
 private:
 	class QLabel *avatar;
 
