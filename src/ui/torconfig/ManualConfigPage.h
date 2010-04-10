@@ -18,6 +18,8 @@ public:
 
 	virtual void initializePage();
 
+	virtual bool isComplete() const;
+
 private:
 	QLineEdit *ipEdit, *portEdit;
 };

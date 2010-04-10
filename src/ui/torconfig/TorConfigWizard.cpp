@@ -8,7 +8,7 @@ TorConfigWizard::TorConfigWizard(QWidget *parent)
 	: QWizard(parent)
 {
 	setWindowTitle(tr("TorIM - Configure Tor"));
-	setFixedSize(600, 450);
+	setFixedSize(550, 450);
 
 	addPage(new IntroPage);
 	addPage(new ManualConfigPage);

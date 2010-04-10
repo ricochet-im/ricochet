@@ -11,6 +11,8 @@ using namespace TorConfig;
 ManualConfigPage::ManualConfigPage(QWidget *parent)
 	: QWizardPage(parent)
 {
+	setButtonText(QWizard::CustomButton1, tr("Verify Connection"));
+
 	QBoxLayout *layout = new QVBoxLayout(this);
 
 	QLabel *desc = new QLabel;
@@ -60,6 +62,13 @@ ManualConfigPage::ManualConfigPage(QWidget *parent)
 
 void ManualConfigPage::initializePage()
 {
+	wizard()->setOption(QWizard::HaveCustomButton1);
+
 	ipEdit->setText(QString("127.0.0.1"));
 	portEdit->setText(QString("9051"));
+}
+
+bool ManualConfigPage::isComplete() const
+{
+	return false;
 }

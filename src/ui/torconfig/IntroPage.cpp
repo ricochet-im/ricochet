@@ -9,8 +9,6 @@ using namespace TorConfig;
 IntroPage::IntroPage(QWidget *parent)
 	: QWizardPage(parent), configChoice(-1)
 {
-	setFinalPage(false);
-
 	QBoxLayout *layout = new QVBoxLayout(this);
 
 	/* Introduction */
@@ -54,6 +52,12 @@ void IntroPage::setConfigChoice(int choice)
 {
 	configChoice = choice;
 	wizard()->next();
+}
+
+void IntroPage::initializePage()
+{
+	wizard()->button(QWizard::NextButton)->setVisible(false);
+	wizard()->button(QWizard::FinishButton)->setVisible(false);
 }
 
 bool IntroPage::isComplete() const

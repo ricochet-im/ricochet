@@ -14,6 +14,8 @@ class IntroPage : public QWizardPage
 public:
 	explicit IntroPage(QWidget *parent = 0);
 
+	virtual void initializePage();
+
 	virtual bool isComplete() const;
 	virtual int nextId() const;
 
