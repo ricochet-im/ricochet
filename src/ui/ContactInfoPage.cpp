@@ -200,7 +200,9 @@ void ContactInfoPage::createInfoText()
 
 	QDateTime lastConnect = user->readSetting(QString("lastConnected")).toDateTime();
 	QString lastConnectStr;
-	if (lastConnect.isNull())
+	if (user->isConnected())
+		lastConnectStr = tr("Online now");
+	else if (lastConnect.isNull())
 		lastConnectStr = tr("Never connected");
 	else
 		lastConnectStr = tr("%1 (%2)").arg(timeDifferenceString(lastConnect, QDateTime::currentDateTime()))
