@@ -6,7 +6,11 @@ QT += core \
     network
 TARGET = TorIM
 TEMPLATE = app
+
 INCLUDEPATH += src
+
+QMAKE_RESOURCE_FLAGS += -no-compress
+
 SOURCES += src/main.cpp \
     src/ui/MainWindow.cpp \
     src/ui/ChatWidget.cpp \
@@ -38,7 +42,8 @@ SOURCES += src/main.cpp \
     src/tor/HiddenService.cpp \
     src/ui/torconfig/TorConfigWizard.cpp \
     src/ui/torconfig/IntroPage.cpp \
-    src/ui/torconfig/ManualConfigPage.cpp
+    src/ui/torconfig/ManualConfigPage.cpp \
+    src/protocol/ProtocolSocket.cpp
 HEADERS += src/ui/MainWindow.h \
     src/ui/ChatWidget.h \
     src/ContactsModel.h \
@@ -70,7 +75,8 @@ HEADERS += src/ui/MainWindow.h \
     src/tor/HiddenService.h \
     src/ui/torconfig/TorConfigWizard.h \
     src/ui/torconfig/IntroPage.h \
-    src/ui/torconfig/ManualConfigPage.h
+    src/ui/torconfig/ManualConfigPage.h \
+    src/protocol/ProtocolSocket.h
 RESOURCES += res/resources.qrc \
     translation/embedded.qrc
 TRANSLATIONS = translation/torim.ts
