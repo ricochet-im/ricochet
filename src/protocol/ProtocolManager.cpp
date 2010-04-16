@@ -2,8 +2,11 @@
 #include "ProtocolCommand.h"
 
 ProtocolManager::ProtocolManager(ContactUser *u, const QString &host, quint16 port)
-	: QObject(u), user(u), pPrimary(0), pHost(host), pPort(port)
+	: QObject(u), user(u), pHost(host), pPort(port)
 {
+	pPrimary = new ProtocolSocket(this);
+	connect(pPrimary, SIGNAL(socketReady()), this, SIGNAL(primaryConnected()));
+	connect(pPrimary->socket, SIGNAL(disconnected()), this, SIGNAL(primaryDisconnected()));
 }
 
 void ProtocolManager::setHost(const QString &host)
@@ -43,20 +46,13 @@ bool ProtocolManager::isAnyConnected() const
 
 void ProtocolManager::connectPrimary()
 {
-	if (pPrimary && pPrimary->isConnecting())
+	if (pPrimary && (pPrimary->isConnecting() || pPrimary->isConnected()))
 		return;
 
 	if (host().isEmpty() || !port())
 		return;
 
-	if (!pPrimary)
-	{
-		pPrimary = new ProtocolSocket(host(), port(), this);
-		connect(pPrimary, SIGNAL(socketReady()), this, SIGNAL(primaryConnected()));
-		connect(pPrimary->socket, SIGNAL(disconnected()), this, SIGNAL(primaryDisconnected()));
-	}
-	else
-		Q_ASSERT_X(false, "connect existing primary socket", "not implemented");
+	pPrimary->connectToHost(host(), port());
 }
 
 void ProtocolManager::addSocket(QTcpSocket *socket, quint8 purpose)
@@ -73,6 +69,7 @@ void ProtocolManager::addSocket(QTcpSocket *socket, quint8 purpose)
 		 * may be used as the new local primary. */
 		if (!pPrimary || (!pPrimary->isConnecting() && !pPrimary->isConnected()))
 		{
+			/* TODO lots of fixing */
 			if (pPrimary)
 			{
 				qDebug() << "Replacing unconnected primary socket with incoming socket";

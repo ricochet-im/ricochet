@@ -17,16 +17,12 @@ ProtocolSocket::ProtocolSocket(QTcpSocket *s, ProtocolManager *m)
 }
 
 /* Create a new outgoing connection */
-ProtocolSocket::ProtocolSocket(const QString &host, quint16 port, ProtocolManager *m)
+ProtocolSocket::ProtocolSocket(ProtocolManager *m)
 	: QObject(m), manager(m), socket(new QTcpSocket(this)), authPending(false), authFinished(false)
 {
-	socket->setProxy(torManager->connectionProxy());
-
 	connect(socket, SIGNAL(connected()), this, SLOT(sendAuth()));
 	connect(this, SIGNAL(socketReady()), this, SLOT(flushCommands()));
 	setupSocket();
-
-	socket->connectToHost(host, port);
 }
 
 void ProtocolSocket::setupSocket()
@@ -43,6 +39,12 @@ bool ProtocolSocket::isConnecting() const
 {
 	return (socket->state() != QAbstractSocket::UnconnectedState && socket->state() != QAbstractSocket::ClosingState
 			&& !isConnected());
+}
+
+void ProtocolSocket::connectToHost(const QString &host, quint16 port)
+{
+	socket->setProxy(torManager->connectionProxy());
+	socket->connectToHost(host, port);
 }
 
 void ProtocolSocket::abort()

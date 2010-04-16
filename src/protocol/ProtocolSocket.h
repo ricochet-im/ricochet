@@ -20,12 +20,14 @@ public:
 
 	/* Create with an established and authenticated socket (incoming connections) */
 	explicit ProtocolSocket(QTcpSocket *socket, ProtocolManager *manager);
-	/* Create with a new socket and connect (outgoing) */
-	explicit ProtocolSocket(const QString &host, quint16 port, ProtocolManager *manager);
+	/* Create with a new socket */
+	explicit ProtocolSocket(ProtocolManager *manager);
 
 	/* Returns true if the socket is connected and ready (i.e. authenticated) */
 	bool isConnected() const;
 	bool isConnecting() const;
+
+	void connectToHost(const QString &host, quint16 port);
 
 	/* Get an available identifier; not reserved, must be followed by sendCommand immediately. */
 	quint16 getIdentifier() const;
