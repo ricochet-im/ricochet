@@ -1,13 +1,8 @@
 #include "ProtocolManager.h"
 #include "ProtocolCommand.h"
-#include "tor/TorControlManager.h"
-#include <QTcpSocket>
-#include <QtEndian>
-#include <QNetworkProxy>
-#include <QTimer>
 
 ProtocolManager::ProtocolManager(ContactUser *u, const QString &host, quint16 port)
-	: QObject(u), user(u), primarySocket(0), pHost(host), pPort(port)
+	: QObject(u), user(u), pPrimary(0), pHost(host), pPort(port)
 {
 }
 
@@ -25,11 +20,17 @@ void ProtocolManager::setSecret(const QByteArray &secret)
 {
 	Q_ASSERT(secret.size() == 16);
 	pSecret = secret;
+
+	int size = pSecret.size();
+	pSecret.resize(size);
+
+	if (size < 16)
+		memset(pSecret.data() + size, 0, 16 - size);
 }
 
 bool ProtocolManager::isPrimaryConnected() const
 {
-	return primarySocket ? (primarySocket->state() == QAbstractSocket::ConnectedState) : false;
+	return pPrimary ? pPrimary->isConnected() : false;
 }
 
 bool ProtocolManager::isAnyConnected() const
@@ -37,276 +38,55 @@ bool ProtocolManager::isAnyConnected() const
 	if (isPrimaryConnected())
 		return true;
 
-	for (QList<QTcpSocket*>::ConstIterator it = socketPool.begin(); it != socketPool.end(); ++it)
-		if ((*it)->state() == QAbstractSocket::ConnectedState)
-			return true;
-
 	return false;
 }
 
 void ProtocolManager::connectPrimary()
 {
-	if (primarySocket && primarySocket->state() != QAbstractSocket::UnconnectedState)
+	if (pPrimary && pPrimary->isConnecting())
 		return;
 
-	if (!primarySocket)
+	if (host().isEmpty() || !port())
+		return;
+
+	if (!pPrimary)
 	{
-		primarySocket = new QTcpSocket(this);
-		primarySocket->setProxy(torManager->connectionProxy());
-		connect(primarySocket, SIGNAL(connected()), this, SLOT(socketConnected()));
-		connect(primarySocket, SIGNAL(disconnected()), this, SLOT(socketDisconnected()));
-		connect(primarySocket, SIGNAL(error(QAbstractSocket::SocketError)), this,
-				SLOT(socketError(QAbstractSocket::SocketError)));
-		connect(primarySocket, SIGNAL(readyRead()), this, SLOT(socketReadable()));
+		pPrimary = new ProtocolSocket(host(), port(), this);
+		connect(pPrimary, SIGNAL(socketReady()), this, SIGNAL(primaryConnected()));
+		connect(pPrimary->socket, SIGNAL(disconnected()), this, SIGNAL(primaryDisconnected()));
 	}
-
-	qDebug() << "Attempting to connect primary socket to" << host() << "on port" << port();
-	primarySocket->connectToHost(host(), port());
-}
-
-void ProtocolManager::connectAnother()
-{
-	qFatal("ProtocolManager::ConnectAnother - not implemented");
+	else
+		Q_ASSERT_X(false, "connect existing primary socket", "not implemented");
 }
 
 void ProtocolManager::addSocket(QTcpSocket *socket, quint8 purpose)
 {
 	Q_ASSERT(socket->state() == QAbstractSocket::ConnectedState);
 
-	socket->setParent(this);
-	connect(socket, SIGNAL(connected()), this, SLOT(socketConnected()));
-	connect(socket, SIGNAL(disconnected()), this, SLOT(socketDisconnected()));
-	connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this,
-			SLOT(socketError(QAbstractSocket::SocketError)));
-	connect(socket, SIGNAL(readyRead()), this, SLOT(socketReadable()));
+	ProtocolSocket *psocket = new ProtocolSocket(socket, this);
 
 	if (purpose == 0x00)
 	{
-		/* Primary, serial connection. This is not required to be the same connection on
-		 * both ends, but you cannot use a connection as the primary when the other end
-		 * does not consider it to be one. */
-		if (!isPrimaryConnected())
+		/* Remote primary connection. To avoid a race condition when both ends establish connections
+		 * simultaniously but do not yet know that the connection has been established, we do not
+		 * replace a pending connection attempt at this time. If that attempt fails, this connection
+		 * may be used as the new local primary. */
+		if (!pPrimary || (!pPrimary->isConnecting() && !pPrimary->isConnected()))
 		{
-			if (primarySocket)
+			if (pPrimary)
 			{
 				qDebug() << "Replacing unconnected primary socket with incoming socket";
-				primarySocket->abort();
-				primarySocket->deleteLater();
+				pPrimary->abort();
+				pPrimary->deleteLater();
 			}
 
-			primarySocket = socket;
+			pPrimary = psocket;
+			connect(pPrimary, SIGNAL(socketReady()), this, SIGNAL(primaryConnected()));
+			connect(pPrimary->socket, SIGNAL(disconnected()), this, SIGNAL(primaryDisconnected()));
+
+			emit primaryConnected();
 		}
 	}
 	else
-	{
-		/* Nothing yet */
-		qFatal("Non-primary sockets are not implemented");
-	}
-
-	socketAuthenticated(socket);
-}
-
-quint16 ProtocolManager::getIdentifier() const
-{
-	/* There is a corner case for the very unlucky where the RNG will take a very long time
-	 * to find an available ID. This could be considered a BUG. */
-	if (pendingCommands.size() >= 50000)
-		return 0;
-
-	quint16 re;
-	do
-	{
-		re = (qrand() % 65535) + 1;
-	} while (pendingCommands.contains(re));
-
-	return re;
-}
-
-void ProtocolManager::sendCommand(ProtocolCommand *command, bool ordered)
-{
-	Q_ASSERT(!pendingCommands.contains(command->identifier()));
-
-	pendingCommands.insert(command->identifier(), command);
-
-	if (ordered)
-	{
-		if (!isPrimaryConnected())
-		{
-			qDebug() << "Queued command for primary connection";
-			commandQueue.append(command);
-			return;
-		}
-
-		Q_ASSERT(commandQueue.isEmpty());
-		qint64 re = primarySocket->write(command->commandBuffer);
-		Q_ASSERT(re == command->commandBuffer.size());
-
-		qDebug() << "Wrote command:" << command->commandBuffer.toHex();
-	}
-	else
-	{
-		qFatal("Not implemented");
-	}
-}
-
-void ProtocolManager::socketConnected(QTcpSocket *socket)
-{
-	if (!socket)
-	{
-		socket = qobject_cast<QTcpSocket*>(sender());
-		if (!socket)
-		{
-			Q_ASSERT_X(false, "ProtocolManager", "socketConnected signal from an unexpected source");
-			return;
-		}
-	}
-
-	if (pSecret.size() != 16)
-		qFatal("Invalid secret set for ProtocolManager");
-
-	quint8 purpose;
-	if (socket == primarySocket)
-		purpose = 0x00;
-	else
-		purpose = 0xff;
-
-	/* Introduction; 0x49 0x4D [1*version] [16*cookie] [1*purpose] */
-	QByteArray intro;
-	intro.resize(20);
-
-	intro[0] = 0x49;
-	intro[1] = 0x4D;
-	intro[2] = protocolVersion;
-	intro[19] = purpose;
-
-	memcpy(intro.data()+3, pSecret.constData(), qMin(16, pSecret.size()));
-	if (pSecret.size() < 16)
-		memset(intro.data()+3+pSecret.size(), 0, 16-pSecret.size());
-
-	socket->setProperty("authPending", true);
-	qint64 re = socket->write(intro);
-	Q_ASSERT(re == intro.size());
-}
-
-
-void ProtocolManager::socketAuthenticated(QTcpSocket *socket)
-{
-	if (socket == primarySocket)
-	{
-		qDebug() << "Primary socket connected";
-
-		while (!commandQueue.isEmpty())
-			primarySocket->write(commandQueue.takeFirst()->commandBuffer);
-
-		emit primaryConnected();
-	}
-}
-
-void ProtocolManager::socketDisconnected()
-{
-	qDebug() << "Socket disconnected";
-
-	QTcpSocket *socket = qobject_cast<QTcpSocket*>(sender());
-	if (!socket)
-		return;
-
-	if (socket == primarySocket)
-	{
-		qDebug() << "Primary socket disconnected";
-
-		emit primaryDisconnected();
-
-		primarySocket = 0;
-		socket->deleteLater();
-	}
-}
-
-void ProtocolManager::socketError(QAbstractSocket::SocketError error)
-{
-	QTcpSocket *socket = qobject_cast<QTcpSocket*>(sender());
-	if (!socket)
-		return;
-
-	qDebug() << "Socket error:" << error;
-
-	if (socket == primarySocket && socket->state() != QAbstractSocket::ConnectedState)
-	{
-		QTimer::singleShot(60000, this, SLOT(connectPrimary()));
-	}
-}
-
-void ProtocolManager::socketReadable()
-{
-	qDebug() << "Socket readable";
-
-	QTcpSocket *socket = qobject_cast<QTcpSocket*>(sender());
-	if (!socket)
-		return;
-
-	qint64 available = socket->bytesAvailable();
-
-	if (available && socket->property("authPending").toBool())
-	{
-		char reply;
-		qint64 re = socket->read(&reply, 1);
-		Q_ASSERT(re);
-
-		if (reply != 0x01)
-		{
-			socket->close();
-			return;
-		}
-
-		socket->setProperty("authPending", QVariant());
-		socketAuthenticated(socket);
-
-		available--;
-	}
-
-	while (available >= 6)
-	{
-		quint16 msgLength;
-		if (socket->peek(reinterpret_cast<char*>(&msgLength), sizeof(msgLength)) < 2)
-			return;
-
-		msgLength = qFromBigEndian(msgLength);
-		if (!msgLength)
-			qFatal("Unbuffered protocol replies are not implemented");
-
-		/* Message length is one more than the actual data length, and does not include the header. */
-		msgLength--;
-		if ((available - 6) < msgLength)
-			break;
-
-		QByteArray data;
-		data.resize(msgLength + 6);
-
-		qint64 re = socket->read(data.data(), msgLength + 6);
-		Q_ASSERT(re == msgLength + 6);
-
-		if (isReply(data[3]))
-		{
-			quint16 identifier = qFromBigEndian<quint16>(reinterpret_cast<const uchar*>(data.constData())+4);
-			QHash<quint16,ProtocolCommand*>::Iterator it = pendingCommands.find(identifier);
-
-			if (it != pendingCommands.end())
-			{
-				(*it)->processReply(data[3], reinterpret_cast<const uchar*>(data.constData())+6, msgLength);
-				if (isFinal(data[3]))
-				{
-					qDebug() << "Received final reply for identifier" << identifier;
-					emit (*it)->commandFinished();
-					(*it)->deleteLater();
-					pendingCommands.erase(it);
-				}
-			}
-		}
-		else
-		{
-			CommandHandler handler(user, socket, reinterpret_cast<const uchar*>(data.constData()),
-								   msgLength + 6);
-		}
-
-		available -= msgLength + 6;
-	}
+		Q_ASSERT_X(false, "add non-primary socket", "not implemented");
 }

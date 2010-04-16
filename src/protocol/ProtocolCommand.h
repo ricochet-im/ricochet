@@ -11,7 +11,7 @@ class ProtocolCommand : public QObject
 	Q_OBJECT
 	Q_DISABLE_COPY(ProtocolCommand)
 
-	friend ProtocolManager;
+	friend ProtocolSocket;
 
 public:
 	static const int maxCommandData = 65540;
