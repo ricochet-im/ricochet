@@ -45,7 +45,7 @@ signals:
 	void primaryDisconnected();
 
 private:
-	ProtocolSocket *pPrimary;
+	ProtocolSocket *pPrimary, *remotePrimary;
 
 	QString pHost;
 	QByteArray pSecret;

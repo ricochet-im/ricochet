@@ -2,7 +2,7 @@
 #include "ProtocolCommand.h"
 
 ProtocolManager::ProtocolManager(ContactUser *u, const QString &host, quint16 port)
-	: QObject(u), user(u), pHost(host), pPort(port)
+	: QObject(u), user(u), pHost(host), pPort(port), remotePrimary(0)
 {
 	pPrimary = new ProtocolSocket(this);
 	connect(pPrimary, SIGNAL(socketReady()), this, SIGNAL(primaryConnected()));
@@ -63,6 +63,17 @@ void ProtocolManager::addSocket(QTcpSocket *socket, quint8 purpose)
 
 	if (purpose == 0x00)
 	{
+		/* Remote primary connection. */
+		if (remotePrimary)
+		{
+			/* Replaces any older one; a race condition would be possible if the reconnect timeout was
+			 * too short, but that shouldn't be an issue. */
+			remotePrimary->abort();
+			remotePrimary->deleteLater();
+		}
+
+		remotePrimary = psocket;
+
 		/* Remote primary connection. To avoid a race condition when both ends establish connections
 		 * simultaniously but do not yet know that the connection has been established, we do not
 		 * replace a pending connection attempt at this time. If that attempt fails, this connection
