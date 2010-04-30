@@ -62,7 +62,10 @@ void TorControlSocket::process()
 				<< (command ? command->keyword : "???") << "-" << code << line.mid(4, line.size() - 6);
 
 		if (command)
-			command->inputReply(code, line.mid(4, line.size() - 6), end);
+		{
+			QByteArray data = line.mid(4, line.size() - 6);
+			command->inputReply(code, data, end);
+		}
 
 		if (end)
 		{

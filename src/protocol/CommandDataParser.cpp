@@ -37,7 +37,7 @@ void CommandDataParser::setPos(int pos)
 template<typename T> bool CommandDataParser::appendInt(T value)
 {
 	Q_ASSERT(writable);
-	if (!writable || d->size() + sizeof(T) > maxCommandSize)
+	if (!writable || d->size() + int(sizeof(T)) > maxCommandSize)
 	{
 		error = true;
 		return false;
@@ -64,7 +64,7 @@ template<> bool CommandDataParser::appendInt<quint8>(quint8 value)
 
 template<typename T> bool CommandDataParser::takeInt(T &value)
 {
-	if (p + sizeof(T) > d->size())
+	if (p + int(sizeof(T)) > d->size())
 	{
 		error = true;
 		return false;

@@ -10,6 +10,7 @@ enum ContactPage
 };
 
 class ContactUser;
+class ChatWidget;
 
 class MainWindow : public QMainWindow
 {

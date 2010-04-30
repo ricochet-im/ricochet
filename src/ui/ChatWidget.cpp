@@ -319,7 +319,7 @@ void ChatWidget::clearOfflineNoticeInstantly()
 
 bool ChatWidget::event(QEvent *event)
 {
-	if (pUnread && event->type() == QEvent::Show || event->type() == QEvent::WindowActivate)
+	if (pUnread && (event->type() == QEvent::Show || event->type() == QEvent::WindowActivate))
 		clearUnreadMessages();
 
 	return QWidget::event(event);

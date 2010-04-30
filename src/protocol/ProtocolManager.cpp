@@ -2,7 +2,7 @@
 #include "ProtocolCommand.h"
 
 ProtocolManager::ProtocolManager(ContactUser *u, const QString &host, quint16 port)
-	: QObject(u), user(u), pHost(host), pPort(port), remotePrimary(0)
+	: QObject(u), user(u), remotePrimary(0), pHost(host), pPort(port)
 {
 	pPrimary = new ProtocolSocket(this);
 	connect(pPrimary, SIGNAL(socketReady()), this, SIGNAL(primaryConnected()));
