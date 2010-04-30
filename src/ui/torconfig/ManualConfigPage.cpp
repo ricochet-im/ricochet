@@ -1,10 +1,13 @@
 #include "ManualConfigPage.h"
+#include "TorConnTestWidget.h"
 #include <QBoxLayout>
 #include <QFormLayout>
 #include <QLabel>
 #include <QLineEdit>
 #include <QRegExpValidator>
 #include <QIntValidator>
+#include <QPushButton>
+#include <QVariant>
 
 using namespace TorConfig;
 
@@ -58,6 +61,19 @@ ManualConfigPage::ManualConfigPage(QWidget *parent)
 
 	registerField(QString("controlPassword"), passwordEdit);
 	formLayout->addRow(tr("Control Password"), passwordEdit);
+
+	/* Tester */
+	QBoxLayout *testLayout = new QHBoxLayout;
+
+	torTest = new TorConnTestWidget;
+	testLayout->addWidget(torTest, 1, Qt::AlignVCenter | Qt::AlignLeft);
+
+	QPushButton *testBtn = new QPushButton(tr("Test Connection"));
+	testLayout->addWidget(testBtn, 0, Qt::AlignVCenter | Qt::AlignRight);
+
+	connect(testBtn, SIGNAL(clicked()), this, SLOT(testSettings()));
+
+	layout->addLayout(testLayout);
 }
 
 void ManualConfigPage::initializePage()
@@ -71,4 +87,10 @@ void ManualConfigPage::initializePage()
 bool ManualConfigPage::isComplete() const
 {
 	return false;
+}
+
+void ManualConfigPage::testSettings()
+{
+	torTest->startTest(field(QString("controlIp")).toString(), field("controlPort").toString().toInt(),
+					   field("controlPassword").toString().toLocal8Bit());
 }

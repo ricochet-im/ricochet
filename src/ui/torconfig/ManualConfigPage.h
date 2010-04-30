@@ -20,8 +20,12 @@ public:
 
 	virtual bool isComplete() const;
 
+public slots:
+	void testSettings();
+
 private:
 	QLineEdit *ipEdit, *portEdit;
+	class TorConnTestWidget *torTest;
 };
 
 }

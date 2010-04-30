@@ -43,7 +43,8 @@ SOURCES += src/main.cpp \
     src/ui/torconfig/TorConfigWizard.cpp \
     src/ui/torconfig/IntroPage.cpp \
     src/ui/torconfig/ManualConfigPage.cpp \
-    src/protocol/ProtocolSocket.cpp
+    src/protocol/ProtocolSocket.cpp \
+    src/ui/torconfig/TorConnTestWidget.cpp
 HEADERS += src/ui/MainWindow.h \
     src/ui/ChatWidget.h \
     src/ContactsModel.h \
@@ -76,7 +77,8 @@ HEADERS += src/ui/MainWindow.h \
     src/ui/torconfig/TorConfigWizard.h \
     src/ui/torconfig/IntroPage.h \
     src/ui/torconfig/ManualConfigPage.h \
-    src/protocol/ProtocolSocket.h
+    src/protocol/ProtocolSocket.h \
+    src/ui/torconfig/TorConnTestWidget.h
 RESOURCES += res/resources.qrc \
     translation/embedded.qrc
 TRANSLATIONS = translation/torim.ts
