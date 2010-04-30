@@ -6,7 +6,7 @@ ProtocolManager::ProtocolManager(ContactUser *u, const QString &host, quint16 po
 {
 	pPrimary = new ProtocolSocket(this);
 	connect(pPrimary, SIGNAL(socketReady()), this, SIGNAL(primaryConnected()));
-	connect(pPrimary->socket, SIGNAL(disconnected()), this, SIGNAL(primaryDisconnected()));
+	connect(pPrimary->socket, SIGNAL(disconnected()), this, SLOT(onPrimaryDisconnected()));
 }
 
 void ProtocolManager::setHost(const QString &host)
@@ -97,4 +97,9 @@ void ProtocolManager::addSocket(QTcpSocket *socket, quint8 purpose)
 	}
 	else
 		Q_ASSERT_X(false, "add non-primary socket", "not implemented");
+}
+
+void ProtocolManager::onPrimaryDisconnected()
+{
+
 }

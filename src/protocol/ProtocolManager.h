@@ -44,6 +44,9 @@ signals:
 	void primaryConnected();
 	void primaryDisconnected();
 
+private slots:
+	void onPrimaryDisconnected();
+
 private:
 	ProtocolSocket *pPrimary, *remotePrimary;
 
