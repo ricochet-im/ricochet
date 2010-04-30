@@ -71,16 +71,11 @@ void ContactsModel::moveRow(int from, int to)
 	if (from < 0 || from >= contacts.size() || to < 0 || to >= contacts.size() || from == to)
 		return;
 
-	emit layoutAboutToBeChanged();
-	/* A shortcut is taken here by not changing persistent indexes for everything, but it isn't necessary
-	 * as used right now. */
-	for (int i = 0; i < columnCount(); ++i)
-	{
-		changePersistentIndex(index(from, i, QModelIndex()), index(to, i, QModelIndex()));
-		changePersistentIndex(index(to, i, QModelIndex()), index(from, i, QModelIndex()));
-	}
+	bool ok = beginMoveRows(QModelIndex(), from, from, QModelIndex(), (to > from) ? (to+1) : to);
+	Q_ASSERT(ok);
 
 	contacts.move(from, to);
+	endMoveRows();
 
 	/* Update the stored positions */
 	for (int i = 0; i < contacts.size(); ++i)
@@ -88,8 +83,6 @@ void ContactsModel::moveRow(int from, int to)
 		if (contacts[i]->readSetting(QString("listPosition"), -1).toInt() != i)
 			contacts[i]->writeSetting(QString("listPosition"), i);
 	}
-
-	emit layoutChanged();
 }
 
 int ContactsModel::rowCount(const QModelIndex &parent) const
