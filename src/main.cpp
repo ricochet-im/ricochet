@@ -2,12 +2,14 @@
 #include "core/ContactsManager.h"
 #include "tor/TorControlManager.h"
 #include "tor/HiddenService.h"
+#include "ui/torconfig/TorConfigWizard.h"
 #include "protocol/IncomingSocket.h"
 #include <QApplication>
 #include <QSettings>
 #include <QTime>
 #include <QDir>
 #include <QTranslator>
+#include <QMessageBox>
 
 QSettings *config = 0;
 
@@ -41,10 +43,9 @@ int main(int argc, char *argv[])
 	/* Incoming socket */
 	initIncomingSocket();
 
-	/* Tor control manager */
-	bool configured = connectTorControl();
-	if (!configured)
-		qFatal("Tor control settings aren't configured");
+	/* Tor control manager; this may enter into the TorConfigWizard. */
+	if (!connectTorControl())
+		return 0;
 
 	QObject::connect(torManager, SIGNAL(socksReady()), contactsManager, SLOT(connectToAll()));
 
@@ -113,6 +114,28 @@ static void initIncomingSocket()
 
 static bool connectTorControl()
 {
+	QHostAddress address(config->value("tor/controlIp").value<QString>());
+	quint16 port = (quint16)config->value("tor/controlPort", 0).toUInt();
+
+	if (address.isNull() || !port)
+	{
+		TorConfigWizard wizard;
+		int re = wizard.exec();
+		if (re != QDialog::Accepted)
+			return false;
+
+		address = config->value("tor/controlIp").value<QString>();
+		port = (quint16)config->value("tor/controlPort", 0).toUInt();
+
+		if (address.isNull() || !port)
+		{
+			QMessageBox::critical(0, wizard.tr("TorIM - Error"),
+				wizard.tr("The Tor configuration wizard did not complete successfully. Please restart the "
+				"application and try again."));
+			return false;
+		}
+	}
+
 	torManager = new Tor::TorControlManager;
 
 	/* Authentication */
@@ -127,12 +150,6 @@ static bool connectTorControl()
 	torManager->addHiddenService(service);
 
 	/* Connect */
-	QHostAddress address(config->value("tor/controlIp").value<QString>());
-	quint16 port = (quint16)config->value("tor/controlPort", 0).toUInt();
-
-	if (address.isNull() || !port)
-		return false;
-
 	torManager->connect(address, port);
 	return true;
 }

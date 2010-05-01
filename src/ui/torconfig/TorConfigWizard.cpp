@@ -13,6 +13,7 @@ TorConfigWizard::TorConfigWizard(QWidget *parent)
 	setFixedSize(550, 450);
 
 	addPage(new IntroPage);
+	addPage(new QWizardPage);
 	addPage(new ManualConfigPage);
 }
 
