@@ -6,7 +6,7 @@
 using namespace TorConfig;
 
 TorConnTestWidget::TorConnTestWidget(QWidget *parent)
-	: QWidget(parent), testManager(0)
+	: QWidget(parent), testManager(0), m_state(-1)
 {
 	QBoxLayout *layout = new QHBoxLayout(this);
 
@@ -24,18 +24,54 @@ void TorConnTestWidget::startTest(const QString &host, quint16 port, const QByte
 		testManager->deleteLater();
 	}
 
+	m_state = -1;
+
 	testManager = new Tor::TorControlManager(this);
-	connect(testManager, SIGNAL(socksReady()), this, SLOT(testSuccess()));
+	connect(testManager, SIGNAL(socksReady()), this, SLOT(doTestSuccess()));
 
 	testManager->setAuthPassword(authPassword);
 	testManager->connect(QHostAddress(host), port);
 
 	infoLabel->setText(tr("Testing connection..."));
+
+	emit testStarted();
+	emit stateChanged();
 }
 
-void TorConnTestWidget::testSuccess()
+void TorConnTestWidget::clear()
+{
+	if (testManager)
+	{
+		testManager->disconnect(this);
+		testManager->deleteLater();
+		testManager = 0;
+	}
+
+	m_state = -1;
+	infoLabel->setText(tr("The connection has not been tested"));
+	emit stateChanged();
+}
+
+void TorConnTestWidget::doTestSuccess()
 {
 	infoLabel->setText(tr("Successfully connected with Tor %1").arg(testManager->torVersion()));
 	testManager->deleteLater();
 	testManager = 0;
+
+	m_state = 1;
+	emit testSucceeded();
+	emit testFinished(true);
+	emit stateChanged();
+}
+
+void TorConnTestWidget::doTestFail()
+{
+	infoLabel->setText(tr("Generic failure message!"));
+	testManager->deleteLater();
+	testManager = 0;
+
+	m_state = 0;
+	emit testFailed();
+	emit testFinished(false);
+	emit stateChanged();
 }

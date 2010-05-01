@@ -34,6 +34,10 @@ ManualConfigPage::ManualConfigPage(QWidget *parent)
 	QFormLayout *formLayout = new QFormLayout;
 	layout->addLayout(formLayout);
 
+	/* Test widget */
+	torTest = new TorConnTestWidget;
+	connect(torTest, SIGNAL(stateChanged()), this, SIGNAL(completeChanged()));
+
 	/* IP */
 	ipEdit = new QLineEdit;
 	ipEdit->setWhatsThis(tr("The IP of the Tor control connection"));
@@ -46,6 +50,8 @@ ManualConfigPage::ManualConfigPage(QWidget *parent)
 	registerField(QString("controlIp*"), ipEdit);
 	formLayout->addRow(tr("Control IP"), ipEdit);
 
+	connect(ipEdit, SIGNAL(textChanged(QString)), torTest, SLOT(clear()));
+
 	/* Port */
 	portEdit = new QLineEdit;
 	portEdit->setValidator(new QIntValidator(1, 65535, portEdit));
@@ -53,6 +59,8 @@ ManualConfigPage::ManualConfigPage(QWidget *parent)
 
 	registerField(QString("controlPort*"), portEdit);
 	formLayout->addRow(tr("Control Port"), portEdit);
+
+	connect(portEdit, SIGNAL(textChanged(QString)), torTest, SLOT(clear()));
 
 	/* Password */
 	QLineEdit *passwordEdit = new QLineEdit;
@@ -62,10 +70,11 @@ ManualConfigPage::ManualConfigPage(QWidget *parent)
 	registerField(QString("controlPassword"), passwordEdit);
 	formLayout->addRow(tr("Control Password"), passwordEdit);
 
+	connect(passwordEdit, SIGNAL(textChanged(QString)), torTest, SLOT(clear()));
+
 	/* Tester */
 	QBoxLayout *testLayout = new QHBoxLayout;
 
-	torTest = new TorConnTestWidget;
 	testLayout->addWidget(torTest, 1, Qt::AlignVCenter | Qt::AlignLeft);
 
 	QPushButton *testBtn = new QPushButton(tr("Test Connection"));
@@ -73,20 +82,20 @@ ManualConfigPage::ManualConfigPage(QWidget *parent)
 
 	connect(testBtn, SIGNAL(clicked()), this, SLOT(testSettings()));
 
+	layout->addStretch();
 	layout->addLayout(testLayout);
+	layout->addStretch();
 }
 
 void ManualConfigPage::initializePage()
 {
-	wizard()->setOption(QWizard::HaveCustomButton1);
-
 	ipEdit->setText(QString("127.0.0.1"));
 	portEdit->setText(QString("9051"));
 }
 
 bool ManualConfigPage::isComplete() const
 {
-	return false;
+	return torTest->hasTestSucceeded();
 }
 
 void ManualConfigPage::testSettings()

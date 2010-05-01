@@ -23,12 +23,31 @@ public:
 
 	void startTest(const QString &host, quint16 port, const QByteArray &authPassword);
 
+	bool hasTestSucceeded() const { return m_state == 1; }
+	bool hasTestFailed() const { return m_state == 0; }
+
+	bool isTestRunning() const { return testManager != 0; }
+	bool hasTestCompleted() const { return m_state >= 0; }
+
+public slots:
+	void clear();
+
+signals:
+	void testStarted();
+	void testFinished(bool success);
+	bool testSucceeded();
+	bool testFailed();
+
+	void stateChanged();
+
 private slots:
-	void testSuccess();
+	void doTestSuccess();
+	void doTestFail();
 
 private:
 	QLabel *infoLabel;
 	Tor::TorControlManager *testManager;
+	qint8 m_state;
 };
 
 }
