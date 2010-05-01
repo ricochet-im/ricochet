@@ -20,6 +20,7 @@ public:
 
 signals:
 	void commandFinished(TorControlCommand *command);
+	void controlError(const QString &message);
 
 private slots:
 	void process();

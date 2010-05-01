@@ -24,6 +24,8 @@ TorControlManager::TorControlManager(QObject *parent)
 					 SLOT(commandFinished(TorControlCommand*)));
 	QObject::connect(socket, SIGNAL(connected()), this, SLOT(socketConnected()));
 	QObject::connect(socket, SIGNAL(disconnected()), this, SLOT(socketDisconnected()));
+	QObject::connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(socketError()));
+	QObject::connect(socket, SIGNAL(controlError(QString)), this, SLOT(setError(QString)));
 }
 
 QNetworkProxy TorControlManager::connectionProxy()
@@ -145,6 +147,11 @@ void TorControlManager::socketDisconnected()
 
 	/* This emits the disconnected() signal as well */
 	setStatus(NotConnected);
+}
+
+void TorControlManager::socketError()
+{
+	setError(tr("Connection failed: %1").arg(socket->errorString()));
 }
 
 void TorControlManager::authenticate()

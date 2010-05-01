@@ -67,10 +67,13 @@ signals:
 private slots:
 	void socketConnected();
 	void socketDisconnected();
+	void socketError();
 
 	void commandFinished(class TorControlCommand *command);
 
 	void getSocksInfoReply();
+
+	void setError(const QString &message);
 
 private:
 	class TorControlSocket *socket;
@@ -84,7 +87,6 @@ private:
 	Status pStatus;
 
 	void setStatus(Status status);
-	void setError(const QString &message);
 
 	void authenticate();
 	void getSocksInfo();

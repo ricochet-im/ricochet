@@ -31,13 +31,13 @@ void TorControlSocket::process()
 
 		if (line.size() < 4 || !line.endsWith("\r\n"))
 		{
-			qWarning("torctrl: Invalid syntax, ignored");
+			controlError(tr("Invalid control message syntax (may not be a Tor control port)"));
 			return;
 		}
 
 		if (line[3] == '+')
 		{
-			qWarning("torctrl: Data replies are not supported");
+			controlError(tr("BUG: Data replies are not supported"));
 			return;
 		}
 
@@ -46,7 +46,7 @@ void TorControlSocket::process()
 
 		if (!end && line[3] != '-')
 		{
-			qWarning("torctrl: Invalid syntax, ignored");
+			controlError(tr("Invalid or unrecognized syntax (may not be a Tor control port)"));
 			return;
 		}
 
