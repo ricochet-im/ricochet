@@ -59,7 +59,7 @@ public:
 	void addHiddenService(HiddenService *service);
 
 signals:
-	void statusChanged(Status newStatus, Status oldStatus);
+	void statusChanged(int newStatus, int oldStatus);
 	void connected();
 	void disconnected();
 	void socksReady();
@@ -74,6 +74,7 @@ private slots:
 
 private:
 	class TorControlSocket *socket;
+	QString pErrorMessage;
 	QString pTorVersion;
 	QByteArray pAuthPassword;
 	QHostAddress pSocksAddress;
@@ -83,6 +84,7 @@ private:
 	Status pStatus;
 
 	void setStatus(Status status);
+	void setError(const QString &message);
 
 	void authenticate();
 	void getSocksInfo();

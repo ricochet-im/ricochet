@@ -44,6 +44,8 @@ private slots:
 	void doTestSuccess();
 	void doTestFail();
 
+	void torStatusChanged(int status);
+
 private:
 	QLabel *infoLabel;
 	Tor::TorControlManager *testManager;

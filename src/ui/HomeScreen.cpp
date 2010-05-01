@@ -143,7 +143,7 @@ QLayout *HomeScreen::createStatus()
 
 	layout->addWidget(torInfo);
 
-	connect(torManager, SIGNAL(statusChanged(Status,Status)), this, SLOT(updateTorStatus()));
+	connect(torManager, SIGNAL(statusChanged(int,int)), this, SLOT(updateTorStatus()));
 	updateTorStatus();
 
 	return layout;

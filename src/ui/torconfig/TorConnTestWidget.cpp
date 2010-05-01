@@ -28,6 +28,7 @@ void TorConnTestWidget::startTest(const QString &host, quint16 port, const QByte
 
 	testManager = new Tor::TorControlManager(this);
 	connect(testManager, SIGNAL(socksReady()), this, SLOT(doTestSuccess()));
+	connect(testManager, SIGNAL(statusChanged(int,int)), this, SLOT(torStatusChanged(int)));
 
 	testManager->setAuthPassword(authPassword);
 	testManager->connect(QHostAddress(host), port);
@@ -66,7 +67,7 @@ void TorConnTestWidget::doTestSuccess()
 
 void TorConnTestWidget::doTestFail()
 {
-	infoLabel->setText(tr("Generic failure message!"));
+	infoLabel->setText(testManager->statusText());
 	testManager->deleteLater();
 	testManager = 0;
 
@@ -74,4 +75,10 @@ void TorConnTestWidget::doTestFail()
 	emit testFailed();
 	emit testFinished(false);
 	emit stateChanged();
+}
+
+void TorConnTestWidget::torStatusChanged(int status)
+{
+	if (status == Tor::TorControlManager::Error)
+		doTestFail();
 }

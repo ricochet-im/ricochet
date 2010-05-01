@@ -39,6 +39,9 @@ void TorControlManager::setStatus(Status n)
 	Status old = pStatus;
 	pStatus = n;
 
+	if (old == Error)
+		pErrorMessage.clear();
+
 	emit statusChanged(pStatus, old);
 
 	if (pStatus == Connected && old < Connected)
@@ -47,12 +50,22 @@ void TorControlManager::setStatus(Status n)
 		emit disconnected();
 }
 
+void TorControlManager::setError(const QString &message)
+{
+	pErrorMessage = message;
+	setStatus(Error);
+
+	qWarning() << "torctrl: Error:" << pErrorMessage;
+
+	socket->abort();
+}
+
 QString TorControlManager::statusText() const
 {
 	switch (pStatus)
 	{
 	case Error:
-		return tr("An unknown error occurred");
+		return pErrorMessage.isEmpty() ? tr("An unknown error occurred") : pErrorMessage;
 	case NotConnected:
 		return tr("Not connected to Tor");
 	case Connecting:
@@ -93,9 +106,13 @@ void TorControlManager::commandFinished(TorControlCommand *command)
 	{
 		Q_ASSERT(status() == Authenticating);
 
-		if (command->statusCode() != 250)
+		if (command->statusCode() == 515)
 		{
-			qWarning() << "torctrl: Authentication failed with code" << command->statusCode();
+			setError(tr("Authentication failed - incorrect password"));
+		}
+		else if (command->statusCode() != 250)
+		{
+			setError(tr("Authentication failed (error %1)").arg(command->statusCode()));
 			return;
 		}
 
@@ -148,7 +165,7 @@ void TorControlManager::authenticate()
 
 		if (pAuthPassword.isEmpty())
 		{
-			qWarning() << "torctrl: Password authentication required and no password is configured";
+			setError(tr("Tor requires a control password to connect, but no password is configured."));
 			delete command;
 			return;
 		}
@@ -157,7 +174,7 @@ void TorControlManager::authenticate()
 	}
 	else
 	{
-		qWarning("torctrl: No supported authentication methods");
+		setError(tr("Tor is not configured to accept any supported authentication methods."));
 		delete command;
 		return;
 	}
