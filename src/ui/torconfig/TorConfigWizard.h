@@ -10,6 +10,8 @@ class TorConfigWizard : public QWizard
 
 public:
 	explicit TorConfigWizard(QWidget *parent = 0);
+
+	virtual void accept();
 };
 
 #endif // TORCONFIGWIZARD_H
