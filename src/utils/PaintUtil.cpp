@@ -7,13 +7,17 @@
 
 QPixmap customSelectionRect(const QSize &size, QStyle::State state)
 {
-	if (!(state & QStyle::State_Selected))
-		return QPixmap();
-
 	QString cacheKey;
 	cacheKey.reserve(32);
 	cacheKey += QLatin1String("cselr-");
 	cacheKey += QString::number(size.width()) + QChar('x') + QString::number(size.height());
+
+	if (state & QStyle::State_Selected)
+		cacheKey += QLatin1String("-s");
+	else if (state & QStyle::State_MouseOver)
+		cacheKey += QLatin1String("-h");
+	else
+		return QPixmap();
 
 	QPixmap re;
 	if (QPixmapCache::find(cacheKey, &re))
@@ -26,11 +30,21 @@ QPixmap customSelectionRect(const QSize &size, QStyle::State state)
 
 	QLinearGradient gradient(0, 0, 0, 1);
 	gradient.setCoordinateMode(QGradient::ObjectBoundingMode);
-	gradient.setColorAt(0, QColor(242, 248, 255));
-	gradient.setColorAt(1, QColor(211, 232, 255));
+
+	if (state & QStyle::State_Selected)
+	{
+		gradient.setColorAt(0, QColor(242, 248, 255));
+		gradient.setColorAt(1, QColor(211, 232, 255));
+		p.setPen(QPen(QColor(114, 180, 211)));
+	}
+	else if (state & QStyle::State_MouseOver)
+	{
+		gradient.setColorAt(0, QColor(250, 250, 255));
+		gradient.setColorAt(1, QColor(235, 244, 255));
+		p.setPen(QPen(QColor(160, 201, 220)));
+	}
 
 	p.setBrush(QBrush(gradient));
-	p.setPen(QPen(QColor(114, 180, 211)));
 
 	p.drawRoundedRect(QRect(1, 1, size.width() - 2, size.height() - 2), 3, 3);
 

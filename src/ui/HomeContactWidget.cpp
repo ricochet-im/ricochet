@@ -120,18 +120,23 @@ void HomeContactWidget::paintEvent(QPaintEvent *event)
 
 	int xpos = (r.width() - icon.width());
 
+	bool mouseOver = QRect(mapToGlobal(QPoint(0,0)), size()).contains(QCursor::pos());
+
 	if (isSelected())
 	{
 		p.drawPixmap(r.topLeft(), customSelectionRect(r.size(), QStyle::State_Selected));
-		xpos /= 2;
+		xpos = qRound(xpos / 2.0);
 	}
-	else if (!QRect(mapToGlobal(QPoint(0,0)), size()).contains(QCursor::pos()))
+	else if (mouseOver)
+	{
+		p.drawPixmap(r.topLeft(), customSelectionRect(r.size(), QStyle::State_MouseOver));
+		xpos -= 5;
+	}
+	else
 	{
 		p.setOpacity(0.5);
 		xpos -= 5;
 	}
-	else
-		xpos -= 5;
 
 	xpos -= iconOffset();
 
