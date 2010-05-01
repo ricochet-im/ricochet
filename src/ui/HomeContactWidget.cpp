@@ -1,5 +1,6 @@
 #include "main.h"
 #include "HomeContactWidget.h"
+#include "utils/PaintUtil.h"
 #include <QMouseEvent>
 #include <QPainter>
 #include <QCursor>
@@ -121,7 +122,7 @@ void HomeContactWidget::paintEvent(QPaintEvent *event)
 
 	if (isSelected())
 	{
-		p.fillRect(r, Qt::blue);
+		p.drawPixmap(r.topLeft(), customSelectionRect(r.size(), QStyle::State_Selected));
 		xpos /= 2;
 	}
 	else if (!QRect(mapToGlobal(QPoint(0,0)), size()).contains(QCursor::pos()))
