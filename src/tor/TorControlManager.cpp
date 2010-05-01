@@ -111,6 +111,7 @@ void TorControlManager::commandFinished(TorControlCommand *command)
 		if (command->statusCode() == 515)
 		{
 			setError(tr("Authentication failed - incorrect password"));
+			return;
 		}
 		else if (command->statusCode() != 250)
 		{
