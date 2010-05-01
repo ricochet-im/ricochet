@@ -7,6 +7,8 @@ QT += core \
 TARGET = TorIM
 TEMPLATE = app
 
+CONFIG += debug_and_release
+
 INCLUDEPATH += src
 
 QMAKE_RESOURCE_FLAGS += -no-compress
