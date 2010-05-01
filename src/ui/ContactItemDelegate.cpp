@@ -1,6 +1,7 @@
 #include "ContactItemDelegate.h"
 #include "ContactsView.h"
 #include "ContactsModel.h"
+#include "utils/PaintUtil.h"
 #include <QPainter>
 #include <QApplication>
 #include <QCursor>
@@ -49,8 +50,7 @@ void ContactItemDelegate::paint(QPainter *p, const QStyleOptionViewItem &opt,
 
 	/* Selection (behind the avatar) */
 	ropt.rect.adjust(0, 0, 0, -3);
-	ropt.state |= QStyle::State_Active;
-	qApp->style()->drawPrimitive(QStyle::PE_PanelItemViewItem, &ropt, p, ropt.widget);
+	p->drawPixmap(ropt.rect.topLeft(), customSelectionRect(ropt.rect.size(), ropt.state));
 
 	/* Avatar */
 	QPixmap avatar = index.data(Qt::DecorationRole).value<QPixmap>();
@@ -67,7 +67,7 @@ void ContactItemDelegate::paint(QPainter *p, const QStyleOptionViewItem &opt,
 	/* Status */
 	QPixmap status = index.data(ContactsModel::StatusIndicator).value<QPixmap>();
 	if (!status.isNull())
-		p->drawPixmap(avatarPos - QPoint(status.width()/2-1, status.height()/2-1), status);
+		p->drawPixmap(avatarPos - QPoint(status.width()/2-2, status.height()/2-3), status);
 
 	/* Draw nickname */
 	r.adjust(41, 0, 0, 0);
