@@ -130,7 +130,7 @@ void ProtocolManager::spawnReconnect()
 	if (connectAttempts <= 6)
 		delay = connectAttempts * 45;
 	else
-		delay = qMax((6 * 45) + ((connectAttempts - 6) * 90), 900);
+		delay = qMin((6 * 45) + ((connectAttempts - 6) * 90), 900);
 
 	qDebug() << "Spawning reconnection to" << user->uniqueID << "with a delay of" << delay << "seconds";
 
