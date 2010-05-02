@@ -37,6 +37,7 @@ int ProtocolCommand::prepareCommand(quint8 state, unsigned reserveSize)
 
 void ProtocolCommand::sendCommand(ProtocolManager *to, bool ordered)
 {
+        Q_UNUSED(ordered);
 	Q_ASSERT(commandBuffer.size() >= 6);
 	Q_ASSERT(to);
 

@@ -34,6 +34,7 @@ QByteArray AuthenticateCommand::build(const QByteArray &data)
 
 void AuthenticateCommand::handleReply(int code, QByteArray &data, bool end)
 {
+        Q_UNUSED(code);
 	if (end)
 		statusMessage = data;
 }
