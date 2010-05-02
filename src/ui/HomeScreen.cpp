@@ -53,7 +53,7 @@ HomeScreen::HomeScreen(QWidget *parent)
 
 	layout->addWidget(line);
 
-	layout->addLayout(createStatus());
+	layout->addWidget(createStatus());
 }
 
 void HomeScreen::createAvatar()
@@ -129,9 +129,15 @@ QLayout *HomeScreen::createButtons()
 	return layout;
 }
 
-QLayout *HomeScreen::createStatus()
+QWidget *HomeScreen::createStatus()
 {
-	QBoxLayout *layout = new QHBoxLayout;
+	QWidget *widget = new QWidget;
+	widget->setContextMenuPolicy(Qt::ActionsContextMenu);
+	widget->addAction(actTestConnection);
+	widget->addAction(actTorConfig);
+
+	QBoxLayout *layout = new QHBoxLayout(widget);
+	layout->setMargin(0);
 
 	QFont font("Calibri");
 	font.setPixelSize(13);
@@ -163,7 +169,7 @@ QLayout *HomeScreen::createStatus()
 	connect(torManager, SIGNAL(statusChanged(int,int)), this, SLOT(updateTorStatus()));
 	updateTorStatus();
 
-	return layout;
+	return widget;
 }
 
 void HomeScreen::updateTorStatus()

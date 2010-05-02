@@ -45,7 +45,7 @@ private:
 	void createAvatar();
 	void createActions();
 	class QLayout *createButtons();
-	class QLayout *createStatus();
+	class QWidget *createStatus();
 };
 
 #endif // HOMESCREEN_H
