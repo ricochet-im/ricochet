@@ -52,22 +52,29 @@ public:
 	void sendCommand(ProtocolCommand *command);
 
 signals:
+	/* Connected and authenticated */
 	void socketReady();
+	/* Disconnected from an authenticated connection */
+	void disconnected();
+	/* Connection attempt failed or disconnected from an unauthenticated connection */
+	void connectFailed();
 
 public slots:
 	void abort();
+	void abortConnectionAttempt();
 
 private slots:
 	void sendAuth();
 	void flushCommands();
 
 	void read();
+	void socketDisconnected();
 
 private:
 	QQueue<ProtocolCommand*> commandQueue;
 	QHash<quint16,ProtocolCommand*> pendingCommands;
 
-	bool authPending, authFinished;
+	bool active, authPending, authFinished;
 
 	void setupSocket();
 };

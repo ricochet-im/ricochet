@@ -62,7 +62,10 @@ signals:
 	void primaryDisconnected();
 
 private slots:
+	void onPrimaryConnected();
 	void onPrimaryDisconnected();
+
+	void spawnReconnect();
 
 private:
 	ProtocolSocket *pPrimary, *remotePrimary;
@@ -71,7 +74,10 @@ private:
 	QByteArray pSecret;
 	quint16 pPort;
 
-	virtual void addSocket(QTcpSocket *socket, quint8 purpose);
+	int connectAttempts;
+
+	void addSocket(QTcpSocket *socket, quint8 purpose);
+	void setPrimary(ProtocolSocket *newPrimary);
 };
 
 /* Do not change this, as it breaks backwards compatibility. Hopefully, it will never be necessary. */

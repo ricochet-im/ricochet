@@ -25,7 +25,7 @@
 
 /* Create with an established, authenticated connection */
 ProtocolSocket::ProtocolSocket(QTcpSocket *s, ProtocolManager *m)
-	: QObject(m), manager(m), socket(s), authPending(false), authFinished(true)
+	: QObject(m), manager(m), socket(s), active(true), authPending(false), authFinished(true)
 {
 	Q_ASSERT(isConnected());
 
@@ -35,7 +35,7 @@ ProtocolSocket::ProtocolSocket(QTcpSocket *s, ProtocolManager *m)
 
 /* Create a new outgoing connection */
 ProtocolSocket::ProtocolSocket(ProtocolManager *m)
-	: QObject(m), manager(m), socket(new QTcpSocket(this)), authPending(false), authFinished(false)
+	: QObject(m), manager(m), socket(new QTcpSocket(this)), active(false), authPending(false), authFinished(false)
 {
 	connect(socket, SIGNAL(connected()), this, SLOT(sendAuth()));
 	connect(this, SIGNAL(socketReady()), this, SLOT(flushCommands()));
@@ -45,6 +45,8 @@ ProtocolSocket::ProtocolSocket(ProtocolManager *m)
 void ProtocolSocket::setupSocket()
 {
 	connect(socket, SIGNAL(readyRead()), this, SLOT(read()));
+	connect(socket, SIGNAL(disconnected()), this, SLOT(socketDisconnected()));
+	connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(socketDisconnected()));
 }
 
 bool ProtocolSocket::isConnected() const
@@ -60,6 +62,8 @@ bool ProtocolSocket::isConnecting() const
 
 void ProtocolSocket::connectToHost(const QString &host, quint16 port)
 {
+	active = true;
+
 	socket->setProxy(torManager->connectionProxy());
 	socket->connectToHost(host, port);
 }
@@ -67,6 +71,21 @@ void ProtocolSocket::connectToHost(const QString &host, quint16 port)
 void ProtocolSocket::abort()
 {
 	socket->abort();
+}
+
+void ProtocolSocket::abortConnectionAttempt()
+{
+	if (!isConnecting())
+		return;
+
+	/* We need to ensure that socketDisconnected is called once even if there wasn't technically a
+	 * connection yet (as it handles errors too). */
+
+	socket->blockSignals(true);
+	socket->abort();
+	socket->blockSignals(false);
+
+	socketDisconnected();
 }
 
 void ProtocolSocket::sendAuth()
@@ -221,4 +240,23 @@ void ProtocolSocket::read()
 
 		available -= msgLength + 6;
 	}
+}
+
+void ProtocolSocket::socketDisconnected()
+{
+	if (!active)
+		return;
+
+	active = false;
+
+	if (authFinished && !isConnecting())
+		emit disconnected();
+	else
+		emit connectFailed();
+
+	authFinished = authPending = false;
+
+	/* TODO: EEK. These need to be handled properly! */
+	commandQueue.clear();
+	pendingCommands.clear();
 }

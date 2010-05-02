@@ -17,13 +17,12 @@
 
 #include "ProtocolManager.h"
 #include "ProtocolCommand.h"
+#include <QTimer>
 
 ProtocolManager::ProtocolManager(ContactUser *u, const QString &host, quint16 port)
-	: QObject(u), user(u), remotePrimary(0), pHost(host), pPort(port)
+	: QObject(u), user(u), pPrimary(0), remotePrimary(0), pHost(host), pPort(port), connectAttempts(0)
 {
-	pPrimary = new ProtocolSocket(this);
-	connect(pPrimary, SIGNAL(socketReady()), this, SIGNAL(primaryConnected()));
-	connect(pPrimary->socket, SIGNAL(disconnected()), this, SLOT(onPrimaryDisconnected()));
+	setPrimary(new ProtocolSocket(this));
 }
 
 void ProtocolManager::setHost(const QString &host)
@@ -61,15 +60,68 @@ bool ProtocolManager::isAnyConnected() const
 	return false;
 }
 
+void ProtocolManager::setPrimary(ProtocolSocket *newPrimary)
+{
+	if (pPrimary == newPrimary)
+		return;
+
+	if (pPrimary)
+	{
+		/* TODO: copy pending commands and such */
+		qDebug() << "Replacing primary socket with a new socket";
+		pPrimary->abort();
+		pPrimary->disconnect(this);
+		pPrimary->deleteLater();
+	}
+
+	pPrimary = newPrimary;
+	connect(pPrimary, SIGNAL(socketReady()), this, SLOT(onPrimaryConnected()));
+	connect(pPrimary, SIGNAL(disconnected()), this, SLOT(onPrimaryDisconnected()));
+	connect(pPrimary, SIGNAL(connectFailed()), this, SLOT(spawnReconnect()));
+
+	if (pPrimary->isConnected())
+		emit primaryConnected();
+}
+
 void ProtocolManager::connectPrimary()
 {
-	if (pPrimary && (pPrimary->isConnecting() || pPrimary->isConnected()))
+	Q_ASSERT(pPrimary);
+
+	if (pPrimary->isConnecting() || pPrimary->isConnected())
 		return;
 
 	if (host().isEmpty() || !port())
 		return;
 
 	pPrimary->connectToHost(host(), port());
+}
+
+void ProtocolManager::spawnReconnect()
+{
+	/* See if any other connections can be used as the new primary */
+	if (remotePrimary && remotePrimary != pPrimary && remotePrimary->isConnected())
+	{
+		setPrimary(remotePrimary);
+		return;
+	}
+
+	/* TODO: Outgoing auxiliary connections with no owner can be repurposed as a new primary connection */
+
+	connectAttempts++;
+
+	int delay = 0;
+
+	/* For the first 6 attempts, scale linearly at a delay of 45 seconds
+	 * For each following attempt, add 90 seconds to a maximum of 15 minutes.
+	 * These numbers are completely arbitrary. */
+	if (connectAttempts <= 6)
+		delay = connectAttempts * 45;
+	else
+		delay = qMax((6 * 45) + ((connectAttempts - 6) * 90), 900);
+
+	qDebug() << "Spawning reconnection to" << user->uniqueID << "with a delay of" << delay << "seconds";
+
+	QTimer::singleShot(delay * 1000, this, SLOT(connectPrimary()));
 }
 
 void ProtocolManager::addSocket(QTcpSocket *socket, quint8 purpose)
@@ -91,32 +143,32 @@ void ProtocolManager::addSocket(QTcpSocket *socket, quint8 purpose)
 
 		remotePrimary = psocket;
 
-		/* Remote primary connection. To avoid a race condition when both ends establish connections
-		 * simultaniously but do not yet know that the connection has been established, we do not
-		 * replace a pending connection attempt at this time. If that attempt fails, this connection
-		 * may be used as the new local primary. */
-		if (!pPrimary || (!pPrimary->isConnecting() && !pPrimary->isConnected()))
+		/* If there is no existing local primary connection and no active attempt, use this as the local primary.
+		 * If there is an active attempt, wait 30 seconds and abort it if it has not completed in that time. That
+		 * will then trigger logic that will use the remote primary as the new local primary. */
+		if (pPrimary && pPrimary->isConnecting())
 		{
-			/* TODO lots of fixing */
-			if (pPrimary)
-			{
-				qDebug() << "Replacing unconnected primary socket with incoming socket";
-				pPrimary->abort();
-				pPrimary->deleteLater();
-			}
-
-			pPrimary = psocket;
-			connect(pPrimary, SIGNAL(socketReady()), this, SIGNAL(primaryConnected()));
-			connect(pPrimary->socket, SIGNAL(disconnected()), this, SIGNAL(primaryDisconnected()));
-
-			emit primaryConnected();
+			qDebug() << "Waiting 30 seconds for an existing connection attempt before using the remote primary";
+			QTimer::singleShot(30000, pPrimary, SLOT(abortConnectionAttempt()));
 		}
+		else if (!pPrimary || !pPrimary->isConnected())
+			setPrimary(remotePrimary);
 	}
 	else
 		Q_ASSERT_X(false, "add non-primary socket", "not implemented");
 }
 
+void ProtocolManager::onPrimaryConnected()
+{
+	emit primaryConnected();
+	connectAttempts = 0;
+}
+
 void ProtocolManager::onPrimaryDisconnected()
 {
+	if (pPrimary != sender())
+		return;
 
+	emit primaryDisconnected();
+	spawnReconnect();
 }
