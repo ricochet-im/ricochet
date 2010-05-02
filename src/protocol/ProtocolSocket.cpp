@@ -62,7 +62,19 @@ bool ProtocolSocket::isConnecting() const
 
 void ProtocolSocket::connectToHost(const QString &host, quint16 port)
 {
+	if (isConnected() && socket->peerName() == host && socket->peerPort() == port)
+		return;
+
+	socket->abort();
 	active = true;
+
+	if (!torManager->isSocksReady())
+	{
+		/* Can't make any connection; behave as if the connection attempt failed.
+		 * Many things should handle this situation prior to this function anyway. */
+		socketDisconnected();
+		return;
+	}
 
 	socket->setProxy(torManager->connectionProxy());
 	socket->connectToHost(host, port);
