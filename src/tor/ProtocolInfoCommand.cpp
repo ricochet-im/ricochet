@@ -34,6 +34,8 @@ QByteArray ProtocolInfoCommand::build()
 
 void ProtocolInfoCommand::handleReply(int code, QByteArray &data, bool end)
 {
+        Q_UNUSED(end);
+
 	if (code != 250)
 		return;
 

@@ -45,6 +45,8 @@ QByteArray GetConfCommand::build(const QList<QByteArray> &keys)
 
 void GetConfCommand::handleReply(int code, QByteArray &data, bool end)
 {
+        Q_UNUSED(end);
+
 	if (code != 250)
 		return;
 
