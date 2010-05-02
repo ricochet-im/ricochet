@@ -95,9 +95,7 @@ void ProtocolSocket::sendAuth()
 	QByteArray secret = manager->secret();
 	Q_ASSERT(secret.size() == 16);
 
-	quint8 purpose;
-	qWarning("ProtocolSocket doesn't know its purpose!");
-	purpose = 0x00;
+	quint8 purpose = 0x00;
 
 	/* Introduction; 0x49 0x4D [1*version] [16*cookie] [1*purpose] */
 	QByteArray intro;
