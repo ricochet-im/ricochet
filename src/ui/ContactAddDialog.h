@@ -1,5 +1,5 @@
 /* TorIM - http://gitorious.org/torim
- * Copyright (C) 2010, John Brooks <special@dereferenced.net>
+ * Copyright (C) 2010, Robin Burchell <robin.burchell@collabora.co.uk>
  *
  * TorIM is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,38 +15,27 @@
  * along with TorIM. If not, see http://www.gnu.org/licenses/
  */
 
-#ifndef HOMESCREEN_H
-#define HOMESCREEN_H
+#ifndef CONTACTADDDIALOG_H
+#define CONTACTADDDIALOG_H
 
-#include <QWidget>
+#include <QDialog>
 
-class HomeScreen : public QWidget
+class QLineEdit;
+class FancyTextEdit;
+
+class ContactAddDialog : public QDialog
 {
     Q_OBJECT
-    Q_DISABLE_COPY(HomeScreen)
-
 public:
-    explicit HomeScreen(QWidget *parent = 0);
-
+    explicit ContactAddDialog(QWidget *parent = 0);
 private slots:
-    void updateTorStatus();
-
-    void startTorConfig();
-
-    void startAddContact();
+    void processFriendAdd();
+    void checkClipboardForId();
 private:
-    class QLabel *avatar;
-
-    QList<QAction*> buttonActions;
-    class QAction *actAddContact, *actChangeAvatar, *actOpenDownloads, *actTestConnection, *actOptions;
-    class QAction *actTorConfig;
-
-    QLabel *torStatus, *torInfo;
-
-    void createAvatar();
-    void createActions();
-    class QLayout *createButtons();
-    class QWidget *createStatus();
+    QWidget *createUI() const;
+    QLineEdit * const m_nickname;
+    QLineEdit * const m_id;
+    FancyTextEdit * const m_message;
 };
 
-#endif // HOMESCREEN_H
+#endif // CONTACTADDDIALOG_H

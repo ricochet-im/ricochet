@@ -19,6 +19,7 @@
 #include "HomeScreen.h"
 #include "tor/TorControlManager.h"
 #include "torconfig/TorConfigWizard.h"
+#include "ui/ContactAddDialog.h"
 #include <QApplication>
 #include <QBoxLayout>
 #include <QLabel>
@@ -73,6 +74,7 @@ void HomeScreen::createAvatar()
 void HomeScreen::createActions()
 {
     actAddContact = new QAction(QIcon(":/icons/user--plus.png"), tr("Add New Contact"), this);
+    connect(actAddContact, SIGNAL(triggered()), SLOT(startAddContact()));
     actChangeAvatar = new QAction(QIcon(":/icons/image--pencil.png"), tr("Change Avatar"), this);
     actOpenDownloads = new QAction(QIcon(":/icons/folder-open-image.png"), tr("Open Downloads Folder"), this);
 
@@ -189,4 +191,10 @@ void HomeScreen::startTorConfig()
 {
     TorConfigWizard wizard(window());
     wizard.exec();
+}
+
+void HomeScreen::startAddContact()
+{
+    ContactAddDialog dialog;
+    dialog.exec();
 }
