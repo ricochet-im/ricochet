@@ -38,6 +38,8 @@ static void initTranslation();
 static void initIncomingSocket();
 static bool connectTorControl();
 
+#include "utils/CryptoKey.h"
+
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
@@ -57,6 +59,8 @@ int main(int argc, char *argv[])
 
     /* Initialize OpenSSL's allocator */
     CRYPTO_malloc_init();
+
+    CryptoKey::test(config->value("core/serviceDirectory", QString("data")).toString().append("/private_key"));
 
     /* Contacts */
     contactsManager = new ContactsManager;
