@@ -203,6 +203,13 @@ void ContactInfoPage::createNickname()
     nickname->setPalette(p);
 }
 
+static QString fullDateString(const QDateTime &date)
+{
+    return ContactInfoPage::tr("%1 (%2)", "date format; %1 is relative, %2 is absolute")
+            .arg(timeDifferenceString(date, QDateTime::currentDateTime()))
+            .arg(date.toString(Qt::SystemLocaleShortDate));
+}
+
 void ContactInfoPage::createInfoText()
 {
     if (!infoText)
@@ -215,18 +222,21 @@ void ContactInfoPage::createInfoText()
     QString text;
     QTextStream builder(&text);
 
-    QDateTime lastConnect = user->readSetting(QString("lastConnected")).toDateTime();
+    QDateTime lastConnect = user->readSetting(QLatin1String("lastConnected")).toDateTime();
     QString lastConnectStr;
     if (user->isConnected())
         lastConnectStr = tr("Online now");
     else if (lastConnect.isNull())
         lastConnectStr = tr("Never connected");
     else
-        lastConnectStr = tr("%1 (%2)").arg(timeDifferenceString(lastConnect, QDateTime::currentDateTime()))
-                         .arg(lastConnect.toString(Qt::SystemLocaleShortDate));
+        lastConnectStr = fullDateString(lastConnect);
 
-    builder << "<span style=''>" << tr("Last seen:") << "</span> <span style='color: #6e6e6e;'>"
-            << lastConnectStr << "</span>";
+    QDateTime addDate = user->readSetting(QLatin1String("whenCreated")).toDateTime();
+
+    if (!addDate.isNull())
+        builder << tr("Added:") << "<span style='color:#6e6e6e;'> " << fullDateString(addDate) << "</span><br>";
+
+    builder << tr("Last seen:") << "<span style='color:#6e6e6e;'> " << lastConnectStr << "</span>";
 
     infoText->setText(text);
 }
