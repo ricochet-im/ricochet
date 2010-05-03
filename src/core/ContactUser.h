@@ -34,6 +34,8 @@ class ContactUser : public QObject
 
     Q_PROPERTY(QString nickname READ nickname WRITE setNickname STORED true)
 
+    friend class ContactsManager;
+
 public:
     enum AvatarSize
     {
@@ -78,6 +80,9 @@ private:
     ProtocolManager *pConn;
     QString pNickname;
     QPixmapCache::Key cachedAvatar[2];
+
+    /* See ContactsManager::addContact */
+    static ContactUser *addNewContact(int id);
 
     void loadSettings();
 };

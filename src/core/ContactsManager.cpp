@@ -49,6 +49,20 @@ void ContactsManager::loadFromSettings()
     }
 }
 
+ContactUser *ContactsManager::addContact(const QString &nickname)
+{
+    Q_ASSERT(!nickname.isEmpty());
+
+    highestID++;
+    ContactUser *user = ContactUser::addNewContact(highestID);
+    user->setParent(this);
+    user->setNickname(nickname);
+
+    qDebug() << "Added new contact" << nickname << "with ID" << user->uniqueID;
+
+    return user;
+}
+
 ContactUser *ContactsManager::lookupSecret(const QByteArray &secret) const
 {
     Q_ASSERT(secret.size() == 16);

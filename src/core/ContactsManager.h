@@ -33,6 +33,8 @@ public:
     const QList<ContactUser*> &contacts() const { return pContacts; }
     ContactUser *lookupSecret(const QByteArray &secret) const;
 
+    ContactUser *addContact(const QString &nickname);
+
 public slots:
     void connectToAll();
 

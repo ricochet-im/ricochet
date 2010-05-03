@@ -60,6 +60,13 @@ void ContactUser::writeSetting(const QString &key, const QVariant &value)
     config->setValue(QString("contacts/%1/%2").arg(uniqueID).arg(key), value);
 }
 
+ContactUser *ContactUser::addNewContact(int id)
+{
+    ContactUser *user = new ContactUser(id);
+    user->writeSetting(QLatin1String("whenCreated"), QDateTime::currentDateTime());
+    return user;
+}
+
 QString ContactUser::statusLine() const
 {
     if (isConnected())
