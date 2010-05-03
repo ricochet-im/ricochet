@@ -22,7 +22,7 @@
 
 namespace Tor
 {
-	class TorControlManager;
+    class TorControlManager;
 }
 
 class QLabel;
@@ -32,41 +32,41 @@ namespace TorConfig
 
 class TorConnTestWidget : public QWidget
 {
-	Q_OBJECT
-	Q_DISABLE_COPY(TorConnTestWidget)
+    Q_OBJECT
+    Q_DISABLE_COPY(TorConnTestWidget)
 
 public:
-	explicit TorConnTestWidget(QWidget *parent = 0);
+    explicit TorConnTestWidget(QWidget *parent = 0);
 
-	void startTest(const QString &host, quint16 port, const QByteArray &authPassword);
+    void startTest(const QString &host, quint16 port, const QByteArray &authPassword);
 
-	bool hasTestSucceeded() const { return m_state == 1; }
-	bool hasTestFailed() const { return m_state == 0; }
+    bool hasTestSucceeded() const { return m_state == 1; }
+    bool hasTestFailed() const { return m_state == 0; }
 
-	bool isTestRunning() const { return testManager != 0; }
-	bool hasTestCompleted() const { return m_state >= 0; }
+    bool isTestRunning() const { return testManager != 0; }
+    bool hasTestCompleted() const { return m_state >= 0; }
 
 public slots:
-	void clear();
+    void clear();
 
 signals:
-	void testStarted();
-	void testFinished(bool success);
-	bool testSucceeded();
-	bool testFailed();
+    void testStarted();
+    void testFinished(bool success);
+    bool testSucceeded();
+    bool testFailed();
 
-	void stateChanged();
+    void stateChanged();
 
 private slots:
-	void doTestSuccess();
-	void doTestFail();
+    void doTestSuccess();
+    void doTestFail();
 
-	void torStatusChanged(int status);
+    void torStatusChanged(int status);
 
 private:
-	QLabel *infoLabel;
-	Tor::TorControlManager *testManager;
-	qint8 m_state;
+    QLabel *infoLabel;
+    Tor::TorControlManager *testManager;
+    qint8 m_state;
 };
 
 }

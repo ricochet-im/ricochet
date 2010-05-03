@@ -22,30 +22,30 @@
 
 class HomeScreen : public QWidget
 {
-	Q_OBJECT
-	Q_DISABLE_COPY(HomeScreen)
+    Q_OBJECT
+    Q_DISABLE_COPY(HomeScreen)
 
 public:
-	explicit HomeScreen(QWidget *parent = 0);
+    explicit HomeScreen(QWidget *parent = 0);
 
 private slots:
-	void updateTorStatus();
+    void updateTorStatus();
 
-	void startTorConfig();
+    void startTorConfig();
 
 private:
-	class QLabel *avatar;
+    class QLabel *avatar;
 
-	QList<QAction*> buttonActions;
-	class QAction *actAddContact, *actChangeAvatar, *actOpenDownloads, *actTestConnection, *actOptions;
-	class QAction *actTorConfig;
+    QList<QAction*> buttonActions;
+    class QAction *actAddContact, *actChangeAvatar, *actOpenDownloads, *actTestConnection, *actOptions;
+    class QAction *actTorConfig;
 
-	QLabel *torStatus, *torInfo;
+    QLabel *torStatus, *torInfo;
 
-	void createAvatar();
-	void createActions();
-	class QLayout *createButtons();
-	class QWidget *createStatus();
+    void createAvatar();
+    void createActions();
+    class QLayout *createButtons();
+    class QWidget *createStatus();
 };
 
 #endif // HOMESCREEN_H

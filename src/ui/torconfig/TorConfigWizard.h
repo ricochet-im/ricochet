@@ -22,13 +22,13 @@
 
 class TorConfigWizard : public QWizard
 {
-	Q_OBJECT
-	Q_DISABLE_COPY(TorConfigWizard)
+    Q_OBJECT
+    Q_DISABLE_COPY(TorConfigWizard)
 
 public:
-	explicit TorConfigWizard(QWidget *parent = 0);
+    explicit TorConfigWizard(QWidget *parent = 0);
 
-	virtual void accept();
+    virtual void accept();
 };
 
 #endif // TORCONFIGWIZARD_H

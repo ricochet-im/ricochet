@@ -24,138 +24,138 @@
 #include <QPropertyAnimation>
 
 HomeContactWidget::HomeContactWidget(QWidget *parent)
-	: QWidget(parent), pSelected(false), pIconOffset(0)
+    : QWidget(parent), pSelected(false), pIconOffset(0)
 {
-	setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
-	setBackgroundRole(QPalette::Base);
-	setAutoFillBackground(true);
-	setToolTip(tr("Your Information", "Tooltip for the 'Home' button in the contact list"));
+    setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
+    setBackgroundRole(QPalette::Base);
+    setAutoFillBackground(true);
+    setToolTip(tr("Your Information", "Tooltip for the 'Home' button in the contact list"));
 }
 
 void HomeContactWidget::setSelected(bool value)
 {
-	if (pSelected == value)
-		return;
+    if (pSelected == value)
+        return;
 
-	pSelected = value;
+    pSelected = value;
 
-	emit selectionChanged(pSelected);
+    emit selectionChanged(pSelected);
 
-	if (pSelected)
-		emit selected();
-	else
-		emit deselected();
+    if (pSelected)
+        emit selected();
+    else
+        emit deselected();
 
-	if (!isVisible())
-		return;
+    if (!isVisible())
+        return;
 
-	QPropertyAnimation *ani = new QPropertyAnimation(this, QByteArray("iconOffset"), this);
-	ani->setEndValue(0);
+    QPropertyAnimation *ani = new QPropertyAnimation(this, QByteArray("iconOffset"), this);
+    ani->setEndValue(0);
 
-	int maxOffset = ((width() - 16) / 2 - 5);
+    int maxOffset = ((width() - 16) / 2 - 5);
 
-	if (pSelected)
-	{
-		pIconOffset -= maxOffset;
-		ani->setDuration(200);
-		ani->setEasingCurve(QEasingCurve::OutBack);
-	}
-	else
-	{
-		pIconOffset += maxOffset;
-		ani->setDuration(250);
-		ani->setEasingCurve(QEasingCurve::InCubic);
-	}
+    if (pSelected)
+    {
+        pIconOffset -= maxOffset;
+        ani->setDuration(200);
+        ani->setEasingCurve(QEasingCurve::OutBack);
+    }
+    else
+    {
+        pIconOffset += maxOffset;
+        ani->setDuration(250);
+        ani->setEasingCurve(QEasingCurve::InCubic);
+    }
 
-	update();
-	ani->start(QAbstractAnimation::DeleteWhenStopped);
+    update();
+    ani->start(QAbstractAnimation::DeleteWhenStopped);
 }
 
 void HomeContactWidget::setIconOffset(int offset)
 {
-	if (pIconOffset == offset)
-		return;
+    if (pIconOffset == offset)
+        return;
 
-	pIconOffset = offset;
-	update();
+    pIconOffset = offset;
+    update();
 }
 
 QSize HomeContactWidget::sizeHint() const
 {
-	return QSize(24, 24);
+    return QSize(24, 24);
 }
 
 void HomeContactWidget::mousePressEvent(QMouseEvent *event)
 {
-	if (event->button() != Qt::LeftButton)
-	{
-		QWidget::mousePressEvent(event);
-		return;
-	}
+    if (event->button() != Qt::LeftButton)
+    {
+        QWidget::mousePressEvent(event);
+        return;
+    }
 
-	setSelected();
+    setSelected();
 }
 
 void HomeContactWidget::enterEvent(QEvent *event)
 {
-	Q_UNUSED(event);
-	if (isSelected())
-		return;
+    Q_UNUSED(event);
+    if (isSelected())
+        return;
 
-	//update();
+    //update();
 
-	QPropertyAnimation *ani = new QPropertyAnimation(this, QByteArray("iconOffset"), this);
-	ani->setEndValue(((width() - 16) / 2 - 5));
-	ani->setDuration(200);
-	ani->setEasingCurve(QEasingCurve::OutBack);
-	ani->start(QAbstractAnimation::DeleteWhenStopped);
+    QPropertyAnimation *ani = new QPropertyAnimation(this, QByteArray("iconOffset"), this);
+    ani->setEndValue(((width() - 16) / 2 - 5));
+    ani->setDuration(200);
+    ani->setEasingCurve(QEasingCurve::OutBack);
+    ani->start(QAbstractAnimation::DeleteWhenStopped);
 }
 
 void HomeContactWidget::leaveEvent(QEvent *event)
 {
-	Q_UNUSED(event);
-	if (isSelected())
-		return;
+    Q_UNUSED(event);
+    if (isSelected())
+        return;
 
-	//update();
+    //update();
 
-	QPropertyAnimation *ani = new QPropertyAnimation(this, QByteArray("iconOffset"), this);
-	ani->setEndValue(0);
-	ani->setDuration(250);
-	ani->setEasingCurve(QEasingCurve::InCubic);
-	ani->start(QAbstractAnimation::DeleteWhenStopped);
+    QPropertyAnimation *ani = new QPropertyAnimation(this, QByteArray("iconOffset"), this);
+    ani->setEndValue(0);
+    ani->setDuration(250);
+    ani->setEasingCurve(QEasingCurve::InCubic);
+    ani->start(QAbstractAnimation::DeleteWhenStopped);
 }
 
 void HomeContactWidget::paintEvent(QPaintEvent *event)
 {
-	Q_UNUSED(event);
+    Q_UNUSED(event);
 
-	QPainter p(this);
-	QRect r = rect();
+    QPainter p(this);
+    QRect r = rect();
 
-	QPixmap icon(":/icons/home.png");
+    QPixmap icon(":/icons/home.png");
 
-	int xpos = (r.width() - icon.width());
+    int xpos = (r.width() - icon.width());
 
-	bool mouseOver = QRect(mapToGlobal(QPoint(0,0)), size()).contains(QCursor::pos());
+    bool mouseOver = QRect(mapToGlobal(QPoint(0,0)), size()).contains(QCursor::pos());
 
-	if (isSelected())
-	{
-		p.drawPixmap(r.topLeft(), customSelectionRect(r.size(), QStyle::State_Selected));
-		xpos = qRound(xpos / 2.0);
-	}
-	else if (mouseOver)
-	{
-		p.drawPixmap(r.topLeft(), customSelectionRect(r.size(), QStyle::State_MouseOver));
-		xpos -= 5;
-	}
-	else
-	{
-		p.setOpacity(0.5);
-		xpos -= 5;
-	}
+    if (isSelected())
+    {
+        p.drawPixmap(r.topLeft(), customSelectionRect(r.size(), QStyle::State_Selected));
+        xpos = qRound(xpos / 2.0);
+    }
+    else if (mouseOver)
+    {
+        p.drawPixmap(r.topLeft(), customSelectionRect(r.size(), QStyle::State_MouseOver));
+        xpos -= 5;
+    }
+    else
+    {
+        p.setOpacity(0.5);
+        xpos -= 5;
+    }
 
-	xpos -= iconOffset();
+    xpos -= iconOffset();
 
-	p.drawPixmap(xpos, (r.height() - icon.height() - 4), icon);
+    p.drawPixmap(xpos, (r.height() - icon.height() - 4), icon);
 }

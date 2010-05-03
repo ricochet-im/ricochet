@@ -41,32 +41,32 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-	a.setApplicationVersion(QString("1.0.0"));
+    a.setApplicationVersion(QString("1.0.0"));
 
-	QDir::setCurrent(a.applicationDirPath());
+    QDir::setCurrent(a.applicationDirPath());
 
-	initSettings();
-	initTranslation();
+    initSettings();
+    initTranslation();
 
-	/* Seed RNG */
-	{
-		QTime now = QTime::currentTime();
-		qsrand(unsigned(now.second()) * now.msec() * unsigned(a.applicationPid()));
-	}
+    /* Seed RNG */
+    {
+        QTime now = QTime::currentTime();
+        qsrand(unsigned(now.second()) * now.msec() * unsigned(a.applicationPid()));
+    }
 
-	/* Contacts */
-	contactsManager = new ContactsManager;
+    /* Contacts */
+    contactsManager = new ContactsManager;
 
-	/* Incoming socket */
-	initIncomingSocket();
+    /* Incoming socket */
+    initIncomingSocket();
 
-	/* Tor control manager; this may enter into the TorConfigWizard. */
-	if (!connectTorControl())
-		return 0;
+    /* Tor control manager; this may enter into the TorConfigWizard. */
+    if (!connectTorControl())
+        return 0;
 
-	QObject::connect(torManager, SIGNAL(socksReady()), contactsManager, SLOT(connectToAll()));
+    QObject::connect(torManager, SIGNAL(socksReady()), contactsManager, SLOT(connectToAll()));
 
-	/* Window */
+    /* Window */
     MainWindow w;
     w.show();
 
@@ -75,98 +75,98 @@ int main(int argc, char *argv[])
 
 static void initSettings()
 {
-	/* Defaults */
-	qApp->setOrganizationName(QString("TorIM"));
-	QSettings::setDefaultFormat(QSettings::IniFormat);
-	QSettings::setPath(QSettings::IniFormat, QSettings::UserScope, qApp->applicationDirPath());
+    /* Defaults */
+    qApp->setOrganizationName(QString("TorIM"));
+    QSettings::setDefaultFormat(QSettings::IniFormat);
+    QSettings::setPath(QSettings::IniFormat, QSettings::UserScope, qApp->applicationDirPath());
 
-	/* Commandline */
-	QStringList args = qApp->arguments();
-	if (args.size() > 1)
-		config = new QSettings(args[1], QSettings::IniFormat);
-	else
-		config = new QSettings;
+    /* Commandline */
+    QStringList args = qApp->arguments();
+    if (args.size() > 1)
+        config = new QSettings(args[1], QSettings::IniFormat);
+    else
+        config = new QSettings;
 }
 
 static void initTranslation()
 {
-	QTranslator *translator = new QTranslator;
+    QTranslator *translator = new QTranslator;
 
-	bool ok = false;
-	QString appPath = qApp->applicationDirPath();
+    bool ok = false;
+    QString appPath = qApp->applicationDirPath();
 
-	/* First, try to load the user's configured language */
-	QString configLang = config->value("core/language").toString();
-	if (!configLang.isEmpty())
-	{
-		/* Look in the application directory */
-		ok = translator->load(QString("torim.") + configLang, appPath, QString("_"));
-		/* Look in the resources */
-		if (!ok)
-			ok = translator->load(QString("torim.") + configLang, QString(":/lang/"), QString("_"));
-	}
+    /* First, try to load the user's configured language */
+    QString configLang = config->value("core/language").toString();
+    if (!configLang.isEmpty())
+    {
+        /* Look in the application directory */
+        ok = translator->load(QString("torim.") + configLang, appPath, QString("_"));
+        /* Look in the resources */
+        if (!ok)
+            ok = translator->load(QString("torim.") + configLang, QString(":/lang/"), QString("_"));
+    }
 
-	/* Next, try to load the system locale language, and allow it to fall back to the english default */
-	if (!ok)
-	{
-		QString locale = QLocale::system().name();
-		ok = translator->load(QString("torim.") + configLang, appPath);
-		if (!ok)
-			ok = translator->load(QString("torim.") + configLang, QString(":/lang/"));
-	}
+    /* Next, try to load the system locale language, and allow it to fall back to the english default */
+    if (!ok)
+    {
+        QString locale = QLocale::system().name();
+        ok = translator->load(QString("torim.") + configLang, appPath);
+        if (!ok)
+            ok = translator->load(QString("torim.") + configLang, QString(":/lang/"));
+    }
 
-	if (ok)
-		qApp->installTranslator(translator);
+    if (ok)
+        qApp->installTranslator(translator);
 }
 
 static void initIncomingSocket()
 {
-	QHostAddress address(config->value("core/listenIp", QString("127.0.0.1")).toString());
-	quint16 port = (quint16)config->value("core/listenPort", 0).toUInt();
+    QHostAddress address(config->value("core/listenIp", QString("127.0.0.1")).toString());
+    quint16 port = (quint16)config->value("core/listenPort", 0).toUInt();
 
-	incomingSocket = new IncomingSocket;
-	if (!incomingSocket->listen(address, port))
-		qFatal("Failed to open incoming socket: %s", qPrintable(incomingSocket->errorString()));
+    incomingSocket = new IncomingSocket;
+    if (!incomingSocket->listen(address, port))
+        qFatal("Failed to open incoming socket: %s", qPrintable(incomingSocket->errorString()));
 }
 
 static bool connectTorControl()
 {
-	QHostAddress address(config->value("tor/controlIp").value<QString>());
-	quint16 port = (quint16)config->value("tor/controlPort", 0).toUInt();
+    QHostAddress address(config->value("tor/controlIp").value<QString>());
+    quint16 port = (quint16)config->value("tor/controlPort", 0).toUInt();
 
-	if (address.isNull() || !port)
-	{
-		TorConfigWizard wizard;
-		int re = wizard.exec();
-		if (re != QDialog::Accepted)
-			return false;
+    if (address.isNull() || !port)
+    {
+        TorConfigWizard wizard;
+        int re = wizard.exec();
+        if (re != QDialog::Accepted)
+            return false;
 
-		address = config->value("tor/controlIp").value<QString>();
-		port = (quint16)config->value("tor/controlPort", 0).toUInt();
+        address = config->value("tor/controlIp").value<QString>();
+        port = (quint16)config->value("tor/controlPort", 0).toUInt();
 
-		if (address.isNull() || !port)
-		{
-			QMessageBox::critical(0, wizard.tr("TorIM - Error"),
-				wizard.tr("The Tor configuration wizard did not complete successfully. Please restart the "
-				"application and try again."));
-			return false;
-		}
-	}
+        if (address.isNull() || !port)
+        {
+            QMessageBox::critical(0, wizard.tr("TorIM - Error"),
+                wizard.tr("The Tor configuration wizard did not complete successfully. Please restart the "
+                "application and try again."));
+            return false;
+        }
+    }
 
-	torManager = new Tor::TorControlManager;
+    torManager = new Tor::TorControlManager;
 
-	/* Authentication */
-	torManager->setAuthPassword(config->value("tor/authPassword").toByteArray());
+    /* Authentication */
+    torManager->setAuthPassword(config->value("tor/authPassword").toByteArray());
 
-	/* Hidden service */
-	QString serviceDir = config->value("core/serviceDirectory", QString("data")).toString();
+    /* Hidden service */
+    QString serviceDir = config->value("core/serviceDirectory", QString("data")).toString();
 
-	Tor::HiddenService *service = new Tor::HiddenService(serviceDir);
-	service->addTarget(13535, incomingSocket->serverAddress(), incomingSocket->serverPort());
+    Tor::HiddenService *service = new Tor::HiddenService(serviceDir);
+    service->addTarget(13535, incomingSocket->serverAddress(), incomingSocket->serverPort());
 
-	torManager->addHiddenService(service);
+    torManager->addHiddenService(service);
 
-	/* Connect */
-	torManager->connect(address, port);
-	return true;
+    /* Connect */
+    torManager->connect(address, port);
+    return true;
 }

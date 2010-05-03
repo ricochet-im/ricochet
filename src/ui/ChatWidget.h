@@ -27,52 +27,52 @@ class ChatWidget : public QWidget
 {
 Q_OBJECT
 public:
-	ContactUser * const user;
+    ContactUser * const user;
 
-	static ChatWidget *widgetForUser(ContactUser *user, bool create = true);
+    static ChatWidget *widgetForUser(ContactUser *user, bool create = true);
 
-	~ChatWidget();
+    ~ChatWidget();
 
-	void receiveMessage(const QDateTime &when, const QString &text);
+    void receiveMessage(const QDateTime &when, const QString &text);
 
-	int unreadMessages() const { return pUnread; }
+    int unreadMessages() const { return pUnread; }
 
 public slots:
-	void clearUnreadMessages();
+    void clearUnreadMessages();
 
 signals:
-	void messageReceived();
-	void unreadMessagesChanged(int unread);
+    void messageReceived();
+    void unreadMessagesChanged(int unread);
 
 private slots:
-	void sendInputMessage();
-	void messageReply();
+    void sendInputMessage();
+    void messageReply();
 
-	void scrollToBottom();
+    void scrollToBottom();
 
-	void showOfflineNotice();
-	void clearOfflineNotice();
-	void clearOfflineNoticeInstantly();
+    void showOfflineNotice();
+    void clearOfflineNotice();
+    void clearOfflineNoticeInstantly();
 
 protected:
-	virtual bool event(QEvent *event);
+    virtual bool event(QEvent *event);
 
 private:
-	static QHash<ContactUser*,ChatWidget*> userMap;
+    static QHash<ContactUser*,ChatWidget*> userMap;
 
-	class QTextEdit *textArea;
-	class QLineEdit *textInput;
-	class QWidget *offlineNotice;
+    class QTextEdit *textArea;
+    class QLineEdit *textInput;
+    class QWidget *offlineNotice;
 
-	int pUnread;
+    int pUnread;
 
-	explicit ChatWidget(ContactUser *user);
+    explicit ChatWidget(ContactUser *user);
 
-	void createTextArea();
-	void createTextInput();
+    void createTextArea();
+    void createTextInput();
 
-	void addChatMessage(ContactUser *user, const QDateTime &when, const QString &text, int identifier = 0);
-	bool findBlockIdentifier(int identifier, class QTextBlock &block);
+    void addChatMessage(ContactUser *user, const QDateTime &when, const QString &text, int identifier = 0);
+    bool findBlockIdentifier(int identifier, class QTextBlock &block);
 };
 
 #endif // CHATWIDGET_H

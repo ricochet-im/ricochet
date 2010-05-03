@@ -22,20 +22,20 @@
 
 class ChatMessageCommand : public ProtocolCommand
 {
-	Q_OBJECT
-	Q_DISABLE_COPY(ChatMessageCommand)
+    Q_OBJECT
+    Q_DISABLE_COPY(ChatMessageCommand)
 
 public:
-	explicit ChatMessageCommand(QObject *parent = 0);
+    explicit ChatMessageCommand(QObject *parent = 0);
 
-	virtual quint8 command() const { return 0x10; }
+    virtual quint8 command() const { return 0x10; }
 
-	void send(ProtocolManager *to, const QDateTime &timestamp, const QString &text);
+    void send(ProtocolManager *to, const QDateTime &timestamp, const QString &text);
 
-	static void process(CommandHandler &command);
+    static void process(CommandHandler &command);
 
 protected:
-	virtual void processReply(quint8 state, const uchar *data, unsigned dataSize);
+    virtual void processReply(quint8 state, const uchar *data, unsigned dataSize);
 };
 
 #endif // CHATMESSAGECOMMAND_H

@@ -23,38 +23,38 @@ ContactsManager *contactsManager = 0;
 
 ContactsManager::ContactsManager()
 {
-	loadFromSettings();
+    loadFromSettings();
 }
 
 void ContactsManager::loadFromSettings()
 {
-	config->beginGroup(QString("contacts"));
-	QStringList sections = config->childGroups();
-	config->endGroup();
+    config->beginGroup(QString("contacts"));
+    QStringList sections = config->childGroups();
+    config->endGroup();
 
-	for (QStringList::Iterator it = sections.begin(); it != sections.end(); ++it)
-	{
-		ContactUser *user = new ContactUser(*it, this);
-		pContacts.append(user);
-	}
+    for (QStringList::Iterator it = sections.begin(); it != sections.end(); ++it)
+    {
+        ContactUser *user = new ContactUser(*it, this);
+        pContacts.append(user);
+    }
 }
 
 ContactUser *ContactsManager::lookupSecret(const QByteArray &secret) const
 {
-	Q_ASSERT(secret.size() == 16);
+    Q_ASSERT(secret.size() == 16);
 
-	for (QList<ContactUser*>::ConstIterator it = pContacts.begin(); it != pContacts.end(); ++it)
-	{
-		if ((*it)->readSetting("localSecret") == secret)
-			return *it;
-	}
+    for (QList<ContactUser*>::ConstIterator it = pContacts.begin(); it != pContacts.end(); ++it)
+    {
+        if ((*it)->readSetting("localSecret") == secret)
+            return *it;
+    }
 
-	return 0;
+    return 0;
 }
 
 void ContactsManager::connectToAll()
 {
-	qDebug() << "Attempting connections to all contacts";
-	for (QList<ContactUser*>::ConstIterator it = pContacts.begin(); it != pContacts.end(); ++it)
-		(*it)->conn()->connectPrimary();
+    qDebug() << "Attempting connections to all contacts";
+    for (QList<ContactUser*>::ConstIterator it = pContacts.begin(); it != pContacts.end(); ++it)
+        (*it)->conn()->connectPrimary();
 }

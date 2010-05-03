@@ -31,13 +31,13 @@ class ProtocolInfoCommand : public TorControlCommand
 public:
     ProtocolInfoCommand(TorControlManager *manager);
 
-	QByteArray build();
+    QByteArray build();
 
 protected:
-	virtual void handleReply(int code, QByteArray &data, bool end);
+    virtual void handleReply(int code, QByteArray &data, bool end);
 
 private:
-	TorControlManager *manager;
+    TorControlManager *manager;
 };
 
 }

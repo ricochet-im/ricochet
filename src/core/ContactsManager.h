@@ -24,23 +24,23 @@
 
 class ContactsManager : public QObject
 {
-	Q_OBJECT
-	Q_DISABLE_COPY(ContactsManager)
+    Q_OBJECT
+    Q_DISABLE_COPY(ContactsManager)
 
 public:
     explicit ContactsManager();
 
-	const QList<ContactUser*> &contacts() const { return pContacts; }
-	ContactUser *lookupSecret(const QByteArray &secret) const;
+    const QList<ContactUser*> &contacts() const { return pContacts; }
+    ContactUser *lookupSecret(const QByteArray &secret) const;
 
 
 public slots:
-	void connectToAll();
+    void connectToAll();
 
 private:
-	QList<ContactUser*> pContacts;
+    QList<ContactUser*> pContacts;
 
-	void loadFromSettings();
+    void loadFromSettings();
 };
 
 extern ContactsManager *contactsManager;

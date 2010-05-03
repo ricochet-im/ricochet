@@ -26,28 +26,28 @@ namespace Tor
 
 class TorControlCommand : public QObject
 {
-	Q_OBJECT
-	Q_DISABLE_COPY(TorControlCommand)
+    Q_OBJECT
+    Q_DISABLE_COPY(TorControlCommand)
 
-	friend class TorControlSocket;
+    friend class TorControlSocket;
 
 public:
-	const char * const keyword;
+    const char * const keyword;
 
     TorControlCommand(const char *keyword);
 
-	int statusCode() const { return pStatusCode; }
+    int statusCode() const { return pStatusCode; }
 
 signals:
-	void replyFinished();
+    void replyFinished();
 
 protected:
-	virtual void handleReply(int code, QByteArray &data, bool end) = 0;
+    virtual void handleReply(int code, QByteArray &data, bool end) = 0;
 
 private:
-	int pStatusCode;
+    int pStatusCode;
 
-	void inputReply(int code, QByteArray &data, bool end);
+    void inputReply(int code, QByteArray &data, bool end);
 };
 
 }

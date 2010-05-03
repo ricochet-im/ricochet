@@ -26,14 +26,14 @@ namespace Tor
 class AuthenticateCommand : public TorControlCommand
 {
 public:
-	QByteArray statusMessage;
+    QByteArray statusMessage;
 
     AuthenticateCommand();
 
-	QByteArray build(const QByteArray &data = QByteArray());
+    QByteArray build(const QByteArray &data = QByteArray());
 
 protected:
-	virtual void handleReply(int code, QByteArray &data, bool end);
+    virtual void handleReply(int code, QByteArray &data, bool end);
 };
 
 }

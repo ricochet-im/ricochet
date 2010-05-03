@@ -27,23 +27,23 @@ namespace Tor
 
 class SetConfCommand : public TorControlCommand
 {
-	Q_OBJECT
-	Q_DISABLE_COPY(SetConfCommand)
+    Q_OBJECT
+    Q_DISABLE_COPY(SetConfCommand)
 
 public:
-	QByteArray statusMessage;
+    QByteArray statusMessage;
 
     SetConfCommand();
 
-	QByteArray build(const QByteArray &key, const QByteArray &value);
-	QByteArray build(const QList<QPair<QByteArray,QByteArray> > &data);
+    QByteArray build(const QByteArray &key, const QByteArray &value);
+    QByteArray build(const QList<QPair<QByteArray,QByteArray> > &data);
 
 signals:
-	void setConfSucceeded();
-	void setConfFailed(int code);
+    void setConfSucceeded();
+    void setConfFailed(int code);
 
 protected:
-	virtual void handleReply(int code, QByteArray &data, bool end);
+    virtual void handleReply(int code, QByteArray &data, bool end);
 };
 
 }

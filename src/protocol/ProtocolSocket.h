@@ -28,55 +28,55 @@ class ProtocolCommand;
 
 class ProtocolSocket : public QObject
 {
-	Q_OBJECT
-	Q_DISABLE_COPY(ProtocolSocket)
+    Q_OBJECT
+    Q_DISABLE_COPY(ProtocolSocket)
 
 public:
-	ProtocolManager * const manager;
-	QTcpSocket * const socket;
+    ProtocolManager * const manager;
+    QTcpSocket * const socket;
 
-	/* Create with an established and authenticated socket (incoming connections) */
-	explicit ProtocolSocket(QTcpSocket *socket, ProtocolManager *manager);
-	/* Create with a new socket */
-	explicit ProtocolSocket(ProtocolManager *manager);
+    /* Create with an established and authenticated socket (incoming connections) */
+    explicit ProtocolSocket(QTcpSocket *socket, ProtocolManager *manager);
+    /* Create with a new socket */
+    explicit ProtocolSocket(ProtocolManager *manager);
 
-	/* Returns true if the socket is connected and ready (i.e. authenticated) */
-	bool isConnected() const;
-	bool isConnecting() const;
+    /* Returns true if the socket is connected and ready (i.e. authenticated) */
+    bool isConnected() const;
+    bool isConnecting() const;
 
-	void connectToHost(const QString &host, quint16 port);
+    void connectToHost(const QString &host, quint16 port);
 
-	/* Get an available identifier; not reserved, must be followed by sendCommand immediately. */
-	quint16 getIdentifier() const;
+    /* Get an available identifier; not reserved, must be followed by sendCommand immediately. */
+    quint16 getIdentifier() const;
 
-	void sendCommand(ProtocolCommand *command);
+    void sendCommand(ProtocolCommand *command);
 
 signals:
-	/* Connected and authenticated */
-	void socketReady();
-	/* Disconnected from an authenticated connection */
-	void disconnected();
-	/* Connection attempt failed or disconnected from an unauthenticated connection */
-	void connectFailed();
+    /* Connected and authenticated */
+    void socketReady();
+    /* Disconnected from an authenticated connection */
+    void disconnected();
+    /* Connection attempt failed or disconnected from an unauthenticated connection */
+    void connectFailed();
 
 public slots:
-	void abort();
-	void abortConnectionAttempt();
+    void abort();
+    void abortConnectionAttempt();
 
 private slots:
-	void sendAuth();
-	void flushCommands();
+    void sendAuth();
+    void flushCommands();
 
-	void read();
-	void socketDisconnected();
+    void read();
+    void socketDisconnected();
 
 private:
-	QQueue<ProtocolCommand*> commandQueue;
-	QHash<quint16,ProtocolCommand*> pendingCommands;
+    QQueue<ProtocolCommand*> commandQueue;
+    QHash<quint16,ProtocolCommand*> pendingCommands;
 
-	bool active, authPending, authFinished;
+    bool active, authPending, authFinished;
 
-	void setupSocket();
+    void setupSocket();
 };
 
 #endif // PROTOCOLSOCKET_H

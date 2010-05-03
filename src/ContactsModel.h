@@ -25,35 +25,35 @@ class ContactUser;
 
 class ContactsModel : public QAbstractListModel
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	enum
-	{
-		ContactUserRole = Qt::UserRole,
-		StatusIndicator
-	};
+    enum
+    {
+        ContactUserRole = Qt::UserRole,
+        StatusIndicator
+    };
 
-	explicit ContactsModel(QObject *parent = 0);
+    explicit ContactsModel(QObject *parent = 0);
 
-	QModelIndex indexOfContact(ContactUser *user) const;
+    QModelIndex indexOfContact(ContactUser *user) const;
 
-	void moveRow(int from, int to);
+    void moveRow(int from, int to);
 
-	virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
-	virtual int columnCount(const QModelIndex &parent = QModelIndex()) const;
+    virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
+    virtual int columnCount(const QModelIndex &parent = QModelIndex()) const;
 
-	virtual Qt::DropActions supportedDropActions() const;
-	virtual Qt::ItemFlags flags(const QModelIndex &index) const;
+    virtual Qt::DropActions supportedDropActions() const;
+    virtual Qt::ItemFlags flags(const QModelIndex &index) const;
 
-	virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
+    virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
 
 private slots:
-	void updateUser(ContactUser *user = 0);
+    void updateUser(ContactUser *user = 0);
 
 private:
-	QList<ContactUser*> contacts;
+    QList<ContactUser*> contacts;
 
-	void populate();
+    void populate();
 };
 
 #endif // CONTACTSMODEL_H

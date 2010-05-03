@@ -29,55 +29,55 @@ class ContactUser;
 
 class ProtocolManager : public QObject
 {
-	Q_OBJECT
-	Q_DISABLE_COPY(ProtocolManager)
+    Q_OBJECT
+    Q_DISABLE_COPY(ProtocolManager)
 
-	friend class IncomingSocket;
+    friend class IncomingSocket;
 
-	Q_PROPERTY(QString host READ host WRITE setHost STORED true)
-	Q_PROPERTY(quint16 port READ port WRITE setPort STORED true)
+    Q_PROPERTY(QString host READ host WRITE setHost STORED true)
+    Q_PROPERTY(quint16 port READ port WRITE setPort STORED true)
 
 public:
-	ContactUser * const user;
+    ContactUser * const user;
 
-	explicit ProtocolManager(ContactUser *user, const QString &host, quint16 port);
+    explicit ProtocolManager(ContactUser *user, const QString &host, quint16 port);
 
-	QString host() const { return pHost; }
-	void setHost(const QString &host);
-	quint16 port() const { return pPort; }
-	void setPort(quint16 port);
-	QByteArray secret() const { return pSecret; }
-	void setSecret(const QByteArray &secret);
+    QString host() const { return pHost; }
+    void setHost(const QString &host);
+    quint16 port() const { return pPort; }
+    void setPort(quint16 port);
+    QByteArray secret() const { return pSecret; }
+    void setSecret(const QByteArray &secret);
 
-	bool isPrimaryConnected() const;
-	bool isAnyConnected() const;
+    bool isPrimaryConnected() const;
+    bool isAnyConnected() const;
 
-	ProtocolSocket *primary() { return pPrimary; }
+    ProtocolSocket *primary() { return pPrimary; }
 
 public slots:
-	void connectPrimary();
+    void connectPrimary();
 
 signals:
-	void primaryConnected();
-	void primaryDisconnected();
+    void primaryConnected();
+    void primaryDisconnected();
 
 private slots:
-	void onPrimaryConnected();
-	void onPrimaryDisconnected();
+    void onPrimaryConnected();
+    void onPrimaryDisconnected();
 
-	void spawnReconnect();
+    void spawnReconnect();
 
 private:
-	ProtocolSocket *pPrimary, *remotePrimary;
+    ProtocolSocket *pPrimary, *remotePrimary;
 
-	QString pHost;
-	QByteArray pSecret;
-	quint16 pPort;
+    QString pHost;
+    QByteArray pSecret;
+    quint16 pPort;
 
-	int connectAttempts;
+    int connectAttempts;
 
-	void addSocket(QTcpSocket *socket, quint8 purpose);
-	void setPrimary(ProtocolSocket *newPrimary);
+    void addSocket(QTcpSocket *socket, quint8 purpose);
+    void setPrimary(ProtocolSocket *newPrimary);
 };
 
 /* Do not change this, as it breaks backwards compatibility. Hopefully, it will never be necessary. */

@@ -20,21 +20,21 @@
 using namespace Tor;
 
 AuthenticateCommand::AuthenticateCommand()
-	: TorControlCommand("AUTHENTICATE")
+    : TorControlCommand("AUTHENTICATE")
 {
 }
 
 QByteArray AuthenticateCommand::build(const QByteArray &data)
 {
-	if (data.isNull())
-		return QByteArray("AUTHENTICATE\r\n");
+    if (data.isNull())
+        return QByteArray("AUTHENTICATE\r\n");
 
-	return QByteArray("AUTHENTICATE ") + data.toHex() + "\r\n";
+    return QByteArray("AUTHENTICATE ") + data.toHex() + "\r\n";
 }
 
 void AuthenticateCommand::handleReply(int code, QByteArray &data, bool end)
 {
         Q_UNUSED(code);
-	if (end)
-		statusMessage = data;
+    if (end)
+        statusMessage = data;
 }

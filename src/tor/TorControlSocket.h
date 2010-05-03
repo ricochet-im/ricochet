@@ -32,18 +32,18 @@ Q_OBJECT
 public:
     explicit TorControlSocket(QObject *parent = 0);
 
-	void sendCommand(const QByteArray &data);
-	void sendCommand(TorControlCommand *command, const QByteArray &data);
+    void sendCommand(const QByteArray &data);
+    void sendCommand(TorControlCommand *command, const QByteArray &data);
 
 signals:
-	void commandFinished(TorControlCommand *command);
-	void controlError(const QString &message);
+    void commandFinished(TorControlCommand *command);
+    void controlError(const QString &message);
 
 private slots:
-	void process();
+    void process();
 
 private:
-	QQueue<TorControlCommand*> commandQueue;
+    QQueue<TorControlCommand*> commandQueue;
 };
 
 }

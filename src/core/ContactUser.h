@@ -29,57 +29,57 @@
 
 class ContactUser : public QObject
 {
-	Q_OBJECT
-	Q_DISABLE_COPY(ContactUser)
+    Q_OBJECT
+    Q_DISABLE_COPY(ContactUser)
 
-	Q_PROPERTY(QString nickname READ nickname WRITE setNickname STORED true)
+    Q_PROPERTY(QString nickname READ nickname WRITE setNickname STORED true)
 
 public:
-	enum AvatarSize
-	{
-		FullAvatar, /* 160x160 */
-		TinyAvatar /* 35x35 */
-	};
+    enum AvatarSize
+    {
+        FullAvatar, /* 160x160 */
+        TinyAvatar /* 35x35 */
+    };
 
-	const QString uniqueID;
+    const QString uniqueID;
 
-	explicit ContactUser(const QString &uniqueID, QObject *parent = 0);
+    explicit ContactUser(const QString &uniqueID, QObject *parent = 0);
 
-	ProtocolManager *conn() const { return pConn; }
-	bool isConnected() const { return pConn->isPrimaryConnected(); }
+    ProtocolManager *conn() const { return pConn; }
+    bool isConnected() const { return pConn->isPrimaryConnected(); }
 
-	const QString &nickname() const { return pNickname; }
-	QString notesText() const;
-	QPixmap avatar(AvatarSize size);
+    const QString &nickname() const { return pNickname; }
+    QString notesText() const;
+    QPixmap avatar(AvatarSize size);
 
-	QString statusLine() const;
+    QString statusLine() const;
 
-	QVariant readSetting(const QString &key, const QVariant &defaultValue = QVariant()) const;
-	void writeSetting(const QString &key, const QVariant &value);
+    QVariant readSetting(const QString &key, const QVariant &defaultValue = QVariant()) const;
+    void writeSetting(const QString &key, const QVariant &value);
 
 public slots:
-	void setNickname(const QString &nickname);
-	void setAvatar(QImage image);
-	void setNotesText(const QString &notesText);
+    void setNickname(const QString &nickname);
+    void setAvatar(QImage image);
+    void setNotesText(const QString &notesText);
 
-	void updateStatusLine();
+    void updateStatusLine();
 
 signals:
-	void connected();
-	void disconnected();
+    void connected();
+    void disconnected();
 
-	void statusLineChanged();
+    void statusLineChanged();
 
 private slots:
-	void onConnected();
-	void onDisconnected();
+    void onConnected();
+    void onDisconnected();
 
 private:
-	ProtocolManager *pConn;
-	QString pNickname;
-	QPixmapCache::Key cachedAvatar[2];
+    ProtocolManager *pConn;
+    QString pNickname;
+    QPixmapCache::Key cachedAvatar[2];
 
-	void loadSettings();
+    void loadSettings();
 };
 
 Q_DECLARE_METATYPE(ContactUser*)

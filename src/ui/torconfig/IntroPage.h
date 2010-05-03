@@ -25,22 +25,22 @@ namespace TorConfig
 
 class IntroPage : public QWizardPage
 {
-	Q_OBJECT
-	Q_DISABLE_COPY(IntroPage)
+    Q_OBJECT
+    Q_DISABLE_COPY(IntroPage)
 
 public:
-	explicit IntroPage(QWidget *parent = 0);
+    explicit IntroPage(QWidget *parent = 0);
 
-	virtual void initializePage();
+    virtual void initializePage();
 
-	virtual bool isComplete() const;
-	virtual int nextId() const;
+    virtual bool isComplete() const;
+    virtual int nextId() const;
 
 private slots:
-	void setConfigChoice(int choice);
+    void setConfigChoice(int choice);
 
 private:
-	int configChoice;
+    int configChoice;
 };
 
 }

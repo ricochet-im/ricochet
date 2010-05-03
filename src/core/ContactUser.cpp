@@ -25,152 +25,152 @@
 #include <QDateTime>
 
 ContactUser::ContactUser(const QString &id, QObject *parent)
-	: QObject(parent), uniqueID(id)
+    : QObject(parent), uniqueID(id)
 {
-	Q_ASSERT(!uniqueID.isEmpty());
+    Q_ASSERT(!uniqueID.isEmpty());
 
-	loadSettings();
+    loadSettings();
 
-	QString host = readSetting("hostname").toString();
-	quint16 port = (quint16)readSetting("port", 13535).toUInt();
-	pConn = new ProtocolManager(this, host, port);
+    QString host = readSetting("hostname").toString();
+    quint16 port = (quint16)readSetting("port", 13535).toUInt();
+    pConn = new ProtocolManager(this, host, port);
 
-	pConn->setSecret(readSetting("remoteSecret").toByteArray());
+    pConn->setSecret(readSetting("remoteSecret").toByteArray());
 
-	connect(pConn, SIGNAL(primaryConnected()), this, SLOT(onConnected()));
-	connect(pConn, SIGNAL(primaryDisconnected()), this, SLOT(onDisconnected()));
+    connect(pConn, SIGNAL(primaryConnected()), this, SLOT(onConnected()));
+    connect(pConn, SIGNAL(primaryDisconnected()), this, SLOT(onDisconnected()));
 }
 
 void ContactUser::loadSettings()
 {
-	config->beginGroup(QString("contacts/").append(uniqueID));
+    config->beginGroup(QString("contacts/").append(uniqueID));
 
-	pNickname = config->value(QString("nickname"), uniqueID).toString();
+    pNickname = config->value(QString("nickname"), uniqueID).toString();
 
-	config->endGroup();
+    config->endGroup();
 }
 
 QVariant ContactUser::readSetting(const QString &key, const QVariant &defaultValue) const
 {
-	return config->value(QString("contacts/%1/%2").arg(uniqueID, key), defaultValue);
+    return config->value(QString("contacts/%1/%2").arg(uniqueID, key), defaultValue);
 }
 
 void ContactUser::writeSetting(const QString &key, const QVariant &value)
 {
-	config->setValue(QString("contacts/%1/%2").arg(uniqueID, key), value);
+    config->setValue(QString("contacts/%1/%2").arg(uniqueID, key), value);
 }
 
 QString ContactUser::statusLine() const
 {
-	if (isConnected())
-	{
-		ChatWidget *chat = ChatWidget::widgetForUser(const_cast<ContactUser*>(this), false);
-		if (chat && chat->unreadMessages())
-			return tr("%n new message(s)", 0, chat->unreadMessages());
-		return tr("Online");
-	}
-	else
-	{
-		QDateTime lastConnected = readSetting(QString("lastConnected")).toDateTime();
-		if (lastConnected.isNull())
-			return tr("Never connected");
-		return timeDifferenceString(lastConnected, QDateTime::currentDateTime());
-	}
+    if (isConnected())
+    {
+        ChatWidget *chat = ChatWidget::widgetForUser(const_cast<ContactUser*>(this), false);
+        if (chat && chat->unreadMessages())
+            return tr("%n new message(s)", 0, chat->unreadMessages());
+        return tr("Online");
+    }
+    else
+    {
+        QDateTime lastConnected = readSetting(QString("lastConnected")).toDateTime();
+        if (lastConnected.isNull())
+            return tr("Never connected");
+        return timeDifferenceString(lastConnected, QDateTime::currentDateTime());
+    }
 }
 
 void ContactUser::updateStatusLine()
 {
-	emit statusLineChanged();
+    emit statusLineChanged();
 }
 
 void ContactUser::onConnected()
 {
-	emit connected();
+    emit connected();
 
-	writeSetting(QString("lastConnected"), QDateTime::currentDateTime());
+    writeSetting(QString("lastConnected"), QDateTime::currentDateTime());
 }
 
 void ContactUser::onDisconnected()
 {
-	emit disconnected();
+    emit disconnected();
 
-	writeSetting(QString("lastConnected"), QDateTime::currentDateTime());
+    writeSetting(QString("lastConnected"), QDateTime::currentDateTime());
 }
 
 void ContactUser::setNickname(const QString &nickname)
 {
-	if (pNickname == nickname)
-		return;
+    if (pNickname == nickname)
+        return;
 
-	pNickname = nickname;
+    pNickname = nickname;
 
-	config->setValue(QString("contacts/%1/nickname").arg(uniqueID), nickname);
+    config->setValue(QString("contacts/%1/nickname").arg(uniqueID), nickname);
 }
 
 QPixmap ContactUser::avatar(AvatarSize size)
 {
-	QPixmap re;
-	if (QPixmapCache::find(cachedAvatar[size], &re))
-		return re;
+    QPixmap re;
+    if (QPixmapCache::find(cachedAvatar[size], &re))
+        return re;
 
-	QString settingsKey = QString("contacts/%1/avatar").arg(uniqueID);
-	if (size == TinyAvatar)
-		settingsKey.append("-tiny");
+    QString settingsKey = QString("contacts/%1/avatar").arg(uniqueID);
+    if (size == TinyAvatar)
+        settingsKey.append("-tiny");
 
-	re.loadFromData(config->value(settingsKey).toByteArray());
+    re.loadFromData(config->value(settingsKey).toByteArray());
 
-	cachedAvatar[size] = QPixmapCache::insert(re);
-	return re;
+    cachedAvatar[size] = QPixmapCache::insert(re);
+    return re;
 }
 
 void ContactUser::setAvatar(QImage image)
 {
-	if (image.width() > 160 || image.height() > 160)
-		image = image.scaled(QSize(160, 160), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    if (image.width() > 160 || image.height() > 160)
+        image = image.scaled(QSize(160, 160), Qt::KeepAspectRatio, Qt::SmoothTransformation);
 
-	QString key = QString("contacts/%1/avatar").arg(uniqueID);
+    QString key = QString("contacts/%1/avatar").arg(uniqueID);
 
-	if (!image.isNull())
-	{
-		QBuffer buffer;
-		buffer.open(QBuffer::ReadWrite);
-		if (image.save(&buffer, "jpeg", 100))
-		{
-			config->setValue(key, buffer.buffer());
+    if (!image.isNull())
+    {
+        QBuffer buffer;
+        buffer.open(QBuffer::ReadWrite);
+        if (image.save(&buffer, "jpeg", 100))
+        {
+            config->setValue(key, buffer.buffer());
 
-			QImage tiny = image.scaled(QSize(35, 35), Qt::KeepAspectRatio, Qt::SmoothTransformation);
-			buffer.close();
-			buffer.open(QBuffer::ReadWrite);
-			if (tiny.save(&buffer, "jpeg", 100))
-				config->setValue(key + "-tiny", buffer.buffer());
-			else
-				image = QImage();
-		}
-		else
-			image = QImage();
-	}
+            QImage tiny = image.scaled(QSize(35, 35), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+            buffer.close();
+            buffer.open(QBuffer::ReadWrite);
+            if (tiny.save(&buffer, "jpeg", 100))
+                config->setValue(key + "-tiny", buffer.buffer());
+            else
+                image = QImage();
+        }
+        else
+            image = QImage();
+    }
 
-	if (image.isNull())
-	{
-		config->remove(key);
-		config->remove(key + "-tiny");
-	}
+    if (image.isNull())
+    {
+        config->remove(key);
+        config->remove(key + "-tiny");
+    }
 
-	for (int i = 0; i < 2; ++i)
-		QPixmapCache::remove(cachedAvatar[i]);
+    for (int i = 0; i < 2; ++i)
+        QPixmapCache::remove(cachedAvatar[i]);
 }
 
 QString ContactUser::notesText() const
 {
-	return config->value(QString("contacts/%1/notes").arg(uniqueID)).toString();
+    return config->value(QString("contacts/%1/notes").arg(uniqueID)).toString();
 }
 
 void ContactUser::setNotesText(const QString &text)
 {
-	QString key = QString("contacts/%1/notes").arg(uniqueID);
+    QString key = QString("contacts/%1/notes").arg(uniqueID);
 
-	if (text.isEmpty())
-		config->remove(key);
-	else
-		config->setValue(key, text);
+    if (text.isEmpty())
+        config->remove(key);
+    else
+        config->setValue(key, text);
 }
