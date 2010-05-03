@@ -33,12 +33,12 @@ public:
     const QList<ContactUser*> &contacts() const { return pContacts; }
     ContactUser *lookupSecret(const QByteArray &secret) const;
 
-
 public slots:
     void connectToAll();
 
 private:
     QList<ContactUser*> pContacts;
+    int highestID;
 
     void loadFromSettings();
 };

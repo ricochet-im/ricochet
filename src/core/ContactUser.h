@@ -41,9 +41,9 @@ public:
         TinyAvatar /* 35x35 */
     };
 
-    const QString uniqueID;
+    const int uniqueID;
 
-    explicit ContactUser(const QString &uniqueID, QObject *parent = 0);
+    explicit ContactUser(int uniqueID, QObject *parent = 0);
 
     ProtocolManager *conn() const { return pConn; }
     bool isConnected() const { return pConn->isPrimaryConnected(); }

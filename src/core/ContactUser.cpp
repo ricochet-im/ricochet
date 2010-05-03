@@ -24,10 +24,10 @@
 #include <QBuffer>
 #include <QDateTime>
 
-ContactUser::ContactUser(const QString &id, QObject *parent)
+ContactUser::ContactUser(int id, QObject *parent)
     : QObject(parent), uniqueID(id)
 {
-    Q_ASSERT(!uniqueID.isEmpty());
+    Q_ASSERT(uniqueID >= 0);
 
     loadSettings();
 
@@ -43,7 +43,7 @@ ContactUser::ContactUser(const QString &id, QObject *parent)
 
 void ContactUser::loadSettings()
 {
-    config->beginGroup(QString("contacts/").append(uniqueID));
+    config->beginGroup(QString("contacts/").append(QString::number(uniqueID)));
 
     pNickname = config->value(QString("nickname"), uniqueID).toString();
 
@@ -52,12 +52,12 @@ void ContactUser::loadSettings()
 
 QVariant ContactUser::readSetting(const QString &key, const QVariant &defaultValue) const
 {
-    return config->value(QString("contacts/%1/%2").arg(uniqueID, key), defaultValue);
+    return config->value(QString("contacts/%1/%2").arg(uniqueID).arg(key), defaultValue);
 }
 
 void ContactUser::writeSetting(const QString &key, const QVariant &value)
 {
-    config->setValue(QString("contacts/%1/%2").arg(uniqueID, key), value);
+    config->setValue(QString("contacts/%1/%2").arg(uniqueID).arg(key), value);
 }
 
 QString ContactUser::statusLine() const

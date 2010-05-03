@@ -22,6 +22,7 @@
 ContactsManager *contactsManager = 0;
 
 ContactsManager::ContactsManager()
+    : highestID(-1)
 {
     loadFromSettings();
 }
@@ -34,8 +35,17 @@ void ContactsManager::loadFromSettings()
 
     for (QStringList::Iterator it = sections.begin(); it != sections.end(); ++it)
     {
-        ContactUser *user = new ContactUser(*it, this);
-        pContacts.append(user);
+        bool ok = false;
+        int id = it->toInt(&ok);
+        if (!ok)
+        {
+            qWarning() << "Ignoring contact" << *it << "with a non-integer ID";
+            continue;
+        }
+
+    	ContactUser *user = new ContactUser(id, this);
+    	pContacts.append(user);
+        highestID = qMax(id, highestID);
     }
 }
 
