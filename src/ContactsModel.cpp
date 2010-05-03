@@ -36,6 +36,8 @@ ContactsModel::ContactsModel(QObject *parent) :
     QAbstractListModel(parent)
 {
     populate();
+
+    connect(contactsManager, SIGNAL(contactAdded(ContactUser*)), this, SLOT(contactAdded(ContactUser*)));
 }
 
 void ContactsModel::populate()
@@ -81,6 +83,18 @@ void ContactsModel::updateUser(ContactUser *user)
     }
 
     emit dataChanged(index(row, 0), index(row, columnCount()-1));
+}
+
+void ContactsModel::contactAdded(ContactUser *user)
+{
+    int i;
+    for (i = 0; i < contacts.size(); ++i)
+        if (!contactSort(contacts[i], user))
+            break;
+
+    beginInsertRows(QModelIndex(), i, i);
+    contacts.insert(i, user);
+    endInsertRows();
 }
 
 void ContactsModel::moveRow(int from, int to)

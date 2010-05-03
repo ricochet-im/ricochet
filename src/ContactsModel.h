@@ -49,6 +49,7 @@ public:
 
 private slots:
     void updateUser(ContactUser *user = 0);
+    void contactAdded(ContactUser *user);
 
 private:
     QList<ContactUser*> contacts;

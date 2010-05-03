@@ -38,6 +38,9 @@ public:
 public slots:
     void connectToAll();
 
+signals:
+    void contactAdded(ContactUser *user);
+
 private:
     QList<ContactUser*> pContacts;
     int highestID;
