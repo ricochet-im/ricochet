@@ -8,10 +8,21 @@ TARGET = TorIM
 TEMPLATE = app
 
 CONFIG += debug_and_release
+QMAKE_RESOURCE_FLAGS += -no-compress
 
 INCLUDEPATH += src
 
-QMAKE_RESOURCE_FLAGS += -no-compress
+unix {
+    CONFIG += link_pkgconfig
+    PKGCONFIG += openssl
+} else {
+    isEmpty(OPENSSLDIR):error(You must pass OPENSSLDIR=path/to/openssl to qmake on this platform)
+    INCLUDEPATH += $${OPENSSLDIR}/include
+    LIBS += -L$${OPENSSLDIR}/lib -llibeay32
+
+    # required by openssl
+    win32:LIBS += -lUser32 -lGdi32 -ladvapi32
+}
 
 SOURCES += src/main.cpp \
     src/ui/MainWindow.cpp \
@@ -47,7 +58,8 @@ SOURCES += src/main.cpp \
     src/ui/torconfig/ManualConfigPage.cpp \
     src/protocol/ProtocolSocket.cpp \
     src/ui/torconfig/TorConnTestWidget.cpp \
-    src/utils/PaintUtil.cpp
+    src/utils/PaintUtil.cpp \
+    src/utils/CryptoKey.cpp
 HEADERS += src/ui/MainWindow.h \
     src/ui/ChatWidget.h \
     src/ContactsModel.h \
@@ -82,7 +94,8 @@ HEADERS += src/ui/MainWindow.h \
     src/ui/torconfig/ManualConfigPage.h \
     src/protocol/ProtocolSocket.h \
     src/ui/torconfig/TorConnTestWidget.h \
-    src/utils/PaintUtil.h
+    src/utils/PaintUtil.h \
+    src/utils/CryptoKey.h
 RESOURCES += res/resources.qrc \
     translation/embedded.qrc
 TRANSLATIONS = translation/torim.ts

@@ -27,6 +27,7 @@
 #include <QDir>
 #include <QTranslator>
 #include <QMessageBox>
+#include <openssl/crypto.h>
 
 QSettings *config = 0;
 
@@ -53,6 +54,9 @@ int main(int argc, char *argv[])
         QTime now = QTime::currentTime();
         qsrand(unsigned(now.second()) * now.msec() * unsigned(a.applicationPid()));
     }
+
+    /* Initialize OpenSSL's allocator */
+    CRYPTO_malloc_init();
 
     /* Contacts */
     contactsManager = new ContactsManager;
