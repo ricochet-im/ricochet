@@ -15,7 +15,10 @@ public:
     void clear();
 
     bool isLoaded() const { return key != 0; }
-    QByteArray encodedPublicKey();
+
+    QByteArray publicKeyDigest() const;
+    QByteArray encodedPublicKey() const;
+    QString torServiceID() const;
 
 private:
     typedef struct rsa_st RSA;
