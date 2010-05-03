@@ -1,4 +1,5 @@
 #include "CryptoKey.h"
+#include "SecureRNG.h"
 #include <QtDebug>
 #include <QFile>
 #include <openssl/bio.h>
@@ -50,6 +51,11 @@ bool CryptoKey::loadFromFile(const QString &path)
     }
 
     return true;
+}
+
+bool CryptoKey::isPrivate() const
+{
+    return key && key->p != 0;
 }
 
 QByteArray CryptoKey::publicKeyDigest() const
@@ -131,6 +137,49 @@ QString CryptoKey::torServiceID() const
     return QString::fromLatin1(re);
 }
 
+QByteArray CryptoKey::signData(const QByteArray &data) const
+{
+    if (!isPrivate())
+        return QByteArray();
+
+    QByteArray re;
+    re.resize(RSA_size(key));
+
+    int r = RSA_private_encrypt(data.size(), reinterpret_cast<const unsigned char*>(data.constData()),
+                                reinterpret_cast<unsigned char*>(re.data()), key, RSA_PKCS1_PADDING);
+
+    if (r < 0)
+    {
+        qDebug() << "RSA encryption failed when generating signature";
+        return QByteArray();
+    }
+
+    re.resize(r);
+    return re;
+}
+
+bool CryptoKey::verifySignature(const QByteArray &data, const QByteArray &signature) const
+{
+    if (!isLoaded())
+        return false;
+
+    QByteArray re;
+    re.resize(RSA_size(key) - 11);
+
+    int r = RSA_public_decrypt(signature.size(), reinterpret_cast<const unsigned char*>(signature.constData()),
+                               reinterpret_cast<unsigned char*>(re.data()), key, RSA_PKCS1_PADDING);
+
+    if (r < 0)
+    {
+        qDebug() << "RSA decryption failed when verifying signature";
+        return false;
+    }
+
+    re.resize(r);
+
+    return (re == data);
+}
+
 void CryptoKey::test(const QString &file)
 {
     CryptoKey key;
@@ -153,6 +202,17 @@ void CryptoKey::test(const QString &file)
     Q_ASSERT(!serviceid.isEmpty());
 
     qDebug() << "(crypto test) Tor service ID:" << serviceid;
+
+    QByteArray data = SecureRNG::random(16);
+    Q_ASSERT(!data.isNull());
+    qDebug() << "(crypto test) Random data:" << data.toHex();
+
+    QByteArray signature = key.signData(data);
+    Q_ASSERT(!signature.isNull());
+    qDebug() << "(crypto test) Signature:" << signature.toHex();
+
+    ok = key.verifySignature(data, signature);
+    qDebug() << "(crypto test) Verified signature:" << ok;
 }
 
 /* Copyright (c) 2001-2004, Roger Dingledine

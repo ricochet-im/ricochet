@@ -59,7 +59,8 @@ SOURCES += src/main.cpp \
     src/protocol/ProtocolSocket.cpp \
     src/ui/torconfig/TorConnTestWidget.cpp \
     src/utils/PaintUtil.cpp \
-    src/utils/CryptoKey.cpp
+    src/utils/CryptoKey.cpp \
+    src/utils/SecureRNG.cpp
 HEADERS += src/ui/MainWindow.h \
     src/ui/ChatWidget.h \
     src/ContactsModel.h \
@@ -95,7 +96,8 @@ HEADERS += src/ui/MainWindow.h \
     src/protocol/ProtocolSocket.h \
     src/ui/torconfig/TorConnTestWidget.h \
     src/utils/PaintUtil.h \
-    src/utils/CryptoKey.h
+    src/utils/CryptoKey.h \
+    src/utils/SecureRNG.h
 RESOURCES += res/resources.qrc \
     translation/embedded.qrc
 TRANSLATIONS = translation/torim.ts

@@ -21,6 +21,7 @@
 #include "tor/HiddenService.h"
 #include "ui/torconfig/TorConfigWizard.h"
 #include "protocol/IncomingSocket.h"
+#include "utils/SecureRNG.h"
 #include <QApplication>
 #include <QSettings>
 #include <QTime>
@@ -59,6 +60,10 @@ int main(int argc, char *argv[])
 
     /* Initialize OpenSSL's allocator */
     CRYPTO_malloc_init();
+
+    /* Seed the OpenSSL RNG */
+    if (!SecureRNG::seed())
+        qFatal("Failed to initialize RNG");
 
     CryptoKey::test(config->value("core/serviceDirectory", QString("data")).toString().append("/private_key"));
 
