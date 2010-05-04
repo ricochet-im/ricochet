@@ -26,7 +26,6 @@ void base32_encode(char *dest, unsigned destlen, const char *src, unsigned srcle
 bool base32_decode(char *dest, unsigned destlen, const char *src, unsigned srclen);
 
 CryptoKey::CryptoKey()
-    : key(0)
 {
 }
 
@@ -35,13 +34,18 @@ CryptoKey::~CryptoKey()
     clear();
 }
 
-void CryptoKey::clear()
+CryptoKey::Data::~Data()
 {
     if (key)
     {
         RSA_free(key);
         key = 0;
     }
+}
+
+void CryptoKey::clear()
+{
+    d = 0;
 }
 
 bool CryptoKey::loadFromFile(const QString &path)
@@ -57,7 +61,7 @@ bool CryptoKey::loadFromFile(const QString &path)
     file.close();
 
     BIO *b = BIO_new_mem_buf((void*)data.constData(), -1);
-    key = PEM_read_bio_RSAPrivateKey(b, NULL, NULL, NULL);
+    RSA *key = PEM_read_bio_RSAPrivateKey(b, NULL, NULL, NULL);
 
     BIO_free(b);
 
@@ -67,12 +71,13 @@ bool CryptoKey::loadFromFile(const QString &path)
         return false;
     }
 
+    d = new Data(key);
     return true;
 }
 
 bool CryptoKey::isPrivate() const
 {
-    return key && key->p != 0;
+    return isLoaded() && d->key->p != 0;
 }
 
 QByteArray CryptoKey::publicKeyDigest() const
@@ -80,7 +85,7 @@ QByteArray CryptoKey::publicKeyDigest() const
     if (!isLoaded())
         return QByteArray();
 
-    int len = i2d_RSAPublicKey(key, NULL);
+    int len = i2d_RSAPublicKey(d->key, NULL);
     if (len < 0)
         return QByteArray();
 
@@ -88,7 +93,7 @@ QByteArray CryptoKey::publicKeyDigest() const
     buf.resize(len);
     unsigned char *bufp = reinterpret_cast<unsigned char*>(buf.data());
 
-    len = i2d_RSAPublicKey(key, &bufp);
+    len = i2d_RSAPublicKey(d->key, &bufp);
     if (len < 0)
     {
         qWarning() << "Failed to encode public key for digest";
@@ -117,7 +122,7 @@ QByteArray CryptoKey::encodedPublicKey() const
 
     BIO *b = BIO_new(BIO_s_mem());
 
-    if (!PEM_write_bio_RSAPublicKey(b, key))
+    if (!PEM_write_bio_RSAPublicKey(b, d->key))
     {
         qWarning() << "Failed to encode public key";
         BIO_free(b);
@@ -160,10 +165,10 @@ QByteArray CryptoKey::signData(const QByteArray &data) const
         return QByteArray();
 
     QByteArray re;
-    re.resize(RSA_size(key));
+    re.resize(RSA_size(d->key));
 
     int r = RSA_private_encrypt(data.size(), reinterpret_cast<const unsigned char*>(data.constData()),
-                                reinterpret_cast<unsigned char*>(re.data()), key, RSA_PKCS1_PADDING);
+                                reinterpret_cast<unsigned char*>(re.data()), d->key, RSA_PKCS1_PADDING);
 
     if (r < 0)
     {
@@ -181,10 +186,10 @@ bool CryptoKey::verifySignature(const QByteArray &data, const QByteArray &signat
         return false;
 
     QByteArray re;
-    re.resize(RSA_size(key) - 11);
+    re.resize(RSA_size(d->key) - 11);
 
     int r = RSA_public_decrypt(signature.size(), reinterpret_cast<const unsigned char*>(signature.constData()),
-                               reinterpret_cast<unsigned char*>(re.data()), key, RSA_PKCS1_PADDING);
+                               reinterpret_cast<unsigned char*>(re.data()), d->key, RSA_PKCS1_PADDING);
 
     if (r < 0)
     {

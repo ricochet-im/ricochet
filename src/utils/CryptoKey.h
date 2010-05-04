@@ -19,6 +19,8 @@
 #define CRYPTOKEY_H
 
 #include <QString>
+#include <QSharedData>
+#include <QExplicitlySharedDataPointer>
 
 class CryptoKey
 {
@@ -31,7 +33,8 @@ public:
     bool loadFromFile(const QString &path);
     void clear();
 
-    bool isLoaded() const { return key != 0; }
+    bool isValid() const { return d.data() == 0; }
+    bool isLoaded() const { return d.data() && d->key != 0; }
     bool isPrivate() const;
 
     QByteArray publicKeyDigest() const;
@@ -43,9 +46,16 @@ public:
     bool verifySignature(const QByteArray &data, const QByteArray &signature) const;
 
 private:
-    typedef struct rsa_st RSA;
+    struct Data : public QSharedData
+    {
+        typedef struct rsa_st RSA;
+        RSA *key;
 
-    RSA *key;
+        Data(RSA *k = 0) : key(k) { }
+        ~Data();
+    };
+
+    QExplicitlySharedDataPointer<Data> d;
 };
 
 #endif // CRYPTOKEY_H
