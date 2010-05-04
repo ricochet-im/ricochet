@@ -173,7 +173,7 @@ static bool connectTorControl()
     QString serviceDir = config->value("core/serviceDirectory", QString("data")).toString();
 
     Tor::HiddenService *service = new Tor::HiddenService(serviceDir);
-    service->addTarget(13535, incomingSocket->serverAddress(), incomingSocket->serverPort());
+    service->addTarget(80, incomingSocket->serverAddress(), incomingSocket->serverPort());
 
     torManager->addHiddenService(service);
 
