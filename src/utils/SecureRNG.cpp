@@ -20,6 +20,10 @@
 #include <openssl/rand.h>
 #include <openssl/err.h>
 
+#ifdef Q_OS_WIN
+#include <Wincrypt.h>
+#endif
+
 #if QT_VERSION >= 0x040700
 #include <QElapsedTimer>
 #endif
@@ -29,17 +33,46 @@ bool SecureRNG::seed()
 #if QT_VERSION >= 0x040700
     QElapsedTimer timer;
     timer.start();
-    int r = RAND_poll();
-    qDebug() << "RNG seed took" << timer.elapsed() << "ms";
-#else
-    int r = RAND_poll();
 #endif
 
-    if (!r)
+#ifdef Q_OS_WIN
+    /* RAND_poll is very unreliable on windows; with older versions of OpenSSL,
+     * it can take up to several minutes to run and has been known to crash.
+     * Even newer versions seem to take around 400ms, which is far too long for
+     * interactive startup. Random data from the windows CSP is used as a seed
+     * instead, as it should be very high quality random and fast. */
+    HCRYPTPROV provider = 0;
+    if (!CryptAcquireContext(&provider, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT))
     {
-        qWarning() << "RNG seed failed:" << ERR_get_error();
+        qWarning() << "Failed to acquire CSP context for RNG seed:" << hex << GetLastError();
         return false;
     }
+
+    /* Same amount of entropy OpenSSL uses, apparently. */
+    char buf[32];
+
+    if (!CryptGenRandom(provider, sizeof(buf), reinterpret_cast<BYTE*>(buf)))
+    {
+        qWarning() << "Failed to get entropy from CSP for RNG seed: " << hex << GetLastError();
+        CryptReleaseContext(provider, 0);
+        return false;
+    }
+
+    CryptReleaseContext(provider, 0);
+
+    RAND_seed(buf, sizeof(buf));
+    memset(buf, 0, sizeof(buf));
+#else
+    if (!RAND_poll())
+    {
+        qWarning() << "OpenSSL RNG seed failed:" << ERR_get_error();
+        return false;
+    }
+#endif
+
+#if QT_VERSION >= 0x040700
+    qDebug() << "RNG seed took" << timer.elapsed() << "ms";
+#endif
 
     return true;
 }
