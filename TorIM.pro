@@ -60,7 +60,8 @@ SOURCES += src/main.cpp \
     src/ui/torconfig/TorConnTestWidget.cpp \
     src/utils/PaintUtil.cpp \
     src/utils/CryptoKey.cpp \
-    src/utils/SecureRNG.cpp
+    src/utils/SecureRNG.cpp \
+    src/protocol/ContactRequestClient.cpp
 HEADERS += src/ui/MainWindow.h \
     src/ui/ChatWidget.h \
     src/ContactsModel.h \
@@ -97,7 +98,8 @@ HEADERS += src/ui/MainWindow.h \
     src/ui/torconfig/TorConnTestWidget.h \
     src/utils/PaintUtil.h \
     src/utils/CryptoKey.h \
-    src/utils/SecureRNG.h
+    src/utils/SecureRNG.h \
+    src/protocol/ContactRequestClient.h
 RESOURCES += res/resources.qrc \
     translation/embedded.qrc
 TRANSLATIONS = translation/torim.ts
