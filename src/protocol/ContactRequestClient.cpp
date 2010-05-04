@@ -5,7 +5,9 @@
 #include "CommandDataParser.h"
 #include "tor/TorControlManager.h"
 #include "tor/HiddenService.h"
+#include "utils/CryptoKey.h"
 #include <QNetworkProxy>
+#include <QtEndian>
 
 ContactRequestClient::ContactRequestClient(ContactUser *u)
     : QObject(u), user(u), state(NotConnected)
@@ -67,11 +69,10 @@ void ContactRequestClient::buildRequestData(QByteArray cookie)
     QByteArray requestData;
     CommandDataParser request(&requestData);
 
-    /* Placeholder for length */
-    request << (quint16)0;
+    /* Hostname */
+    Tor::HiddenService *service = torManager->hiddenServices().value(0);
 
-    /* Hostname; ASCII */
-    QString hostname = torManager->hiddenServices()[0]->hostname();
+    QString hostname = service ? service->hostname() : QString();
     hostname.truncate(hostname.lastIndexOf(QChar('.')));
     if (hostname.size() != 16)
     {
@@ -80,5 +81,54 @@ void ContactRequestClient::buildRequestData(QByteArray cookie)
         return;
     }
 
+    /* Public service key */
+    CryptoKey serviceKey = service->cryptoKey();
+    if (!serviceKey.isValid())
+    {
+        qWarning() << "Cannot send contact request: failed to load service key";
+        /* TODO also */
+        return;
+    }
+
+    QByteArray publicKeyData = serviceKey.encodedPublicKey();
+    if (publicKeyData.isNull())
+    {
+        qWarning() << "Cannot send contact request: failed to encode service key";
+        /* TODO .. */
+        return;
+    }
+
+    /* Signed cookie */
+    QByteArray signature = serviceKey.signData(cookie);
+    if (signature.isNull())
+    {
+        qWarning() << "Cannot send contact request: failed to sign cookie";
+        /* TODO again! */
+        return;
+    }
+
+    request.writeVariableData(signature);
+
+    /* Build request */
+    request << (quint16)0; /* placeholder for length */
     request.writeFixedData(hostname.toLatin1());
+    request.writeVariableData(publicKeyData);
+    request.writeVariableData(signature);
+    request << myNickname() << message();
+
+    if (request.hasError())
+    {
+        qWarning() << "Cannot send contact request: command building failed";
+        /* TODO something */
+        return;
+    }
+
+    /* Set length */
+    qToBigEndian((quint16)requestData.size(), reinterpret_cast<uchar*>(requestData.data()));
+
+    /* Send */
+    qint64 re = socket.write(requestData);
+    Q_ASSERT(re == requestData.size());
+
+    qDebug() << "Contact request for" << user->uniqueID << "sent request data";
 }
