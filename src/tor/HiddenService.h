@@ -22,6 +22,8 @@
 #include <QHostAddress>
 #include <QList>
 
+class CryptoKey;
+
 namespace Tor
 {
 
@@ -53,6 +55,7 @@ public:
     Status status() const { return pStatus; }
 
     const QString &hostname() const { return pHostname; }
+    CryptoKey cryptoKey() const;
 
     const QList<Target> &targets() const { return pTargets; }
     void addTarget(const Target &target);

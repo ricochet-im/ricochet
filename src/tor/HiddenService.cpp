@@ -18,6 +18,7 @@
 #include "HiddenService.h"
 #include "TorControlManager.h"
 #include "TorServiceTest.h"
+#include "utils/CryptoKey.h"
 #include <QFile>
 #include <QTimer>
 
@@ -85,6 +86,17 @@ void HiddenService::readHostname()
 
     pHostname = QString::fromLatin1(data.constData(), sep) + QLatin1String(".onion");
     qDebug() << "Hidden service hostname is" << pHostname;
+}
+
+CryptoKey HiddenService::cryptoKey() const
+{
+    CryptoKey key;
+
+    bool ok = key.loadFromFile(dataPath + QLatin1String("/private_key"));
+    if (!ok)
+        qWarning() << "Failed to load hidden service key";
+
+    return key;
 }
 
 void HiddenService::startSelfTest()
