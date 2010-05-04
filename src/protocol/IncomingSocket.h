@@ -40,6 +40,9 @@ public:
     QHostAddress serverAddress() const;
     quint16 serverPort() const;
 
+    /* The intro based on supported protocols; anything after the purpose is left to the caller. */
+    static QByteArray introData(uchar purpose);
+
 private slots:
     void incomingConnection();
 
@@ -53,6 +56,9 @@ private:
     QTcpServer *server;
     QList<QTcpSocket*> pendingSockets;
     QBasicTimer expireTimer;
+
+    bool handleVersion(QTcpSocket *socket);
+    void handleIntro(QTcpSocket *socket, uchar version);
 };
 
 #endif // INCOMINGSOCKET_H

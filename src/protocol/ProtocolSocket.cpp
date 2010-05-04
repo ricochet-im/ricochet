@@ -19,6 +19,7 @@
 #include "ProtocolManager.h"
 #include "ProtocolCommand.h"
 #include "CommandHandler.h"
+#include "IncomingSocket.h"
 #include "tor/TorControlManager.h"
 #include <QNetworkProxy>
 #include <QtEndian>
@@ -104,23 +105,19 @@ void ProtocolSocket::sendAuth()
 {
     Q_ASSERT(!authPending && !authFinished);
 
+    QByteArray intro = IncomingSocket::introData(0x00);
+
     QByteArray secret = manager->secret();
     Q_ASSERT(secret.size() == 16);
 
-    quint8 purpose = 0x00;
+    if (secret.size() != 16)
+    {
+        int f = secret.size();
+        secret.resize(16);
+        memset(secret.data() + f, 0, 16 - f);
+    }
 
-    /* Introduction; 0x49 0x4D [1*version] [16*cookie] [1*purpose] */
-    QByteArray intro;
-    intro.resize(20);
-
-    intro[0] = 0x49;
-    intro[1] = 0x4D;
-    intro[2] = protocolVersion;
-    intro[19] = purpose;
-
-    memcpy(intro.data()+3, secret.constData(), qMin(16, secret.size()));
-    if (secret.size() < 16)
-        memset(intro.data()+3+secret.size(), 0, 16-secret.size());
+    intro.append(secret);
 
     qint64 re = socket->write(intro);
     Q_ASSERT(re == intro.size());
@@ -185,12 +182,23 @@ void ProtocolSocket::read()
 
     if (available && authPending && !authFinished)
     {
-        char reply;
-        qint64 re = socket->read(&reply, 1);
-        Q_ASSERT(re);
+        if (available < 2)
+            return;
 
-        if (reply != 0x01)
+        char reply[2];
+        qint64 re = socket->read(reply, 2);
+        Q_ASSERT(re == 2);
+
+        if (reply[0] != protocolVersion)
         {
+            qDebug() << "Outgoing socket rejected: Version negotiation failure";
+            socket->close();
+            return;
+        }
+
+        if (reply[1] != 0x00)
+        {
+            qDebug() << "Outgoing socket rejected: Authentication failure, code" << hex << (int)reply[1];
             socket->close();
             return;
         }
@@ -201,7 +209,7 @@ void ProtocolSocket::read()
         /* This will take care of flushing commands as well */
         emit socketReady();
 
-        available--;
+        available -= 2;
     }
 
     while (available >= 6)

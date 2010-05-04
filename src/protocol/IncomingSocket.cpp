@@ -69,6 +69,24 @@ void IncomingSocket::incomingConnection()
     }
 }
 
+void IncomingSocket::removeSocket(QTcpSocket *socket)
+{
+    if (!socket)
+    {
+        socket = qobject_cast<QTcpSocket*>(sender());
+        if (!socket)
+            return;
+    }
+
+    qDebug() << "Disconnecting pending socket";
+
+    pendingSockets.removeOne(socket);
+
+    socket->disconnect(this);
+    socket->close();
+    socket->deleteLater();
+}
+
 void IncomingSocket::timerEvent(QTimerEvent *)
 {
     QDateTime now = QDateTime::currentDateTime();
@@ -94,77 +112,152 @@ void IncomingSocket::readSocket()
     if (!socket)
         return;
 
-    /* 0x49 0x4D [1*version] [16*cookie] [1*purpose] */
+    QVariant versionProp = socket->property("protocolVersion");
+
+    if (versionProp.isNull())
+    {
+        if (!handleVersion(socket))
+            return;
+        versionProp = socket->property("protocolVersion");
+
+        if (versionProp.isNull())
+        {
+            Q_ASSERT_X(false, "IncomingConnection::handleVersion", "version property not properly set");
+            return;
+        }
+    }
+
+    handleIntro(socket, (uchar)versionProp.toUInt());
+}
+
+bool IncomingSocket::handleVersion(QTcpSocket *socket)
+{
+    /* 0x49 0x4D [numversions] (numversions * version) */
     qint64 available = socket->bytesAvailable();
 
     if (available < 3)
-        return;
+        return false;
 
-    /* Peek for the intro bytes and the version */
-    char intro[3];
-    qint64 re = socket->peek(intro, 3);
+    /* Peek for the identifier and version count */
+    uchar intro[3];
+    qint64 re = socket->peek(reinterpret_cast<char*>(intro), 3);
     if (re < 3)
-        return;
+        return false;
 
-    if (intro[0] != 0x49 || intro[1] != 0x4D)
+    if (intro[0] != 0x49 || intro[1] != 0x4D || intro[2] == 0)
     {
-        qDebug() << "Connection authentication failed: incorrect introduction sequence";
+        qDebug() << "Connection rejected: incorrect introduction sequence";
         removeSocket(socket);
-        return;
+        return false;
     }
 
-    if (intro[2] != protocolVersion)
+    /* Stop and wait if the full list of supported versions is not here */
+    if (available < (intro[2] + 3))
+        return false;
+
+    QByteArray versions = socket->read(intro[2] + 3);
+    Q_ASSERT(versions.size() == intro[2] + 3);
+
+    /* Only one version is supported right now (protocolVersion). 0xff is the reserved failure code. */
+    uchar version = 0xff;
+    for (int i = 3; i < versions.size(); ++i)
     {
-        qDebug() << "Connection authentication failed: protocol version mismatch - " << hex
-                << (int)intro[2];
-        removeSocket(socket);
-        return;
+        if ((uchar)versions[i] == protocolVersion)
+        {
+            version = protocolVersion;
+            break;
+        }
     }
 
-    /* Wait until the full introduction is available */
-    if (available < 20)
-        return;
+    /* Send the version response */
+    socket->write(reinterpret_cast<char*>(&version), 1);
 
-    QByteArray data = socket->read(20);
-    Q_ASSERT(data.size() == 20);
-
-    ContactUser *user = contactsManager->lookupSecret(data.mid(3, 16));
-
-    if (!user)
+    if (version == 0xff)
     {
-        qDebug() << "Connection authentication failed: no match for secret";
+        qDebug() << "Connection rejected: no mutually supported protocol version";
         removeSocket(socket);
-        return;
+        return false;
     }
 
-    qDebug() << "Connection authentication successful for" << user->nickname()
-            << "purpose" << hex << (int)data[19];
+    /* Set the version property (used for the rest of the intro) */
+    socket->setProperty("protocolVersion", QVariant((unsigned)version));
 
-    char response = 0x01;
-    socket->write(&response, 1);
-
-    pendingSockets.removeOne(socket);
-    socket->disconnect(this);
-
-    /* The protocolmanager also takes ownership */
-    user->conn()->addSocket(socket, data[19]);
-    Q_ASSERT(socket->parent() != this);
+    return true;
 }
 
-void IncomingSocket::removeSocket(QTcpSocket *socket)
+void IncomingSocket::handleIntro(QTcpSocket *socket, uchar version)
 {
-    if (!socket)
+    Q_ASSERT(version == protocolVersion);
+
+    /* Peek at the purpose; can't be a read as this may be called repeatedly until it's ready */
+    uchar purpose;
+    if (socket->peek(reinterpret_cast<char*>(&purpose), 1) < 1)
+        return;
+
+    /* Purposes less than 0x20 are allowed as contact-authenticated connections,
+     * all following the same auth rules (with nothing else in intro).
+     * 0x00 has special meaning as a primary connection, while all others are
+     * treated as generic unidirectional auxiliary connections. */
+
+    if (purpose < 0x20)
     {
-        socket = qobject_cast<QTcpSocket*>(sender());
-        if (!socket)
+        /* Wait until the auth data is available */
+        quint64 available = socket->bytesAvailable();
+        if (available < 16)
             return;
+
+        QByteArray secret = socket->read(17);
+        /* Remove purpose */
+        secret.remove(0, 1);
+        Q_ASSERT(secret.size() == 16);
+
+        ContactUser *user = contactsManager->lookupSecret(secret);
+
+        /* Response; 0x00 is success, while all others are error. 0x01 is generic error. */
+        char response = 0x01;
+
+        if (!user)
+        {
+            qDebug() << "Connection authentication failed: no match for secret";
+            response = 0x02;
+            socket->write(&response, 1);
+            removeSocket(socket);
+            return;
+        }
+
+        qDebug() << "Connection authentication successful for contact" << user->uniqueID
+                << "purpose" << hex << purpose;
+
+        /* 0x00 is success */
+        response = 0x00;
+        socket->write(&response, 1);
+
+        pendingSockets.removeOne(socket);
+        socket->disconnect(this);
+
+        /* The protocolmanager also takes ownership */
+        user->conn()->addSocket(socket, purpose);
+        Q_ASSERT(socket->parent() != this);
     }
+    else
+    {
+        /* Purpose unknown and not supported; just close the connection, because somebody
+         * isn't obeying the rules of protocol versioning. */
+        qDebug() << "Connection rejected: Unrecognized version 0 purpose" << hex << purpose;
+        removeSocket(socket);
+    }
+}
 
-    qDebug() << "Disconnecting pending socket";
+QByteArray IncomingSocket::introData(uchar purpose)
+{
+    QByteArray re;
+    re.resize(5);
 
-    pendingSockets.removeOne(socket);
+    re[0] = 0x49;
+    re[1] = 0x4D;
+    re[2] = 0x01; /* number of versions */
+    re[3] = protocolVersion; /* version */
+    re[4] = (char)purpose;
 
-    socket->disconnect(this);
-    socket->close();
-    socket->deleteLater();
+    return re;
 }
