@@ -57,6 +57,9 @@ public:
     CommandDataParser &operator<<(quint64 value);
     CommandDataParser &operator<<(const QString &string);
 
+    CommandDataParser &writeFixedData(const QByteArray &data);
+    CommandDataParser &writeVariableData(const QByteArray &data);
+
     /* Output */
     CommandDataParser &operator>>(bool &boolean);
     CommandDataParser &operator>>(qint8 &byte);

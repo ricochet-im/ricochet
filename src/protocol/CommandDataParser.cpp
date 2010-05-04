@@ -187,6 +187,33 @@ CommandDataParser &CommandDataParser::operator<<(const QString &string)
     return *this;
 }
 
+CommandDataParser &CommandDataParser::writeFixedData(const QByteArray &data)
+{
+    Q_ASSERT(writable);
+    if (!writable || d->size() + data.size() > maxCommandSize)
+    {
+        error = true;
+        return *this;
+    }
+
+    d->append(data);
+    return *this;
+}
+
+CommandDataParser &CommandDataParser::writeVariableData(const QByteArray &data)
+{
+    Q_ASSERT(data.size() <= 65535);
+    if (data.size() > 65535)
+    {
+        error = true;
+        return *this;
+    }
+
+    *this << (quint16)data.size();
+    writeFixedData(data);
+    return *this;
+}
+
 /* Output - integer types */
 CommandDataParser &CommandDataParser::operator>>(bool &boolean)
 {
