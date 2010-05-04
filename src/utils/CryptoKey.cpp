@@ -49,7 +49,7 @@ bool CryptoKey::loadFromFile(const QString &path)
     QFile file(path);
     if (!file.open(QIODevice::ReadOnly))
     {
-        qDebug() << "Failed to open private key from" << path << "-" << file.errorString();
+        qWarning() << "Failed to open private key from" << path << "-" << file.errorString();
         return false;
     }
 
@@ -63,7 +63,7 @@ bool CryptoKey::loadFromFile(const QString &path)
 
     if (!key)
     {
-        qDebug() << "Failed to parse private key from" << path;
+        qWarning() << "Failed to parse private key from" << path;
         return false;
     }
 
@@ -91,7 +91,7 @@ QByteArray CryptoKey::publicKeyDigest() const
     len = i2d_RSAPublicKey(key, &bufp);
     if (len < 0)
     {
-        qDebug() << "Failed to encode public key for digest";
+        qWarning() << "Failed to encode public key for digest";
         return QByteArray();
     }
 
@@ -103,7 +103,7 @@ QByteArray CryptoKey::publicKeyDigest() const
 
     if (!ok)
     {
-        qDebug() << "Failed to hash public key data for digest";
+        qWarning() << "Failed to hash public key data for digest";
         return QByteArray();
     }
 
@@ -119,7 +119,7 @@ QByteArray CryptoKey::encodedPublicKey() const
 
     if (!PEM_write_bio_RSAPublicKey(b, key))
     {
-        qDebug() << "Failed to encode public key";
+        qWarning() << "Failed to encode public key";
         BIO_free(b);
         return QByteArray();
     }
@@ -167,7 +167,7 @@ QByteArray CryptoKey::signData(const QByteArray &data) const
 
     if (r < 0)
     {
-        qDebug() << "RSA encryption failed when generating signature";
+        qWarning() << "RSA encryption failed when generating signature";
         return QByteArray();
     }
 
@@ -188,7 +188,7 @@ bool CryptoKey::verifySignature(const QByteArray &data, const QByteArray &signat
 
     if (r < 0)
     {
-        qDebug() << "RSA decryption failed when verifying signature";
+        qWarning() << "RSA decryption failed when verifying signature";
         return false;
     }
 

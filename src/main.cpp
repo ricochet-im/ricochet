@@ -65,8 +65,6 @@ int main(int argc, char *argv[])
     if (!SecureRNG::seed())
         qFatal("Failed to initialize RNG");
 
-    CryptoKey::test(config->value("core/serviceDirectory", QString("data")).toString().append("/private_key"));
-
     /* Contacts */
     contactsManager = new ContactsManager;
 
