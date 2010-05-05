@@ -282,3 +282,29 @@ CommandDataParser &CommandDataParser::operator>>(QString &string)
 
     return *this;
 }
+
+CommandDataParser &CommandDataParser::readFixedData(QByteArray *dest, int size)
+{
+    if ((p + size) > d->size())
+    {
+        error = true;
+        return *this;
+    }
+
+    *dest = d->mid(p, size);
+    p += size;
+
+    return *this;
+}
+
+CommandDataParser &CommandDataParser::readVariableData(QByteArray *dest)
+{
+    quint16 length = 0;
+
+    if (!takeInt(length))
+        error = true;
+    else
+        readFixedData(dest, length);
+
+    return *this;
+}

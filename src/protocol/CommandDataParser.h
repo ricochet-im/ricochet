@@ -72,6 +72,9 @@ public:
     CommandDataParser &operator>>(quint64 &value);
     CommandDataParser &operator>>(QString &string);
 
+    CommandDataParser &readFixedData(QByteArray *dest, int size);
+    CommandDataParser &readVariableData(QByteArray *dest);
+
 private:
     QByteArray *d;
     int p;
