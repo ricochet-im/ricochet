@@ -34,7 +34,7 @@ ContactAddDialog::ContactAddDialog(QWidget *parent) :
 {
     setModal(true);
     setWindowTitle(tr("Add Contact"));
-    setFixedSize(550, 300);
+    setFixedSize(390, 240);
 
     m_message->setPlaceholderText(tr("Enter something about yourself here!"));
 
@@ -51,6 +51,7 @@ QWidget *ContactAddDialog::createUI() const
 {
     QWidget *introPage = new QWidget;
     QVBoxLayout *layout = new QVBoxLayout(introPage);
+    layout->setMargin(0);
 
     // top form
     QFormLayout *formLayout = new QFormLayout;

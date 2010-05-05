@@ -195,6 +195,6 @@ void HomeScreen::startTorConfig()
 
 void HomeScreen::startAddContact()
 {
-    ContactAddDialog dialog;
+    ContactAddDialog dialog(window());
     dialog.exec();
 }
