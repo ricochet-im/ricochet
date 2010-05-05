@@ -92,7 +92,7 @@ CryptoKey HiddenService::cryptoKey() const
 {
     CryptoKey key;
 
-    bool ok = key.loadFromFile(dataPath + QLatin1String("/private_key"));
+    bool ok = key.loadFromFile(dataPath + QLatin1String("/private_key"), true);
     if (!ok)
         qWarning() << "Failed to load hidden service key";
 

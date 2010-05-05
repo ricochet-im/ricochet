@@ -30,7 +30,8 @@ public:
 
     static void test(const QString &file);
 
-    bool loadFromFile(const QString &path);
+    bool loadFromData(const QByteArray &data, bool privateKey = false);
+    bool loadFromFile(const QString &path, bool privateKey = false);
     void clear();
 
     bool isValid() const { return d.data() == 0; }
