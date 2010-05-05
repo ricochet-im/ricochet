@@ -62,7 +62,8 @@ SOURCES += src/main.cpp \
     src/utils/CryptoKey.cpp \
     src/utils/SecureRNG.cpp \
     src/protocol/ContactRequestClient.cpp \
-    src/protocol/ContactRequestServer.cpp
+    src/protocol/ContactRequestServer.cpp \
+    src/core/OutgoingRequestManager.cpp
 HEADERS += src/ui/MainWindow.h \
     src/ui/ChatWidget.h \
     src/ContactsModel.h \
@@ -101,7 +102,8 @@ HEADERS += src/ui/MainWindow.h \
     src/utils/CryptoKey.h \
     src/utils/SecureRNG.h \
     src/protocol/ContactRequestClient.h \
-    src/protocol/ContactRequestServer.h
+    src/protocol/ContactRequestServer.h \
+    src/core/OutgoingRequestManager.h
 RESOURCES += res/resources.qrc \
     translation/embedded.qrc
 TRANSLATIONS = translation/torim.ts

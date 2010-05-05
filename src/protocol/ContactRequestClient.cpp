@@ -10,7 +10,7 @@
 #include <QtEndian>
 
 ContactRequestClient::ContactRequestClient(ContactUser *u)
-    : QObject(u), user(u), socket(0), state(NotConnected)
+    : QObject(u), user(u), socket(0), m_response(NoResponse), state(NotConnected)
 {
 }
 
@@ -169,6 +169,7 @@ bool ContactRequestClient::handleResponse()
     case 0x00: /* Acknowledge */
         qDebug() << "Contact request for" << user->uniqueID << "acknowledged; waiting for response";
         state = WaitResponse;
+        m_response = Acknowledged;
         break;
 
     case 0x01: /* Accept */
@@ -179,14 +180,23 @@ bool ContactRequestClient::handleResponse()
         Q_ASSERT(socket->parent() != this);
         socket = 0;
 
+        m_response = Accepted;
+        break;
+
+    case 0x40:
+        qDebug() << "Contact request for" << user->uniqueID << "rejected by user";
+        m_response = Rejected;
         break;
 
     default: /* Error */
         qDebug() << "Contact request for" << user->uniqueID << "rejected with code" << hex << response;
-
-        /* TODO */
-        return false;
+        m_response = Error;
+        break;
     }
 
+    emit responseChanged(m_response);
+
+    if (m_response >= Rejected)
+        return false;
     return true;
 }

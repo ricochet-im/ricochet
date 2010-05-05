@@ -13,6 +13,15 @@ class ContactRequestClient : public QObject
 public:
     ContactUser * const user;
 
+    enum Response
+    {
+        NoResponse,
+        Acknowledged,
+        Accepted,
+        Rejected,
+        Error
+    };
+
     explicit ContactRequestClient(ContactUser *user);
 
     QString message() const { return m_message; }
@@ -21,8 +30,13 @@ public:
     QString myNickname() const { return m_mynick; }
     void setMyNickname(const QString &nick);
 
+    Response response() const { return m_response; }
+
 public slots:
     void sendRequest();
+
+signals:
+    void responseChanged(int response);
 
 private slots:
     void socketConnected();
@@ -31,6 +45,7 @@ private slots:
 private:
     class QTcpSocket *socket;
     QString m_message, m_mynick;
+    Response m_response;
 
     enum
     {
