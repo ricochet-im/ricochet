@@ -46,7 +46,12 @@ bool ContactRequestServer::sendResponse(uchar response)
         qFatal("Not implemented");
     }
     else if (response != 0x00)
+    {
         socket->close();
+        return false;
+    }
+
+    return true;
 }
 
 void ContactRequestServer::socketReadable()
