@@ -54,16 +54,31 @@ void ContactRequestClient::socketReadable()
         if (socket.bytesAvailable() < 16)
             return;
 
-        buildRequestData(socket.read(16));
+        if (!buildRequestData(socket.read(16)))
+        {
+            socket.close();
+            return;
+        }
+
+        state = WaitAck;
         break;
 
     case WaitAck:
     case WaitResponse:
+        if (!handleResponse())
+        {
+            socket.close();
+            return;
+        }
+
+        break;
+
+    case NotConnected:
         break;
     }
 }
 
-void ContactRequestClient::buildRequestData(QByteArray cookie)
+bool ContactRequestClient::buildRequestData(QByteArray cookie)
 {
     /* [2*length][16*hostname][data:pubkey][data:signedcookie][str:nick][str:message] */
     QByteArray requestData;
@@ -77,8 +92,7 @@ void ContactRequestClient::buildRequestData(QByteArray cookie)
     if (hostname.size() != 16)
     {
         qWarning() << "Cannot send contact request: unable to determine the local service hostname";
-        /* TODO handle this somehow */
-        return;
+        return false;
     }
 
     /* Public service key */
@@ -86,16 +100,14 @@ void ContactRequestClient::buildRequestData(QByteArray cookie)
     if (!serviceKey.isValid())
     {
         qWarning() << "Cannot send contact request: failed to load service key";
-        /* TODO also */
-        return;
+        return false;
     }
 
     QByteArray publicKeyData = serviceKey.encodedPublicKey();
     if (publicKeyData.isNull())
     {
         qWarning() << "Cannot send contact request: failed to encode service key";
-        /* TODO .. */
-        return;
+        return false;
     }
 
     /* Signed cookie */
@@ -103,8 +115,7 @@ void ContactRequestClient::buildRequestData(QByteArray cookie)
     if (signature.isNull())
     {
         qWarning() << "Cannot send contact request: failed to sign cookie";
-        /* TODO again! */
-        return;
+        return false;
     }
 
     request.writeVariableData(signature);
@@ -119,8 +130,7 @@ void ContactRequestClient::buildRequestData(QByteArray cookie)
     if (request.hasError())
     {
         qWarning() << "Cannot send contact request: command building failed";
-        /* TODO something */
-        return;
+        return false;
     }
 
     /* Set length */
@@ -131,4 +141,14 @@ void ContactRequestClient::buildRequestData(QByteArray cookie)
     Q_ASSERT(re == requestData.size());
 
     qDebug() << "Contact request for" << user->uniqueID << "sent request data";
+    return true;
+}
+
+bool ContactRequestClient::handleResponse()
+{
+    uchar response;
+    if (socket.read(reinterpret_cast<char*>(&response), 1) < 1)
+        return true;
+
+
 }

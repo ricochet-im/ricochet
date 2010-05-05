@@ -41,7 +41,8 @@ private:
         WaitResponse
     } state;
 
-    void buildRequestData(QByteArray cookie);
+    bool buildRequestData(QByteArray cookie);
+    bool handleResponse();
 };
 
 #endif // CONTACTREQUESTCLIENT_H
