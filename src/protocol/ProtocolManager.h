@@ -32,8 +32,6 @@ class ProtocolManager : public QObject
     Q_OBJECT
     Q_DISABLE_COPY(ProtocolManager)
 
-    friend class IncomingSocket;
-
     Q_PROPERTY(QString host READ host WRITE setHost STORED true)
     Q_PROPERTY(quint16 port READ port WRITE setPort STORED true)
 
@@ -53,6 +51,8 @@ public:
     bool isAnyConnected() const;
 
     ProtocolSocket *primary() { return pPrimary; }
+
+    void addSocket(QTcpSocket *socket, quint8 purpose);
 
 public slots:
     void connectPrimary();
@@ -76,7 +76,6 @@ private:
 
     int connectAttempts;
 
-    void addSocket(QTcpSocket *socket, quint8 purpose);
     void setPrimary(ProtocolSocket *newPrimary);
 };
 

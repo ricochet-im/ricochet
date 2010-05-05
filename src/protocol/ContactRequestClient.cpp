@@ -10,10 +10,8 @@
 #include <QtEndian>
 
 ContactRequestClient::ContactRequestClient(ContactUser *u)
-    : QObject(u), user(u), state(NotConnected)
+    : QObject(u), user(u), socket(0), state(NotConnected)
 {
-    connect(&socket, SIGNAL(connected()), this, SLOT(socketConnected()));
-    connect(&socket, SIGNAL(readyRead()), this, SLOT(socketReadable()));
 }
 
 void ContactRequestClient::setMessage(const QString &message)
@@ -28,19 +26,33 @@ void ContactRequestClient::setMyNickname(const QString &nick)
 
 void ContactRequestClient::sendRequest()
 {
+    if (socket)
+    {
+        socket->abort();
+        socket->disconnect(this);
+        socket->deleteLater();
+        socket = 0;
+    }
+
+    state = NotConnected;
+
     if (!torManager->isSocksReady())
     {
         /* Impossible to send now, requests are triggered when socks becomes ready */
         return;
     }
 
-    socket.setProxy(torManager->connectionProxy());
-    socket.connectToHost(user->conn()->host(), user->conn()->port());
+    socket = new QTcpSocket(this);
+    connect(socket, SIGNAL(connected()), this, SLOT(socketConnected()));
+    connect(socket, SIGNAL(readyRead()), this, SLOT(socketReadable()));
+
+    socket->setProxy(torManager->connectionProxy());
+    socket->connectToHost(user->conn()->host(), user->conn()->port());
 }
 
 void ContactRequestClient::socketConnected()
 {
-    socket.write(IncomingSocket::introData(0x80));
+    socket->write(IncomingSocket::introData(0x80));
     state = WaitCookie;
 
     qDebug() << "Contact request for" << user->uniqueID << "connected";
@@ -51,12 +63,12 @@ void ContactRequestClient::socketReadable()
     switch (state)
     {
     case WaitCookie:
-        if (socket.bytesAvailable() < 16)
+        if (socket->bytesAvailable() < 16)
             return;
 
-        if (!buildRequestData(socket.read(16)))
+        if (!buildRequestData(socket->read(16)))
         {
-            socket.close();
+            socket->close();
             return;
         }
 
@@ -65,9 +77,9 @@ void ContactRequestClient::socketReadable()
 
     case WaitAck:
     case WaitResponse:
-        if (!handleResponse())
+        if (!handleResponse() && socket)
         {
-            socket.close();
+            socket->close();
             return;
         }
 
@@ -137,7 +149,7 @@ bool ContactRequestClient::buildRequestData(QByteArray cookie)
     qToBigEndian((quint16)requestData.size(), reinterpret_cast<uchar*>(requestData.data()));
 
     /* Send */
-    qint64 re = socket.write(requestData);
+    qint64 re = socket->write(requestData);
     Q_ASSERT(re == requestData.size());
 
     qDebug() << "Contact request for" << user->uniqueID << "sent request data";
@@ -147,8 +159,34 @@ bool ContactRequestClient::buildRequestData(QByteArray cookie)
 bool ContactRequestClient::handleResponse()
 {
     uchar response;
-    if (socket.read(reinterpret_cast<char*>(&response), 1) < 1)
+    if (socket->read(reinterpret_cast<char*>(&response), 1) < 1)
         return true;
 
+    /* TODO much more state handling and cleanup */
 
+    switch (response)
+    {
+    case 0x00: /* Acknowledge */
+        qDebug() << "Contact request for" << user->uniqueID << "acknowledged; waiting for response";
+        state = WaitResponse;
+        break;
+
+    case 0x01: /* Accept */
+        qDebug() << "Contact request for" << user->uniqueID << "accepted! Converting connection to primary";
+
+        socket->disconnect(this);
+        user->conn()->addSocket(socket, 0x00);
+        Q_ASSERT(socket->parent() != this);
+        socket = 0;
+
+        break;
+
+    default: /* Error */
+        qDebug() << "Contact request for" << user->uniqueID << "rejected with code" << hex << response;
+
+        /* TODO */
+        return false;
+    }
+
+    return true;
 }

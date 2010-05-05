@@ -2,7 +2,6 @@
 #define CONTACTREQUESTCLIENT_H
 
 #include <QObject>
-#include <QTcpSocket>
 
 class ContactUser;
 
@@ -30,7 +29,7 @@ private slots:
     void socketReadable();
 
 private:
-    QTcpSocket socket;
+    class QTcpSocket *socket;
     QString m_message, m_mynick;
 
     enum
