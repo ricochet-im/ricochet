@@ -65,7 +65,8 @@ SOURCES += src/main.cpp \
     src/protocol/ContactRequestServer.cpp \
     src/core/OutgoingRequestManager.cpp \
     src/ui/ContactAddDialog.cpp \
-    src/ui/FancyTextEdit.cpp
+    src/ui/FancyTextEdit.cpp \
+    src/core/IncomingRequestManager.cpp
 
 HEADERS += src/ui/MainWindow.h \
     src/ui/ChatWidget.h \
@@ -108,7 +109,8 @@ HEADERS += src/ui/MainWindow.h \
     src/protocol/ContactRequestServer.h \
     src/core/OutgoingRequestManager.h \
     src/ui/ContactAddDialog.h \
-    src/ui/FancyTextEdit.h
+    src/ui/FancyTextEdit.h \
+    src/core/IncomingRequestManager.h
 
 RESOURCES += res/resources.qrc \
     translation/embedded.qrc

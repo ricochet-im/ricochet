@@ -16,6 +16,11 @@ ContactRequestServer::ContactRequestServer(QTcpSocket *s)
     sendCookie();
 }
 
+void ContactRequestServer::close()
+{
+    socket->close();
+}
+
 void ContactRequestServer::socketDisconnected()
 {
     qDebug() << "Contact request connection closed";

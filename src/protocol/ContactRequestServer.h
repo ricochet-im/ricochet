@@ -13,6 +13,8 @@ class ContactRequestServer : public QObject
 public:
     explicit ContactRequestServer(QTcpSocket *socket);
 
+    void close();
+
 private slots:
     void socketReadable();
     void socketDisconnected();
