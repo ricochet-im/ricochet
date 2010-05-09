@@ -2,12 +2,16 @@
 #include "CommandDataParser.h"
 #include "utils/CryptoKey.h"
 #include "utils/SecureRNG.h"
+#include "core/ContactsManager.h"
+#include "core/IncomingRequestManager.h"
 #include <QTcpSocket>
 #include <QtEndian>
 
 ContactRequestServer::ContactRequestServer(QTcpSocket *s)
     : socket(s), state(WaitRequest)
 {
+    socket->setParent(this);
+
     connect(socket, SIGNAL(readyRead()), this, SLOT(socketReadable()));
     connect(socket, SIGNAL(disconnected()), this, SLOT(socketDisconnected()));
 
@@ -150,6 +154,8 @@ void ContactRequestServer::handleRequest(const QByteArray &data)
     qDebug() << "  Nickname:" << nickname;
     qDebug() << "  Message:" << message;
     qDebug() << "  Cookie:" << cookie.toHex();
+
+    contactsManager->incomingRequests->addRequest(hostname, this, nickname, message);
 
     /* Acknowledgement */
     sendResponse(0x00);

@@ -18,6 +18,7 @@
 #include "IncomingSocket.h"
 #include "ProtocolManager.h"
 #include "core/ContactsManager.h"
+#include "ContactRequestServer.h"
 #include <QTcpServer>
 #include <QTcpSocket>
 #include <QDateTime>
@@ -237,6 +238,21 @@ void IncomingSocket::handleIntro(QTcpSocket *socket, uchar version)
 
         /* The protocolmanager also takes ownership */
         user->conn()->addSocket(socket, purpose);
+        Q_ASSERT(socket->parent() != this);
+    }
+    else if (purpose == 0x80)
+    {
+        /* Incoming contact request connection */
+
+        /* Read purpose */
+        int ok = socket->read(1).size();
+        Q_ASSERT(ok);
+
+        /* Pass to ContactRequestServer */
+        pendingSockets.removeOne(socket);
+        socket->disconnect(this);
+
+        new ContactRequestServer(socket);
         Q_ASSERT(socket->parent() != this);
     }
     else
