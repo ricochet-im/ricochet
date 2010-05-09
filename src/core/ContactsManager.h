@@ -28,6 +28,9 @@ class ContactsManager : public QObject
     Q_DISABLE_COPY(ContactsManager)
 
 public:
+    class IncomingRequestManager * const incomingRequests;
+    class OutgoingRequestManager * const outgoingRequests;
+
     explicit ContactsManager();
 
     const QList<ContactUser*> &contacts() const { return pContacts; }

@@ -65,9 +65,6 @@ int main(int argc, char *argv[])
     if (!SecureRNG::seed())
         qFatal("Failed to initialize RNG");
 
-    /* Contacts */
-    contactsManager = new ContactsManager;
-
     /* Incoming socket */
     initIncomingSocket();
 
@@ -75,6 +72,8 @@ int main(int argc, char *argv[])
     if (!connectTorControl())
         return 0;
 
+    /* Contacts */
+    contactsManager = new ContactsManager;
     QObject::connect(torManager, SIGNAL(socksReady()), contactsManager, SLOT(connectToAll()));
 
     /* Window */

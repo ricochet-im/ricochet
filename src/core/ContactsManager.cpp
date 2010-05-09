@@ -17,14 +17,20 @@
 
 #include "main.h"
 #include "ContactsManager.h"
+#include "IncomingRequestManager.h"
+#include "OutgoingRequestManager.h"
 #include <QStringList>
 
 ContactsManager *contactsManager = 0;
 
 ContactsManager::ContactsManager()
-    : highestID(-1)
+    : incomingRequests(new IncomingRequestManager(this)),
+      outgoingRequests(new OutgoingRequestManager(this)),
+      highestID(-1)
 {
     loadFromSettings();
+    outgoingRequests->loadRequests();
+    incomingRequests->loadRequests();
 }
 
 void ContactsManager::loadFromSettings()
