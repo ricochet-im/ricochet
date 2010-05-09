@@ -59,6 +59,12 @@ bool ContactRequestServer::sendResponse(uchar response)
     return true;
 }
 
+void ContactRequestServer::sendRejection()
+{
+    bool open = sendResponse(0x40);
+    Q_ASSERT(!open);
+}
+
 void ContactRequestServer::socketReadable()
 {
     if (state != WaitRequest)

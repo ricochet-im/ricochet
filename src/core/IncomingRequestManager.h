@@ -44,12 +44,16 @@ public slots:
 private:
     QPointer<ContactRequestServer> connection;
     QString m_message, m_nickname;
+
+    void removeRequest();
 };
 
 class IncomingRequestManager : public QObject
 {
     Q_OBJECT
     Q_DISABLE_COPY(IncomingRequestManager)
+
+    friend class IncomingContactRequest;
 
 public:
     ContactsManager * const contacts;
@@ -65,12 +69,17 @@ public:
     void addRequest(const QByteArray &hostname, ContactRequestServer *connection, const QString &nickname,
                     const QString &message);
 
+    /* Blacklist a host for immediate rejection in the future */
+    void addRejectedHost(const QByteArray &hostname);
+
 signals:
     void requestAdded(IncomingContactRequest *request);
     void requestRemoved(IncomingContactRequest *request);
 
 private:
     QList<IncomingContactRequest*> m_requests;
+
+    void removeRequest(IncomingContactRequest *request);
 };
 
 #endif // INCOMINGREQUESTMANAGER_H

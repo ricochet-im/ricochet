@@ -62,12 +62,27 @@ void IncomingRequestManager::addRequest(const QByteArray &hostname, ContactReque
     emit requestAdded(request);
 }
 
+void IncomingRequestManager::removeRequest(IncomingContactRequest *request)
+{
+    if (m_requests.removeOne(request))
+        emit requestRemoved(request);
+
+    request->deleteLater();
+}
+
+void IncomingRequestManager::addRejectedHost(const QByteArray &hostname)
+{
+    qWarning() << "Rejected host list is not implemented";
+}
+
 IncomingContactRequest::IncomingContactRequest(IncomingRequestManager *m, const QByteArray &h,
                                                     ContactRequestServer *c)
     : QObject(m), manager(m), hostname(h), connection(c)
 {
     Q_ASSERT(manager);
     Q_ASSERT(hostname.size() == 16);
+
+    qDebug() << "Created contact request from" << hostname << (connection ? "with" : "without") << "connection";
 }
 
 void IncomingContactRequest::load()
@@ -84,6 +99,12 @@ void IncomingContactRequest::save()
     config->setValue(QLatin1String("nickname"), nickname());
     config->setValue(QLatin1String("message"), message());
     config->endGroup();
+}
+
+void IncomingContactRequest::removeRequest()
+{
+    /* Remove from config */
+    qFatal("Not implemented");
 }
 
 void IncomingContactRequest::setMessage(const QString &message)
@@ -105,6 +126,8 @@ void IncomingContactRequest::setConnection(ContactRequestServer *c)
         connection->close();
     }
 
+    qDebug() << "Setting new connection for an existing contact request from" << hostname;
+
     connection = c;
 }
 
@@ -120,10 +143,20 @@ QDateTime IncomingContactRequest::lastRequestDate() const
 
 void IncomingContactRequest::accept()
 {
-
+    qDebug() << "Accepting contact request from" << hostname;
+    qFatal("Not implemented");
 }
 
 void IncomingContactRequest::reject()
 {
+    qDebug() << "Rejecting contact request from" << hostname;
 
+    if (connection)
+        connection->sendRejection();
+
+    removeRequest();
+    manager->addRejectedHost(hostname);
+    manager->removeRequest(this);
+
+    /* Object is now scheduled for deletion */
 }
