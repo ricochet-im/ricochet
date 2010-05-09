@@ -18,8 +18,10 @@ public:
 
     explicit OutgoingRequestManager(ContactsManager *contactsManager);
 
-    void loadRequests();
     void addNewRequest(ContactUser *user, const QString &myNickname, const QString &message);
+
+public slots:
+    void loadRequests();
 
 private slots:
     void handleResponse(int response);

@@ -34,7 +34,7 @@ void ContactRequestClient::sendRequest()
         socket = 0;
     }
 
-    state = NotConnected;
+    state = WaitConnect;
 
     if (!torManager->isSocksReady())
     {
@@ -53,7 +53,7 @@ void ContactRequestClient::sendRequest()
 void ContactRequestClient::socketConnected()
 {
     socket->write(IncomingSocket::introData(0x80));
-    state = WaitCookie;
+    state = WaitConnect;
 
     qDebug() << "Contact request for" << user->uniqueID << "connected";
 }
@@ -62,6 +62,25 @@ void ContactRequestClient::socketReadable()
 {
     switch (state)
     {
+    case WaitConnect:
+        {
+            uchar version;
+            if (socket->read(reinterpret_cast<char*>(&version), 1) < 1)
+                return;
+
+            if (version != protocolVersion)
+            {
+                /* TODO better handling of this */
+                qWarning() << "Contact request for" << user->uniqueID << "version negotiation failed";
+                socket->close();
+                return;
+            }
+
+            state = WaitCookie;
+
+            /* Deliberately omitted break; cookie may arrive instantly */
+        }
+
     case WaitCookie:
         if (socket->bytesAvailable() < 16)
             return;
@@ -109,7 +128,7 @@ bool ContactRequestClient::buildRequestData(QByteArray cookie)
 
     /* Public service key */
     CryptoKey serviceKey = service->cryptoKey();
-    if (!serviceKey.isValid())
+    if (!serviceKey.isLoaded())
     {
         qWarning() << "Cannot send contact request: failed to load service key";
         return false;
@@ -129,8 +148,6 @@ bool ContactRequestClient::buildRequestData(QByteArray cookie)
         qWarning() << "Cannot send contact request: failed to sign cookie";
         return false;
     }
-
-    request.writeVariableData(signature);
 
     /* Build request */
     request << (quint16)0; /* placeholder for length */
@@ -189,7 +206,7 @@ bool ContactRequestClient::handleResponse()
         break;
 
     default: /* Error */
-        qDebug() << "Contact request for" << user->uniqueID << "rejected with code" << hex << response;
+        qDebug() << "Contact request for" << user->uniqueID << "rejected with code" << hex << (int)response;
         m_response = Error;
         break;
     }

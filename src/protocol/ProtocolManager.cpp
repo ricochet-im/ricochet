@@ -38,6 +38,12 @@ void ProtocolManager::setPort(quint16 port)
 
 void ProtocolManager::setSecret(const QByteArray &secret)
 {
+    if (secret.isEmpty())
+    {
+        pSecret = QByteArray();
+        return;
+    }
+
     Q_ASSERT(secret.size() == 16);
     pSecret = secret;
 
@@ -94,7 +100,7 @@ void ProtocolManager::connectPrimary()
     /* The contact is responsible for triggering connection should host or port
      * change. The tor manager check is safe because ContactsManager will always
      * spawn a connection for all contacts when the socksReady state changes. */
-    if (host().isEmpty() || !port() || !torManager->isSocksReady())
+    if (!isConnectable() || !torManager->isSocksReady())
         return;
 
     pPrimary->connectToHost(host(), port());

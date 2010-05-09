@@ -80,7 +80,7 @@ void ContactRequestServer::socketReadable()
 
     /* Peek at the request length field */
     quint16 length;
-    if (socket->peek(reinterpret_cast<char*>(&length), sizeof(length)) < sizeof(length))
+    if (socket->peek(reinterpret_cast<char*>(&length), sizeof(length)) < (int)sizeof(length))
         return;
 
     length = qFromBigEndian(length);

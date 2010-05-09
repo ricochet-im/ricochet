@@ -3,10 +3,12 @@
 #include "ContactsManager.h"
 #include "ContactUser.h"
 #include "protocol/ContactRequestClient.h"
+#include "tor/TorControlManager.h"
 
 OutgoingRequestManager::OutgoingRequestManager(ContactsManager *c)
     : QObject(c), contacts(c)
 {
+    connect(torManager, SIGNAL(socksReady()), this, SLOT(loadRequests()));
 }
 
 void OutgoingRequestManager::loadRequests()

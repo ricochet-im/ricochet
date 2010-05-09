@@ -49,6 +49,7 @@ public:
 
     ProtocolManager *conn() const { return pConn; }
     bool isConnected() const { return pConn->isPrimaryConnected(); }
+    bool isConnectable() const { return pConn->isConnectable(); }
 
     const QString &nickname() const { return pNickname; }
     QString notesText() const;

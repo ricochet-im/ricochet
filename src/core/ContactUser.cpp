@@ -35,7 +35,9 @@ ContactUser::ContactUser(int id, QObject *parent)
     quint16 port = (quint16)readSetting("port", 80).toUInt();
     pConn = new ProtocolManager(this, host, port);
 
-    pConn->setSecret(readSetting("remoteSecret").toByteArray());
+    QByteArray remoteSecret = readSetting("remoteSecret").toByteArray();
+    if (!remoteSecret.isNull())
+        pConn->setSecret(remoteSecret);
 
     connect(pConn, SIGNAL(primaryConnected()), this, SLOT(onConnected()));
     connect(pConn, SIGNAL(primaryDisconnected()), this, SLOT(onDisconnected()));

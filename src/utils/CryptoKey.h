@@ -26,6 +26,7 @@ class CryptoKey
 {
 public:
     CryptoKey();
+    CryptoKey(const CryptoKey &other) : d(other.d) { }
     ~CryptoKey();
 
     static void test(const QString &file);
@@ -34,7 +35,7 @@ public:
     bool loadFromFile(const QString &path, bool privateKey = false);
     void clear();
 
-    bool isValid() const { return d.data() == 0; }
+    bool isValid() const { return d.data() != 0; }
     bool isLoaded() const { return d.data() && d->key != 0; }
     bool isPrivate() const;
 

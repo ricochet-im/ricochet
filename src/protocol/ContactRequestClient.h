@@ -50,6 +50,7 @@ private:
     enum
     {
         NotConnected,
+        WaitConnect,
         WaitCookie,
         WaitAck,
         WaitResponse

@@ -29,7 +29,7 @@ ContactsManager::ContactsManager()
       highestID(-1)
 {
     loadFromSettings();
-    outgoingRequests->loadRequests();
+    /* Outgoing requests are loaded and started when Tor signals readiness */
     incomingRequests->loadRequests();
 }
 

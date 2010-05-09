@@ -49,6 +49,7 @@ public:
 
     bool isPrimaryConnected() const;
     bool isAnyConnected() const;
+    bool isConnectable() const { return !pHost.isEmpty() && !pSecret.isEmpty() && pPort; }
 
     ProtocolSocket *primary() { return pPrimary; }
 
