@@ -88,30 +88,9 @@ void ContactItemDelegate::paint(QPainter *p, const QStyleOptionViewItem &opt,
     if (!status.isNull())
         p->drawPixmap(avatarPos - QPoint(status.width()/2-2, status.height()/2-3), status);
 
-    /* Draw nickname */
-    r.adjust(41, 0, 0, 0);
-
-    QString nickname = index.data().toString();
-
-    QFont nickFont = QFont("Calibri", 11);
-    p->setFont(nickFont);
-
-    /* Caution: horrifically slow */
-    QFontMetrics metrics = p->fontMetrics();
-    QRect nickRect = metrics.tightBoundingRect(nickname);
-
-    p->drawText(r.topLeft() + QPoint(0, nickRect.height()+1), nickname);
-
-    /* Draw info text */
-    QString infoText = index.model()->index(index.row(), 2, index.parent()).data(Qt::DisplayRole).toString();
-
-    QFont infoFont = QFont("Arial", 8);
-    p->setFont(infoFont);
-
-    p->setPen(Qt::gray);
-    p->drawText(r.bottomLeft() - QPoint(0, 1), infoText);
-
     /* Page switch buttons */
+    int textWidth = 0;
+
     if ((opt.state & QStyle::State_Selected) || (opt.state & QStyle::State_MouseOver))
     {
         ContactPage activePage = contactsView->activeContactPage();
@@ -139,7 +118,35 @@ void ContactItemDelegate::paint(QPainter *p, const QStyleOptionViewItem &opt,
             pm = QPixmap(":/icons/info-inactive.png");
 
         p->drawPixmap(iconRect.topLeft(), pm);
+
+        textWidth -= 14;
     }
+
+    /* Draw nickname */
+    r.adjust(41, 0, 0, 0);
+    textWidth += r.width();
+
+    QString nickname = index.data().toString();
+
+    QFont nickFont = QFont("Calibri", 11);
+    p->setFont(nickFont);
+
+    /* Caution: horrifically slow */
+    QFontMetrics metrics = p->fontMetrics();
+    QRect nickRect = metrics.tightBoundingRect(nickname);
+
+    p->drawText(r.topLeft() + QPoint(0, nickRect.height()+1), nickname);
+
+    /* Draw info text */
+    QString infoText = index.model()->index(index.row(), 2, index.parent()).data(Qt::DisplayRole).toString();
+
+    QFont infoFont = QFont("Arial", 8);
+    p->setFont(infoFont);
+
+    infoText = QFontMetrics(infoFont).elidedText(infoText, Qt::ElideRight, textWidth);
+
+    p->setPen(Qt::gray);
+    p->drawText(r.bottomLeft() - QPoint(0, 1), infoText);
 
     p->restore();
 }
