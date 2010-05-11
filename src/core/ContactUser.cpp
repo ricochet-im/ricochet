@@ -78,6 +78,10 @@ QString ContactUser::statusLine() const
             return tr("%n new message(s)", 0, chat->unreadMessages());
         return tr("Online");
     }
+    else if (readSetting(QLatin1String("addRequest")).toBool())
+    {
+        return tr("Contact request pending");
+    }
     else
     {
         QDateTime lastConnected = readSetting(QString("lastConnected")).toDateTime();
