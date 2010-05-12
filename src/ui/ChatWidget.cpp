@@ -15,6 +15,7 @@
  * along with TorIM. If not, see http://www.gnu.org/licenses/
  */
 
+#include "main.h"
 #include "ChatWidget.h"
 #include "core/ContactUser.h"
 #include "protocol/ChatMessageCommand.h"
@@ -85,7 +86,7 @@ void ChatWidget::createTextArea()
 {
     textArea = new QTextEdit;
     textArea->setReadOnly(true);
-    textArea->setFont(QFont("Calibri", 10));
+    textArea->setFont(config->value(QLatin1String("ui/chatFont"), QFont("Calibri", 10)).value<QFont>());
 
     connect(textArea->verticalScrollBar(), SIGNAL(rangeChanged(int,int)), this, SLOT(scrollToBottom()));
 }
@@ -93,7 +94,7 @@ void ChatWidget::createTextArea()
 void ChatWidget::createTextInput()
 {
     textInput = new QLineEdit;
-    textInput->setFont(QFont("Calibri", 10));
+    textArea->setFont(config->value(QLatin1String("ui/chatFont"), QFont("Calibri", 10)).value<QFont>());
     textInput->setMaxLength(512);
 
     connect(textInput, SIGNAL(returnPressed()), this, SLOT(sendInputMessage()));
