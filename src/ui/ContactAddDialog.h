@@ -22,6 +22,7 @@
 
 class QLineEdit;
 class FancyTextEdit;
+class QDialogButtonBox;
 
 class ContactAddDialog : public QDialog
 {
@@ -35,11 +36,13 @@ public:
 
 private slots:
     void checkClipboardForId();
+    void updateAcceptableInput();
 
 private:
     QLineEdit * const m_nickname;
     QLineEdit * const m_id;
     FancyTextEdit * const m_message;
+    QDialogButtonBox * const m_buttonBox;
 
     QWidget *createUI();
 };

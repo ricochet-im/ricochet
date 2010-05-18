@@ -35,7 +35,8 @@ ContactAddDialog::ContactAddDialog(QWidget *parent) :
     QDialog(parent),
     m_nickname(new QLineEdit),
     m_id(new QLineEdit),
-    m_message(new FancyTextEdit)
+    m_message(new FancyTextEdit),
+    m_buttonBox(new QDialogButtonBox(Qt::Horizontal))
 {
     setModal(true);
     setWindowTitle(tr("Add Contact"));
@@ -50,6 +51,7 @@ ContactAddDialog::ContactAddDialog(QWidget *parent) :
 
     // populate UI if there is an id on the clipboard already
     checkClipboardForId();
+    updateAcceptableInput();
 }
 
 QWidget *ContactAddDialog::createUI()
@@ -60,9 +62,11 @@ QWidget *ContactAddDialog::createUI()
 
     // Nickname
     m_nickname->setValidator(new NicknameValidator(m_nickname));
+    connect(m_nickname, SIGNAL(textChanged(QString)), SLOT(updateAcceptableInput()));
 
     // ID
     m_id->setValidator(new ContactIDValidator(m_id));
+    connect(m_id, SIGNAL(textChanged(QString)), SLOT(updateAcceptableInput()));
 
     // top form
     QFormLayout *formLayout = new QFormLayout;
@@ -77,13 +81,12 @@ QWidget *ContactAddDialog::createUI()
     layout->addStretch(1);
 
     // ok/cancel
-    QDialogButtonBox *qdbb = new QDialogButtonBox(Qt::Horizontal);
-    qdbb->addButton(QDialogButtonBox::Ok);
-    qdbb->addButton(QDialogButtonBox::Cancel);
-    connect(qdbb, SIGNAL(accepted()), this, SLOT(accept()));
-    connect(qdbb, SIGNAL(rejected()), this, SLOT(reject()));
+    m_buttonBox->addButton(QDialogButtonBox::Ok);
+    m_buttonBox->addButton(QDialogButtonBox::Cancel);
+    connect(m_buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(m_buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
 
-    layout->addWidget(qdbb);
+    layout->addWidget(m_buttonBox);
 
     return introPage;
 }
@@ -113,6 +116,12 @@ void ContactAddDialog::accept()
     qFatal("Not implemented");
 
     QDialog::accept();
+}
+
+void ContactAddDialog::updateAcceptableInput()
+{
+    bool ok = m_nickname->hasAcceptableInput() && m_id->hasAcceptableInput();
+    m_buttonBox->button(QDialogButtonBox::Ok)->setEnabled(ok);
 }
 
 void ContactAddDialog::checkClipboardForId()
