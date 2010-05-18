@@ -67,7 +67,8 @@ SOURCES += src/main.cpp \
     src/ui/ContactAddDialog.cpp \
     src/ui/FancyTextEdit.cpp \
     src/core/IncomingRequestManager.cpp \
-    src/core/ContactIDValidator.cpp
+    src/core/ContactIDValidator.cpp \
+    src/core/NicknameValidator.cpp
 
 HEADERS += src/ui/MainWindow.h \
     src/ui/ChatWidget.h \
@@ -112,7 +113,8 @@ HEADERS += src/ui/MainWindow.h \
     src/ui/ContactAddDialog.h \
     src/ui/FancyTextEdit.h \
     src/core/IncomingRequestManager.h \
-    src/core/ContactIDValidator.h
+    src/core/ContactIDValidator.h \
+    src/core/NicknameValidator.h
 
 RESOURCES += res/resources.qrc \
     translation/embedded.qrc

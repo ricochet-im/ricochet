@@ -19,6 +19,7 @@
 #include "ui/FancyTextEdit.h"
 #include "core/ContactsManager.h"
 #include "core/OutgoingRequestManager.h"
+#include "core/NicknameValidator.h"
 #include "core/ContactIDValidator.h"
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -56,6 +57,9 @@ QWidget *ContactAddDialog::createUI() const
     QWidget *introPage = new QWidget;
     QVBoxLayout *layout = new QVBoxLayout(introPage);
     layout->setMargin(0);
+
+    // Nickname
+    m_nickname->setValidator(new NicknameValidator(m_nickname));
 
     // ID
     m_id->setValidator(new ContactIDValidator(m_id));
