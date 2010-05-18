@@ -120,6 +120,21 @@ void ContactUser::setNickname(const QString &nickname)
     config->setValue(QString("contacts/%1/nickname").arg(uniqueID), nickname);
 }
 
+QString ContactUser::hostname() const
+{
+    return readSetting(QLatin1String("hostname")).toString();
+}
+
+void ContactUser::setHostname(const QString &hostname)
+{
+    QString fh = hostname;
+
+    if (!hostname.endsWith(QLatin1String(".onion")))
+        fh.append(QLatin1String(".onion"));
+
+    writeSetting(QLatin1String("hostname"), fh);
+}
+
 QPixmap ContactUser::avatar(AvatarSize size)
 {
     QPixmap re;

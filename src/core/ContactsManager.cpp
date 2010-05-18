@@ -19,6 +19,7 @@
 #include "ContactsManager.h"
 #include "IncomingRequestManager.h"
 #include "OutgoingRequestManager.h"
+#include "ContactIDValidator.h"
 #include <QStringList>
 
 ContactsManager *contactsManager = 0;
@@ -77,6 +78,24 @@ ContactUser *ContactsManager::lookupSecret(const QByteArray &secret) const
     for (QList<ContactUser*>::ConstIterator it = pContacts.begin(); it != pContacts.end(); ++it)
     {
         if ((*it)->readSetting("localSecret") == secret)
+            return *it;
+    }
+
+    return 0;
+}
+
+ContactUser *ContactsManager::lookupHostname(const QString &hostname) const
+{
+    QString ohost = ContactIDValidator::hostnameFromID(hostname);
+    if (ohost.isNull())
+        ohost = hostname;
+
+    if (!ohost.endsWith(".onion"))
+        ohost.append(QLatin1String(".onion"));
+
+    for (QList<ContactUser*>::ConstIterator it = pContacts.begin(); it != pContacts.end(); ++it)
+    {
+        if (ohost.compare((*it)->hostname(), Qt::CaseInsensitive) == 0)
             return *it;
     }
 

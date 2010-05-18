@@ -17,6 +17,9 @@
 
 #include "ui/ContactAddDialog.h"
 #include "ui/FancyTextEdit.h"
+#include "core/ContactsManager.h"
+#include "core/OutgoingRequestManager.h"
+#include "core/ContactIDValidator.h"
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QFormLayout>
@@ -25,6 +28,7 @@
 #include <QClipboard>
 #include <QApplication>
 #include <QDialogButtonBox>
+#include <QMessageBox>
 
 ContactAddDialog::ContactAddDialog(QWidget *parent) :
     QDialog(parent),
@@ -53,6 +57,9 @@ QWidget *ContactAddDialog::createUI() const
     QVBoxLayout *layout = new QVBoxLayout(introPage);
     layout->setMargin(0);
 
+    // ID
+    m_id->setValidator(new ContactIDValidator(m_id));
+
     // top form
     QFormLayout *formLayout = new QFormLayout;
     formLayout->addRow(tr("Nickname:"), m_nickname);
@@ -72,13 +79,32 @@ QWidget *ContactAddDialog::createUI() const
 
     layout->addWidget(qdbb);
 
-
     return introPage;
 }
 
 void ContactAddDialog::processFriendAdd()
 {
+    if (!m_id->hasAcceptableInput() || !m_nickname->hasAcceptableInput())
+        return;
 
+    QString hostname = ContactIDValidator::hostnameFromID(m_id->text());
+    Q_ASSERT(!hostname.isNull());
+
+    if (contactsManager->lookupHostname(hostname))
+        return;
+
+    ContactUser *user = contactsManager->addContact(m_nickname->text());
+    if (!user)
+    {
+        QMessageBox::critical(this, tr("Error"), tr("An error occurred while trying to add"
+                                                    "the contact. Please try again."));
+        return;
+    }
+
+    user->setHostname(hostname);
+
+    /* TODO add to OutgoingRequestManager */
+    qFatal("Not implemented");
 }
 
 void ContactAddDialog::checkClipboardForId()

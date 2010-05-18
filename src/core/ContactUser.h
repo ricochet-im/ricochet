@@ -52,6 +52,8 @@ public:
     bool isConnectable() const { return pConn->isConnectable(); }
 
     const QString &nickname() const { return pNickname; }
+    /* Hostname is in the onion hostname format, i.e. it ends with .onion */
+    QString hostname() const;
     QString notesText() const;
     QPixmap avatar(AvatarSize size);
 
@@ -62,6 +64,7 @@ public:
 
 public slots:
     void setNickname(const QString &nickname);
+    void setHostname(const QString &hostname);
     void setAvatar(QImage image);
     void setNotesText(const QString &notesText);
 
