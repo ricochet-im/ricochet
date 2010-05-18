@@ -52,7 +52,7 @@ ContactAddDialog::ContactAddDialog(QWidget *parent) :
     checkClipboardForId();
 }
 
-QWidget *ContactAddDialog::createUI() const
+QWidget *ContactAddDialog::createUI()
 {
     QWidget *introPage = new QWidget;
     QVBoxLayout *layout = new QVBoxLayout(introPage);
@@ -66,11 +66,13 @@ QWidget *ContactAddDialog::createUI() const
 
     // top form
     QFormLayout *formLayout = new QFormLayout;
-    formLayout->addRow(tr("Nickname:"), m_nickname);
     formLayout->addRow(tr("ID:"), m_id);
+    formLayout->addRow(tr("Nickname:"), m_nickname);
     layout->addLayout(formLayout);
 
     // message
+    m_message->setTabChangesFocus(true);
+
     layout->addWidget(m_message);
     layout->addStretch(1);
 
@@ -78,15 +80,15 @@ QWidget *ContactAddDialog::createUI() const
     QDialogButtonBox *qdbb = new QDialogButtonBox(Qt::Horizontal);
     qdbb->addButton(QDialogButtonBox::Ok);
     qdbb->addButton(QDialogButtonBox::Cancel);
-    connect(qdbb->button(QDialogButtonBox::Ok), SIGNAL(clicked()), SLOT(processFriendAdd()));
-    connect(qdbb->button(QDialogButtonBox::Cancel), SIGNAL(clicked()), SLOT(close()));
+    connect(qdbb, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(qdbb, SIGNAL(rejected()), this, SLOT(reject()));
 
     layout->addWidget(qdbb);
 
     return introPage;
 }
 
-void ContactAddDialog::processFriendAdd()
+void ContactAddDialog::accept()
 {
     if (!m_id->hasAcceptableInput() || !m_nickname->hasAcceptableInput())
         return;
@@ -109,6 +111,8 @@ void ContactAddDialog::processFriendAdd()
 
     /* TODO add to OutgoingRequestManager */
     qFatal("Not implemented");
+
+    QDialog::accept();
 }
 
 void ContactAddDialog::checkClipboardForId()

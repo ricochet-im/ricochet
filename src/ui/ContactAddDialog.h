@@ -26,16 +26,22 @@ class FancyTextEdit;
 class ContactAddDialog : public QDialog
 {
     Q_OBJECT
+    Q_DISABLE_COPY(ContactAddDialog)
+
 public:
     explicit ContactAddDialog(QWidget *parent = 0);
+
+    virtual void accept();
+
 private slots:
-    void processFriendAdd();
     void checkClipboardForId();
+
 private:
-    QWidget *createUI() const;
     QLineEdit * const m_nickname;
     QLineEdit * const m_id;
     FancyTextEdit * const m_message;
+
+    QWidget *createUI();
 };
 
 #endif // CONTACTADDDIALOG_H
