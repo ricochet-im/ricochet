@@ -99,10 +99,26 @@ void ContactAddDialog::accept()
     QString hostname = ContactIDValidator::hostnameFromID(m_id->text());
     Q_ASSERT(!hostname.isNull());
 
-    if (contactsManager->lookupHostname(hostname))
-        return;
+    ContactUser *user;
 
-    ContactUser *user = contactsManager->addContact(m_nickname->text());
+    if ((user = contactsManager->lookupHostname(hostname)))
+    {
+        QMessageBox::critical(this, tr("Error"), tr("You already have <b>%1</b> as a contact.")
+                              .arg(Qt::escape(user->nickname())));
+        return;
+    }
+
+    if ((user = contactsManager->lookupNickname(m_nickname->text())))
+    {
+        QMessageBox::critical(this, tr("Error"), tr("You already have another contact named "
+                                                    "<b>%1</b>. Please choose another nickname.")
+                              .arg(Qt::escape(user->nickname())));
+        m_nickname->setFocus(Qt::OtherFocusReason);
+        m_nickname->selectAll();
+        return;
+    }
+
+    user = contactsManager->addContact(m_nickname->text());
     if (!user)
     {
         QMessageBox::critical(this, tr("Error"), tr("An error occurred while trying to add"

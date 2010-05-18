@@ -17,6 +17,7 @@
 
 #include "main.h"
 #include "ContactUser.h"
+#include "ContactsManager.h"
 #include "ui/ChatWidget.h"
 #include "utils/DateUtil.h"
 #include <QPixmapCache>
@@ -114,6 +115,9 @@ void ContactUser::setNickname(const QString &nickname)
 {
     if (pNickname == nickname)
         return;
+
+    /* non-critical, just a safety net for UI checks */
+    Q_ASSERT(!contactsManager->lookupNickname(nickname));
 
     pNickname = nickname;
 

@@ -102,6 +102,17 @@ ContactUser *ContactsManager::lookupHostname(const QString &hostname) const
     return 0;
 }
 
+ContactUser *ContactsManager::lookupNickname(const QString &nickname) const
+{
+    for (QList<ContactUser*>::ConstIterator it = pContacts.begin(); it != pContacts.end(); ++it)
+    {
+        if (QString::compare(nickname, (*it)->nickname(), Qt::CaseInsensitive) == 0)
+            return *it;
+    }
+
+    return 0;
+}
+
 void ContactsManager::connectToAll()
 {
     qDebug() << "Attempting connections to all contacts";
