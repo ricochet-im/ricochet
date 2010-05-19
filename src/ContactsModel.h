@@ -55,6 +55,7 @@ private:
     QList<ContactUser*> contacts;
 
     void populate();
+    void savePositions();
 };
 
 #endif // CONTACTSMODEL_H

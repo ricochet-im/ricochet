@@ -95,6 +95,8 @@ void ContactsModel::contactAdded(ContactUser *user)
     beginInsertRows(QModelIndex(), i, i);
     contacts.insert(i, user);
     endInsertRows();
+
+    savePositions();
 }
 
 void ContactsModel::moveRow(int from, int to)
@@ -108,6 +110,11 @@ void ContactsModel::moveRow(int from, int to)
     contacts.move(from, to);
     endMoveRows();
 
+    savePositions();
+}
+
+void ContactsModel::savePositions()
+{
     /* Update the stored positions */
     for (int i = 0; i < contacts.size(); ++i)
     {
