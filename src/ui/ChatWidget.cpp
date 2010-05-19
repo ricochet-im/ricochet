@@ -86,7 +86,7 @@ void ChatWidget::createTextArea()
 {
     textArea = new QTextEdit;
     textArea->setReadOnly(true);
-    textArea->setFont(config->value(QLatin1String("ui/chatFont"), QFont("Calibri", 10)).value<QFont>());
+    textArea->setFont(config->value("ui/chatFont", QFont(QLatin1String("Calibri"), 10)).value<QFont>());
 
     connect(textArea->verticalScrollBar(), SIGNAL(rangeChanged(int,int)), this, SLOT(scrollToBottom()));
 }
@@ -94,7 +94,7 @@ void ChatWidget::createTextArea()
 void ChatWidget::createTextInput()
 {
     textInput = new QLineEdit;
-    textArea->setFont(config->value(QLatin1String("ui/chatFont"), QFont("Calibri", 10)).value<QFont>());
+    textArea->setFont(config->value("ui/chatFont", QFont(QLatin1String("Calibri"), 10)).value<QFont>());
     textInput->setMaxLength(512);
 
     connect(textInput, SIGNAL(returnPressed()), this, SLOT(sendInputMessage()));
@@ -197,7 +197,7 @@ void ChatWidget::addChatMessage(ContactUser *from, const QDateTime &when, const 
     if (light)
         tsFormat.setProperty(QTextFormat::UserProperty, tsColor[!light]);
 
-    cursor.insertText(when.time().toString(QString("(HH:mm:ss) ")), tsFormat);
+    cursor.insertText(when.time().toString(QLatin1String("(HH:mm:ss) ")), tsFormat);
 
     /* Nickname */
     QTextCharFormat nickFormat;
@@ -217,7 +217,7 @@ void ChatWidget::addChatMessage(ContactUser *from, const QDateTime &when, const 
 
     QString nickname = from ? from->nickname() : tr("Me");
 
-    cursor.insertText(nickname + QString(": "), nickFormat);
+    cursor.insertText(nickname + QLatin1String(": "), nickFormat);
 
     /* Text */
     QTextCharFormat textFormat;
@@ -273,7 +273,7 @@ void ChatWidget::showOfflineNotice()
     layout->addStretch();
 
     QLabel *icon = new QLabel;
-    icon->setPixmap(QPixmap(":/icons/information.png"));
+    icon->setPixmap(QPixmap(QLatin1String(":/icons/information.png")));
     icon->setAlignment(Qt::AlignLeft | Qt::AlignTop);
     layout->addWidget(icon);
 

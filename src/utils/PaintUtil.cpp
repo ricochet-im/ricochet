@@ -27,7 +27,7 @@ QPixmap customSelectionRect(const QSize &size, QStyle::State state)
     QString cacheKey;
     cacheKey.reserve(32);
     cacheKey += QLatin1String("cselr-");
-    cacheKey += QString::number(size.width()) + QChar('x') + QString::number(size.height());
+    cacheKey += QString::number(size.width()) + QLatin1Char('x') + QString::number(size.height());
 
     if (state & QStyle::State_Selected)
         cacheKey += QLatin1String("-s");

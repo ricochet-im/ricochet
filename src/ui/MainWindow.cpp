@@ -36,7 +36,7 @@ MainWindow::MainWindow(QWidget *parent)
     Q_ASSERT(!uiMain);
     uiMain = this;
 
-    setWindowTitle(QString("TorIM"));
+    setWindowTitle(QLatin1String("TorIM"));
 
     /* Saved geometry */
     resize(config->value("ui/main/windowSize", QSize(730, 400)).toSize());

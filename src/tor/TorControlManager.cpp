@@ -112,7 +112,9 @@ void TorControlManager::connect(const QHostAddress &address, quint16 port)
 
 void TorControlManager::commandFinished(TorControlCommand *command)
 {
-    if (command->keyword == QLatin1String("PROTOCOLINFO"))
+    QLatin1String keyword(command->keyword);
+
+    if (keyword == QLatin1String("PROTOCOLINFO"))
     {
         Q_ASSERT(status() == Authenticating);
 
@@ -121,7 +123,7 @@ void TorControlManager::commandFinished(TorControlCommand *command)
         if (status() == Authenticating)
             authenticate();
     }
-    else if (command->keyword == QLatin1String("AUTHENTICATE"))
+    else if (keyword == QLatin1String("AUTHENTICATE"))
     {
         Q_ASSERT(status() == Authenticating);
 
@@ -271,7 +273,7 @@ void TorControlManager::getSocksInfoReply()
         }
 
         if (address.isNull())
-            address.setAddress(QString("127.0.0.1"));
+            address.setAddress(QLatin1String("127.0.0.1"));
         if (!port)
             port = defaultPort;
 
@@ -291,7 +293,7 @@ void TorControlManager::getSocksInfoReply()
 
     if (pSocksAddress.isNull())
     {
-        pSocksAddress.setAddress(QString("127.0.0.1"));
+        pSocksAddress.setAddress(QLatin1String("127.0.0.1"));
         pSocksPort = defaultPort;
     }
 
@@ -313,7 +315,7 @@ void TorControlManager::publishServices()
     if (pServices.isEmpty())
         return;
 
-    if (config->value(QString("core/neverPublishService"), false).toBool())
+    if (config->value("core/neverPublishService", false).toBool())
     {
         qDebug() << "torctrl: Skipping service publication because neverPublishService is enabled";
 
@@ -339,7 +341,8 @@ void TorControlManager::publishServices()
         const QList<HiddenService::Target> &targets = service->targets();
         for (QList<HiddenService::Target>::ConstIterator tit = targets.begin(); tit != targets.end(); ++tit)
         {
-            QString target = QString("%1 %2:%3").arg(tit->servicePort).arg(tit->targetAddress.toString())
+            QString target = QString::fromLatin1("%1 %2:%3").arg(tit->servicePort)
+                             .arg(tit->targetAddress.toString())
                              .arg(tit->targetPort);
             settings.append(qMakePair(QByteArray("HiddenServicePort"), target.toLatin1()));
         }

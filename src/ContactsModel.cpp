@@ -22,8 +22,8 @@
 
 static inline bool contactSort(const ContactUser *u1, const ContactUser *u2)
 {
-    int p1 = u1->readSetting(QString("listPosition"), -1).toInt();
-    int p2 = u2->readSetting(QString("listPosition"), -1).toInt();
+    int p1 = u1->readSetting("listPosition", -1).toInt();
+    int p2 = u2->readSetting("listPosition", -1).toInt();
     if (p2 < 0)
         return true;
     else if (p1 < 0)
@@ -118,8 +118,8 @@ void ContactsModel::savePositions()
     /* Update the stored positions */
     for (int i = 0; i < contacts.size(); ++i)
     {
-        if (contacts[i]->readSetting(QString("listPosition"), -1).toInt() != i)
-            contacts[i]->writeSetting(QString("listPosition"), i);
+        if (contacts[i]->readSetting("listPosition", -1).toInt() != i)
+            contacts[i]->writeSetting("listPosition", i);
     }
 }
 
@@ -164,9 +164,9 @@ QVariant ContactsModel::data(const QModelIndex &index, int role) const
     else if (role == StatusIndicator)
     {
         if (user->isConnected())
-            return QPixmap(":/icons/status-online.png");
+            return QPixmap(QLatin1String(":/icons/status-online.png"));
         else
-            return QPixmap(":/icons/status-offline.png");
+            return QPixmap(QLatin1String(":/icons/status-offline.png"));
     }
 
     switch (index.column())

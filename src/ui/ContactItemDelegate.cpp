@@ -100,22 +100,22 @@ void ContactItemDelegate::paint(QPainter *p, const QStyleOptionViewItem &opt,
         QRect iconRect(r.right()-16+1, r.top()-1, 16, 16);
         QPixmap pm;
         if (isActive && activePage == ChatPage)
-            pm = QPixmap(":/icons/chat-active.png");
+            pm = QPixmap(QLatin1String(":/icons/chat-active.png"));
         else if (iconRect.contains(ropt.widget->mapFromGlobal(QCursor::pos())))
-            pm = QPixmap(":/icons/chat-hover.png");
+            pm = QPixmap(QLatin1String(":/icons/chat-hover.png"));
         else
-            pm = QPixmap(":/icons/chat-inactive.png");
+            pm = QPixmap(QLatin1String(":/icons/chat-inactive.png"));
 
         p->drawPixmap(iconRect.topLeft(), pm);
 
         /* Info page */
         iconRect = QRect(r.right()-16+1, r.bottom()-16+1, 16, 16);
         if (isActive && activePage == InfoPage)
-            pm = QPixmap(":/icons/info-active.png");
+            pm = QPixmap(QLatin1String(":/icons/info-active.png"));
         else if (iconRect.contains(ropt.widget->mapFromGlobal(QCursor::pos())))
-            pm = QPixmap(":/icons/info-hover.png");
+            pm = QPixmap(QLatin1String(":/icons/info-hover.png"));
         else
-            pm = QPixmap(":/icons/info-inactive.png");
+            pm = QPixmap(QLatin1String(":/icons/info-inactive.png"));
 
         p->drawPixmap(iconRect.topLeft(), pm);
 
@@ -128,7 +128,7 @@ void ContactItemDelegate::paint(QPainter *p, const QStyleOptionViewItem &opt,
 
     QString nickname = index.data().toString();
 
-    QFont nickFont = QFont("Calibri", 11);
+    QFont nickFont = QFont(QLatin1String("Calibri"), 11);
     p->setFont(nickFont);
 
     /* Caution: horrifically slow */
@@ -140,7 +140,7 @@ void ContactItemDelegate::paint(QPainter *p, const QStyleOptionViewItem &opt,
     /* Draw info text */
     QString infoText = index.model()->index(index.row(), 2, index.parent()).data(Qt::DisplayRole).toString();
 
-    QFont infoFont = QFont("Arial", 8);
+    QFont infoFont = QFont(QLatin1String("Arial"), 8);
     p->setFont(infoFont);
 
     infoText = QFontMetrics(infoFont).elidedText(infoText, Qt::ElideRight, textWidth);

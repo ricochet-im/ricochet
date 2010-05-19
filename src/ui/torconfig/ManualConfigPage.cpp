@@ -59,12 +59,12 @@ ManualConfigPage::ManualConfigPage(QWidget *parent)
     ipEdit = new QLineEdit;
     ipEdit->setWhatsThis(tr("The IP of the Tor control connection"));
 
-    QRegExpValidator *validator = new QRegExpValidator(QRegExp(QString(
+    QRegExpValidator *validator = new QRegExpValidator(QRegExp(QLatin1String(
             "^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$")),
             ipEdit);
     ipEdit->setValidator(validator);
 
-    registerField(QString("controlIp*"), ipEdit);
+    registerField(QLatin1String("controlIp*"), ipEdit);
     formLayout->addRow(tr("Control IP"), ipEdit);
 
     connect(ipEdit, SIGNAL(textChanged(QString)), torTest, SLOT(clear()));
@@ -74,7 +74,7 @@ ManualConfigPage::ManualConfigPage(QWidget *parent)
     portEdit->setValidator(new QIntValidator(1, 65535, portEdit));
     portEdit->setWhatsThis(tr("The port used for the Tor control connection (ControlPort option)"));
 
-    registerField(QString("controlPort*"), portEdit);
+    registerField(QLatin1String("controlPort*"), portEdit);
     formLayout->addRow(tr("Control Port"), portEdit);
 
     connect(portEdit, SIGNAL(textChanged(QString)), torTest, SLOT(clear()));
@@ -84,7 +84,7 @@ ManualConfigPage::ManualConfigPage(QWidget *parent)
     passwordEdit->setWhatsThis(tr("The password for control authentication. Plaintext of the "
                                   "HashedControlPassword option in Tor."));
 
-    registerField(QString("controlPassword"), passwordEdit);
+    registerField(QLatin1String("controlPassword"), passwordEdit);
     formLayout->addRow(tr("Control Password"), passwordEdit);
 
     connect(passwordEdit, SIGNAL(textChanged(QString)), torTest, SLOT(clear()));
@@ -106,8 +106,8 @@ ManualConfigPage::ManualConfigPage(QWidget *parent)
 
 void ManualConfigPage::initializePage()
 {
-    ipEdit->setText(QString("127.0.0.1"));
-    portEdit->setText(QString("9051"));
+    ipEdit->setText(QLatin1String("127.0.0.1"));
+    portEdit->setText(QLatin1String("9051"));
 }
 
 bool ManualConfigPage::isComplete() const
@@ -117,6 +117,7 @@ bool ManualConfigPage::isComplete() const
 
 void ManualConfigPage::testSettings()
 {
-    torTest->startTest(field(QString("controlIp")).toString(), field("controlPort").toString().toInt(),
-                       field("controlPassword").toString().toLocal8Bit());
+    torTest->startTest(field(QLatin1String("controlIp")).toString(),
+                       field(QLatin1String("controlPort")).toString().toInt(),
+                       field(QLatin1String("controlPassword")).toString().toLocal8Bit());
 }

@@ -133,7 +133,7 @@ void HomeContactWidget::paintEvent(QPaintEvent *event)
     QPainter p(this);
     QRect r = rect();
 
-    QPixmap icon(":/icons/home.png");
+    QPixmap icon(QLatin1String(":/icons/home.png"));
 
     int xpos = (r.width() - icon.width());
 

@@ -15,6 +15,7 @@
  * along with TorIM. If not, see http://www.gnu.org/licenses/
  */
 
+#include "main.h"
 #include "ui/MainWindow.h"
 #include "core/ContactsManager.h"
 #include "tor/TorControlManager.h"
@@ -30,7 +31,7 @@
 #include <QMessageBox>
 #include <openssl/crypto.h>
 
-QSettings *config = 0;
+AppSettings *config = 0;
 
 static IncomingSocket *incomingSocket = 0;
 
@@ -45,7 +46,7 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    a.setApplicationVersion(QString("1.0.0"));
+    a.setApplicationVersion(QLatin1String("1.0.0"));
 
     QDir::setCurrent(a.applicationDirPath());
 
@@ -86,16 +87,16 @@ int main(int argc, char *argv[])
 static void initSettings()
 {
     /* Defaults */
-    qApp->setOrganizationName(QString("TorIM"));
+    qApp->setOrganizationName(QLatin1String("TorIM"));
     QSettings::setDefaultFormat(QSettings::IniFormat);
     QSettings::setPath(QSettings::IniFormat, QSettings::UserScope, qApp->applicationDirPath());
 
     /* Commandline */
     QStringList args = qApp->arguments();
     if (args.size() > 1)
-        config = new QSettings(args[1], QSettings::IniFormat);
+        config = new AppSettings(args[1], QSettings::IniFormat);
     else
-        config = new QSettings;
+        config = new AppSettings;
 }
 
 static void initTranslation()
@@ -104,25 +105,29 @@ static void initTranslation()
 
     bool ok = false;
     QString appPath = qApp->applicationDirPath();
+    QString resPath = QLatin1String(":/lang/");
 
     /* First, try to load the user's configured language */
-    QString configLang = config->value("core/language").toString();
+    QString configLang = config->value(QLatin1String("core/language")).toString();
     if (!configLang.isEmpty())
     {
+        QString filename = QLatin1String("torim.") + configLang;
+        QString separators = QLatin1String("_");
+
         /* Look in the application directory */
-        ok = translator->load(QString("torim.") + configLang, appPath, QString("_"));
+        ok = translator->load(filename, appPath, separators);
         /* Look in the resources */
         if (!ok)
-            ok = translator->load(QString("torim.") + configLang, QString(":/lang/"), QString("_"));
+            ok = translator->load(filename, resPath, separators);
     }
 
     /* Next, try to load the system locale language, and allow it to fall back to the english default */
     if (!ok)
     {
-        QString locale = QLocale::system().name();
-        ok = translator->load(QString("torim.") + configLang, appPath);
+        QString filename = QLatin1String("torim.") + QLocale::system().name();
+        ok = translator->load(filename, appPath);
         if (!ok)
-            ok = translator->load(QString("torim.") + configLang, QString(":/lang/"));
+            ok = translator->load(filename, resPath);
     }
 
     if (ok)
@@ -131,7 +136,7 @@ static void initTranslation()
 
 static void initIncomingSocket()
 {
-    QHostAddress address(config->value("core/listenIp", QString("127.0.0.1")).toString());
+    QHostAddress address(config->value("core/listenIp", QLatin1String("127.0.0.1")).toString());
     quint16 port = (quint16)config->value("core/listenPort", 0).toUInt();
 
     incomingSocket = new IncomingSocket;
@@ -169,7 +174,7 @@ static bool connectTorControl()
     torManager->setAuthPassword(config->value("tor/authPassword").toByteArray());
 
     /* Hidden service */
-    QString serviceDir = config->value("core/serviceDirectory", QString("data")).toString();
+    QString serviceDir = config->value("core/serviceDirectory", QLatin1String("data")).toString();
 
     Tor::HiddenService *service = new Tor::HiddenService(serviceDir);
     service->addTarget(80, incomingSocket->serverAddress(), incomingSocket->serverPort());

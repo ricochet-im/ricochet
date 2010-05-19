@@ -119,7 +119,7 @@ bool ContactRequestClient::buildRequestData(QByteArray cookie)
     Tor::HiddenService *service = torManager->hiddenServices().value(0);
 
     QString hostname = service ? service->hostname() : QString();
-    hostname.truncate(hostname.lastIndexOf(QChar('.')));
+    hostname.truncate(hostname.lastIndexOf(QLatin1Char('.')));
     if (hostname.size() != 16)
     {
         qWarning() << "Cannot send contact request: unable to determine the local service hostname";

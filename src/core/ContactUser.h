@@ -60,7 +60,16 @@ public:
     QString statusLine() const;
 
     QVariant readSetting(const QString &key, const QVariant &defaultValue = QVariant()) const;
+    QVariant readSetting(const char *key, const QVariant &defaultValue = QVariant()) const
+    {
+        return readSetting(QLatin1String(key), defaultValue);
+    }
+
     void writeSetting(const QString &key, const QVariant &value);
+    void writeSetting(const char *key, const QVariant &value)
+    {
+        writeSetting(QLatin1String(key), value);
+    }
 
 public slots:
     void setNickname(const QString &nickname);

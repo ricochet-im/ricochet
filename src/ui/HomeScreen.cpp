@@ -68,19 +68,19 @@ void HomeScreen::createAvatar()
     if (!image.isNull())
         avatar->setPixmap(QPixmap::fromImage(image));
     else
-        avatar->setPixmap(QPixmap(":/graphics/avatar-placeholder.png"));
+        avatar->setPixmap(QPixmap(QLatin1String(":/graphics/avatar-placeholder.png")));
 }
 
 void HomeScreen::createActions()
 {
-    actAddContact = new QAction(QIcon(":/icons/user--plus.png"), tr("Add New Contact"), this);
+    actAddContact = new QAction(QIcon(QLatin1String(":/icons/user--plus.png")), tr("Add New Contact"), this);
     connect(actAddContact, SIGNAL(triggered()), SLOT(startAddContact()));
-    actChangeAvatar = new QAction(QIcon(":/icons/image--pencil.png"), tr("Change Avatar"), this);
-    actOpenDownloads = new QAction(QIcon(":/icons/folder-open-image.png"), tr("Open Downloads Folder"), this);
+    actChangeAvatar = new QAction(QIcon(QLatin1String(":/icons/image--pencil.png")), tr("Change Avatar"), this);
+    actOpenDownloads = new QAction(QIcon(QLatin1String(":/icons/folder-open-image.png")), tr("Open Downloads Folder"), this);
 
-    actTestConnection = new QAction(QIcon(":/icons/globe-green.png"), tr("Test Connection"), this);
-    actOptions = new QAction(QIcon(":/icons/gear.png"), tr("Options"), this);
-    actTorConfig = new QAction(QIcon(":/icons/wall--pencil.png"), tr("Configure Tor"), this);
+    actTestConnection = new QAction(QIcon(QLatin1String(":/icons/globe-green.png")), tr("Test Connection"), this);
+    actOptions = new QAction(QIcon(QLatin1String(":/icons/gear.png")), tr("Options"), this);
+    actTorConfig = new QAction(QIcon(QLatin1String(":/icons/wall--pencil.png")), tr("Configure Tor"), this);
     connect(actTorConfig, SIGNAL(triggered()), SLOT(startTorConfig()));
 
     QAction *separator = new QAction(this);
@@ -102,7 +102,7 @@ QLayout *HomeScreen::createButtons()
     int row = 0, column = 0;
 
     QLabel *heading = new QLabel;
-    heading->setPixmap(QPixmap(":/graphics/logotext.png"));
+    heading->setPixmap(QPixmap(QLatin1String(":/graphics/logotext.png")));
     heading->setContentsMargins(0, 0, 0, 14);
     layout->addWidget(heading, row++, column, 1, 2, Qt::AlignTop | Qt::AlignHCenter);
 
@@ -141,11 +141,11 @@ QWidget *HomeScreen::createStatus()
     QBoxLayout *layout = new QHBoxLayout(widget);
     layout->setMargin(0);
 
-    QFont font("Calibri");
+    QFont font(QLatin1String("Calibri"));
     font.setPixelSize(13);
 
     QLabel *statusIcon = new QLabel;
-    statusIcon->setPixmap(QPixmap(":/icons/tick-circle.png"));
+    statusIcon->setPixmap(QPixmap(QLatin1String(":/icons/tick-circle.png")));
     statusIcon->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     statusIcon->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
     layout->addWidget(statusIcon);

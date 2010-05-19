@@ -66,8 +66,8 @@ ContactInfoPage::~ContactInfoPage()
 
 void ContactInfoPage::createActions()
 {
-    renameAction = new QAction(QIcon(":/icons/image--pencil.png"), tr("Change Nickname"), this);
-    deleteAction = new QAction(QIcon(":/icons/user--plus.png"), tr("Delete Contact"), this);
+    renameAction = new QAction(QIcon(QLatin1String(":/icons/image--pencil.png")), tr("Change Nickname"), this);
+    deleteAction = new QAction(QIcon(QLatin1String(":/icons/user--plus.png")), tr("Delete Contact"), this);
 }
 
 #include <QPainter>
@@ -183,7 +183,7 @@ void ContactInfoPage::createAvatar()
         avatar->setPixmap(QPixmap::fromImage(shadowAvatar));
     }
     else
-        avatar->setPixmap(QPixmap(":/graphics/avatar-placeholder.png"));
+        avatar->setPixmap(QPixmap(QLatin1String(":/graphics/avatar-placeholder.png")));
 }
 
 void ContactInfoPage::createNickname()
@@ -195,7 +195,7 @@ void ContactInfoPage::createNickname()
     nickname->addAction(renameAction);
     nickname->setContextMenuPolicy(Qt::ActionsContextMenu);
 
-    QFont font("Candara", 12, QFont::Bold);
+    QFont font(QLatin1String("Candara"), 12, QFont::Bold);
     nickname->setFont(font);
 
     QPalette p = nickname->palette();
@@ -291,7 +291,7 @@ void ContactInfoPage::createNotes(QBoxLayout *layout)
     /* Edit */
     notesEdit = new QTextEdit;
     notesEdit->insertPlainText(user->notesText());
-    notesEdit->setFont(QFont("Helvetica", 9));
+    notesEdit->setFont(QFont(QLatin1String("Helvetica"), 9));
     layout->addWidget(notesEdit, 1);
 }
 

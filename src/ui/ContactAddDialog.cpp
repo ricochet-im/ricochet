@@ -148,7 +148,7 @@ void ContactAddDialog::checkClipboardForId()
 {
     const QClipboard *clipboard = QApplication::clipboard();
 
-    QRegExp r = QRegExp("(?:^([a-z2-7]{16})$|([a-z2-7]{16})@TorIM)", Qt::CaseInsensitive);
+    QRegExp r = QRegExp(QLatin1String("(?:^([a-z2-7]{16})$|([a-z2-7]{16})@TorIM)"), Qt::CaseInsensitive);
     if (r.indexIn(clipboard->text()) == -1)
         return;
 

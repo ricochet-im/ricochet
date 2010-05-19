@@ -36,8 +36,8 @@ TorConfigWizard::TorConfigWizard(QWidget *parent)
 
 void TorConfigWizard::accept()
 {
-    QString controlIp = field(QString("controlIp")).toString();
-    quint16 controlPort = (quint16) field(QString("controlPort")).toUInt();
+    QString controlIp = field(QLatin1String("controlIp")).toString();
+    quint16 controlPort = (quint16) field(QLatin1String("controlPort")).toUInt();
 
     if (controlIp.isEmpty() || controlPort < 1)
     {
@@ -46,14 +46,14 @@ void TorConfigWizard::accept()
         return;
     }
 
-    config->setValue(QString("tor/controlIp"), field(QString("controlIp")));
-    config->setValue(QString("tor/controlPort"), field(QString("controlPort")));
+    config->setValue("tor/controlIp", field(QLatin1String("controlIp")));
+    config->setValue("tor/controlPort", field(QLatin1String("controlPort")));
 
-    QString authPassword = field(QString("controlPassword")).toString();
+    QString authPassword = field(QLatin1String("controlPassword")).toString();
     if (!authPassword.isEmpty())
-        config->setValue(QString("tor/authPassword"), authPassword);
+        config->setValue("tor/authPassword", authPassword);
     else
-        config->remove(QString("tor/authPassword"));
+        config->remove("tor/authPassword");
 
     QWizard::accept();
 }

@@ -36,7 +36,7 @@ ContactsManager::ContactsManager()
 
 void ContactsManager::loadFromSettings()
 {
-    config->beginGroup(QString("contacts"));
+    config->beginGroup(QLatin1String("contacts"));
     QStringList sections = config->childGroups();
     config->endGroup();
 
@@ -90,7 +90,7 @@ ContactUser *ContactsManager::lookupHostname(const QString &hostname) const
     if (ohost.isNull())
         ohost = hostname;
 
-    if (!ohost.endsWith(".onion"))
+    if (!ohost.endsWith(QLatin1String(".onion")))
         ohost.append(QLatin1String(".onion"));
 
     for (QList<ContactUser*>::ConstIterator it = pContacts.begin(); it != pContacts.end(); ++it)

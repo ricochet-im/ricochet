@@ -58,6 +58,6 @@ void ProtocolInfoCommand::handleReply(int code, QByteArray &data, bool end)
     }
     else if (data.startsWith("VERSION Tor="))
     {
-        manager->pTorVersion = unquotedString(data.mid(12, data.indexOf(' ', 12)));
+        manager->pTorVersion = QString::fromLatin1(unquotedString(data.mid(12, data.indexOf(' ', 12))));
     }
 }
