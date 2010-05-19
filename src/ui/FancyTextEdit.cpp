@@ -25,7 +25,7 @@ FancyTextEdit::FancyTextEdit(QWidget *parent)
 
 bool FancyTextEdit::isTextEmpty() const
 {
-    return isPlaceholderActive() || document()->characterCount() == 0;
+    return isPlaceholderActive() || document()->toPlainText().isEmpty();
 }
 
 void FancyTextEdit::focusInEvent(QFocusEvent *e)
