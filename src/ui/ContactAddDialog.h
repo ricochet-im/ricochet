@@ -32,6 +32,8 @@ class ContactAddDialog : public QDialog
 public:
     explicit ContactAddDialog(QWidget *parent = 0);
 
+    bool hasAcceptableInput() const;
+
     virtual void accept();
 
 private slots:

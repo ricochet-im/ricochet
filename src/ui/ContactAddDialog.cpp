@@ -42,8 +42,6 @@ ContactAddDialog::ContactAddDialog(QWidget *parent) :
     setWindowTitle(tr("Add Contact"));
     setFixedSize(390, 240);
 
-    m_message->setPlaceholderText(tr("Enter something about yourself here!"));
-
     connect(QApplication::clipboard(), SIGNAL(dataChanged()), this, SLOT(checkClipboardForId()));
 
     QVBoxLayout *layout = new QVBoxLayout(this);
@@ -76,6 +74,9 @@ QWidget *ContactAddDialog::createUI()
 
     // message
     m_message->setTabChangesFocus(true);
+    m_message->setPlaceholderText(tr("Enter something about yourself here!"));
+
+    connect(m_message, SIGNAL(textChanged()), this, SLOT(updateAcceptableInput()));
 
     layout->addWidget(m_message);
     layout->addStretch(1);
@@ -93,7 +94,7 @@ QWidget *ContactAddDialog::createUI()
 
 void ContactAddDialog::accept()
 {
-    if (!m_id->hasAcceptableInput() || !m_nickname->hasAcceptableInput())
+    if (!hasAcceptableInput())
         return;
 
     QString hostname = ContactIDValidator::hostnameFromID(m_id->text());
@@ -134,10 +135,15 @@ void ContactAddDialog::accept()
     QDialog::accept();
 }
 
+bool ContactAddDialog::hasAcceptableInput() const
+{
+    return m_nickname->hasAcceptableInput() && m_id->hasAcceptableInput()
+            && !m_message->isTextEmpty();
+}
+
 void ContactAddDialog::updateAcceptableInput()
 {
-    bool ok = m_nickname->hasAcceptableInput() && m_id->hasAcceptableInput();
-    m_buttonBox->button(QDialogButtonBox::Ok)->setEnabled(ok);
+    m_buttonBox->button(QDialogButtonBox::Ok)->setEnabled(hasAcceptableInput());
 }
 
 void ContactAddDialog::checkClipboardForId()
