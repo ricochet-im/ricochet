@@ -128,9 +128,7 @@ void ContactAddDialog::accept()
     }
 
     user->setHostname(hostname);
-
-    /* TODO add to OutgoingRequestManager */
-    qFatal("Not implemented");
+    contactsManager->outgoingRequests->addNewRequest(user, QString(), m_message->document()->toPlainText());
 
     QDialog::accept();
 }
