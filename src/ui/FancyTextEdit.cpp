@@ -17,20 +17,27 @@
 
 #include "ui/FancyTextEdit.h"
 
-FancyTextEdit::FancyTextEdit(QWidget *parent) :
-    QTextEdit(parent)
+FancyTextEdit::FancyTextEdit(QWidget *parent)
+    : QTextEdit(parent), m_placeholderActive(false)
 {
     m_storedColor = textColor();
+}
+
+bool FancyTextEdit::isTextEmpty() const
+{
+    return isPlaceholderActive() || document()->characterCount() == 0;
 }
 
 void FancyTextEdit::focusInEvent(QFocusEvent *e)
 {
     QTextEdit::focusInEvent(e);
 
-    if (document()->toPlainText() == placeholderText())
+    if (m_placeholderActive)
     {
-        setText("");
+        clear();
         setTextColor(m_storedColor);
+
+        m_placeholderActive = false;
     }
 }
 
@@ -38,20 +45,20 @@ void FancyTextEdit::focusOutEvent(QFocusEvent *e)
 {
     QTextEdit::focusOutEvent(e);
 
-    if (this->document()->toPlainText().length() == 0)
-        setPlaceholderText(placeholderText());
+    setPlaceholderText(placeholderText());
 }
 
 void FancyTextEdit::setPlaceholderText(const QString &placeholderText)
 {
     m_placeholderText = placeholderText;
 
-    if (hasFocus())
-        return; // don't touch the text of a focused widget. bad karma.
+    if (isPlaceholderActive() || (!hasFocus() && this->document()->toPlainText().isEmpty()))
+    {
+        setTextColor(Qt::gray);
+        setText(placeholderText);
 
-    // set it grey if there is no real text
-    setTextColor(Qt::gray);
-    setText(placeholderText);
+        m_placeholderActive = true;
+    }
 }
 
 const QString &FancyTextEdit::placeholderText() const
