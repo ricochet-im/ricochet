@@ -19,6 +19,11 @@
 #define HOMESCREEN_H
 
 #include <QWidget>
+#include <QPointer>
+
+class NotificationWidget;
+class QLabel;
+class QAction;
 
 class HomeScreen : public QWidget
 {
@@ -30,23 +35,27 @@ public:
 
 private slots:
     void updateTorStatus();
+    void enableTorNotification();
 
     void startTorConfig();
 
     void startAddContact();
+
 private:
-    class QLabel *avatar;
+    QLabel *avatar;
 
     QList<QAction*> buttonActions;
-    class QAction *actAddContact, *actChangeAvatar, *actOpenDownloads, *actTestConnection, *actOptions;
-    class QAction *actTorConfig;
+    QAction *actAddContact, *actChangeAvatar, *actOpenDownloads, *actTestConnection, *actOptions;
+    QAction *actTorConfig;
 
     QLabel *torStatus, *torInfo;
+    QPointer<NotificationWidget> torNotification;
+    bool torNotificationEnabled;
 
     void createAvatar();
     void createActions();
-    class QLayout *createButtons();
-    class QWidget *createStatus();
+    QLayout *createButtons();
+    QWidget *createStatus();
 };
 
 #endif // HOMESCREEN_H

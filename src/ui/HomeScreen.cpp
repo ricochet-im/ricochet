@@ -20,14 +20,17 @@
 #include "tor/TorControlManager.h"
 #include "torconfig/TorConfigWizard.h"
 #include "ui/ContactAddDialog.h"
+#include "ui/MainWindow.h"
+#include "ui/NotificationWidget.h"
 #include <QApplication>
 #include <QBoxLayout>
 #include <QLabel>
 #include <QToolButton>
 #include <QAction>
+#include <QTimer>
 
 HomeScreen::HomeScreen(QWidget *parent)
-    : QWidget(parent)
+    : QWidget(parent), torNotificationEnabled(false)
 {
     QBoxLayout *layout = new QVBoxLayout(this);
     layout->setMargin(3);
@@ -55,6 +58,10 @@ HomeScreen::HomeScreen(QWidget *parent)
     layout->addWidget(line);
 
     layout->addWidget(createStatus());
+
+    /* Show the tor offline notification 10 seconds after startup, if Tor is not connected by that time.
+     * This avoids obnoxiously showing it for the normal case where Tor should connect *very* quickly. */
+    QTimer::singleShot(10000, this, SLOT(enableTorNotification()));
 }
 
 void HomeScreen::createAvatar()
@@ -185,6 +192,42 @@ void HomeScreen::updateTorStatus()
     torInfo->setText(infoText);
 
     torStatus->setText(torManager->statusText());
+
+    /* Offline notification */
+    if ((torManager->status() == Tor::TorControlManager::Connected) ||
+        (!torNotificationEnabled && torManager->status() != Tor::TorControlManager::Error))
+    {
+        if (torNotification)
+        {
+            torNotification->closeNotification();
+            torNotification = 0;
+        }
+
+        return;
+    }
+
+    QString message;
+
+    switch (torManager->status())
+    {
+    case Tor::TorControlManager::Error:
+        message = tr("Unable to connect to Tor. Make sure Tor is running, or click to reconfigure.");
+        break;
+    default:
+        message = tr("Connecting to Tor. If you have trouble, make sure Tor is running.");
+        break;
+    }
+
+    if (torNotification)
+        torNotification->setMessage(message);
+    else
+        torNotification = uiMain->showNotification(message, this, SLOT(startTorConfig()));
+}
+
+void HomeScreen::enableTorNotification()
+{
+    torNotificationEnabled = true;
+    updateTorStatus();
 }
 
 void HomeScreen::startTorConfig()
