@@ -70,7 +70,8 @@ SOURCES += src/main.cpp \
     src/ui/FancyTextEdit.cpp \
     src/core/IncomingRequestManager.cpp \
     src/core/ContactIDValidator.cpp \
-    src/core/NicknameValidator.cpp
+    src/core/NicknameValidator.cpp \
+    src/ui/NotificationWidget.cpp
 
 HEADERS += src/ui/MainWindow.h \
     src/ui/ChatWidget.h \
@@ -116,7 +117,8 @@ HEADERS += src/ui/MainWindow.h \
     src/ui/FancyTextEdit.h \
     src/core/IncomingRequestManager.h \
     src/core/ContactIDValidator.h \
-    src/core/NicknameValidator.h
+    src/core/NicknameValidator.h \
+    src/ui/NotificationWidget.h
 
 RESOURCES += res/resources.qrc \
     translation/embedded.qrc
