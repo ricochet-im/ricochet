@@ -59,10 +59,12 @@ QWidget *ContactAddDialog::createUI()
     layout->setMargin(0);
 
     // Nickname
+    m_nickname->setWhatsThis(tr("Choose a nickname for this contact. You can use any name."));
     m_nickname->setValidator(new NicknameValidator(m_nickname));
     connect(m_nickname, SIGNAL(textChanged(QString)), SLOT(updateAcceptableInput()));
 
     // ID
+    m_id->setWhatsThis(tr("Enter the ID of your contact, e.g. w3rf2xcq1b88lbda@TorIM"));
     m_id->setValidator(new ContactIDValidator(m_id));
     connect(m_id, SIGNAL(textChanged(QString)), SLOT(updateAcceptableInput()));
 
@@ -73,8 +75,10 @@ QWidget *ContactAddDialog::createUI()
     layout->addLayout(formLayout);
 
     // message
+    m_message->setWhatsThis(tr("This message is sent along with your request. Write something about yourself."));
     m_message->setTabChangesFocus(true);
-    m_message->setPlaceholderText(tr("Enter something about yourself here!"));
+    m_message->setPlaceholderText(tr("Enter a message for your request.\nTell your contact who you are, or why "
+                                     "they should accept."));
 
     connect(m_message, SIGNAL(textChanged()), this, SLOT(updateAcceptableInput()));
 
