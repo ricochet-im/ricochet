@@ -28,16 +28,20 @@ enum ContactPage
 
 class ContactUser;
 class ChatWidget;
+class NotificationWidget;
 
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
+    Q_DISABLE_COPY(MainWindow)
 
     friend class ChatWidget;
 
 public:
-    MainWindow(QWidget *parent = 0);
+    explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+
+    NotificationWidget *showNotification(const QString &message, QObject *receiver = 0, const char *slot = 0);
 
 public slots:
     void showHomeScreen();

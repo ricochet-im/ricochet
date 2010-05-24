@@ -22,6 +22,7 @@
 #include "ChatWidget.h"
 #include "ContactInfoPage.h"
 #include "HomeScreen.h"
+#include "NotificationWidget.h"
 #include "core/ContactsManager.h"
 #include <QToolBar>
 #include <QBoxLayout>
@@ -48,9 +49,12 @@ MainWindow::MainWindow(QWidget *parent)
     QWidget *center = new QWidget;
     setCentralWidget(center);
 
-    QBoxLayout *layout = new QHBoxLayout(center);
-    layout->setMargin(0);
-    layout->setSpacing(0);
+    QBoxLayout *topLayout = new QVBoxLayout(center);
+    topLayout->setMargin(0);
+    topLayout->setSpacing(0);
+
+    QBoxLayout *layout = new QHBoxLayout;
+    topLayout->addLayout(layout);
 
     /* Contacts */
     QBoxLayout *contactsLayout = new QVBoxLayout;
@@ -163,4 +167,20 @@ void MainWindow::contactPageChanged(ContactUser *user, ContactPage page)
 
     if (newWidget)
         chatArea->setCurrentIndex(chatArea->addWidget(newWidget));
+}
+
+NotificationWidget *MainWindow::showNotification(const QString &message, QObject *receiver, const char *slot)
+{
+    NotificationWidget *widget = new NotificationWidget(message);
+    if (receiver && slot)
+        connect(widget, SIGNAL(clicked()), receiver, slot);
+
+    Q_ASSERT(centralWidget() && qobject_cast<QBoxLayout*>(centralWidget()->layout()));
+    QBoxLayout *mainLayout = static_cast<QBoxLayout*>(centralWidget()->layout());
+    int mainIndex = mainLayout->count() - 1;
+
+    mainLayout->insertWidget(mainIndex, widget);
+    widget->showAnimated();
+
+    return widget;
 }
