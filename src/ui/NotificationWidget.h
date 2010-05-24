@@ -20,6 +20,8 @@
 
 #include <QWidget>
 
+class QTextLayout;
+
 class NotificationWidget : public QWidget
 {
     Q_OBJECT
