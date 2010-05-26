@@ -45,12 +45,14 @@ ContactRequestDialog::ContactRequestDialog(IncomingContactRequest *r, QWidget *p
 
     QTextEdit *message = new QTextEdit;
     message->setReadOnly(true);
-    message->setFont(QFont(QLatin1String("Arial"), 9));
+    QFont f = QFont(QLatin1String("Arial"), 9);
+    f.setStyleHint(QFont::SansSerif);
+    message->setFont(f);
 
     message->setText(QString::fromLatin1(
-            "<table><tr><td style='color:#808080;'>%1</td><td width='100%' style='font-family:Consolas;font-weight:bold;'>"
-            "%2</td></tr><tr><td style='color:#808080;padding-right:9px;'>%3</td><td>%4</td></tr><tr><td colspan=2><br>%5"
-            "</td></tr></table>")
+            "<table><tr><td style='color:#808080;'>%1</td><td width='100%' style='font-family:Consolas,\"Courier New\";"
+            "font-weight:bold;'>%2</td></tr><tr><td style='color:#808080;padding-right:9px;'>%3</td><td>%4</td></tr><tr>"
+            "<td colspan=2><br>%5</td></tr></table>")
             .arg(tr("ID:"))
             .arg(QString::fromLatin1(request->hostname) + QLatin1String("@TorIM"))
             .arg(tr("Date:"))
@@ -60,7 +62,7 @@ ContactRequestDialog::ContactRequestDialog(IncomingContactRequest *r, QWidget *p
 
     mainLayout->addWidget(message);
 
-    QBoxLayout *bLayout = new QHBoxLayout(this);
+    QBoxLayout *bLayout = new QHBoxLayout;
     mainLayout->addLayout(bLayout);
 
     /* Nickname */
