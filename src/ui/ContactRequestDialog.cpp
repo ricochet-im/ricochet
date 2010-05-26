@@ -17,6 +17,7 @@
 
 #include "main.h"
 #include "ContactRequestDialog.h"
+#include "core/ContactsManager.h"
 #include "core/IncomingRequestManager.h"
 #include "core/NicknameValidator.h"
 #include <QBoxLayout>
@@ -26,6 +27,7 @@
 #include <QLabel>
 #include <QTextEdit>
 #include <QDateTime>
+#include <QToolTip>
 
 ContactRequestDialog::ContactRequestDialog(IncomingContactRequest *r, QWidget *parent)
     : QDialog(parent), request(r)
@@ -78,7 +80,38 @@ ContactRequestDialog::ContactRequestDialog(IncomingContactRequest *r, QWidget *p
     btns->addButton(tr("Accept"), QDialogButtonBox::YesRole);
     btns->addButton(tr("Reject"), QDialogButtonBox::NoRole);
     connect(btns, SIGNAL(accepted()), this, SLOT(accept()));
-    connect(btns, SIGNAL(rejected()), this, SLOT(reject()));
+    connect(btns, SIGNAL(rejected()), this, SLOT(rejectRequest()));
 
     bLayout->addWidget(btns);
+}
+
+void ContactRequestDialog::accept()
+{
+    if (!m_nickname->hasAcceptableInput())
+    {
+        m_nickname->setFocus();
+        QToolTip::showText(m_nickname->mapToGlobal(QPoint(0,0)),
+                           tr("You must enter a valid nickname for this contact"), m_nickname);
+        return;
+    }
+
+    if (contactsManager->lookupNickname(m_nickname->text()))
+    {
+        m_nickname->setFocus();
+        QToolTip::showText(m_nickname->mapToGlobal(QPoint(0,0)), tr("You already have a contact named <b>%1</b>")
+                           .arg(Qt::escape(m_nickname->text())), m_nickname);
+        return;
+    }
+
+    request->setNickname(m_nickname->text());
+    request->accept();
+
+    QDialog::accept();
+}
+
+void ContactRequestDialog::rejectRequest()
+{
+    request->reject();
+    /* Call the normal QDialog::reject(), which closes the dialog. */
+    reject();
 }

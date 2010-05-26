@@ -32,6 +32,11 @@ public:
 
     explicit ContactRequestDialog(IncomingContactRequest *request, QWidget *parent = 0);
 
+    virtual void accept();
+
+public slots:
+    void rejectRequest();
+
 private:
     class QLineEdit *m_nickname;
 };
