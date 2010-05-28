@@ -85,6 +85,10 @@ ContactRequestDialog::ContactRequestDialog(IncomingContactRequest *r, QWidget *p
     connect(btns, SIGNAL(rejected()), this, SLOT(rejectRequest()));
 
     bLayout->addWidget(btns);
+
+    /* Other */
+    connect(contactsManager->incomingRequests, SIGNAL(requestRemoved(IncomingContactRequest*)),
+            SLOT(requestRemoved(IncomingContactRequest*)));
 }
 
 void ContactRequestDialog::accept()
@@ -120,4 +124,13 @@ void ContactRequestDialog::rejectRequest()
 void ContactRequestDialog::reject()
 {
     this->done(ContactRequestDialog::Cancelled);
+}
+
+void ContactRequestDialog::requestRemoved(IncomingContactRequest *r)
+{
+    if (r != request)
+        return;
+
+    /* Request is gone, there is no way for this dialog to stay open (the request will soon be an invalid pointer). */
+    reject();
 }

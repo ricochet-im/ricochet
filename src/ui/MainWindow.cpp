@@ -210,15 +210,20 @@ void MainWindow::updateContactRequests()
 
 void MainWindow::showContactRequest()
 {
-    QList<IncomingContactRequest*> requests = contactsManager->incomingRequests->requests();
-
-    for (QList<IncomingContactRequest*>::Iterator it = requests.begin(); it != requests.end(); ++it)
+    /* This cannot iterate a list because it is technically possible for that list to change during the loop */
+    for (;;)
     {
-        ContactRequestDialog *dialog = new ContactRequestDialog(*it, this);
+        QList<IncomingContactRequest*> requests = contactsManager->incomingRequests->requests();
+        if (requests.isEmpty())
+            break;
+
+        ContactRequestDialog *dialog = new ContactRequestDialog(requests.first(), this);
 
         /* Allow the user a way out of a loop of requests by cancelling */
         if (dialog->exec() == ContactRequestDialog::Cancelled)
             break;
+
+        /* Accept or reject would remove the request from the list, so it will not come up again. */
     }
 
     updateContactRequests();

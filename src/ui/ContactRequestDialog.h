@@ -43,6 +43,9 @@ public:
 public slots:
     void rejectRequest();
 
+private slots:
+    void requestRemoved(IncomingContactRequest *request);
+
 private:
     class QLineEdit *m_nickname;
 };
