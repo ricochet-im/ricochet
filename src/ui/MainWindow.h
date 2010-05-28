@@ -18,7 +18,8 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QtGui/QMainWindow>
+#include <QMainWindow>
+#include <QWeakPointer>
 
 enum ContactPage
 {
@@ -29,6 +30,7 @@ enum ContactPage
 class ContactUser;
 class ChatWidget;
 class NotificationWidget;
+class IncomingContactRequest;
 
 class MainWindow : public QMainWindow
 {
@@ -52,11 +54,15 @@ protected:
 private slots:
     void contactPageChanged(ContactUser *user, ContactPage page);
 
+    void updateContactRequests();
+    void showContactRequest();
+
 private:
     class ContactsView *contactsView;
     class HomeScreen *homeScreen;
     class HomeContactWidget *homeContact;
     class QStackedWidget *chatArea;
+    QWeakPointer<NotificationWidget> contactReqNotification;
 
     void createContactsView();
     void createHomeContact();

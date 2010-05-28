@@ -28,11 +28,17 @@ class ContactRequestDialog : public QDialog
     Q_DISABLE_COPY(ContactRequestDialog)
 
 public:
+    enum ExtendedDialogCode
+    {
+        Cancelled = -1
+    };
+
     IncomingContactRequest * const request;
 
     explicit ContactRequestDialog(IncomingContactRequest *request, QWidget *parent = 0);
 
     virtual void accept();
+    virtual void reject();
 
 public slots:
     void rejectRequest();

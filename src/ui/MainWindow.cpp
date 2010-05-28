@@ -23,6 +23,8 @@
 #include "ContactInfoPage.h"
 #include "HomeScreen.h"
 #include "NotificationWidget.h"
+#include "ContactRequestDialog.h"
+#include "core/IncomingRequestManager.h"
 #include "core/ContactsManager.h"
 #include <QToolBar>
 #include <QBoxLayout>
@@ -85,11 +87,16 @@ MainWindow::MainWindow(QWidget *parent)
     chatArea->addWidget(homeScreen);
 
     showHomeScreen();
+
+    /* Other things */
+    connect(contactsManager->incomingRequests, SIGNAL(requestAdded(IncomingContactRequest*)), SLOT(updateContactRequests()));
+    connect(contactsManager->incomingRequests, SIGNAL(requestRemoved(IncomingContactRequest*)), SLOT(updateContactRequests()));
+
+    updateContactRequests();
 }
 
 MainWindow::~MainWindow()
 {
-
 }
 
 void MainWindow::createContactsView()
@@ -183,4 +190,36 @@ NotificationWidget *MainWindow::showNotification(const QString &message, QObject
     widget->showAnimated();
 
     return widget;
+}
+
+void MainWindow::updateContactRequests()
+{
+    int numRequests = contactsManager->incomingRequests->requests().size();
+
+    if (numRequests && !contactReqNotification)
+    {
+        contactReqNotification = showNotification(tr("Someone wants to contact you - click here for more information"),
+                                                  this, SLOT(showContactRequest()));
+    }
+    else if (!numRequests && contactReqNotification)
+    {
+        contactReqNotification.data()->closeNotification();
+        contactReqNotification.clear();
+    }
+}
+
+void MainWindow::showContactRequest()
+{
+    QList<IncomingContactRequest*> requests = contactsManager->incomingRequests->requests();
+
+    for (QList<IncomingContactRequest*>::Iterator it = requests.begin(); it != requests.end(); ++it)
+    {
+        ContactRequestDialog *dialog = new ContactRequestDialog(*it, this);
+
+        /* Allow the user a way out of a loop of requests by cancelling */
+        if (dialog->exec() == ContactRequestDialog::Cancelled)
+            break;
+    }
+
+    updateContactRequests();
 }

@@ -114,6 +114,10 @@ void ContactRequestDialog::accept()
 void ContactRequestDialog::rejectRequest()
 {
     request->reject();
-    /* Call the normal QDialog::reject(), which closes the dialog. */
-    reject();
+    this->done(QDialog::Rejected);
+}
+
+void ContactRequestDialog::reject()
+{
+    this->done(ContactRequestDialog::Cancelled);
 }
