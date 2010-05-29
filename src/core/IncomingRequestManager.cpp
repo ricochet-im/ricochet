@@ -197,7 +197,8 @@ void IncomingContactRequest::accept()
     /* If there is a connection, send the accept message and morph it to a primary connection */
     if (connection)
     {
-        /* TODO */
+        connection.data()->sendAccept(user);
+        connection.clear();
     }
 
     /* Remove the request */

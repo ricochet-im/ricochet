@@ -4,6 +4,7 @@
 #include <QObject>
 
 class QTcpSocket;
+class ContactUser;
 
 class ContactRequestServer : public QObject
 {
@@ -13,6 +14,7 @@ class ContactRequestServer : public QObject
 public:
     explicit ContactRequestServer(QTcpSocket *socket);
 
+    void sendAccept(ContactUser *user);
     void sendRejection();
 
     void close();

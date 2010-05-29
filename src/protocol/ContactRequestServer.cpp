@@ -48,19 +48,29 @@ bool ContactRequestServer::sendResponse(uchar response)
     qint64 re = socket->write(reinterpret_cast<const char*>(&response), 1);
     Q_ASSERT(re);
 
-    if (response == 0x01)
+    if (response > 0x01)
     {
-        /* Accept; this turns the connection into a primary */
-        /* TODO implement; the user has to actually exist.. */
-        qFatal("Not implemented");
-    }
-    else if (response != 0x00)
-    {
+        /* Everything except acknowledge (0x00) and accept (0x01) is an error or rejection */
         socket->close();
         return false;
     }
 
     return true;
+}
+
+void ContactRequestServer::sendAccept(ContactUser *user)
+{
+    /* Send the accepted response; immediately after this, both ends will treat the connection
+     * as their newly established primary. */
+    sendResponse(0x01);
+
+    qDebug() << "Contact request accepted with an active connection; sending accept and morphing to primary";
+
+    socket->disconnect(this);
+    user->conn()->addSocket(socket, 0x00);
+    Q_ASSERT(socket->parent() != this);
+
+    deleteLater();
 }
 
 void ContactRequestServer::sendRejection()
