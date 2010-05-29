@@ -95,14 +95,15 @@ void ContactRequestServer::socketReadable()
 
 void ContactRequestServer::handleRequest(const QByteArray &data)
 {
-    /* [2*length][16*hostname][data:pubkey][data:signedcookie][str:nick][str:message] */
+    /* [2*length][16*hostname][16*connSecret][data:pubkey][data:signedcookie][str:nick][str:message] */
     CommandDataParser request(&data);
     request.setPos(2);
 
-    QByteArray hostname, encodedPublicKey, signedCookie;
+    QByteArray hostname, connSecret, encodedPublicKey, signedCookie;
     QString nickname, message;
 
     request.readFixedData(&hostname, 16);
+    request.readFixedData(&connSecret, 16);
     request.readVariableData(&encodedPublicKey);
     request.readVariableData(&signedCookie);
     request >> nickname >> message;
@@ -151,11 +152,12 @@ void ContactRequestServer::handleRequest(const QByteArray &data)
     /* Request is valid; the hidden service identity is cryptographically proven. */
     qDebug() << "Received contact request:";
     qDebug() << "  Hostname:" << hostname;
+    qDebug() << "  Connection Secret:" << connSecret.toHex();
     qDebug() << "  Nickname:" << nickname;
     qDebug() << "  Message:" << message;
     qDebug() << "  Cookie:" << cookie.toHex();
 
-    contactsManager->incomingRequests->addRequest(hostname, this, nickname, message);
+    contactsManager->incomingRequests->addRequest(hostname, connSecret, this, nickname, message);
 
     /* Acknowledgement */
     sendResponse(0x00);

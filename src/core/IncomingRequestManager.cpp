@@ -37,7 +37,7 @@ IncomingContactRequest *IncomingRequestManager::requestFromHostname(const QByteA
     return 0;
 }
 
-void IncomingRequestManager::addRequest(const QByteArray &hostname, ContactRequestServer *connection,
+void IncomingRequestManager::addRequest(const QByteArray &hostname, const QByteArray &connSecret, ContactRequestServer *connection,
                                         const QString &nickname, const QString &message)
 {
     if (isHostnameRejected(hostname))
@@ -55,6 +55,7 @@ void IncomingRequestManager::addRequest(const QByteArray &hostname, ContactReque
     {
         /* Update the existing request */
         request->setConnection(connection);
+        request->setRemoteSecret(connSecret);
         request->setNickname(nickname);
         request->setMessage(message);
         request->save();
@@ -63,6 +64,7 @@ void IncomingRequestManager::addRequest(const QByteArray &hostname, ContactReque
 
     /* Create a new request */
     request = new IncomingContactRequest(this, hostname, connection);
+    request->setRemoteSecret(connSecret);
     request->setNickname(nickname);
     request->setMessage(message);
 
@@ -110,6 +112,7 @@ IncomingContactRequest::IncomingContactRequest(IncomingRequestManager *m, const 
 void IncomingContactRequest::load()
 {
     config->beginGroup(QLatin1String("contactRequests/") + QString::fromLatin1(hostname));
+    setRemoteSecret(config->value(QLatin1String("remoteSecret")).toByteArray());
     setNickname(config->value(QLatin1String("nickname")).toString());
     setMessage(config->value(QLatin1String("message")).toString());
     config->endGroup();
@@ -118,6 +121,7 @@ void IncomingContactRequest::load()
 void IncomingContactRequest::save()
 {
     config->beginGroup(QLatin1String("contactRequests/") + QString::fromLatin1(hostname));
+    config->setValue(QLatin1String("remoteSecret"), remoteSecret());
     config->setValue(QLatin1String("nickname"), nickname());
     config->setValue(QLatin1String("message"), message());
     config->endGroup();
@@ -127,6 +131,12 @@ void IncomingContactRequest::removeRequest()
 {
     /* Remove from config */
     qFatal("Not implemented");
+}
+
+void IncomingContactRequest::setRemoteSecret(const QByteArray &remoteSecret)
+{
+    Q_ASSERT(remoteSecret.size() == 16);
+    m_remoteSecret = remoteSecret;
 }
 
 void IncomingContactRequest::setMessage(const QString &message)
@@ -145,11 +155,10 @@ void IncomingContactRequest::setConnection(ContactRequestServer *c)
     {
         /* New connections replace old ones.. but this should honestly never
          * happen, because the redeliver timeout is far longer. */
-        connection->close();
+        connection.data()->close();
     }
 
     qDebug() << "Setting new connection for an existing contact request from" << hostname;
-
     connection = c;
 }
 
@@ -174,7 +183,7 @@ void IncomingContactRequest::reject()
     qDebug() << "Rejecting contact request from" << hostname;
 
     if (connection)
-        connection->sendRejection();
+        connection.data()->sendRejection();
 
     removeRequest();
     manager->addRejectedHost(hostname);

@@ -111,7 +111,7 @@ void ContactRequestClient::socketReadable()
 
 bool ContactRequestClient::buildRequestData(QByteArray cookie)
 {
-    /* [2*length][16*hostname][data:pubkey][data:signedcookie][str:nick][str:message] */
+    /* [2*length][16*hostname][16*connSecret][data:pubkey][data:signedcookie][str:nick][str:message] */
     QByteArray requestData;
     CommandDataParser request(&requestData);
 
@@ -123,6 +123,14 @@ bool ContactRequestClient::buildRequestData(QByteArray cookie)
     if (hostname.size() != 16)
     {
         qWarning() << "Cannot send contact request: unable to determine the local service hostname";
+        return false;
+    }
+
+    /* Connection secret */
+    QByteArray connSecret = user->readSetting("localSecret").toByteArray();
+    if (connSecret.size() != 16)
+    {
+        qWarning() << "Cannot send contact request: invalid local secret";
         return false;
     }
 
@@ -152,6 +160,7 @@ bool ContactRequestClient::buildRequestData(QByteArray cookie)
     /* Build request */
     request << (quint16)0; /* placeholder for length */
     request.writeFixedData(hostname.toLatin1());
+    request.writeFixedData(connSecret);
     request.writeVariableData(publicKeyData);
     request.writeVariableData(signature);
     request << myNickname() << message();

@@ -2,7 +2,7 @@
 #define INCOMINGREQUESTMANAGER_H
 
 #include <QObject>
-#include <QPointer>
+#include <QWeakPointer>
 #include "protocol/ContactRequestServer.h"
 
 class IncomingRequestManager;
@@ -20,6 +20,9 @@ public:
 
     IncomingContactRequest(IncomingRequestManager *manager, const QByteArray &hostname,
                            ContactRequestServer *connection = 0);
+
+    QByteArray remoteSecret() const { return m_remoteSecret; }
+    void setRemoteSecret(const QByteArray &remoteSecret);
 
     QString message() const { return m_message; }
     void setMessage(const QString &message);
@@ -42,7 +45,8 @@ public slots:
     void reject();
 
 private:
-    QPointer<ContactRequestServer> connection;
+    QWeakPointer<ContactRequestServer> connection;
+    QByteArray m_remoteSecret;
     QString m_message, m_nickname;
 
     void removeRequest();
@@ -66,8 +70,8 @@ public:
     void loadRequests();
 
     /* Input from ContactRequestServer */
-    void addRequest(const QByteArray &hostname, ContactRequestServer *connection, const QString &nickname,
-                    const QString &message);
+    void addRequest(const QByteArray &hostname, const QByteArray &connSecret, ContactRequestServer *connection,
+                    const QString &nickname, const QString &message);
 
     /* Blacklist a host for immediate rejection in the future */
     void addRejectedHost(const QByteArray &hostname);
