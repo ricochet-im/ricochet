@@ -2,6 +2,7 @@
 #include "OutgoingRequestManager.h"
 #include "ContactsManager.h"
 #include "ContactUser.h"
+#include "IncomingRequestManager.h"
 #include "protocol/ContactRequestClient.h"
 #include "tor/TorControlManager.h"
 
@@ -31,6 +32,20 @@ void OutgoingRequestManager::addNewRequest(ContactUser *user, const QString &myN
     Q_ASSERT(!user->isConnected());
     if (users.contains(user))
         return;
+
+    /* Check if there is an existing incoming request that matches this one; if so, treat this as accepted
+     * automatically and accept that incoming request for this user */
+    QByteArray hostname = user->hostname().left(16).toLatin1();
+    IncomingContactRequest *incomingReq = contactsManager->incomingRequests->requestFromHostname(hostname);
+    if (incomingReq)
+    {
+        qDebug() << "Automatically accepting an incoming contact request matching a newly created outgoing request";
+
+        qFatal("Accept logic for OutgoingRequestManager is not implemented"); // !!!!!!!!!
+
+        incomingReq->accept(user);
+        return;
+    }
 
     user->writeSetting(QLatin1String("addRequest"), true);
     user->writeSetting(QLatin1String("requestNickname"), myNickname);
