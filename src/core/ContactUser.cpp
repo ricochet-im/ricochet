@@ -142,6 +142,7 @@ void ContactUser::setHostname(const QString &hostname)
         fh.append(QLatin1String(".onion"));
 
     writeSetting(QLatin1String("hostname"), fh);
+    conn()->setHost(fh);
 }
 
 QPixmap ContactUser::avatar(AvatarSize size)
