@@ -71,6 +71,9 @@ public:
 
     /* Blacklist a host for immediate rejection in the future */
     void addRejectedHost(const QByteArray &hostname);
+    bool isHostnameRejected(const QByteArray &hostname) const;
+
+    QStringList rejectedHosts() const;
 
 signals:
     void requestAdded(IncomingContactRequest *request);

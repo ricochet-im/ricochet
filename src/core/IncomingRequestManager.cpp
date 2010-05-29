@@ -40,6 +40,16 @@ IncomingContactRequest *IncomingRequestManager::requestFromHostname(const QByteA
 void IncomingRequestManager::addRequest(const QByteArray &hostname, ContactRequestServer *connection,
                                         const QString &nickname, const QString &message)
 {
+    if (isHostnameRejected(hostname))
+    {
+        qDebug() << "Rejecting contact request due to a blacklist match for" << hostname;
+
+        if (connection)
+            connection->sendRejection();
+
+        return;
+    }
+
     IncomingContactRequest *request = requestFromHostname(hostname);
     if (request)
     {
@@ -72,7 +82,19 @@ void IncomingRequestManager::removeRequest(IncomingContactRequest *request)
 
 void IncomingRequestManager::addRejectedHost(const QByteArray &hostname)
 {
-    qWarning() << "Rejected host list is not implemented";
+    QStringList hosts = rejectedHosts();
+    hosts.append(QString::fromLatin1(hostname));
+    config->setValue("core/hostnameBlacklist", QVariant::fromValue(hosts));
+}
+
+bool IncomingRequestManager::isHostnameRejected(const QByteArray &hostname) const
+{
+    return rejectedHosts().contains(QString::fromLatin1(hostname));
+}
+
+QStringList IncomingRequestManager::rejectedHosts() const
+{
+    return config->value("core/hostnameBlacklist").value<QStringList>();
 }
 
 IncomingContactRequest::IncomingContactRequest(IncomingRequestManager *m, const QByteArray &h,
