@@ -21,6 +21,7 @@
 #include "ui/ChatWidget.h"
 #include "utils/DateUtil.h"
 #include "utils/SecureRNG.h"
+#include "protocol/GetSecretCommand.h"
 #include <QPixmapCache>
 #include <QtDebug>
 #include <QBuffer>
@@ -112,6 +113,13 @@ void ContactUser::onConnected()
     emit connected();
 
     writeSetting("lastConnected", QDateTime::currentDateTime());
+
+    if (readSetting("remoteSecret").isNull())
+    {
+        qDebug() << "Requesting remote secret from user" << uniqueID;
+        GetSecretCommand *command = new GetSecretCommand(this);
+        command->send(conn());
+    }
 }
 
 void ContactUser::onDisconnected()

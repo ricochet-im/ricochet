@@ -72,7 +72,8 @@ SOURCES += src/main.cpp \
     src/core/ContactIDValidator.cpp \
     src/core/NicknameValidator.cpp \
     src/ui/NotificationWidget.cpp \
-    src/ui/ContactRequestDialog.cpp
+    src/ui/ContactRequestDialog.cpp \
+    src/protocol/GetSecretCommand.cpp
 
 HEADERS += src/ui/MainWindow.h \
     src/ui/ChatWidget.h \
@@ -120,7 +121,8 @@ HEADERS += src/ui/MainWindow.h \
     src/core/ContactIDValidator.h \
     src/core/NicknameValidator.h \
     src/ui/NotificationWidget.h \
-    src/ui/ContactRequestDialog.h
+    src/ui/ContactRequestDialog.h \
+    src/protocol/GetSecretCommand.h
 
 RESOURCES += res/resources.qrc \
     translation/embedded.qrc
