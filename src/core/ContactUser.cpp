@@ -64,6 +64,11 @@ void ContactUser::writeSetting(const QString &key, const QVariant &value)
     config->setValue(QString::fromLatin1("contacts/%1/%2").arg(uniqueID).arg(key), value);
 }
 
+void ContactUser::removeSetting(const QString &key)
+{
+    config->remove(QString::fromLatin1("contacts/%1/%2").arg(uniqueID).arg(key));
+}
+
 ContactUser *ContactUser::addNewContact(int id)
 {
     ContactUser *user = new ContactUser(id);

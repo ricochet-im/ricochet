@@ -51,7 +51,7 @@ public:
     bool isConnected() const { return pConn->isPrimaryConnected(); }
     bool isConnectable() const { return pConn->isConnectable(); }
 
-    bool isContactRequest() const { return readSetting(QLatin1String("addRequest")).toBool(); }
+    bool isContactRequest() const { return readSetting(QLatin1String("request/isRequest")).toBool(); }
 
     const QString &nickname() const { return pNickname; }
     /* Hostname is in the onion hostname format, i.e. it ends with .onion */
@@ -71,6 +71,12 @@ public:
     void writeSetting(const char *key, const QVariant &value)
     {
         writeSetting(QLatin1String(key), value);
+    }
+
+    void removeSetting(const QString &key);
+    void removeSetting(const char *key)
+    {
+        removeSetting(QLatin1String(key));
     }
 
 public slots:
