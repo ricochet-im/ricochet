@@ -50,6 +50,8 @@ void IncomingRequestManager::addRequest(const QByteArray &hostname, const QByteA
     }
 
     IncomingContactRequest *request = requestFromHostname(hostname);
+    bool newRequest = false;
+
     if (request)
     {
         /* Update the existing request */
@@ -58,20 +60,40 @@ void IncomingRequestManager::addRequest(const QByteArray &hostname, const QByteA
         request->setNickname(nickname);
         request->setMessage(message);
         request->renew();
-        request->save();
+    }
+    else
+    {
+        /* Create a new request */
+        newRequest = true;
+
+        request = new IncomingContactRequest(this, hostname, connection);
+        request->setRemoteSecret(connSecret);
+        request->setNickname(nickname);
+        request->setMessage(message);
+    }
+
+    /* Check if this request matches any existing users, including any outgoing requests. */
+    ContactUser *existingUser = contactsManager->lookupHostname(QString::fromLatin1(hostname));
+    if (existingUser)
+    {
+        /* If the existing user is an outgoing contact request, that is considered accepted */
+        if (existingUser->isContactRequest())
+        {
+            qFatal("Accepting an outgoing request from an incoming request is not implemented");
+            return;
+        }
+
+        /* This request is automatically accepted */
+        request->accept(existingUser);
         return;
     }
 
-    /* Create a new request */
-    request = new IncomingContactRequest(this, hostname, connection);
-    request->setRemoteSecret(connSecret);
-    request->setNickname(nickname);
-    request->setMessage(message);
-
     request->save();
-
-    m_requests.append(request);
-    emit requestAdded(request);
+    if (newRequest)
+    {
+        m_requests.append(request);
+        emit requestAdded(request);
+    }
 }
 
 void IncomingRequestManager::removeRequest(IncomingContactRequest *request)
@@ -182,15 +204,18 @@ void IncomingContactRequest::setConnection(ContactRequestServer *c)
     connection = c;
 }
 
-void IncomingContactRequest::accept()
+void IncomingContactRequest::accept(ContactUser *user)
 {
     qDebug() << "Accepting contact request from" << hostname;
 
-    Q_ASSERT(!nickname().isEmpty());
-
     /* Create the contact */
-    ContactUser *user = contactsManager->addContact(nickname());
-    user->setHostname(QString::fromLatin1(hostname));
+    if (!user)
+    {
+        Q_ASSERT(!nickname().isEmpty());
+        user = contactsManager->addContact(nickname());
+        user->setHostname(QString::fromLatin1(hostname));
+    }
+
     user->writeSetting("remoteSecret", remoteSecret());
     user->conn()->setSecret(remoteSecret());
 

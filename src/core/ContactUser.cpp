@@ -84,7 +84,7 @@ QString ContactUser::statusLine() const
             return tr("%n new message(s)", 0, chat->unreadMessages());
         return tr("Online");
     }
-    else if (readSetting(QLatin1String("addRequest")).toBool())
+    else if (isContactRequest())
     {
         return tr("Contact request pending");
     }

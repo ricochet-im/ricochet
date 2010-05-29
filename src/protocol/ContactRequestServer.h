@@ -30,7 +30,8 @@ private:
     enum
     {
         WaitRequest,
-        WaitResponse
+        WaitResponse,
+        SentResponse
     } state;
 
     void sendCookie();

@@ -43,7 +43,7 @@ public:
 public slots:
     void setNickname(const QString &nickname);
 
-    void accept();
+    void accept(ContactUser *user = 0);
     void reject();
 
 private:

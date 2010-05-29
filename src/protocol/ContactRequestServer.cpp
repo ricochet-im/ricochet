@@ -45,8 +45,13 @@ void ContactRequestServer::sendCookie()
 /* Returns true if the connection is still open (dependant on the response) */
 bool ContactRequestServer::sendResponse(uchar response)
 {
+    Q_ASSERT(state != SentResponse);
+
     qint64 re = socket->write(reinterpret_cast<const char*>(&response), 1);
     Q_ASSERT(re);
+
+    if (response != 0x00)
+        state = SentResponse;
 
     if (response > 0x01)
     {
@@ -75,8 +80,7 @@ void ContactRequestServer::sendAccept(ContactUser *user)
 
 void ContactRequestServer::sendRejection()
 {
-    bool open = sendResponse(0x40);
-    Q_ASSERT(!open);
+    sendResponse(0x40);
 }
 
 void ContactRequestServer::socketReadable()
@@ -168,6 +172,10 @@ void ContactRequestServer::handleRequest(const QByteArray &data)
     qDebug() << "  Cookie:" << cookie.toHex();
 
     contactsManager->incomingRequests->addRequest(hostname, connSecret, this, nickname, message);
+
+    /* addRequest() can automatically accept or reject in certain situations; account for that */
+    if (state == SentResponse)
+        return;
 
     /* Acknowledgement */
     sendResponse(0x00);
