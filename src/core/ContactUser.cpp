@@ -20,6 +20,7 @@
 #include "ContactsManager.h"
 #include "ui/ChatWidget.h"
 #include "utils/DateUtil.h"
+#include "utils/SecureRNG.h"
 #include <QPixmapCache>
 #include <QtDebug>
 #include <QBuffer>
@@ -67,6 +68,10 @@ ContactUser *ContactUser::addNewContact(int id)
 {
     ContactUser *user = new ContactUser(id);
     user->writeSetting("whenCreated", QDateTime::currentDateTime());
+
+    /* Generate the local secret and set it */
+    user->writeSetting("localSecret", SecureRNG::random(16));
+
     return user;
 }
 
