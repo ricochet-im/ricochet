@@ -2,7 +2,6 @@
 #include "IncomingRequestManager.h"
 #include "ContactsManager.h"
 #include "protocol/ContactRequestServer.h"
-#include <QDateTime>
 
 IncomingRequestManager::IncomingRequestManager(ContactsManager *c)
     : QObject(c), contacts(c)
@@ -58,6 +57,7 @@ void IncomingRequestManager::addRequest(const QByteArray &hostname, const QByteA
         request->setRemoteSecret(connSecret);
         request->setNickname(nickname);
         request->setMessage(message);
+        request->renew();
         request->save();
         return;
     }
@@ -112,19 +112,37 @@ IncomingContactRequest::IncomingContactRequest(IncomingRequestManager *m, const 
 void IncomingContactRequest::load()
 {
     config->beginGroup(QLatin1String("contactRequests/") + QString::fromLatin1(hostname));
+
     setRemoteSecret(config->value(QLatin1String("remoteSecret")).toByteArray());
     setNickname(config->value(QLatin1String("nickname")).toString());
     setMessage(config->value(QLatin1String("message")).toString());
+
+    m_requestDate = config->value(QLatin1String("requestDate")).toDateTime();
+    m_lastRequestDate = config->value(QLatin1String("lastRequestDate")).toDateTime();
+
     config->endGroup();
 }
 
 void IncomingContactRequest::save()
 {
     config->beginGroup(QLatin1String("contactRequests/") + QString::fromLatin1(hostname));
+
     config->setValue(QLatin1String("remoteSecret"), remoteSecret());
     config->setValue(QLatin1String("nickname"), nickname());
     config->setValue(QLatin1String("message"), message());
+
+    if (m_requestDate.isNull())
+        m_requestDate = m_lastRequestDate = QDateTime::currentDateTime();
+
+    config->setValue(QLatin1String("requestDate"), m_requestDate);
+    config->setValue(QLatin1String("lastRequestDate"), m_lastRequestDate);
+
     config->endGroup();
+}
+
+void IncomingContactRequest::renew()
+{
+    m_lastRequestDate = QDateTime::currentDateTime();
 }
 
 void IncomingContactRequest::removeRequest()
@@ -162,16 +180,6 @@ void IncomingContactRequest::setConnection(ContactRequestServer *c)
 
     qDebug() << "Setting new connection for an existing contact request from" << hostname;
     connection = c;
-}
-
-QDateTime IncomingContactRequest::requestDate() const
-{
-    return QDateTime();
-}
-
-QDateTime IncomingContactRequest::lastRequestDate() const
-{
-    return QDateTime();
 }
 
 void IncomingContactRequest::accept()

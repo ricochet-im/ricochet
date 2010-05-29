@@ -3,11 +3,11 @@
 
 #include <QObject>
 #include <QWeakPointer>
+#include <QDateTime>
 #include "protocol/ContactRequestServer.h"
 
 class IncomingRequestManager;
 class ContactsManager;
-class QDateTime;
 
 class IncomingContactRequest : public QObject
 {
@@ -32,8 +32,10 @@ public:
     bool hasActiveConnection() const { return connection != 0; }
     void setConnection(ContactRequestServer *connection);
 
-    QDateTime requestDate() const;
-    QDateTime lastRequestDate() const;
+    QDateTime requestDate() const { return m_requestDate; }
+    QDateTime lastRequestDate() const { return m_lastRequestDate; }
+
+    void renew();
 
     void load();
     void save();
@@ -48,6 +50,7 @@ private:
     QWeakPointer<ContactRequestServer> connection;
     QByteArray m_remoteSecret;
     QString m_message, m_nickname;
+    QDateTime m_requestDate, m_lastRequestDate;
 
     void removeRequest();
 };
