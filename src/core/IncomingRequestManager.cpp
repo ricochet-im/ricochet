@@ -130,7 +130,9 @@ void IncomingContactRequest::save()
 void IncomingContactRequest::removeRequest()
 {
     /* Remove from config */
-    qFatal("Not implemented");
+    config->beginGroup(QLatin1String("contactRequests/") + QString::fromLatin1(hostname));
+    config->remove("");
+    config->endGroup();
 }
 
 void IncomingContactRequest::setRemoteSecret(const QByteArray &remoteSecret)
@@ -182,11 +184,14 @@ void IncomingContactRequest::reject()
 {
     qDebug() << "Rejecting contact request from" << hostname;
 
+    /* Send a rejection if there is an active connection */
     if (connection)
         connection.data()->sendRejection();
-
+    /* Remove the request from the config */
     removeRequest();
+    /* Blacklist the host to prevent repeat requests */
     manager->addRejectedHost(hostname);
+    /* Remove the request from the manager */
     manager->removeRequest(this);
 
     /* Object is now scheduled for deletion */
