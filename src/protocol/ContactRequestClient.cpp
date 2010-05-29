@@ -24,7 +24,7 @@ void ContactRequestClient::setMyNickname(const QString &nick)
     m_mynick = nick;
 }
 
-void ContactRequestClient::sendRequest()
+void ContactRequestClient::close()
 {
     if (socket)
     {
@@ -34,6 +34,12 @@ void ContactRequestClient::sendRequest()
         socket = 0;
     }
 
+    state = NotConnected;
+}
+
+void ContactRequestClient::sendRequest()
+{
+    close();
     state = WaitConnect;
 
     if (!torManager->isSocksReady())
@@ -201,12 +207,14 @@ bool ContactRequestClient::handleResponse()
     case 0x01: /* Accept */
         qDebug() << "Contact request for" << user->uniqueID << "accepted! Converting connection to primary";
 
+        m_response = Accepted;
+        emit accepted();
+
         socket->disconnect(this);
         user->conn()->addSocket(socket, 0x00);
         Q_ASSERT(socket->parent() != this);
         socket = 0;
 
-        m_response = Accepted;
         break;
 
     case 0x40:
@@ -220,9 +228,11 @@ bool ContactRequestClient::handleResponse()
         break;
     }
 
-    emit responseChanged(m_response);
-
     if (m_response >= Rejected)
+    {
+        emit rejected(response);
         return false;
+    }
+
     return true;
 }

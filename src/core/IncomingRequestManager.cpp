@@ -1,6 +1,7 @@
 #include "main.h"
 #include "IncomingRequestManager.h"
 #include "ContactsManager.h"
+#include "OutgoingRequestManager.h"
 #include "protocol/ContactRequestServer.h"
 
 IncomingRequestManager::IncomingRequestManager(ContactsManager *c)
@@ -78,10 +79,7 @@ void IncomingRequestManager::addRequest(const QByteArray &hostname, const QByteA
     {
         /* If the existing user is an outgoing contact request, that is considered accepted */
         if (existingUser->isContactRequest())
-        {
-            qFatal("Accepting an outgoing request from an incoming request is not implemented");
-            return;
-        }
+            contactsManager->outgoingRequests->acceptRequest(existingUser);
 
         /* This request is automatically accepted */
         request->accept(existingUser);

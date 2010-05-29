@@ -17,7 +17,7 @@ void OutgoingRequestManager::loadRequests()
     QList<ContactUser*> contactList = contacts->contacts();
     for (QList<ContactUser*>::iterator it = contactList.begin(); it != contactList.end(); ++it)
     {
-        if ((*it)->readSetting(QLatin1String("addRequest")).toBool())
+        if ((*it)->readSetting(QLatin1String("request/isRequest")).toBool())
         {
             if (users.contains(*it))
                 continue;
@@ -41,17 +41,36 @@ void OutgoingRequestManager::addNewRequest(ContactUser *user, const QString &myN
     {
         qDebug() << "Automatically accepting an incoming contact request matching a newly created outgoing request";
 
-        qFatal("Accept logic for OutgoingRequestManager is not implemented"); // !!!!!!!!!
-
+        acceptRequest(user);
         incomingReq->accept(user);
         return;
     }
 
-    user->writeSetting(QLatin1String("addRequest"), true);
-    user->writeSetting(QLatin1String("requestNickname"), myNickname);
-    user->writeSetting(QLatin1String("requestMessage"), message);
+    user->writeSetting(QLatin1String("request/isRequest"), true);
+    user->writeSetting(QLatin1String("request/myNickname"), myNickname);
+    user->writeSetting(QLatin1String("request/message"), message);
 
     startRequest(user);
+}
+
+void OutgoingRequestManager::removeRequest(ContactUser *user)
+{
+    /* Clear the list entry and disconnect from client signals */
+    QMap<ContactUser*,ContactRequestClient*>::iterator it = users.find(user);
+    if (it == users.end())
+        return;
+
+    (*it)->disconnect(this);
+    if ((*it)->response() <= ContactRequestClient::Acknowledged)
+        (*it)->close();
+
+    (*it)->deleteLater();
+    users.erase(it);
+
+    /* Clear the request settings */
+    config->beginGroup(QString::fromLatin1("contacts/%1/request").arg(user->uniqueID));
+    config->remove("");
+    config->endGroup();
 }
 
 void OutgoingRequestManager::startRequest(ContactUser *user)
@@ -63,18 +82,49 @@ void OutgoingRequestManager::startRequest(ContactUser *user)
     ContactRequestClient *client = new ContactRequestClient(user);
     users.insert(user, client);
 
-    connect(client, SIGNAL(responseChanged(int)), this, SLOT(handleResponse(int)));
+    connect(client, SIGNAL(accepted()), SLOT(requestAccepted()));
+    connect(client, SIGNAL(rejected(int)), SLOT(requestRejected(int)));
 
-    client->setMyNickname(user->readSetting(QLatin1String("requestNickname")).toString());
-    client->setMessage(user->readSetting(QLatin1String("requestMessage")).toString());
+    client->setMyNickname(user->readSetting("request/myNickname").toString());
+    client->setMessage(user->readSetting("request/message").toString());
     client->sendRequest();
 }
 
-void OutgoingRequestManager::handleResponse(int response)
+void OutgoingRequestManager::acceptRequest(ContactUser *user)
+{
+    /* Remove the request data */
+    removeRequest(user);
+
+    /* Update the user status */
+    user->updateStatusLine();
+
+    /* We don't have enough information to make a connection yet (no remoteSecret);
+     * if there is an active request connection, it will turn into a primary and the
+     * secret will be automatically received there. Otherwise, we must wait for the
+     * peer to connect to us. */
+}
+
+void OutgoingRequestManager::rejectRequest(ContactUser *user, const QString &reason)
+{
+    qFatal("OutgoingRequestManager::rejectRequest is not implemented");
+}
+
+void OutgoingRequestManager::requestAccepted()
 {
     ContactRequestClient *client = qobject_cast<ContactRequestClient*>(sender());
     if (!client)
         return;
 
-    qDebug() << "Received response" << response << "for contact request to" << client->user->uniqueID;
+    acceptRequest(client->user);
+}
+
+void OutgoingRequestManager::requestRejected(int reason)
+{
+    Q_UNUSED(reason);
+
+    ContactRequestClient *client = qobject_cast<ContactRequestClient*>(sender());
+    if (!client)
+        return;
+
+    rejectRequest(client->user, QString());
 }

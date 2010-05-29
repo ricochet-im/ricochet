@@ -24,6 +24,8 @@ public:
 
     explicit ContactRequestClient(ContactUser *user);
 
+    void close();
+
     QString message() const { return m_message; }
     void setMessage(const QString &message);
 
@@ -36,7 +38,9 @@ public slots:
     void sendRequest();
 
 signals:
-    void responseChanged(int response);
+    void accepted();
+    /* reason is the raw code sent by the peer, not a Response. */
+    void rejected(int reason);
 
 private slots:
     void socketConnected();

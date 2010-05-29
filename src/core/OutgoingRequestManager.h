@@ -20,16 +20,21 @@ public:
 
     void addNewRequest(ContactUser *user, const QString &myNickname, const QString &message);
 
+    void acceptRequest(ContactUser *user);
+    void rejectRequest(ContactUser *user, const QString &reason);
+
 public slots:
     void loadRequests();
 
 private slots:
-    void handleResponse(int response);
+    void requestAccepted();
+    void requestRejected(int reason);
 
 private:
     QMap<ContactUser*,ContactRequestClient*> users;
 
     void startRequest(ContactUser *user);
+    void removeRequest(ContactUser *user);
 };
 
 #endif // OUTGOINGREQUESTMANAGER_H
