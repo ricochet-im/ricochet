@@ -8,9 +8,10 @@
 #include "utils/CryptoKey.h"
 #include <QNetworkProxy>
 #include <QtEndian>
+#include <QTimer>
 
 ContactRequestClient::ContactRequestClient(ContactUser *u)
-    : QObject(u), user(u), socket(0), m_response(NoResponse), state(NotConnected)
+    : QObject(u), user(u), socket(0), connectAttempts(0), m_response(NoResponse), state(NotConnected)
 {
 }
 
@@ -28,8 +29,8 @@ void ContactRequestClient::close()
 {
     if (socket)
     {
-        socket->abort();
         socket->disconnect(this);
+        socket->abort();
         socket->deleteLater();
         socket = 0;
     }
@@ -51,9 +52,31 @@ void ContactRequestClient::sendRequest()
     socket = new QTcpSocket(this);
     connect(socket, SIGNAL(connected()), this, SLOT(socketConnected()));
     connect(socket, SIGNAL(readyRead()), this, SLOT(socketReadable()));
+    connect(socket, SIGNAL(disconnected()), this, SLOT(spawnReconnect()));
+    connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(spawnReconnect()));
 
     socket->setProxy(torManager->connectionProxy());
     socket->connectToHost(user->conn()->host(), user->conn()->port());
+}
+
+void ContactRequestClient::spawnReconnect()
+{
+    if (state == Reconnecting || response() != NoResponse)
+        return;
+
+    connectAttempts++;
+
+    int delay = 300;
+
+    if (connectAttempts > 6)
+        delay *= 4;
+    else if (connectAttempts > 2)
+        delay *= 2;
+
+    qDebug() << "Spawning reconnection of contact request for" << user->uniqueID << "with a delay of" << delay << "seconds";
+
+    state = Reconnecting;
+    QTimer::singleShot(delay * 1000, this, SLOT(sendRequest()));
 }
 
 void ContactRequestClient::socketConnected()

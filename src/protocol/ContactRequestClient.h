@@ -46,14 +46,18 @@ private slots:
     void socketConnected();
     void socketReadable();
 
+    void spawnReconnect();
+
 private:
     class QTcpSocket *socket;
     QString m_message, m_mynick;
+    int connectAttempts;
     Response m_response;
 
     enum
     {
         NotConnected,
+        Reconnecting,
         WaitConnect,
         WaitCookie,
         WaitAck,
