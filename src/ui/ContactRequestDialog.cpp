@@ -109,14 +109,22 @@ void ContactRequestDialog::accept()
         return;
     }
 
+    /* Disconnect from the requestRemoved signal to avoid hitting it here */
+    contactsManager->incomingRequests->disconnect(this, SLOT(requestRemoved(IncomingContactRequest*)));
+
+    /* Accept request */
     request->setNickname(m_nickname->text());
     request->accept();
 
+    /* Close dialog */
     QDialog::accept();
 }
 
 void ContactRequestDialog::rejectRequest()
 {
+    /* Disconnect from the requestRemoved signal to avoid hitting it here */
+    contactsManager->incomingRequests->disconnect(this, SLOT(requestRemoved(IncomingContactRequest*)));
+
     request->reject();
     this->done(QDialog::Rejected);
 }
