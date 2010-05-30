@@ -22,6 +22,7 @@ EditableLabel::EditableLabel(QWidget *parent)
     : QLineEdit(parent)
 {
     originalMargins = textMargins();
+    originalPalette = palette();
     setFocusPolicy(Qt::NoFocus);
 
     stopEditing();
@@ -34,20 +35,33 @@ void EditableLabel::startEditing()
     setReadOnly(false);
     setFrame(true);
     setTextMargins(originalMargins);
-    setPalette(originalPalette);
+    QLineEdit::setPalette(originalPalette);
 }
 
 void EditableLabel::stopEditing()
 {
-    setReadOnly(true);
-    setFrame(false);
-    setTextMargins(-2, 0, 0, 0);
-
-    originalPalette = palette();
     QPalette p = originalPalette;
     p.setBrush(QPalette::Base, p.window());
     p.setBrush(QPalette::Text, p.windowText());
-    setPalette(p);
+    QLineEdit::setPalette(p);
+
+    setReadOnly(true);
+    setFrame(false);
+    setTextMargins(-2, 0, 0, 0);
+}
+
+void EditableLabel::setPalette(const QPalette &nPalette)
+{
+    originalPalette = nPalette;
+    QPalette p = nPalette;
+
+    if (!isEditing())
+    {
+        p.setBrush(QPalette::Base, p.window());
+        p.setBrush(QPalette::Text, p.windowText());
+    }
+
+    QLineEdit::setPalette(p);
 }
 
 void EditableLabel::mouseDoubleClickEvent(QMouseEvent *ev)
@@ -55,15 +69,5 @@ void EditableLabel::mouseDoubleClickEvent(QMouseEvent *ev)
     ev->accept();
     startEditing();
     setFocus();
-}
-
-bool EditableLabel::event(QEvent *ev)
-{
-    if (ev->type() == QEvent::PaletteChange)
-    {
-        if (!isEditing())
-            originalPalette = palette();
-    }
-
-    return QWidget::event(ev);
+    selectAll();
 }

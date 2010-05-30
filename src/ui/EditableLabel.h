@@ -30,13 +30,15 @@ public:
 
     bool isEditing() const { return !isReadOnly(); }
 
+    const QPalette &palette() const { return originalPalette; }
+    void setPalette(const QPalette &palette);
+
 public slots:
     void startEditing();
     void stopEditing();
 
 protected:
     virtual void mouseDoubleClickEvent(QMouseEvent *ev);
-    virtual bool event(QEvent *ev);
 
 private:
     QMargins originalMargins;
