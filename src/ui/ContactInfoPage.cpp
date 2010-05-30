@@ -26,9 +26,12 @@
 #include <QApplication>
 #include <QTextStream>
 #include <QDateTime>
+#include <QLineEdit>
+#include <QMenu>
+#include <QMouseEvent>
 
 ContactInfoPage::ContactInfoPage(ContactUser *u, QWidget *parent)
-    : QWidget(parent), user(u), infoText(0)
+    : QWidget(parent), user(u)
 {
     createActions();
 
@@ -42,16 +45,7 @@ ContactInfoPage::ContactInfoPage(ContactUser *u, QWidget *parent)
     createAvatar();
     infoLayout->addWidget(avatar, Qt::AlignTop | Qt::AlignLeft);
 
-    QBoxLayout *textLayout = new QVBoxLayout;
-    infoLayout->addLayout(textLayout);
-
-    createNickname();
-    textLayout->addWidget(nickname);
-
-    createInfoText();
-    textLayout->addWidget(infoText);
-    textLayout->addStretch();
-
+    infoLayout->addLayout(createInfo(), 1);
     infoLayout->addStretch();
     infoLayout->addLayout(createButtons());
 
@@ -186,8 +180,58 @@ void ContactInfoPage::createAvatar()
         avatar->setPixmap(QPixmap(QLatin1String(":/graphics/avatar-placeholder.png")));
 }
 
-void ContactInfoPage::createNickname()
+class IDLineEdit : public QLineEdit
 {
+public:
+    IDLineEdit(QWidget *parent = 0)
+        : QLineEdit(parent), blockMousePress(false)
+    {
+    }
+
+protected:
+    virtual void focusInEvent(QFocusEvent *ev)
+    {
+        QLineEdit::focusInEvent(ev);
+        selectAll();
+
+        if (ev->reason() == Qt::MouseFocusReason)
+            blockMousePress = true;
+    }
+
+    virtual void mousePressEvent(QMouseEvent *ev)
+    {
+        if (blockMousePress)
+        {
+            blockMousePress = false;
+            ev->accept();
+            return;
+        }
+
+        QLineEdit::mousePressEvent(ev);
+    }
+
+    virtual void mouseDoubleClickEvent(QMouseEvent *ev)
+    {
+        selectAll();
+        copy();
+
+        ev->accept();
+    }
+
+private:
+    bool blockMousePress;
+};
+
+QLayout *ContactInfoPage::createInfo()
+{
+    QGridLayout *layout = new QGridLayout;
+    layout->setMargin(0);
+    layout->setVerticalSpacing(0);
+    layout->setHorizontalSpacing(5);
+
+    int row = 0;
+
+    /* Nickname */
     nickname = new QLabel;
     nickname->setTextFormat(Qt::PlainText);
     nickname->setText(user->nickname());
@@ -195,50 +239,66 @@ void ContactInfoPage::createNickname()
     nickname->addAction(renameAction);
     nickname->setContextMenuPolicy(Qt::ActionsContextMenu);
 
-    QFont font(QLatin1String("Candara"), 12, QFont::Bold);
+    QFont font = nickname->font();
+    font.setPointSize(11);
     nickname->setFont(font);
 
     QPalette p = nickname->palette();
-    p.setColor(QPalette::WindowText, QColor(28, 128, 205));
+    p.setColor(QPalette::WindowText, QColor(0x00, 0x66, 0xaa));
     nickname->setPalette(p);
-}
 
-static QString fullDateString(const QDateTime &date)
-{
-    return ContactInfoPage::tr("%1 (%2)", "date format; %1 is relative, %2 is absolute")
-            .arg(timeDifferenceString(date, QDateTime::currentDateTime()))
-            .arg(date.toString(Qt::SystemLocaleShortDate));
-}
+    layout->addWidget(nickname, row++, 0, 1, 2);
 
-void ContactInfoPage::createInfoText()
-{
-    if (!infoText)
-    {
-        infoText = new QLabel;
-        infoText->setTextFormat(Qt::RichText);
-        infoText->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-    }
+    layout->setRowMinimumHeight(row++, 6);
 
-    QString text;
-    QTextStream builder(&text);
+    /* ID */
+    p.setColor(QPalette::WindowText, QColor(0x80, 0x80, 0x80));
+
+    QLabel *label = new QLabel(tr("ID:"));
+    label->setContentsMargins(0, 0, 0, 0);
+    label->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+    label->setPalette(p);
+    layout->addWidget(label, row, 0);
+
+    QLineEdit *id = new IDLineEdit;
+    id->setText(user->contactID());
+    id->setReadOnly(true);
+    id->setFrame(false);
+    id->setTextMargins(-2, 0, 0, 0);
+
+    font = QFont(QLatin1String("Consolas, \"Courier New\""), 9);
+    font.setStyleHint(QFont::TypeWriter);
+    id->setFont(font);
+
+    QPalette idPalette = id->palette();
+    idPalette.setBrush(QPalette::Base, idPalette.window());
+    idPalette.setBrush(QPalette::Text, idPalette.windowText());
+    id->setPalette(idPalette);
+
+    layout->addWidget(id, row++, 1);
+
+    /* Connected date */
+    label = new QLabel(tr("Connected:"));
+    label->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+    label->setPalette(p);
+    layout->addWidget(label, row, 0);
+
+    QLabel *connected = new QLabel;
+    layout->addWidget(connected, row++, 1);
 
     QDateTime lastConnect = user->readSetting(QLatin1String("lastConnected")).toDateTime();
-    QString lastConnectStr;
     if (user->isConnected())
-        lastConnectStr = tr("Online now");
+        connected->setText(tr("Yes"));
     else if (lastConnect.isNull())
-        lastConnectStr = tr("Never connected");
+        connected->setText(tr("Never"));
     else
-        lastConnectStr = fullDateString(lastConnect);
+    {
+        connected->setText(timeDifferenceString(lastConnect, QDateTime::currentDateTime()));
+        connected->setToolTip(lastConnect.toString(Qt::DefaultLocaleLongDate));
+    }
 
-    QDateTime addDate = user->readSetting(QLatin1String("whenCreated")).toDateTime();
-
-    if (!addDate.isNull())
-        builder << tr("Added:") << "<span style='color:#6e6e6e;'> " << fullDateString(addDate) << "</span><br>";
-
-    builder << tr("Last seen:") << "<span style='color:#6e6e6e;'> " << lastConnectStr << "</span>";
-
-    infoText->setText(text);
+    layout->setRowStretch(row, 1);
+    return layout;
 }
 
 QLayout *ContactInfoPage::createButtons()
@@ -252,7 +312,7 @@ QLayout *ContactInfoPage::createButtons()
 
     QToolButton *btn = new QToolButton;
     btn->setFixedHeight(23);
-    btn->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    btn->setToolButtonStyle(Qt::ToolButtonIconOnly);
     btn->setAutoRaise(true);
     btn->setDefaultAction(renameAction);
     btn->setPalette(p);
@@ -260,7 +320,7 @@ QLayout *ContactInfoPage::createButtons()
 
     btn = new QToolButton;
     btn->setFixedHeight(23);
-    btn->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    btn->setToolButtonStyle(Qt::ToolButtonIconOnly);
     btn->setAutoRaise(true);
     btn->setDefaultAction(deleteAction);
     btn->setPalette(p);
