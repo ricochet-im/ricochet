@@ -246,7 +246,10 @@ QLayout *ContactInfoPage::createInfo()
     nickname->setText(user->nickname());
     nickname->addAction(renameAction);
     nickname->setContextMenuPolicy(Qt::ActionsContextMenu);
-    nickname->setValidator(new NicknameValidator(nickname));
+    NicknameValidator *validator = new NicknameValidator(nickname);
+    validator->setWidget(nickname);
+    validator->setValidateUnique(true, user);
+    nickname->setValidator(validator);
 
     QFont font = nickname->font();
     font.setPointSize(11);

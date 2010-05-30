@@ -73,7 +73,10 @@ ContactRequestDialog::ContactRequestDialog(IncomingContactRequest *r, QWidget *p
 #if QT_VERSION >= 0x040700
     m_nickname->setPlaceholderText(tr("Enter a nickname for this contact"));
 #endif
-    m_nickname->setValidator(new NicknameValidator(m_nickname));
+    NicknameValidator *nickValidator = new NicknameValidator(m_nickname);
+    nickValidator->setWidget(m_nickname);
+    nickValidator->setValidateUnique(true);
+    m_nickname->setValidator(nickValidator);
     m_nickname->setFixedWidth(200);
     bLayout->addWidget(m_nickname, 1, Qt::AlignLeft | Qt::AlignVCenter);
 
@@ -98,14 +101,6 @@ void ContactRequestDialog::accept()
         m_nickname->setFocus();
         QToolTip::showText(m_nickname->mapToGlobal(QPoint(0,0)),
                            tr("You must enter a valid nickname for this contact"), m_nickname);
-        return;
-    }
-
-    if (contactsManager->lookupNickname(m_nickname->text()))
-    {
-        m_nickname->setFocus();
-        QToolTip::showText(m_nickname->mapToGlobal(QPoint(0,0)), tr("You already have a contact named <b>%1</b>")
-                           .arg(Qt::escape(m_nickname->text())), m_nickname);
         return;
     }
 

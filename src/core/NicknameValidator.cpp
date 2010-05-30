@@ -1,8 +1,40 @@
+/* TorIM - http://gitorious.org/torim
+ * Copyright (C) 2010, John Brooks <special@dereferenced.net>
+ *
+ * TorIM is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with TorIM. If not, see http://www.gnu.org/licenses/
+ */
+
 #include "NicknameValidator.h"
+#include "core/ContactsManager.h"
+#include <QToolTip>
+#include <QWidget>
+#include <QTextDocument>
 
 NicknameValidator::NicknameValidator(QObject *parent)
-    : QValidator(parent)
+    : QValidator(parent), m_widget(0), m_validateUnique(false)
 {
+}
+
+void NicknameValidator::setWidget(QWidget *widget)
+{
+    m_widget = widget;
+}
+
+void NicknameValidator::setValidateUnique(bool unique, ContactUser *exception)
+{
+    m_validateUnique = unique;
+    m_uniqueException = exception;
 }
 
 QValidator::State NicknameValidator::validate(QString &text, int &pos) const
@@ -38,5 +70,26 @@ QValidator::State NicknameValidator::validate(QString &text, int &pos) const
     else if (wssuf)
         return Intermediate;
 
+    if (m_validateUnique)
+    {
+        ContactUser *u;
+        if ((u = contactsManager->lookupNickname(text)) && u != m_uniqueException)
+        {
+            showMessage(tr("You already have a contact named <b>%1</b>").arg(Qt::escape(u->nickname())));
+            return Intermediate;
+        }
+    }
+
+    if (m_widget && m_widget->hasFocus())
+        QToolTip::hideText();
+
     return Acceptable;
+}
+
+void NicknameValidator::showMessage(const QString &message) const
+{
+    if (!m_widget || !m_widget->hasFocus())
+        return;
+
+    QToolTip::showText(m_widget->mapToGlobal(QPoint(0,0)), message, m_widget);
 }
