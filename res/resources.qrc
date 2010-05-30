@@ -19,6 +19,8 @@
         <file>tick-circle.png</file>
         <file>information.png</file>
         <file>home.png</file>
+        <file>user--pencil.png</file>
+        <file>cross.png</file>
     </qresource>
     <qresource prefix="/graphics">
         <file>avatar-placeholder.png</file>

@@ -60,8 +60,16 @@ ContactInfoPage::~ContactInfoPage()
 
 void ContactInfoPage::createActions()
 {
-    renameAction = new QAction(QIcon(QLatin1String(":/icons/image--pencil.png")), tr("Change Nickname"), this);
-    deleteAction = new QAction(QIcon(QLatin1String(":/icons/user--plus.png")), tr("Delete Contact"), this);
+    renameAction = new QAction(QIcon(QLatin1String(":/icons/user--pencil.png")), tr("Change Nickname"), this);
+    renameAction->setIconVisibleInMenu(false);
+
+    /* Show a grayscale icon normally, and the full color (red) icon when hovered */
+    QIcon deleteIcon;
+    deleteIcon.addFile(QLatin1String(":/icons/cross.png"), QSize(), QIcon::Active);
+    deleteIcon.addPixmap(deleteIcon.pixmap(24, QIcon::Disabled));
+
+    deleteAction = new QAction(deleteIcon, tr("Delete Contact"), this);
+    deleteAction->setIconVisibleInMenu(false);
 }
 
 #include <QPainter>
