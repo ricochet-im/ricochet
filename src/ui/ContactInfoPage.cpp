@@ -44,12 +44,37 @@ ContactInfoPage::ContactInfoPage(ContactUser *u, QWidget *parent)
     infoLayout->setMargin(0);
     mainLayout->addLayout(infoLayout);
 
+    infoLayout->addStrut(120);
+
     createAvatar();
     infoLayout->addWidget(avatar, Qt::AlignTop | Qt::AlignLeft);
 
     infoLayout->addLayout(createInfo(), 1);
     infoLayout->addStretch();
     infoLayout->addLayout(createButtons());
+
+    if (user->isContactRequest())
+    {
+        QBoxLayout *reqLayout = new QHBoxLayout;
+        reqLayout->setSpacing(4);
+        mainLayout->addLayout(reqLayout);
+
+        reqLayout->addStretch();
+
+        /* Icon */
+        QLabel *iconLabel = new QLabel;
+        iconLabel->setPixmap(QPixmap(QLatin1String(":/icons/information.png")));
+        iconLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+        reqLayout->addWidget(iconLabel);
+
+        /* Text */
+        QLabel *textLabel = new QLabel;
+        textLabel->setText(tr("Your contact request will be sent when <b>%1</b> is online").arg(Qt::escape(user->nickname())));
+        textLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+        reqLayout->addWidget(textLabel);
+
+        reqLayout->addStretch();
+    }
 
     /* Notes */
     createNotes(mainLayout);
@@ -128,10 +153,11 @@ static const quint32 bottomData[] =
 
 void ContactInfoPage::createAvatar()
 {
+    QPixmap image = user->avatar(ContactUser::FullAvatar);
+
     avatar = new QLabel;
     avatar->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
-    QPixmap image = user->avatar(ContactUser::FullAvatar);
     if (!image.isNull())
     {
         QImage topLeft(reinterpret_cast<const uchar*>(topLeftData), 6, 6, QImage::Format_ARGB32);
@@ -295,27 +321,45 @@ QLayout *ContactInfoPage::createInfo()
 
     layout->addWidget(id, row++, 1);
 
-    /* Connected date */
-    label = new QLabel(tr("Connected:"));
-    label->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-    label->setPalette(p);
-    layout->addWidget(label, row, 0);
-
-    QLabel *connected = new QLabel;
-    layout->addWidget(connected, row++, 1);
-
-    QDateTime lastConnect = user->readSetting(QLatin1String("lastConnected")).toDateTime();
-    if (user->isConnected())
-        connected->setText(tr("Yes"));
-    else if (lastConnect.isNull())
-        connected->setText(tr("Never"));
-    else
+    /* Contact Request */
+    if (user->isContactRequest())
     {
-        connected->setText(timeDifferenceString(lastConnect, QDateTime::currentDateTime()));
-        connected->setToolTip(lastConnect.toString(Qt::DefaultLocaleLongDate));
+        label = new QLabel(tr("Added:"));
+        label->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+        label->setPalette(p);
+        layout->addWidget(label, row, 0);
+
+        QLabel *reqStatus = new QLabel;
+        layout->addWidget(reqStatus, row++, 1);
+
+        QString startDate = timeDifferenceString(user->readSetting("whenCreated").toDateTime(), QDateTime::currentDateTime());
+        reqStatus->setText(startDate);
     }
 
-    layout->setRowStretch(row, 1);
+    /* Connected date */
+    if (!user->isContactRequest())
+    {
+        label = new QLabel(tr("Connected:"));
+        label->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+        label->setPalette(p);
+        layout->addWidget(label, row, 0);
+
+        QLabel *connected = new QLabel;
+        layout->addWidget(connected, row++, 1);
+
+        QDateTime lastConnect = user->readSetting(QLatin1String("lastConnected")).toDateTime();
+        if (user->isConnected())
+            connected->setText(tr("Yes"));
+        else if (lastConnect.isNull())
+            connected->setText(tr("Never"));
+        else
+        {
+            connected->setText(timeDifferenceString(lastConnect, QDateTime::currentDateTime()));
+            connected->setToolTip(lastConnect.toString(Qt::DefaultLocaleLongDate));
+        }
+    }
+
+    layout->setRowStretch(row++, 1);
     return layout;
 }
 
