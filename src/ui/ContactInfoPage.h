@@ -38,13 +38,17 @@ public:
 public slots:
     void saveNotes();
 
+private slots:
+    void setNickname();
+
 protected:
     virtual void hideEvent(QHideEvent *);
 
 private:
     class QAction *renameAction, *deleteAction;
 
-    QLabel *avatar, *nickname;
+    QLabel *avatar;
+    class EditableLabel *nickname;
     QTextEdit *notesEdit;
 
     void createActions();

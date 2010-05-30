@@ -17,7 +17,9 @@
 
 #include "ContactInfoPage.h"
 #include "core/ContactUser.h"
+#include "ui/EditableLabel.h"
 #include "utils/DateUtil.h"
+#include "core/NicknameValidator.h"
 #include <QBoxLayout>
 #include <QLabel>
 #include <QTextEdit>
@@ -240,12 +242,11 @@ QLayout *ContactInfoPage::createInfo()
     int row = 0;
 
     /* Nickname */
-    nickname = new QLabel;
-    nickname->setTextFormat(Qt::PlainText);
+    nickname = new EditableLabel;
     nickname->setText(user->nickname());
-    nickname->setAlignment(Qt::AlignLeft | Qt::AlignTop);
     nickname->addAction(renameAction);
     nickname->setContextMenuPolicy(Qt::ActionsContextMenu);
+    nickname->setValidator(new NicknameValidator(nickname));
 
     QFont font = nickname->font();
     font.setPointSize(11);
@@ -253,7 +254,13 @@ QLayout *ContactInfoPage::createInfo()
 
     QPalette p = nickname->palette();
     p.setColor(QPalette::WindowText, QColor(0x00, 0x66, 0xaa));
+    p.setColor(QPalette::Text, QColor(0x00, 0x66, 0xaa));
     nickname->setPalette(p);
+
+    connect(renameAction, SIGNAL(triggered()), nickname, SLOT(startEditing()));
+    connect(renameAction, SIGNAL(triggered()), nickname, SLOT(setFocus()));
+    connect(renameAction, SIGNAL(triggered()), nickname, SLOT(selectAll()));
+    connect(nickname, SIGNAL(editingFinished()), SLOT(setNickname()));
 
     layout->addWidget(nickname, row++, 0, 1, 2);
 
@@ -370,6 +377,12 @@ void ContactInfoPage::saveNotes()
 
     user->setNotesText(notesEdit->document()->toPlainText());
     notesEdit->document()->setModified(false);
+}
+
+void ContactInfoPage::setNickname()
+{
+    if (nickname->hasAcceptableInput())
+        user->setNickname(nickname->text());
 }
 
 void ContactInfoPage::hideEvent(QHideEvent *ev)

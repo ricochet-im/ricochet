@@ -141,6 +141,7 @@ void ContactUser::setNickname(const QString &nickname)
     pNickname = nickname;
 
     writeSetting("nickname", nickname);
+    emit statusLineChanged();
 }
 
 QString ContactUser::hostname() const
