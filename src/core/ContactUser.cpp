@@ -22,6 +22,7 @@
 #include "utils/DateUtil.h"
 #include "utils/SecureRNG.h"
 #include "protocol/GetSecretCommand.h"
+#include "core/ContactIDValidator.h"
 #include <QPixmapCache>
 #include <QtDebug>
 #include <QBuffer>
@@ -145,6 +146,11 @@ void ContactUser::setNickname(const QString &nickname)
 QString ContactUser::hostname() const
 {
     return readSetting("hostname").toString();
+}
+
+QString ContactUser::contactID() const
+{
+    return ContactIDValidator::idFromHostname(hostname());
 }
 
 void ContactUser::setHostname(const QString &hostname)

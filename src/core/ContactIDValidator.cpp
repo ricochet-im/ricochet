@@ -48,3 +48,22 @@ QString ContactIDValidator::hostnameFromID(const QString &ID)
 
     return ID.mid(0, 16) + QLatin1String(".onion");
 }
+
+QString ContactIDValidator::idFromHostname(const QString &hostname)
+{
+    QString re = hostname;
+
+    if (re.size() != 16)
+    {
+        if (re.size() == 22 && re.endsWith(QLatin1String(".onion")))
+            re.chop(6);
+        else
+            return QString();
+    }
+
+    re += QLatin1String("@TorIM");
+
+    if (!isValidID(re))
+        return QString();
+    return re;
+}

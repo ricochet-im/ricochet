@@ -56,6 +56,8 @@ public:
     const QString &nickname() const { return pNickname; }
     /* Hostname is in the onion hostname format, i.e. it ends with .onion */
     QString hostname() const;
+    /* Contact ID in the @TorIM format */
+    QString contactID() const;
     QString notesText() const;
     QPixmap avatar(AvatarSize size);
 
