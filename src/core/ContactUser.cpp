@@ -23,6 +23,7 @@
 #include "utils/SecureRNG.h"
 #include "protocol/GetSecretCommand.h"
 #include "core/ContactIDValidator.h"
+#include "core/OutgoingRequestManager.h"
 #include <QPixmapCache>
 #include <QtDebug>
 #include <QBuffer>
@@ -114,6 +115,13 @@ void ContactUser::onConnected()
     emit connected();
 
     writeSetting("lastConnected", QDateTime::currentDateTime());
+
+    if (isContactRequest())
+    {
+        qDebug() << "Implicitly accepting outgoing contact request for" << uniqueID << "from primary connection";
+        contactsManager->outgoingRequests->acceptRequest(this);
+        Q_ASSERT(!isContactRequest());
+    }
 
     if (readSetting("remoteSecret").isNull())
     {
