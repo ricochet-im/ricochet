@@ -55,6 +55,7 @@ private:
     void createAvatar();
     class QLayout *createInfo();
     class QLayout *createButtons();
+    class QLayout *createRequestInfo();
     void createNotes(class QBoxLayout *layout);
 };
 

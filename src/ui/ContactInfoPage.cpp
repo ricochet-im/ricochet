@@ -20,6 +20,7 @@
 #include "ui/EditableLabel.h"
 #include "utils/DateUtil.h"
 #include "core/NicknameValidator.h"
+#include "core/OutgoingContactRequest.h"
 #include <QBoxLayout>
 #include <QLabel>
 #include <QTextEdit>
@@ -54,27 +55,7 @@ ContactInfoPage::ContactInfoPage(ContactUser *u, QWidget *parent)
     infoLayout->addLayout(createButtons());
 
     if (user->isContactRequest())
-    {
-        QBoxLayout *reqLayout = new QHBoxLayout;
-        reqLayout->setSpacing(4);
-        mainLayout->addLayout(reqLayout);
-
-        reqLayout->addStretch();
-
-        /* Icon */
-        QLabel *iconLabel = new QLabel;
-        iconLabel->setPixmap(QPixmap(QLatin1String(":/icons/information.png")));
-        iconLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-        reqLayout->addWidget(iconLabel);
-
-        /* Text */
-        QLabel *textLabel = new QLabel;
-        textLabel->setText(tr("Your contact request will be sent when <b>%1</b> is online").arg(Qt::escape(user->nickname())));
-        textLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-        reqLayout->addWidget(textLabel);
-
-        reqLayout->addStretch();
-    }
+        mainLayout->addLayout(createRequestInfo());
 
     /* Notes */
     createNotes(mainLayout);
@@ -390,6 +371,69 @@ QLayout *ContactInfoPage::createButtons()
 
     layout->addStretch();
     return layout;
+}
+
+QLayout *ContactInfoPage::createRequestInfo()
+{
+    QBoxLayout *reqLayout = new QHBoxLayout;
+    reqLayout->setSpacing(4);
+    reqLayout->addStretch();
+
+    OutgoingContactRequest *request = OutgoingContactRequest::requestForUser(user);
+    Q_ASSERT(request);
+
+    /* Icon */
+    QLabel *iconLabel = new QLabel;
+    iconLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    reqLayout->addWidget(iconLabel);
+
+    /* Text */
+    QLabel *textLabel = new QLabel;
+    textLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+
+    QFont f = textLabel->font();
+    f.setPointSize(10);
+    textLabel->setFont(f);
+
+    reqLayout->addWidget(textLabel);
+
+    QString text, iconPath;
+    QColor textColor = QColor(0x00, 0x66, 0xaa);
+    switch (request->status())
+    {
+    case OutgoingContactRequest::Pending:
+        iconPath = QLatin1String(":/icons/information.png");
+        text = tr("Your contact request will be sent when <b>%1</b> is online").arg(Qt::escape(user->nickname()));
+        break;
+    case OutgoingContactRequest::Acknowledged:
+        iconPath = QLatin1String(":/icons/information.png");
+        text = tr("Waiting for <b>%1</b> to accept your contact request").arg(Qt::escape(user->nickname()));
+        break;
+    case OutgoingContactRequest::Accepted:
+        iconPath = QLatin1String(":/icons/tick-circle.png");
+        text = tr("<b>%1</b> accepted your contact request").arg(Qt::escape(user->nickname()));
+        break;
+    case OutgoingContactRequest::Rejected:
+        iconPath = QLatin1String(":/icons/cross-circle.png");
+        textColor = QColor(0x9f, 0x00, 0x00);
+        text = tr("Your contact request was rejected, and you cannot try again");
+        break;
+    case OutgoingContactRequest::Error:
+        iconPath = QLatin1String(":/icons/exclamation-red.png");
+        textColor = QColor(0x9f, 0x00, 0x00);
+        text = tr("An error occurred with the contact request");
+        break;
+    }
+
+    iconLabel->setPixmap(QPixmap(iconPath));
+    textLabel->setText(text);
+
+    QPalette p = textLabel->palette();
+    p.setColor(QPalette::WindowText, textColor);
+    textLabel->setPalette(p);
+
+    reqLayout->addStretch();
+    return reqLayout;
 }
 
 void ContactInfoPage::createNotes(QBoxLayout *layout)
