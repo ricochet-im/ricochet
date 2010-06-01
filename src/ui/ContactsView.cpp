@@ -95,6 +95,20 @@ void ContactsView::setContactPage(ContactUser *user, ContactPage page)
     }
 }
 
+void ContactsView::showContactChat(ContactUser *user)
+{
+    setContactPage(user, ChatPage);
+    if (user != activeContact())
+        setActiveContact(user);
+}
+
+void ContactsView::showContactInfo(ContactUser *user)
+{
+    setContactPage(user, InfoPage);
+    if (user != activeContact())
+        setActiveContact(user);
+}
+
 void ContactsView::mousePressEvent(QMouseEvent *event)
 {
     /* Only clicks that change the current contact are handled as press events; clicks on an

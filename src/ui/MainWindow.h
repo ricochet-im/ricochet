@@ -31,6 +31,7 @@ class ContactUser;
 class ChatWidget;
 class NotificationWidget;
 class IncomingContactRequest;
+class OutgoingContactRequest;
 
 class MainWindow : public QMainWindow
 {
@@ -54,8 +55,14 @@ protected:
 private slots:
     void contactPageChanged(ContactUser *user, ContactPage page);
 
+    /* Incoming contact request notifications */
     void updateContactRequests();
     void showContactRequest();
+
+    /* Outgoing contact request notifications */
+    void outgoingRequestAdded(OutgoingContactRequest *request);
+    void updateOutgoingRequest(OutgoingContactRequest *request = 0);
+    void showRequestInfo();
 
 private:
     class ContactsView *contactsView;

@@ -39,6 +39,9 @@ public slots:
     void setActiveContact(ContactUser *user);
     void setActivePage(ContactPage page);
 
+    void showContactInfo(ContactUser *user);
+    void showContactChat(ContactUser *user);
+
 signals:
     void activeContactChanged(ContactUser *user);
     void activePageChanged(ContactUser *user, ContactPage page);

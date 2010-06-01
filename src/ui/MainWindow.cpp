@@ -25,11 +25,13 @@
 #include "NotificationWidget.h"
 #include "ContactRequestDialog.h"
 #include "core/IncomingRequestManager.h"
+#include "core/OutgoingContactRequest.h"
 #include "core/ContactsManager.h"
 #include <QToolBar>
 #include <QBoxLayout>
 #include <QStackedWidget>
 #include <QFrame>
+#include <QTextDocument>
 
 MainWindow *uiMain = 0;
 
@@ -91,6 +93,13 @@ MainWindow::MainWindow(QWidget *parent)
     /* Other things */
     connect(contactsManager->incomingRequests, SIGNAL(requestAdded(IncomingContactRequest*)), SLOT(updateContactRequests()));
     connect(contactsManager->incomingRequests, SIGNAL(requestRemoved(IncomingContactRequest*)), SLOT(updateContactRequests()));
+    connect(contactsManager, SIGNAL(outgoingRequestAdded(OutgoingContactRequest*)), SLOT(outgoingRequestAdded(OutgoingContactRequest*)));
+
+    foreach (ContactUser *user, contactsManager->contacts())
+    {
+        if (user->isContactRequest())
+            outgoingRequestAdded(OutgoingContactRequest::requestForUser(user));
+    }
 
     updateContactRequests();
 }
@@ -227,4 +236,47 @@ void MainWindow::showContactRequest()
     }
 
     updateContactRequests();
+}
+
+void MainWindow::outgoingRequestAdded(OutgoingContactRequest *request)
+{
+    connect(request, SIGNAL(statusChanged(int,int)), SLOT(updateOutgoingRequest()));
+    updateOutgoingRequest(request);
+}
+
+void MainWindow::updateOutgoingRequest(OutgoingContactRequest *request)
+{
+    if (!request && !(request = qobject_cast<OutgoingContactRequest*>(sender())))
+        return;
+
+    QString message;
+
+    switch (request->status())
+    {
+    case OutgoingContactRequest::Accepted:
+        message = tr("%1 accepted your contact request!").arg(Qt::escape(request->user->nickname()));
+        break;
+    case OutgoingContactRequest::Error:
+        message = tr("There was an error with your contact request to %1 - click for more information");
+        break;
+    case OutgoingContactRequest::Rejected:
+        message = tr("%1 rejected your contact request");
+        break;
+    }
+
+    if (message.isEmpty())
+        return;
+
+    NotificationWidget *widget = showNotification(message.arg(Qt::escape(request->user->nickname())), this, SLOT(showRequestInfo()));
+    widget->setProperty("user", QVariant::fromValue(reinterpret_cast<void*>(request->user)));
+    connect(widget, SIGNAL(clicked()), widget, SLOT(closeNotification()));
+}
+
+void MainWindow::showRequestInfo()
+{
+    ContactUser *user = reinterpret_cast<ContactUser*>(sender()->property("user").value<void*>());
+    if (!user)
+        return;
+
+    contactsView->showContactInfo(user);
 }
