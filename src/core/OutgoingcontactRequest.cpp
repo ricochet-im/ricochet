@@ -141,6 +141,7 @@ void OutgoingContactRequest::removeRequest()
             m_client->close();
 
         m_client->deleteLater();
+        m_client = 0;
     }
 
     /* Clear the request settings */
@@ -151,12 +152,21 @@ void OutgoingContactRequest::accept()
 {
     setStatus(Accepted);
     removeRequest();
-
     emit accepted();
 }
 
 void OutgoingContactRequest::reject(bool error, const QString &reason)
 {
+    user->writeSetting("request/rejectMessage", reason);
+    setStatus(error ? Error : Rejected);
+
+    if (m_client)
+    {
+        m_client->disconnect(this);
+        m_client->close();
+        m_client->deleteLater();
+        m_client = 0;
+    }
 
     emit rejected(reason);
 }
