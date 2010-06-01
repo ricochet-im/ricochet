@@ -18,7 +18,7 @@
 #include "ui/ContactAddDialog.h"
 #include "ui/FancyTextEdit.h"
 #include "core/ContactsManager.h"
-#include "core/OutgoingRequestManager.h"
+#include "core/OutgoingContactRequest.h"
 #include "core/NicknameValidator.h"
 #include "core/ContactIDValidator.h"
 #include <QVBoxLayout>
@@ -132,7 +132,7 @@ void ContactAddDialog::accept()
     }
 
     user->setHostname(hostname);
-    contactsManager->outgoingRequests->addNewRequest(user, QString(), m_message->document()->toPlainText());
+    OutgoingContactRequest::createNewRequest(user, QString(), m_message->document()->toPlainText());
 
     QDialog::accept();
 }

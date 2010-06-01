@@ -22,14 +22,17 @@
 #include <QList>
 #include "ContactUser.h"
 
+class OutgoingContactRequest;
+
 class ContactsManager : public QObject
 {
     Q_OBJECT
     Q_DISABLE_COPY(ContactsManager)
 
+    friend class OutgoingContactRequest;
+
 public:
     class IncomingRequestManager * const incomingRequests;
-    class OutgoingRequestManager * const outgoingRequests;
 
     explicit ContactsManager();
 
@@ -47,6 +50,7 @@ public slots:
 
 signals:
     void contactAdded(ContactUser *user);
+    void outgoingRequestAdded(OutgoingContactRequest *request);
 
 private:
     QList<ContactUser*> pContacts;

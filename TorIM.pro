@@ -65,7 +65,7 @@ SOURCES += src/main.cpp \
     src/utils/SecureRNG.cpp \
     src/protocol/ContactRequestClient.cpp \
     src/protocol/ContactRequestServer.cpp \
-    src/core/OutgoingRequestManager.cpp \
+    src/core/OutgoingContactRequest.cpp \
     src/ui/ContactAddDialog.cpp \
     src/ui/FancyTextEdit.cpp \
     src/core/IncomingRequestManager.cpp \
@@ -115,7 +115,7 @@ HEADERS += src/ui/MainWindow.h \
     src/utils/SecureRNG.h \
     src/protocol/ContactRequestClient.h \
     src/protocol/ContactRequestServer.h \
-    src/core/OutgoingRequestManager.h \
+    src/core/OutgoingContactRequest.h \
     src/ui/ContactAddDialog.h \
     src/ui/FancyTextEdit.h \
     src/core/IncomingRequestManager.h \

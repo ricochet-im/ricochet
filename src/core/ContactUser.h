@@ -51,7 +51,7 @@ public:
     bool isConnected() const { return pConn->isPrimaryConnected(); }
     bool isConnectable() const { return pConn->isConnectable(); }
 
-    bool isContactRequest() const { return readSetting(QLatin1String("request/isRequest")).toBool(); }
+    bool isContactRequest() const { return !readSetting(QLatin1String("request/status")).isNull(); }
 
     const QString &nickname() const { return pNickname; }
     /* Hostname is in the onion hostname format, i.e. it ends with .onion */

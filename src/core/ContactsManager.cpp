@@ -18,7 +18,7 @@
 #include "main.h"
 #include "ContactsManager.h"
 #include "IncomingRequestManager.h"
-#include "OutgoingRequestManager.h"
+#include "OutgoingContactRequest.h"
 #include "ContactIDValidator.h"
 #include <QStringList>
 
@@ -26,11 +26,11 @@ ContactsManager *contactsManager = 0;
 
 ContactsManager::ContactsManager()
     : incomingRequests(new IncomingRequestManager(this)),
-      outgoingRequests(new OutgoingRequestManager(this)),
       highestID(-1)
 {
+    contactsManager = this;
+
     loadFromSettings();
-    /* Outgoing requests are loaded and started when Tor signals readiness */
     incomingRequests->loadRequests();
 }
 

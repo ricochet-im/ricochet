@@ -23,7 +23,7 @@
 #include "utils/SecureRNG.h"
 #include "protocol/GetSecretCommand.h"
 #include "core/ContactIDValidator.h"
-#include "core/OutgoingRequestManager.h"
+#include "core/OutgoingContactRequest.h"
 #include <QPixmapCache>
 #include <QtDebug>
 #include <QBuffer>
@@ -36,6 +36,7 @@ ContactUser::ContactUser(int id, QObject *parent)
 
     loadSettings();
 
+    /* Connection */
     QString host = readSetting("hostname").toString();
     quint16 port = (quint16)readSetting("port", 80).toUInt();
     pConn = new ProtocolManager(this, host, port);
@@ -46,6 +47,13 @@ ContactUser::ContactUser(int id, QObject *parent)
 
     connect(pConn, SIGNAL(primaryConnected()), this, SLOT(onConnected()));
     connect(pConn, SIGNAL(primaryDisconnected()), this, SLOT(onDisconnected()));
+
+    /* Outgoing request */
+    if (isContactRequest())
+    {
+        OutgoingContactRequest *request = OutgoingContactRequest::requestForUser(this);
+        Q_ASSERT(request);
+    }
 }
 
 void ContactUser::loadSettings()
@@ -119,7 +127,10 @@ void ContactUser::onConnected()
     if (isContactRequest())
     {
         qDebug() << "Implicitly accepting outgoing contact request for" << uniqueID << "from primary connection";
-        contactsManager->outgoingRequests->acceptRequest(this);
+
+        OutgoingContactRequest *request = OutgoingContactRequest::requestForUser(this);
+        Q_ASSERT(request);
+        request->accept();
         Q_ASSERT(!isContactRequest());
     }
 
