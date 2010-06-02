@@ -67,7 +67,9 @@ ContactUser *ContactsManager::addContact(const QString &nickname)
 
     qDebug() << "Added new contact" << nickname << "with ID" << user->uniqueID;
 
+    pContacts.append(user);
     emit contactAdded(user);
+
     return user;
 }
 
