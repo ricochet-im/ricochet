@@ -150,7 +150,7 @@ void ContactRequestClient::socketReadable()
 
         break;
 
-    case NotConnected:
+    default:
         break;
     }
 }

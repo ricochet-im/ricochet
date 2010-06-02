@@ -26,6 +26,7 @@
 #include <Windows.h>
 #include <ShlObj.h>
 #else
+#include <errno.h>
 #include <sys/types.h>
 #include <signal.h>
 #endif

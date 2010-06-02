@@ -262,6 +262,8 @@ void MainWindow::updateOutgoingRequest(OutgoingContactRequest *request)
     case OutgoingContactRequest::Rejected:
         message = tr("%1 rejected your contact request");
         break;
+    default:
+        break;
     }
 
     if (message.isEmpty())

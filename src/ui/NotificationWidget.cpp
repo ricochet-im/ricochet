@@ -116,6 +116,8 @@ int NotificationWidget::heightForWidth(int width) const
 
 void NotificationWidget::paintEvent(QPaintEvent *e)
 {
+    Q_UNUSED(e);
+
     QPainter p(this);
     QRect r = rect();
 

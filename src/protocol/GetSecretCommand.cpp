@@ -47,6 +47,8 @@ void GetSecretCommand::process(CommandHandler &command)
 
 void GetSecretCommand::processReply(quint8 state, const uchar *data, unsigned dataSize)
 {
+    Q_UNUSED(state);
+
     if (dataSize != 16 || !user)
         return;
 
