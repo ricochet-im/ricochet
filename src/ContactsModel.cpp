@@ -52,6 +52,7 @@ void ContactsModel::populate()
 
     for (QList<ContactUser*>::Iterator it = contacts.begin(); it != contacts.end(); ++it)
     {
+        /* Duplicated in contactAdded() */
         connect(*it, SIGNAL(connected()), this, SLOT(updateUser()));
         connect(*it, SIGNAL(disconnected()), this, SLOT(updateUser()));
         connect(*it, SIGNAL(statusLineChanged()), this, SLOT(updateUser()));
@@ -97,6 +98,10 @@ void ContactsModel::contactAdded(ContactUser *user)
     endInsertRows();
 
     savePositions();
+
+    connect(user, SIGNAL(connected()), this, SLOT(updateUser()));
+    connect(user, SIGNAL(disconnected()), this, SLOT(updateUser()));
+    connect(user, SIGNAL(statusLineChanged()), this, SLOT(updateUser()));
 }
 
 void ContactsModel::moveRow(int from, int to)
