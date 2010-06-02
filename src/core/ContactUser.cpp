@@ -53,6 +53,7 @@ ContactUser::ContactUser(int id, QObject *parent)
     {
         OutgoingContactRequest *request = OutgoingContactRequest::requestForUser(this);
         Q_ASSERT(request);
+        connect(request, SIGNAL(statusChanged(int,int)), this, SLOT(updateStatusLine()));
     }
 }
 
@@ -102,7 +103,18 @@ QString ContactUser::statusLine() const
     }
     else if (isContactRequest())
     {
-        return tr("Contact request pending");
+        OutgoingContactRequest *request = OutgoingContactRequest::requestForUser(const_cast<ContactUser*>(this));
+        switch (request->status())
+        {
+        case OutgoingContactRequest::Pending:
+        case OutgoingContactRequest::Acknowledged:
+        case OutgoingContactRequest::Accepted:
+            return tr("Contact request pending");
+        case OutgoingContactRequest::Error:
+            return tr("Contact request error");
+        case OutgoingContactRequest::Rejected:
+            return tr("Contact request rejected");
+        }
     }
     else
     {
@@ -111,6 +123,8 @@ QString ContactUser::statusLine() const
             return tr("Never connected");
         return timeDifferenceString(lastConnected, QDateTime::currentDateTime());
     }
+
+    return QString();
 }
 
 void ContactUser::updateStatusLine()
