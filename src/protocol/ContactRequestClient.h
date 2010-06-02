@@ -55,6 +55,7 @@ public slots:
     void sendRequest();
 
 signals:
+    void acknowledged();
     void accepted();
     /* reason is the raw code sent by the peer, not a Response. */
     void rejected(int reason);

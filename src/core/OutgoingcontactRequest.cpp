@@ -171,6 +171,11 @@ void OutgoingContactRequest::reject(bool error, const QString &reason)
     emit rejected(reason);
 }
 
+void OutgoingContactRequest::requestAcknowledged()
+{
+    setStatus(Acknowledged);
+}
+
 void OutgoingContactRequest::requestRejected(int reason)
 {
     if (m_client->response() == ContactRequestClient::Rejected)

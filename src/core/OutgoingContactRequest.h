@@ -62,6 +62,7 @@ signals:
 
 private slots:
     void requestRejected(int reason);
+    void requestAcknowledged();
 
     void startConnection();
 

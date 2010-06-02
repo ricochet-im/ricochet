@@ -242,6 +242,7 @@ bool ContactRequestClient::handleResponse()
         qDebug() << "Contact request for" << user->uniqueID << "acknowledged; waiting for response";
         state = WaitResponse;
         m_response = Acknowledged;
+        emit acknowledged();
         break;
 
     case 0x01: /* Accept */
