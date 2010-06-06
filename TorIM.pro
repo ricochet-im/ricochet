@@ -74,7 +74,8 @@ SOURCES += src/main.cpp \
     src/ui/NotificationWidget.cpp \
     src/ui/ContactRequestDialog.cpp \
     src/protocol/GetSecretCommand.cpp \
-    src/ui/EditableLabel.cpp
+    src/ui/EditableLabel.cpp \
+    src/ui/ContactIDWidget.cpp
 
 HEADERS += src/ui/MainWindow.h \
     src/ui/ChatWidget.h \
@@ -124,7 +125,8 @@ HEADERS += src/ui/MainWindow.h \
     src/ui/NotificationWidget.h \
     src/ui/ContactRequestDialog.h \
     src/protocol/GetSecretCommand.h \
-    src/ui/EditableLabel.h
+    src/ui/EditableLabel.h \
+    src/ui/ContactIDWidget.h
 
 RESOURCES += res/resources.qrc \
     translation/embedded.qrc

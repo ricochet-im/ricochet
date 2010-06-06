@@ -18,6 +18,7 @@
 #include "ContactInfoPage.h"
 #include "core/ContactUser.h"
 #include "ui/EditableLabel.h"
+#include "ui/ContactIDWidget.h"
 #include "utils/DateUtil.h"
 #include "core/NicknameValidator.h"
 #include "core/OutgoingContactRequest.h"
@@ -31,7 +32,6 @@
 #include <QDateTime>
 #include <QLineEdit>
 #include <QMenu>
-#include <QMouseEvent>
 
 ContactInfoPage::ContactInfoPage(ContactUser *u, QWidget *parent)
     : QWidget(parent), user(u)
@@ -197,48 +197,6 @@ void ContactInfoPage::createAvatar()
         avatar->setPixmap(QPixmap(QLatin1String(":/graphics/avatar-placeholder.png")));
 }
 
-class IDLineEdit : public QLineEdit
-{
-public:
-    IDLineEdit(QWidget *parent = 0)
-        : QLineEdit(parent), blockMousePress(false)
-    {
-    }
-
-protected:
-    virtual void focusInEvent(QFocusEvent *ev)
-    {
-        QLineEdit::focusInEvent(ev);
-        selectAll();
-
-        if (ev->reason() == Qt::MouseFocusReason)
-            blockMousePress = true;
-    }
-
-    virtual void mousePressEvent(QMouseEvent *ev)
-    {
-        if (blockMousePress)
-        {
-            blockMousePress = false;
-            ev->accept();
-            return;
-        }
-
-        QLineEdit::mousePressEvent(ev);
-    }
-
-    virtual void mouseDoubleClickEvent(QMouseEvent *ev)
-    {
-        selectAll();
-        copy();
-
-        ev->accept();
-    }
-
-private:
-    bool blockMousePress;
-};
-
 QLayout *ContactInfoPage::createInfo()
 {
     QGridLayout *layout = new QGridLayout;
@@ -285,15 +243,10 @@ QLayout *ContactInfoPage::createInfo()
     label->setPalette(p);
     layout->addWidget(label, row, 0);
 
-    QLineEdit *id = new IDLineEdit;
+    QLineEdit *id = new ContactIDWidget;
     id->setText(user->contactID());
-    id->setReadOnly(true);
     id->setFrame(false);
     id->setTextMargins(-2, 0, 0, 0);
-
-    font = QFont(QLatin1String("Consolas, \"Courier New\""), 9);
-    font.setStyleHint(QFont::TypeWriter);
-    id->setFont(font);
 
     QPalette idPalette = id->palette();
     idPalette.setBrush(QPalette::Base, idPalette.window());
