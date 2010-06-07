@@ -16,6 +16,7 @@
  */
 
 #include "IntroPage.h"
+#include "tor/autoconfig/VidaliaConfigManager.h"
 #include <QBoxLayout>
 #include <QLabel>
 #include <QCommandLinkButton>
@@ -47,6 +48,12 @@ IntroPage::IntroPage(QWidget *parent)
     QCommandLinkButton *vidaliaBtn = new QCommandLinkButton;
     vidaliaBtn->setText(tr("Use Vidalia (Recommended)"));
     vidaliaBtn->setDescription(tr("Automatically reconfigure Vidalia and Tor to work with TorIM"));
+
+    if (!VidaliaConfigManager::isVidaliaInstalled())
+    {
+        vidaliaBtn->setEnabled(false);
+        vidaliaBtn->setDescription(tr("If Vidalia is installed, it can be automatically configured to work with TorIM"));
+    }
 
     connect(vidaliaBtn, SIGNAL(clicked()), btnMapper, SLOT(map()));
     btnMapper->setMapping(vidaliaBtn, 1);

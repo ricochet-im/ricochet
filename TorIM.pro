@@ -75,7 +75,8 @@ SOURCES += src/main.cpp \
     src/ui/ContactRequestDialog.cpp \
     src/protocol/GetSecretCommand.cpp \
     src/ui/EditableLabel.cpp \
-    src/ui/ContactIDWidget.cpp
+    src/ui/ContactIDWidget.cpp \
+    src/tor/autoconfig/VidaliaConfigManager.cpp
 
 HEADERS += src/ui/MainWindow.h \
     src/ui/ChatWidget.h \
@@ -126,7 +127,8 @@ HEADERS += src/ui/MainWindow.h \
     src/ui/ContactRequestDialog.h \
     src/protocol/GetSecretCommand.h \
     src/ui/EditableLabel.h \
-    src/ui/ContactIDWidget.h
+    src/ui/ContactIDWidget.h \
+    src/tor/autoconfig/VidaliaConfigManager.h
 
 RESOURCES += res/resources.qrc \
     translation/embedded.qrc
