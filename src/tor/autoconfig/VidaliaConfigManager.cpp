@@ -19,6 +19,8 @@
 #include <QFile>
 #include <QDir>
 #include <QLibrary>
+#include <QSettings>
+#include <QtDebug>
 
 #ifdef Q_OS_WIN
 #include <Windows.h>
@@ -110,4 +112,32 @@ bool VidaliaConfigManager::isVidaliaRunning() const
         return (errno != ESRCH);
     return true;
 #endif
+}
+
+bool VidaliaConfigManager::hasCompatibleConfig() const
+{
+    QString fileName = path() + QLatin1String("/vidalia.conf");
+    if (!QFile::exists(fileName))
+        return false;
+
+    const QSettings settings(fileName, QSettings::IniFormat);
+    QString authMethod = settings.value(QLatin1String("Tor/AuthenticationMethod"),
+                                        QLatin1String("password")).toString();
+
+    if (authMethod == QLatin1String("none") || authMethod == QLatin1String("cookie"))
+        return true;
+
+    if (authMethod != QLatin1String("password"))
+    {
+        qWarning() << "Unrecognized value for Vidalia's Tor/AuthenticationMethod variable:" << authMethod;
+        return false;
+    }
+
+    if (settings.value(QLatin1String("Tor/UseRandomPassword"), true).toBool())
+        return false;
+
+    if (!settings.value(QLatin1String("Tor/ControlPassword")).toString().isEmpty())
+        return true;
+
+    return false;
 }

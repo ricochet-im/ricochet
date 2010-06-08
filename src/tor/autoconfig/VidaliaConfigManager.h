@@ -36,6 +36,9 @@ public:
     qint64 currentPid() const;
     bool isVidaliaRunning() const;
 
+    /* True if Vidalia is setup in a way that we can use without reconfiguraiton */
+    bool hasCompatibleConfig() const;
+
 private:
     QString m_path;
 };
