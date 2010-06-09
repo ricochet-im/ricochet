@@ -79,7 +79,8 @@ SOURCES += src/main.cpp \
     src/tor/autoconfig/VidaliaConfigManager.cpp \
     src/ui/torconfig/VidaliaConfigPage.cpp \
     src/ui/torconfig/VidaliaExitWidget.cpp \
-    src/ui/torconfig/VidaliaStartWidget.cpp
+    src/ui/torconfig/VidaliaStartWidget.cpp \
+    src/ui/torconfig/VidaliaTestWidget.cpp
 
 HEADERS += src/ui/MainWindow.h \
     src/ui/ChatWidget.h \
@@ -134,7 +135,8 @@ HEADERS += src/ui/MainWindow.h \
     src/tor/autoconfig/VidaliaConfigManager.h \
     src/ui/torconfig/VidaliaConfigPage.h \
     src/ui/torconfig/VidaliaExitWidget.h \
-    src/ui/torconfig/VidaliaStartWidget.h
+    src/ui/torconfig/VidaliaStartWidget.h \
+    src/ui/torconfig/VidaliaTestWidget.h
 
 RESOURCES += res/resources.qrc \
     translation/embedded.qrc

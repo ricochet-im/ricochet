@@ -18,6 +18,7 @@
 #include "VidaliaConfigPage.h"
 #include "VidaliaExitWidget.h"
 #include "VidaliaStartWidget.h"
+#include "VidaliaTestWidget.h"
 #include "tor/autoconfig/VidaliaConfigManager.h"
 #include <QStackedLayout>
 #include <QBoxLayout>
@@ -27,7 +28,7 @@
 using namespace TorConfig;
 
 VidaliaConfigPage::VidaliaConfigPage(QWidget *parent)
-    : QWizardPage(parent), m_stack(new QStackedLayout(this)), vidaliaConfig(0)
+    : QWizardPage(parent), m_stack(new QStackedLayout(this)), vidaliaConfig(0), testWidget(0)
 {
 }
 
@@ -49,6 +50,8 @@ void VidaliaConfigPage::initializePage()
         else
             doConfiguration();
     }
+    else
+        doTest();
 }
 
 void VidaliaConfigPage::cleanupPage()
@@ -58,11 +61,13 @@ void VidaliaConfigPage::cleanupPage()
 
     delete vidaliaConfig;
     vidaliaConfig = 0;
+
+    testWidget = 0;
 }
 
 bool VidaliaConfigPage::isComplete() const
 {
-    return vidaliaConfig->hasCompatibleConfig();
+    return testWidget && testWidget->hasTestSucceeded();
 }
 
 int VidaliaConfigPage::nextId() const
@@ -88,5 +93,8 @@ void VidaliaConfigPage::doConfiguration()
 
 void VidaliaConfigPage::doTest()
 {
-    qDebug() << "Doing test";
+    Q_ASSERT(!testWidget);
+    testWidget = new VidaliaTestWidget(vidaliaConfig);
+    connect(testWidget, SIGNAL(stateChanged()), this, SIGNAL(completeChanged()));
+    m_stack->setCurrentIndex(m_stack->addWidget(testWidget));
 }

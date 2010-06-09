@@ -15,43 +15,42 @@
  * along with TorIM. If not, see http://www.gnu.org/licenses/
  */
 
-#ifndef VIDALIACONFIGPAGE_H
-#define VIDALIACONFIGPAGE_H
+#ifndef VIDALIATESTWIDGET_H
+#define VIDALIATESTWIDGET_H
 
-#include <QWizardPage>
+#include <QWidget>
 
-class QStackedLayout;
 class VidaliaConfigManager;
 
 namespace TorConfig
 {
 
-class VidaliaTestWidget;
+class TorConnTestWidget;
 
-class VidaliaConfigPage : public QWizardPage
+class VidaliaTestWidget : public QWidget
 {
     Q_OBJECT
-    Q_DISABLE_COPY(VidaliaConfigPage)
+    Q_DISABLE_COPY(VidaliaTestWidget)
 
 public:
-    explicit VidaliaConfigPage(QWidget *parent = 0);
+    explicit VidaliaTestWidget(VidaliaConfigManager *vidaliaConfig, QWidget *parent = 0);
 
-    virtual void initializePage();
-    virtual void cleanupPage();
+    bool hasTestSucceeded() const;
 
-    virtual int nextId() const;
-    virtual bool isComplete() const;
+public slots:
+    void startTest();
+
+signals:
+    void stateChanged();
 
 private slots:
-    void doConfiguration();
-    void doTest();
+    void testStateChanged();
 
 private:
-    QStackedLayout * const m_stack;
-    VidaliaConfigManager *vidaliaConfig;
-    VidaliaTestWidget *testWidget;
+    VidaliaConfigManager * const vidaliaConfig;
+    TorConnTestWidget *tester;
 };
 
 }
 
-#endif // VIDALIACONFIGPAGE_H
+#endif // VIDALIATESTWIDGET_H
