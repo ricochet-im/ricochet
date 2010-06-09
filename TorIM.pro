@@ -76,7 +76,9 @@ SOURCES += src/main.cpp \
     src/protocol/GetSecretCommand.cpp \
     src/ui/EditableLabel.cpp \
     src/ui/ContactIDWidget.cpp \
-    src/tor/autoconfig/VidaliaConfigManager.cpp
+    src/tor/autoconfig/VidaliaConfigManager.cpp \
+    src/ui/torconfig/VidaliaConfigPage.cpp \
+    src/ui/torconfig/VidaliaExitWidget.cpp
 
 HEADERS += src/ui/MainWindow.h \
     src/ui/ChatWidget.h \
@@ -128,7 +130,9 @@ HEADERS += src/ui/MainWindow.h \
     src/protocol/GetSecretCommand.h \
     src/ui/EditableLabel.h \
     src/ui/ContactIDWidget.h \
-    src/tor/autoconfig/VidaliaConfigManager.h
+    src/tor/autoconfig/VidaliaConfigManager.h \
+    src/ui/torconfig/VidaliaConfigPage.h \
+    src/ui/torconfig/VidaliaExitWidget.h
 
 RESOURCES += res/resources.qrc \
     translation/embedded.qrc

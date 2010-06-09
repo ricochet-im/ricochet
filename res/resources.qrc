@@ -26,5 +26,6 @@
     <qresource prefix="/graphics">
         <file>avatar-placeholder.png</file>
         <file>logotext.png</file>
+        <file>vidalia-tray.png</file>
     </qresource>
 </RCC>

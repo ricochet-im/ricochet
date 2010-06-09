@@ -18,6 +18,7 @@
 #include "main.h"
 #include "TorConfigWizard.h"
 #include "IntroPage.h"
+#include "VidaliaConfigPage.h"
 #include "ManualConfigPage.h"
 #include <QMessageBox>
 
@@ -30,7 +31,7 @@ TorConfigWizard::TorConfigWizard(QWidget *parent)
     setFixedSize(550, 450);
 
     addPage(new IntroPage);
-    addPage(new QWizardPage);
+    addPage(new VidaliaConfigPage);
     addPage(new ManualConfigPage);
 }
 
@@ -41,7 +42,7 @@ void TorConfigWizard::accept()
 
     if (controlIp.isEmpty() || controlPort < 1)
     {
-        QMessageBox::critical(this, tr("Error"), tr("The wizard is incomplete; please go back and ensure all required"
+        QMessageBox::critical(this, tr("Error"), tr("The wizard is incomplete; please go back and ensure all required "
                                                     "fields are filled"));
         return;
     }
