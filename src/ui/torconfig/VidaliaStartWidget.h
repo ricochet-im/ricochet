@@ -15,40 +15,41 @@
  * along with TorIM. If not, see http://www.gnu.org/licenses/
  */
 
-#ifndef VIDALIACONFIGPAGE_H
-#define VIDALIACONFIGPAGE_H
+#ifndef VIDALIASTARTWIDGET_H
+#define VIDALIASTARTWIDGET_H
 
-#include <QWizardPage>
+#include <QWidget>
 
-class QStackedLayout;
 class VidaliaConfigManager;
+class QTimer;
+class QTcpSocket;
 
 namespace TorConfig
 {
 
-class VidaliaConfigPage : public QWizardPage
+class VidaliaStartWidget : public QWidget
 {
     Q_OBJECT
-    Q_DISABLE_COPY(VidaliaConfigPage)
+    Q_DISABLE_COPY(VidaliaStartWidget)
 
 public:
-    explicit VidaliaConfigPage(QWidget *parent = 0);
+    explicit VidaliaStartWidget(VidaliaConfigManager *vidaliaConfig, bool restarting, QWidget *parent = 0);
 
-    virtual void initializePage();
-    virtual void cleanupPage();
+public slots:
+    void checkTorActive();
 
-    virtual int nextId() const;
-    virtual bool isComplete() const;
+signals:
+    void ready();
 
 private slots:
-    void doConfiguration();
-    void doTest();
+    void torReady();
 
 private:
-    QStackedLayout * const m_stack;
-    VidaliaConfigManager *vidaliaConfig;
+    VidaliaConfigManager * const vidaliaConfig;
+    QTimer *testTimer;
+    QTcpSocket *testSocket;
 };
 
 }
 
-#endif // VIDALIACONFIGPAGE_H
+#endif // VIDALIASTARTWIDGET_H

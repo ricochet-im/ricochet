@@ -20,6 +20,8 @@
 
 #include <QObject>
 
+class QSettings;
+
 class VidaliaConfigManager : public QObject
 {
     Q_OBJECT
@@ -39,8 +41,12 @@ public:
     /* True if Vidalia is setup in a way that we can use without reconfiguraiton */
     bool hasCompatibleConfig() const;
 
+    void getControlInfo(QString *address, quint16 *port) const;
+
 private:
     QString m_path;
+
+    QString configPath() const { return path() + QLatin1String("/vidalia.conf"); }
 };
 
 #endif // VIDALIACONFIGMANAGER_H

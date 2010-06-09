@@ -37,8 +37,7 @@ VidaliaExitWidget::VidaliaExitWidget(VidaliaConfigManager *vc, QWidget *parent)
 
     QLabel *desc = new QLabel(tr("Look for the vidalia icon (<img src=':/graphics/vidalia-tray.png'>) in "
                                  "the system tray and choose to exit.<br>Anything currently using Tor (such "
-                                 "as web downloads) will be interrupted."));//<br><br><br><br>Configuration will "
-                                 //"continue automatically when Vidalia is closed."));
+                                 "as web downloads) will be interrupted."));
     desc->setAlignment(Qt::AlignTop | Qt::AlignHCenter);
     layout->addWidget(desc);
     layout->addSpacing(30);
@@ -46,7 +45,7 @@ VidaliaExitWidget::VidaliaExitWidget(VidaliaConfigManager *vc, QWidget *parent)
     QLabel *desc2 = new QLabel(tr("Configuration will continue automatically when Vidalia is closed."));
     desc2->setAlignment(Qt::AlignBottom | Qt::AlignHCenter);
     layout->addWidget(desc2);
-    layout->addStretch(30);
+    layout->addStretch();
 
     exitTimer = new QTimer(this);
     connect(exitTimer, SIGNAL(timeout()), SLOT(checkVidalia()));

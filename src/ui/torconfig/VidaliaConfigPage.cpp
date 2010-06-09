@@ -17,6 +17,7 @@
 
 #include "VidaliaConfigPage.h"
 #include "VidaliaExitWidget.h"
+#include "VidaliaStartWidget.h"
 #include "tor/autoconfig/VidaliaConfigManager.h"
 #include <QStackedLayout>
 #include <QBoxLayout>
@@ -52,6 +53,9 @@ void VidaliaConfigPage::initializePage()
 
 void VidaliaConfigPage::cleanupPage()
 {
+    while (m_stack->count())
+        m_stack->takeAt(0)->widget()->deleteLater();
+
     delete vidaliaConfig;
     vidaliaConfig = 0;
 }
@@ -69,4 +73,20 @@ int VidaliaConfigPage::nextId() const
 void VidaliaConfigPage::doConfiguration()
 {
     qDebug() << "Doing configuration";
+
+    if (!vidaliaConfig->isVidaliaRunning())
+    {
+        /* Prompt the user to open Vidalia */
+        bool wasExited = qobject_cast<VidaliaExitWidget*>(sender()) != 0;
+        VidaliaStartWidget *startWidget = new VidaliaStartWidget(vidaliaConfig, wasExited);
+        connect(startWidget, SIGNAL(ready()), this, SLOT(doTest()));
+        m_stack->setCurrentIndex(m_stack->addWidget(startWidget));
+    }
+    else
+        doTest();
+}
+
+void VidaliaConfigPage::doTest()
+{
+    qDebug() << "Doing test";
 }

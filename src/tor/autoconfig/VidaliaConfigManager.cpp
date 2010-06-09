@@ -116,11 +116,10 @@ bool VidaliaConfigManager::isVidaliaRunning() const
 
 bool VidaliaConfigManager::hasCompatibleConfig() const
 {
-    QString fileName = path() + QLatin1String("/vidalia.conf");
-    if (!QFile::exists(fileName))
+    const QSettings settings(configPath(), QSettings::IniFormat);
+    if (settings.status() != QSettings::NoError)
         return false;
 
-    const QSettings settings(fileName, QSettings::IniFormat);
     QString authMethod = settings.value(QLatin1String("Tor/AuthenticationMethod"),
                                         QLatin1String("password")).toString();
 
@@ -140,4 +139,12 @@ bool VidaliaConfigManager::hasCompatibleConfig() const
         return true;
 
     return false;
+}
+
+void VidaliaConfigManager::getControlInfo(QString *address, quint16 *port) const
+{
+    const QSettings settings(configPath(), QSettings::IniFormat);
+
+    *address = settings.value(QLatin1String("Tor/ControlAddr"), QLatin1String("127.0.0.1")).toString();
+    *port = static_cast<quint16>(settings.value(QLatin1String("Tor/ControlPort"), 9051).toUInt());
 }
