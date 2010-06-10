@@ -141,10 +141,12 @@ bool VidaliaConfigManager::hasCompatibleConfig() const
     return false;
 }
 
-void VidaliaConfigManager::getControlInfo(QString *address, quint16 *port) const
+void VidaliaConfigManager::getControlInfo(QString *address, quint16 *port, QByteArray *password) const
 {
     const QSettings settings(configPath(), QSettings::IniFormat);
 
     *address = settings.value(QLatin1String("Tor/ControlAddr"), QLatin1String("127.0.0.1")).toString();
     *port = static_cast<quint16>(settings.value(QLatin1String("Tor/ControlPort"), 9051).toUInt());
+    if (password)
+        *password = settings.value(QLatin1String("Tor/ControlPassword")).toString().toLocal8Bit();
 }

@@ -55,10 +55,11 @@ VidaliaTestWidget::VidaliaTestWidget(VidaliaConfigManager *vc, QWidget *parent)
 void VidaliaTestWidget::startTest()
 {
     QString address;
+    QByteArray password;
     quint16 port = 0;
-    vidaliaConfig->getControlInfo(&address, &port);
+    vidaliaConfig->getControlInfo(&address, &port, &password);
 
-    tester->startTest(address, port, QByteArray());
+    tester->startTest(address, port, password);
 }
 
 bool VidaliaTestWidget::hasTestSucceeded() const

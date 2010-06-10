@@ -38,10 +38,10 @@ public:
     qint64 currentPid() const;
     bool isVidaliaRunning() const;
 
-    /* True if Vidalia is setup in a way that we can use without reconfiguraiton */
+    /* True if Vidalia is setup in a way that we can use without reconfiguration */
     bool hasCompatibleConfig() const;
 
-    void getControlInfo(QString *address, quint16 *port) const;
+    void getControlInfo(QString *address, quint16 *port, QByteArray *password = 0) const;
 
 private:
     QString m_path;
