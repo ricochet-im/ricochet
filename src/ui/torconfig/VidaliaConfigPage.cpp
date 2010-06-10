@@ -23,6 +23,7 @@
 #include <QStackedLayout>
 #include <QBoxLayout>
 #include <QLabel>
+#include <QMessageBox>
 #include <QDebug>
 
 using namespace TorConfig;
@@ -77,7 +78,13 @@ int VidaliaConfigPage::nextId() const
 
 void VidaliaConfigPage::doConfiguration()
 {
-    qDebug() << "Doing configuration";
+    QString errorMessage;
+    if (!vidaliaConfig->reconfigureControlConfig(&errorMessage))
+    {
+        QMessageBox::critical(window(), tr("Error"), tr("Vidalia reconfiguration error:\n\n%1").arg(errorMessage));
+        wizard()->back();
+        return;
+    }
 
     if (!vidaliaConfig->isVidaliaRunning())
     {

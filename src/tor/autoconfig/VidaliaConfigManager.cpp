@@ -150,3 +150,26 @@ void VidaliaConfigManager::getControlInfo(QString *address, quint16 *port, QByte
     if (password)
         *password = settings.value(QLatin1String("Tor/ControlPassword")).toString().toLocal8Bit();
 }
+
+bool VidaliaConfigManager::reconfigureControlConfig(QString *errorMessage)
+{
+    /* Alter Vidalia configuration */
+    QSettings settings(configPath(), QSettings::IniFormat);
+
+    if (settings.status() == QSettings::NoError)
+    {
+        settings.setValue(QLatin1String("Tor/AuthenticationMethod"), QLatin1String("cookie"));
+        settings.sync();
+    }
+
+    if (settings.status() != QSettings::NoError)
+    {
+        if (errorMessage)
+            *errorMessage = tr("Unable to modify Vidalia configuration (error %1)").arg(settings.status());
+        return false;
+    }
+
+    Q_ASSERT(hasCompatibleConfig());
+
+    return true;
+}

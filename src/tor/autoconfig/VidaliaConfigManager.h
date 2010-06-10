@@ -40,6 +40,8 @@ public:
 
     /* True if Vidalia is setup in a way that we can use without reconfiguration */
     bool hasCompatibleConfig() const;
+    /* Alter Vidalia's configuration to make it compatible */
+    bool reconfigureControlConfig(QString *errorMessage = 0);
 
     void getControlInfo(QString *address, quint16 *port, QByteArray *password = 0) const;
 
