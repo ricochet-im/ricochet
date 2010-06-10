@@ -34,14 +34,6 @@ class TorControlManager : public QObject
     friend class ProtocolInfoCommand;
 
 public:
-    enum AuthMethod
-    {
-        AuthUnknown = 0,
-        AuthNull = 0x1,
-        AuthHashedPassword = 0x2,
-        AuthCookie = 0x4
-    };
-
     enum Status
     {
         Error = -1,
@@ -64,7 +56,6 @@ public:
     QNetworkProxy connectionProxy();
 
     /* Authentication */
-    QFlags<AuthMethod> authMethods() const { return pAuthMethods; }
     void setAuthPassword(const QByteArray &password);
 
     /* Connection */
@@ -88,6 +79,7 @@ private slots:
 
     void commandFinished(class TorControlCommand *command);
 
+    void protocolInfoReply();
     void getSocksInfoReply();
 
     void setError(const QString &message);
@@ -100,12 +92,10 @@ private:
     QHostAddress pSocksAddress;
     QList<HiddenService*> pServices;
     quint16 pSocksPort;
-    QFlags<AuthMethod> pAuthMethods;
     Status pStatus;
 
     void setStatus(Status status);
 
-    void authenticate();
     void getSocksInfo();
     void publishServices();
 };

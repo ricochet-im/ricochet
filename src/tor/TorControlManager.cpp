@@ -114,16 +114,7 @@ void TorControlManager::commandFinished(TorControlCommand *command)
 {
     QLatin1String keyword(command->keyword);
 
-    if (keyword == QLatin1String("PROTOCOLINFO"))
-    {
-        Q_ASSERT(status() == Authenticating);
-
-        qDebug() << "torctrl: Tor version is" << torVersion();
-
-        if (status() == Authenticating)
-            authenticate();
-    }
-    else if (keyword == QLatin1String("AUTHENTICATE"))
+    if (keyword == QLatin1String("AUTHENTICATE"))
     {
         Q_ASSERT(status() == Authenticating);
 
@@ -154,6 +145,7 @@ void TorControlManager::socketConnected()
     setStatus(Authenticating);
 
     ProtocolInfoCommand *command = new ProtocolInfoCommand(this);
+    QObject::connect(command, SIGNAL(replyFinished()), SLOT(protocolInfoReply()));
     socket->sendCommand(command, command->build());
 }
 
@@ -163,7 +155,6 @@ void TorControlManager::socketDisconnected()
     pTorVersion.clear();
     pSocksAddress.clear();
     pSocksPort = 0;
-    pAuthMethods = AuthUnknown;
 
     /* This emits the disconnected() signal as well */
     setStatus(NotConnected);
@@ -174,39 +165,70 @@ void TorControlManager::socketError()
     setError(tr("Connection failed: %1").arg(socket->errorString()));
 }
 
-void TorControlManager::authenticate()
+void TorControlManager::protocolInfoReply()
 {
-    Q_ASSERT(status() == Authenticating);
+    ProtocolInfoCommand *info = qobject_cast<ProtocolInfoCommand*>(sender());
+    if (!info)
+        return;
 
-    AuthenticateCommand *command = new AuthenticateCommand;
-    QByteArray data;
+    pTorVersion = info->torVersion();
 
-    if (pAuthMethods.testFlag(AuthNull))
+    if (status() == Authenticating)
     {
-        qDebug() << "torctrl: Using null authentication";
-        data = command->build();
-    }
-    else if (pAuthMethods.testFlag(AuthHashedPassword))
-    {
-        qDebug() << "torctrl: Using hashed password authentication";
+        AuthenticateCommand *auth = new AuthenticateCommand;
+        QByteArray data;
 
-        if (pAuthPassword.isEmpty())
+        ProtocolInfoCommand::AuthMethods methods = info->authMethods();
+
+        if (methods.testFlag(ProtocolInfoCommand::AuthNull))
         {
-            setError(tr("Tor requires a control password to connect, but no password is configured."));
-            delete command;
+            qDebug() << "torctrl: Using null authentication";
+            data = auth->build();
+        }
+        else if (methods.testFlag(ProtocolInfoCommand::AuthHashedPassword) && !pAuthPassword.isEmpty())
+        {
+            qDebug() << "torctrl: Using hashed password authentication";
+            data = auth->build(pAuthPassword);
+        }
+        else if (methods.testFlag(ProtocolInfoCommand::AuthCookie) && !info->cookieFile().isEmpty())
+        {
+            QString cookieFile = info->cookieFile();
+            qDebug() << "torctrl: Using cookie authentication with file" << cookieFile;
+
+            QFile file(cookieFile);
+            if (!file.open(QIODevice::ReadOnly))
+            {
+                setError(tr("Unable to read authentication cookie file: %1").arg(file.errorString()));
+                delete auth;
+                return;
+            }
+
+            QByteArray cookie = file.readAll();
+            file.close();
+
+            /* Simple test to avoid a vulnerability where any process listening on what we think is
+             * the control port could trick us into sending the contents of an arbitrary file */
+            if (cookie.size() != 32)
+            {
+                setError(tr("Unable to read authentication cookie file: ").arg(tr("Unexpected file size")));
+                delete auth;
+                return;
+            }
+
+            data = auth->build(cookie);
+        }
+        else
+        {
+            if (methods.testFlag(ProtocolInfoCommand::AuthHashedPassword))
+                setError(tr("Tor requires a control password to connect, but no password is configured."));
+            else
+                setError(tr("Tor is not configured to accept any supported authentication methods."));
+            delete auth;
             return;
         }
 
-        data = command->build(pAuthPassword);
+        socket->sendCommand(auth, data);
     }
-    else
-    {
-        setError(tr("Tor is not configured to accept any supported authentication methods."));
-        delete command;
-        return;
-    }
-
-    socket->sendCommand(command, data);
 }
 
 void TorControlManager::getSocksInfo()
@@ -346,8 +368,6 @@ void TorControlManager::publishServices()
                              .arg(tit->targetPort);
             settings.append(qMakePair(QByteArray("HiddenServicePort"), target.toLatin1()));
         }
-
-        //settings.append(qMakePair(QByteArray("HiddenServiceAuthorizeClient"), QByteArray("stealth bob")));
 
         QObject::connect(command, SIGNAL(setConfSucceeded()), service, SLOT(servicePublished()));
     }

@@ -34,30 +34,32 @@ QByteArray ProtocolInfoCommand::build()
 
 void ProtocolInfoCommand::handleReply(int code, QByteArray &data, bool end)
 {
-        Q_UNUSED(end);
+    Q_UNUSED(end);
 
     if (code != 250)
         return;
 
     if (data.startsWith("AUTH METHODS="))
     {
-        QFlags<TorControlManager::AuthMethod> authMethods;
+        int methodsEnd = data.indexOf(' ', 13);
 
-        QList<QByteArray> textMethods = data.mid(13, data.indexOf(' ', 13)).split(',');
+        QList<QByteArray> textMethods = data.mid(13, methodsEnd).split(',');
         for (QList<QByteArray>::Iterator it = textMethods.begin(); it != textMethods.end(); ++it)
         {
             if (*it == "NULL")
-                authMethods |= TorControlManager::AuthNull;
+                m_authMethods |= AuthNull;
             else if (*it == "HASHEDPASSWORD")
-                authMethods |= TorControlManager::AuthHashedPassword;
+                m_authMethods |= AuthHashedPassword;
             else if (*it == "COOKIE")
-                authMethods |= TorControlManager::AuthCookie;
+                m_authMethods |= AuthCookie;
         }
 
-        manager->pAuthMethods = authMethods;
+        if (data.mid(methodsEnd+1).startsWith("COOKIEFILE="))
+            m_cookieFile = QString::fromLatin1(unquotedString(data.mid(methodsEnd+12,
+                                                                       data.indexOf(' ', methodsEnd+12))));
     }
     else if (data.startsWith("VERSION Tor="))
     {
-        manager->pTorVersion = QString::fromLatin1(unquotedString(data.mid(12, data.indexOf(' ', 12))));
+        m_torVersion = QString::fromLatin1(unquotedString(data.mid(12, data.indexOf(' ', 12))));
     }
 }

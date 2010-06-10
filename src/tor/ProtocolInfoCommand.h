@@ -28,16 +28,34 @@ class TorControlManager;
 
 class ProtocolInfoCommand : public TorControlCommand
 {
-public:
-    ProtocolInfoCommand(TorControlManager *manager);
+    Q_OBJECT
+    Q_DISABLE_COPY(ProtocolInfoCommand)
 
+public:
+    enum AuthMethod
+    {
+        AuthUnknown = 0,
+        AuthNull = 0x1,
+        AuthHashedPassword = 0x2,
+        AuthCookie = 0x4
+    };
+    Q_DECLARE_FLAGS(AuthMethods, AuthMethod)
+
+    ProtocolInfoCommand(TorControlManager *manager);
     QByteArray build();
+
+    AuthMethods authMethods() const { return m_authMethods; }
+    QString torVersion() const { return m_torVersion; }
+    QString cookieFile() const { return m_cookieFile; }
 
 protected:
     virtual void handleReply(int code, QByteArray &data, bool end);
 
 private:
     TorControlManager *manager;
+    AuthMethods m_authMethods;
+    QString m_torVersion;
+    QString m_cookieFile;
 };
 
 }
