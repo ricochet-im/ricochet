@@ -24,6 +24,7 @@
 #include <QBoxLayout>
 #include <QLabel>
 #include <QMessageBox>
+#include <QVariant>
 #include <QDebug>
 
 using namespace TorConfig;
@@ -78,6 +79,7 @@ int VidaliaConfigPage::nextId() const
 
 void VidaliaConfigPage::doConfiguration()
 {
+    /* Reconfigure */
     QString errorMessage;
     if (!vidaliaConfig->reconfigureControlConfig(&errorMessage))
     {
@@ -86,6 +88,7 @@ void VidaliaConfigPage::doConfiguration()
         return;
     }
 
+    /* Continue */
     if (!vidaliaConfig->isVidaliaRunning())
     {
         /* Prompt the user to open Vidalia */
@@ -100,6 +103,18 @@ void VidaliaConfigPage::doConfiguration()
 
 void VidaliaConfigPage::doTest()
 {
+    /* Set fields */
+    QString address;
+    QByteArray password;
+    quint16 port = 0;
+
+    vidaliaConfig->getControlInfo(&address, &port, &password);
+
+    setField(QLatin1String("controlIp"), address);
+    setField(QLatin1String("controlPort"), port);
+    setField(QLatin1String("controlPassword"), QString::fromLocal8Bit(password));
+
+    /* Show test and results */
     Q_ASSERT(!testWidget);
     testWidget = new VidaliaTestWidget(vidaliaConfig);
     connect(testWidget, SIGNAL(stateChanged()), this, SIGNAL(completeChanged()));
