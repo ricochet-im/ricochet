@@ -30,7 +30,7 @@ public:
 
     virtual quint8 command() const { return 0x10; }
 
-    void send(ProtocolManager *to, const QDateTime &timestamp, const QString &text);
+    void send(ProtocolManager *to, const QDateTime &timestamp, const QString &text, quint16 lastReceivedID = 0);
 
     static void process(CommandHandler &command);
 

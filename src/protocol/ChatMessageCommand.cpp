@@ -28,12 +28,13 @@ ChatMessageCommand::ChatMessageCommand(QObject *parent)
 {
 }
 
-void ChatMessageCommand::send(ProtocolManager *to, const QDateTime &timestamp, const QString &text)
+void ChatMessageCommand::send(ProtocolManager *to, const QDateTime &timestamp, const QString &text, quint16 lastReceived)
 {
     prepareCommand(0x00, 1024);
     CommandDataParser builder(&commandBuffer);
 
     builder << (quint32)timestamp.secsTo(QDateTime::currentDateTime());
+    builder << lastReceived;
     builder << text;
 
     sendCommand(to, true);
@@ -41,21 +42,23 @@ void ChatMessageCommand::send(ProtocolManager *to, const QDateTime &timestamp, c
 
 void ChatMessageCommand::process(CommandHandler &command)
 {
-    quint32 timestamp;
     QString text;
+    quint32 timestamp;
+    quint16 priorMessageID;
 
     CommandDataParser parser(&command.data);
-    parser >> timestamp >> text;
+    parser >> timestamp >> priorMessageID >> text;
     if (!parser)
     {
         command.sendReply(CommandSyntaxError);
         return;
     }
 
-    qDebug() << "Received chat message (time delta" << timestamp << "):" << text;
+    qDebug().nospace() << "Received chat message (time delta " << timestamp << ", prior message "
+            << priorMessageID << "):" << text;
 
     ChatWidget *chat = ChatWidget::widgetForUser(command.user);
-    chat->receiveMessage(QDateTime::currentDateTime().addSecs(-(int)timestamp), text);
+    chat->receiveMessage(QDateTime::currentDateTime().addSecs(-(int)timestamp), text, command.identifier, priorMessageID);
 
     command.sendReply(replyState(true, true, 0x00));
 }

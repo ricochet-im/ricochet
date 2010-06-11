@@ -47,7 +47,7 @@ ChatWidget *ChatWidget::widgetForUser(ContactUser *u, bool create)
 }
 
 ChatWidget::ChatWidget(ContactUser *u)
-    : user(u), offlineNotice(0), pUnread(0)
+    : user(u), offlineNotice(0), pUnread(0), lastReceivedID(0)
 {
     Q_ASSERT(user);
     connect(user, SIGNAL(connected()), this, SLOT(clearOfflineNotice()));
@@ -62,13 +62,6 @@ ChatWidget::ChatWidget(ContactUser *u)
     layout->addWidget(textArea);
 
     createTextInput();
-//    layout->addWidget(textInput);
-
-    QBoxLayout *testLayout = new QHBoxLayout;
-    layout->addLayout(testLayout);
-
-    testLayout->addStretch();
-
     layout->addWidget(textInput);
 
     if (!user->isConnected())
@@ -78,7 +71,7 @@ ChatWidget::ChatWidget(ContactUser *u)
 ChatWidget::~ChatWidget()
 {
     QHash<ContactUser*,ChatWidget*>::Iterator it = userMap.find(user);
-    if (*it == this)
+    if (it != userMap.end() && *it == this)
         userMap.erase(it);
 }
 
@@ -111,13 +104,14 @@ void ChatWidget::sendInputMessage()
 
     ChatMessageCommand *command = new ChatMessageCommand;
     connect(command, SIGNAL(commandFinished()), this, SLOT(messageReply()));
-    command->send(user->conn(), when, text);
+    command->send(user->conn(), when, text, lastReceivedID);
 
     addChatMessage(NULL, when, text, command->identifier());
 }
 
-void ChatWidget::receiveMessage(const QDateTime &when, const QString &text)
+void ChatWidget::receiveMessage(const QDateTime &when, const QString &text, quint16 messageID, quint16 priorMessageID)
 {
+    lastReceivedID = messageID;
     addChatMessage(user, when, text);
     emit messageReceived();
 

@@ -33,7 +33,7 @@ public:
 
     ~ChatWidget();
 
-    void receiveMessage(const QDateTime &when, const QString &text);
+    void receiveMessage(const QDateTime &when, const QString &text, quint16 messageID = 0, quint16 lastSeenID = 0);
 
     int unreadMessages() const { return pUnread; }
 
@@ -65,6 +65,7 @@ private:
     class QWidget *offlineNotice;
 
     int pUnread;
+    quint16 lastReceivedID;
 
     explicit ChatWidget(ContactUser *user);
 
