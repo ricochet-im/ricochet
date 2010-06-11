@@ -47,7 +47,7 @@ public:
     void connectToHost(const QString &host, quint16 port);
 
     /* Get an available identifier; not reserved, must be followed by sendCommand immediately. */
-    quint16 getIdentifier() const;
+    quint16 getIdentifier();
 
     void sendCommand(ProtocolCommand *command);
 
@@ -73,6 +73,7 @@ private slots:
 private:
     QQueue<ProtocolCommand*> commandQueue;
     QHash<quint16,ProtocolCommand*> pendingCommands;
+    quint16 nextCommandId;
 
     bool active, authPending, authFinished;
 

@@ -26,7 +26,7 @@
 
 /* Create with an established, authenticated connection */
 ProtocolSocket::ProtocolSocket(QTcpSocket *s, ProtocolManager *m)
-    : QObject(m), manager(m), socket(s), active(true), authPending(false), authFinished(true)
+    : QObject(m), manager(m), socket(s), nextCommandId(0), active(true), authPending(false), authFinished(true)
 {
     Q_ASSERT(isConnected());
 
@@ -36,7 +36,8 @@ ProtocolSocket::ProtocolSocket(QTcpSocket *s, ProtocolManager *m)
 
 /* Create a new outgoing connection */
 ProtocolSocket::ProtocolSocket(ProtocolManager *m)
-    : QObject(m), manager(m), socket(new QTcpSocket(this)), active(false), authPending(false), authFinished(false)
+    : QObject(m), manager(m), socket(new QTcpSocket(this)), nextCommandId(0), active(false), authPending(false),
+      authFinished(false)
 {
     connect(socket, SIGNAL(connected()), this, SLOT(sendAuth()));
     connect(this, SIGNAL(socketReady()), this, SLOT(flushCommands()));
@@ -131,22 +132,25 @@ void ProtocolSocket::flushCommands()
         socket->write(commandQueue.takeFirst()->commandBuffer);
 }
 
-quint16 ProtocolSocket::getIdentifier() const
+quint16 ProtocolSocket::getIdentifier()
 {
-    /* There is a corner case for the very unlucky where the RNG will take a very long time
-     * to find an available ID. This could be considered a bug.
-     *
-     * This should probably just be sequential and wrap.
-     */
-
-    if (pendingCommands.size() >= 50000)
-        return 0;
-
-    quint16 re;
-    do
+    if (!nextCommandId)
     {
-        re = (qrand() % 65535) + 1;
-    } while (pendingCommands.contains(re));
+        Q_ASSERT(pendingCommands.isEmpty());
+
+        /* Start with a random ID; technically not necessary, but still worth doing */
+        nextCommandId = (qrand() % 65535) + 1;
+    }
+
+    /* Wraparound on unsigned integer overflow is well-defined, and we rely on it here. 0 is not a valid ID. */
+
+    while (pendingCommands.contains(nextCommandId) || !nextCommandId)
+        ++nextCommandId;
+
+    quint16 re = nextCommandId;
+
+    if (!++nextCommandId)
+        nextCommandId++;
 
     return re;
 }
@@ -273,6 +277,7 @@ void ProtocolSocket::socketDisconnected()
     else
         emit connectFailed();
 
+    nextCommandId = 0;
     authFinished = authPending = false;
 
     /* Send failure replies for all pending commands */
