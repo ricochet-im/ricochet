@@ -44,14 +44,10 @@ QByteArray quotedString(const QByteArray &string)
     return out;
 }
 
-QByteArray unquotedString(const QByteArray &string, int *pos)
+QByteArray unquotedString(const QByteArray &string)
 {
-    if (!string.startsWith('"'))
-    {
-        if (pos)
-            *pos = string.size();
+    if (string[0] != '"')
         return string;
-    }
 
     QByteArray out;
     out.reserve(string.size() - 2);
@@ -65,15 +61,43 @@ QByteArray unquotedString(const QByteArray &string, int *pos)
                 out.append(string[i]);
             break;
         case '"':
-            if (pos)
-                *pos = i+1;
             return out;
         default:
             out.append(string[i]);
         }
     }
 
-    if (pos)
-        *pos = -1;
+    return out;
+}
+
+QList<QByteArray> splitQuotedStrings(const QByteArray &input, char separator)
+{
+    QList<QByteArray> out;
+    bool inquote = false;
+    int start = 0;
+
+    for (int i = 0; i < input.size(); ++i)
+    {
+        switch (input[i])
+        {
+        case '"':
+            inquote = !inquote;
+            break;
+        case '\\':
+            if (inquote)
+                ++i;
+            break;
+        }
+
+        if (!inquote && input[i] == separator)
+        {
+            out.append(input.mid(start, i));
+            start = i+1;
+        }
+    }
+
+    if (start < input.size())
+        out.append(input.mid(start));
+
     return out;
 }

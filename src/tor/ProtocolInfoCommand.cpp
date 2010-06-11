@@ -39,24 +39,30 @@ void ProtocolInfoCommand::handleReply(int code, QByteArray &data, bool end)
     if (code != 250)
         return;
 
-    if (data.startsWith("AUTH METHODS="))
+    if (data.startsWith("AUTH "))
     {
-        int methodsEnd = data.indexOf(' ', 13);
+        QList<QByteArray> tokens = splitQuotedStrings(data.mid(5), ' ');
 
-        QList<QByteArray> textMethods = data.mid(13, methodsEnd).split(',');
-        for (QList<QByteArray>::Iterator it = textMethods.begin(); it != textMethods.end(); ++it)
+        foreach (QByteArray token, tokens)
         {
-            if (*it == "NULL")
-                m_authMethods |= AuthNull;
-            else if (*it == "HASHEDPASSWORD")
-                m_authMethods |= AuthHashedPassword;
-            else if (*it == "COOKIE")
-                m_authMethods |= AuthCookie;
+            if (token.startsWith("METHODS="))
+            {
+                QList<QByteArray> textMethods = unquotedString(token.mid(8)).split(',');
+                for (QList<QByteArray>::Iterator it = textMethods.begin(); it != textMethods.end(); ++it)
+                {
+                    if (*it == "NULL")
+                        m_authMethods |= AuthNull;
+                    else if (*it == "HASHEDPASSWORD")
+                        m_authMethods |= AuthHashedPassword;
+                    else if (*it == "COOKIE")
+                        m_authMethods |= AuthCookie;
+                }
+            }
+            else if (token.startsWith("COOKIEFILE="))
+            {
+                m_cookieFile = QString::fromLatin1(unquotedString(token.mid(11)));
+            }
         }
-
-        if (data.mid(methodsEnd+1).startsWith("COOKIEFILE="))
-            m_cookieFile = QString::fromLatin1(unquotedString(data.mid(methodsEnd+12,
-                                                                       data.indexOf(' ', methodsEnd+12))));
     }
     else if (data.startsWith("VERSION Tor="))
     {

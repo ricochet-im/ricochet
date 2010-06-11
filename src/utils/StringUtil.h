@@ -19,8 +19,13 @@
 #define STRINGUTIL_H
 
 #include <QByteArray>
+#include <QList>
 
 QByteArray quotedString(const QByteArray &string);
-QByteArray unquotedString(const QByteArray &string, int *pos = 0);
+
+/* Return the unquoted contents of a string, either until an end quote or an unescaped separator character. */
+QByteArray unquotedString(const QByteArray &string);
+
+QList<QByteArray> splitQuotedStrings(const QByteArray &input, char separator);
 
 #endif // STRINGUTIL_H
