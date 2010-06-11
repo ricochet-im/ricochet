@@ -72,7 +72,10 @@ private:
     void createTextArea();
     void createTextInput();
 
-    void addChatMessage(ContactUser *user, const QDateTime &when, const QString &text, int identifier = 0);
+    void addChatMessage(ContactUser *user, quint16 messageID, const QDateTime &when, const QString &text,
+                              quint16 priorMessage = 0);
+
+    int makeBlockIdentifier(ContactUser *user, quint16 messageid);
     bool findBlockIdentifier(int identifier, class QTextBlock &block);
 };
 

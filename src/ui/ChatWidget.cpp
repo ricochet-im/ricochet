@@ -106,13 +106,13 @@ void ChatWidget::sendInputMessage()
     connect(command, SIGNAL(commandFinished()), this, SLOT(messageReply()));
     command->send(user->conn(), when, text, lastReceivedID);
 
-    addChatMessage(NULL, when, text, command->identifier());
+    addChatMessage(NULL, command->identifier(), when, text);
 }
 
 void ChatWidget::receiveMessage(const QDateTime &when, const QString &text, quint16 messageID, quint16 priorMessageID)
 {
     lastReceivedID = messageID;
-    addChatMessage(user, when, text);
+    addChatMessage(user, messageID, when, text, priorMessageID);
     emit messageReceived();
 
     if (!isVisible() || !window()->isActiveWindow() || window()->isMinimized())
@@ -139,7 +139,7 @@ void ChatWidget::messageReply()
         return;
 
     QTextBlock block;
-    if (findBlockIdentifier(command->identifier(), block))
+    if (findBlockIdentifier(makeBlockIdentifier(0, command->identifier()), block))
     {
         block.setUserState(0);
 
@@ -165,7 +165,8 @@ void ChatWidget::messageReply()
     }
 }
 
-void ChatWidget::addChatMessage(ContactUser *from, const QDateTime &when, const QString &text, int identifier)
+void ChatWidget::addChatMessage(ContactUser *from, quint16 messageID, const QDateTime &when, const QString &text,
+                                quint16 priorMessage)
 {
     QTextCursor cursor(textArea->document());
     cursor.movePosition(QTextCursor::End);
@@ -173,8 +174,8 @@ void ChatWidget::addChatMessage(ContactUser *from, const QDateTime &when, const 
     if (!cursor.atBlockStart())
         cursor.insertBlock();
 
-    if (identifier)
-        cursor.block().setUserState(identifier);
+    if (messageID)
+        cursor.block().setUserState(makeBlockIdentifier(from, messageID));
 
     /* These are the colors used for the timestamp, nickname, and text. Each has two colors;
      * the full color, and the 'faded' color for when the message hasn't been received yet. */
@@ -227,6 +228,15 @@ void ChatWidget::addChatMessage(ContactUser *from, const QDateTime &when, const 
 void ChatWidget::scrollToBottom()
 {
     textArea->verticalScrollBar()->setValue(textArea->verticalScrollBar()->maximum());
+}
+
+int ChatWidget::makeBlockIdentifier(ContactUser *user, quint16 messageid)
+{
+    unsigned re = messageid;
+    if (user)
+        re |= unsigned(user->uniqueID) << 16;
+
+    return int(re);
 }
 
 bool ChatWidget::findBlockIdentifier(int identifier, QTextBlock &dst)

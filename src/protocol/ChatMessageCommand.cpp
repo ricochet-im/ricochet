@@ -55,7 +55,7 @@ void ChatMessageCommand::process(CommandHandler &command)
     }
 
     qDebug().nospace() << "Received chat message (time delta " << timestamp << ", prior message "
-            << priorMessageID << "):" << text;
+            << priorMessageID << "): " << text;
 
     ChatWidget *chat = ChatWidget::widgetForUser(command.user);
     chat->receiveMessage(QDateTime::currentDateTime().addSecs(-(int)timestamp), text, command.identifier, priorMessageID);
