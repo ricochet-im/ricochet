@@ -243,6 +243,7 @@ void ProtocolSocket::read()
                 (*it)->processReply(data[3], reinterpret_cast<const uchar*>(data.constData())+6, msgLength);
                 if (isFinal(data[3]))
                 {
+                    /* Duplicated in socketDisconnected() */
                     qDebug() << "Received final reply for identifier" << identifier;
                     emit (*it)->commandFinished();
                     (*it)->deleteLater();
@@ -274,7 +275,21 @@ void ProtocolSocket::socketDisconnected()
 
     authFinished = authPending = false;
 
-    /* TODO: EEK. These need to be handled properly! */
-    commandQueue.clear();
+    /* Send failure replies for all pending commands */
+    for (QHash<quint16,ProtocolCommand*>::Iterator it = pendingCommands.begin(); it != pendingCommands.end(); ++it)
+    {
+        (*it)->processReply(ProtocolCommand::ConnectionError, 0, 0);
+        emit (*it)->commandFinished();
+        (*it)->deleteLater();
+    }
+
+    for (QQueue<ProtocolCommand*>::Iterator it = commandQueue.begin(); it != commandQueue.end(); ++it)
+    {
+        (*it)->processReply(ProtocolCommand::ConnectionError, 0, 0);
+        emit (*it)->commandFinished();
+        (*it)->deleteLater();
+    }
+
     pendingCommands.clear();
+    commandQueue.clear();
 }
