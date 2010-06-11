@@ -49,6 +49,8 @@ ChatWidget *ChatWidget::widgetForUser(ContactUser *u, bool create)
 ChatWidget::ChatWidget(ContactUser *u)
     : user(u), offlineNotice(0), pUnread(0), lastReceivedID(0)
 {
+    useMessageOrdering = config->value("ui/chatMessageOrdering", true).toBool();
+
     Q_ASSERT(user);
     connect(user, SIGNAL(connected()), this, SLOT(clearOfflineNotice()));
     connect(user, SIGNAL(disconnected()), this, SLOT(showOfflineNotice()));
@@ -168,7 +170,7 @@ void ChatWidget::addChatMessage(ContactUser *from, quint16 messageID, const QDat
 {
     QTextCursor cursor;
 
-    if (from && priorMessage)
+    if (useMessageOrdering && from && priorMessage)
     {
         /* Position this message after the provided *outgoing* message (found by ID),
          * and after any incoming messages, but before the next outgoing message. */

@@ -66,6 +66,7 @@ private:
 
     int pUnread;
     quint16 lastReceivedID;
+    bool useMessageOrdering;
 
     explicit ChatWidget(ContactUser *user);
 
