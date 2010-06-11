@@ -185,37 +185,49 @@ void TorControlManager::protocolInfoReply()
             qDebug() << "torctrl: Using null authentication";
             data = auth->build();
         }
-        else if (methods.testFlag(ProtocolInfoCommand::AuthHashedPassword) && !pAuthPassword.isEmpty())
-        {
-            qDebug() << "torctrl: Using hashed password authentication";
-            data = auth->build(pAuthPassword);
-        }
         else if (methods.testFlag(ProtocolInfoCommand::AuthCookie) && !info->cookieFile().isEmpty())
         {
             QString cookieFile = info->cookieFile();
+            QString cookieError;
             qDebug() << "torctrl: Using cookie authentication with file" << cookieFile;
 
             QFile file(cookieFile);
-            if (!file.open(QIODevice::ReadOnly))
+            if (file.open(QIODevice::ReadOnly))
             {
-                setError(tr("Unable to read authentication cookie file: %1").arg(file.errorString()));
+                QByteArray cookie = file.readAll();
+                file.close();
+
+                /* Simple test to avoid a vulnerability where any process listening on what we think is
+                 * the control port could trick us into sending the contents of an arbitrary file */
+                if (cookie.size() == 32)
+                    data = auth->build(cookie);
+                else
+                    cookieError = tr("Unexpected file size");
+            }
+            else
+                cookieError = file.errorString();
+
+            if (!cookieError.isNull() || data.isNull())
+            {
+                /* If we know a password and password authentication is allowed, try using that instead.
+                 * This is a strange corner case that will likely never happen in a normal configuration,
+                 * but it has happened. */
+                if (methods.testFlag(ProtocolInfoCommand::AuthHashedPassword) && !pAuthPassword.isEmpty())
+                {
+                    qDebug() << "torctrl: Unable to read authentication cookie file:" << cookieError;
+                    goto usePasswordAuth;
+                }
+
+                setError(tr("Unable to read authentication cookie file: %1").arg(cookieError));
                 delete auth;
                 return;
             }
-
-            QByteArray cookie = file.readAll();
-            file.close();
-
-            /* Simple test to avoid a vulnerability where any process listening on what we think is
-             * the control port could trick us into sending the contents of an arbitrary file */
-            if (cookie.size() != 32)
-            {
-                setError(tr("Unable to read authentication cookie file: ").arg(tr("Unexpected file size")));
-                delete auth;
-                return;
-            }
-
-            data = auth->build(cookie);
+        }
+        else if (methods.testFlag(ProtocolInfoCommand::AuthHashedPassword) && !pAuthPassword.isEmpty())
+        {
+            usePasswordAuth:
+            qDebug() << "torctrl: Using hashed password authentication";
+            data = auth->build(pAuthPassword);
         }
         else
         {
