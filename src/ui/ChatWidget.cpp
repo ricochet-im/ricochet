@@ -141,8 +141,6 @@ void ChatWidget::messageReply()
     QTextBlock block;
     if (findBlockIdentifier(makeBlockIdentifier(0, command->identifier()), block))
     {
-        block.setUserState(0);
-
         /* Loop through the fragments in this block, and see if any have alternate text colors.
          * If they do, set that color. */
         QTextCursor cursor(textArea->document());
@@ -168,8 +166,34 @@ void ChatWidget::messageReply()
 void ChatWidget::addChatMessage(ContactUser *from, quint16 messageID, const QDateTime &when, const QString &text,
                                 quint16 priorMessage)
 {
-    QTextCursor cursor(textArea->document());
-    cursor.movePosition(QTextCursor::End);
+    QTextCursor cursor;
+
+    if (from && priorMessage)
+    {
+        /* Position this message after the provided *outgoing* message (found by ID),
+         * and after any incoming messages, but before the next outgoing message. */
+        QTextBlock priorMessageBlock;
+        if (findBlockIdentifier(makeBlockIdentifier(0, priorMessage), priorMessageBlock))
+        {
+            /* Go past any previous incoming messages */
+            for (;;)
+            {
+                QTextBlock next = priorMessageBlock.next();
+                if (!next.isValid() || !(unsigned(next.userState()) >> 16))
+                    break;
+                priorMessageBlock = next;
+            }
+
+            cursor = QTextCursor(priorMessageBlock);
+            cursor.movePosition(QTextCursor::EndOfBlock);
+        }
+    }
+
+    if (cursor.isNull())
+    {
+        cursor = QTextCursor(textArea->document());
+        cursor.movePosition(QTextCursor::End);
+    }
 
     if (!cursor.atBlockStart())
         cursor.insertBlock();
