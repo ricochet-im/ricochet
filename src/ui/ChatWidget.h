@@ -19,6 +19,7 @@
 #define CHATWIDGET_H
 
 #include <QWidget>
+#include <QVector>
 
 class QDateTime;
 class ContactUser;
@@ -54,6 +55,8 @@ private slots:
     void clearOfflineNotice();
     void clearOfflineNoticeInstantly();
 
+    void sendOfflineMessages();
+
 protected:
     virtual bool event(QEvent *event);
 
@@ -63,6 +66,9 @@ private:
     class QTextEdit *textArea;
     class QLineEdit *textInput;
     class QWidget *offlineNotice;
+
+    typedef QVector<QPair<QDateTime,QString> > OfflineMessageList;
+    OfflineMessageList offlineMessages;
 
     int pUnread;
     quint16 lastReceivedID;
@@ -76,8 +82,13 @@ private:
     void addChatMessage(ContactUser *user, quint16 messageID, const QDateTime &when, const QString &text,
                               quint16 priorMessage = 0);
 
-    int makeBlockIdentifier(ContactUser *user, quint16 messageid);
+    /* Upper 16 bits of the block identifier are either a user ID, 0 (indicating local), or -1 (indicating local offline) */
+    int makeBlockIdentifier(qint16 num, quint16 messageid) const { return int((unsigned(num) << 16) | unsigned(messageid)); }
+    int makeBlockIdentifier(ContactUser *user, quint16 messageid) const;
     bool findBlockIdentifier(int identifier, class QTextBlock &block);
+    bool changeBlockIdentifier(int oldIdentifier, int newIdentifier);
+
+    int addOfflineMessage(const QDateTime &when, const QString &message);
 };
 
 #endif // CHATWIDGET_H

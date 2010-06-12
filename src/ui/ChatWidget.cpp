@@ -53,6 +53,7 @@ ChatWidget::ChatWidget(ContactUser *u)
 
     Q_ASSERT(user);
     connect(user, SIGNAL(connected()), this, SLOT(clearOfflineNotice()));
+    connect(user, SIGNAL(connected()), this, SLOT(sendOfflineMessages()));
     connect(user, SIGNAL(disconnected()), this, SLOT(showOfflineNotice()));
 
     connect(this, SIGNAL(unreadMessagesChanged(int)), user, SLOT(updateStatusLine()));
@@ -104,11 +105,20 @@ void ChatWidget::sendInputMessage()
 
     QDateTime when = QDateTime::currentDateTime();
 
-    ChatMessageCommand *command = new ChatMessageCommand;
-    connect(command, SIGNAL(commandFinished()), this, SLOT(messageReply()));
-    command->send(user->conn(), when, text, lastReceivedID);
+    if (user->isConnected())
+    {
+        ChatMessageCommand *command = new ChatMessageCommand;
+        connect(command, SIGNAL(commandFinished()), this, SLOT(messageReply()));
+        command->send(user->conn(), when, text, lastReceivedID);
 
-    addChatMessage(NULL, command->identifier(), when, text);
+        addChatMessage(NULL, command->identifier(), when, text);
+    }
+    else
+    {
+        int n = addOfflineMessage(when, text);
+        addChatMessage(NULL, (quint16)-1, when, text);
+        changeBlockIdentifier(makeBlockIdentifier((ContactUser*)0, (quint16)-1), makeBlockIdentifier(-1, n));
+    }
 }
 
 void ChatWidget::receiveMessage(const QDateTime &when, const QString &text, quint16 messageID, quint16 priorMessageID)
@@ -141,7 +151,7 @@ void ChatWidget::messageReply()
         return;
 
     QTextBlock block;
-    if (findBlockIdentifier(makeBlockIdentifier(0, command->identifier()), block))
+    if (findBlockIdentifier(makeBlockIdentifier((ContactUser*)0, command->identifier()), block))
     {
         /* Loop through the fragments in this block, and see if any have alternate text colors.
          * If they do, set that color. */
@@ -175,13 +185,13 @@ void ChatWidget::addChatMessage(ContactUser *from, quint16 messageID, const QDat
         /* Position this message after the provided *outgoing* message (found by ID),
          * and after any incoming messages, but before the next outgoing message. */
         QTextBlock priorMessageBlock;
-        if (findBlockIdentifier(makeBlockIdentifier(0, priorMessage), priorMessageBlock))
+        if (findBlockIdentifier(makeBlockIdentifier((ContactUser*)0, priorMessage), priorMessageBlock))
         {
             /* Go past any previous incoming messages */
             for (;;)
             {
                 QTextBlock next = priorMessageBlock.next();
-                if (!next.isValid() || !(unsigned(next.userState()) >> 16))
+                if (!next.isValid() || (unsigned(next.userState()) >> 16) != unsigned(user->uniqueID))
                     break;
                 priorMessageBlock = next;
             }
@@ -256,13 +266,9 @@ void ChatWidget::scrollToBottom()
     textArea->verticalScrollBar()->setValue(textArea->verticalScrollBar()->maximum());
 }
 
-int ChatWidget::makeBlockIdentifier(ContactUser *user, quint16 messageid)
+int ChatWidget::makeBlockIdentifier(ContactUser *user, quint16 messageid) const
 {
-    unsigned re = messageid;
-    if (user)
-        re |= unsigned(user->uniqueID) << 16;
-
-    return int(re);
+    return makeBlockIdentifier(user ? user->uniqueID : 0, messageid);
 }
 
 bool ChatWidget::findBlockIdentifier(int identifier, QTextBlock &dst)
@@ -286,6 +292,19 @@ bool ChatWidget::findBlockIdentifier(int identifier, QTextBlock &dst)
     }
 
     return false;
+}
+
+bool ChatWidget::changeBlockIdentifier(int oldIdentifier, int newIdentifier)
+{
+    if (!oldIdentifier || !newIdentifier)
+        return false;
+
+    QTextBlock b;
+    if (!findBlockIdentifier(oldIdentifier, b))
+        return false;
+
+    b.setUserState(newIdentifier);
+    return true;
 }
 
 void ChatWidget::showOfflineNotice()
@@ -363,6 +382,35 @@ void ChatWidget::clearOfflineNoticeInstantly()
     offlineNotice->hide();
     offlineNotice->deleteLater();
     offlineNotice = 0;
+}
+
+int ChatWidget::addOfflineMessage(const QDateTime &when, const QString &message)
+{
+    Q_ASSERT(!user->isConnected());
+    int n = offlineMessages.size();
+    offlineMessages.append(qMakePair(when, message));
+    return n;
+}
+
+void ChatWidget::sendOfflineMessages()
+{
+    if (offlineMessages.isEmpty() || !user->isConnected())
+        return;
+
+    qDebug() << "Sending" << offlineMessages.size() << "offline messages to" << user->uniqueID;
+
+    /* Clear the original list for the unlikely event that one of the commands fails instantly */
+    OfflineMessageList messages = offlineMessages;
+    offlineMessages.clear();
+
+    for (int i = 0; i < messages.size(); ++i)
+    {
+        ChatMessageCommand *command = new ChatMessageCommand;
+        connect(command, SIGNAL(commandFinished()), this, SLOT(messageReply()));
+        command->send(user->conn(), messages[i].first, messages[i].second);
+
+        changeBlockIdentifier(makeBlockIdentifier(-1, i), makeBlockIdentifier((ContactUser*)0, command->identifier()));
+    }
 }
 
 bool ChatWidget::event(QEvent *event)
