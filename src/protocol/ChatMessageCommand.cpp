@@ -24,7 +24,7 @@
 REGISTER_COMMAND_HANDLER(0x10, ChatMessageCommand)
 
 ChatMessageCommand::ChatMessageCommand(QObject *parent)
-    : ProtocolCommand(parent)
+    : ProtocolCommand(parent), m_finalReplyState(0)
 {
 }
 
@@ -38,6 +38,9 @@ void ChatMessageCommand::send(ProtocolManager *to, const QDateTime &timestamp, c
     builder << text;
 
     sendCommand(to, true);
+
+    m_messageText = text;
+    m_messageTime = timestamp;
 }
 
 void ChatMessageCommand::process(CommandHandler &command)
@@ -70,4 +73,6 @@ void ChatMessageCommand::processReply(quint8 state, const uchar *data, unsigned 
     Q_UNUSED(dataSize);
 
     qDebug() << "Received chat message reply" << hex << state;
+    if (isFinal(state))
+        m_finalReplyState = state;
 }

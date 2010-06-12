@@ -150,6 +150,19 @@ void ChatWidget::messageReply()
     if (!command)
         return;
 
+    if (!isSuccess(command->finalReplyState()))
+    {
+        /* Connected users are outside the realm of offline messaging */
+        if (user->isConnected())
+            return;
+
+        int n = addOfflineMessage(command->messageTime(), command->messageText());
+        changeBlockIdentifier(makeBlockIdentifier((ContactUser*)0, command->identifier()), makeBlockIdentifier(-1, n));
+        return;
+    }
+
+    /* Update text colors to indicate that the message was received */
+
     QTextBlock block;
     if (findBlockIdentifier(makeBlockIdentifier((ContactUser*)0, command->identifier()), block))
     {

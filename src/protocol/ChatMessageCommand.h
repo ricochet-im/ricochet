@@ -19,6 +19,7 @@
 #define CHATMESSAGECOMMAND_H
 
 #include "ProtocolCommand.h"
+#include <QDateTime>
 
 class ChatMessageCommand : public ProtocolCommand
 {
@@ -29,13 +30,21 @@ public:
     explicit ChatMessageCommand(QObject *parent = 0);
 
     virtual quint8 command() const { return 0x10; }
+    static void process(CommandHandler &command);
+
+    quint8 finalReplyState() const { return m_finalReplyState; }
 
     void send(ProtocolManager *to, const QDateTime &timestamp, const QString &text, quint16 lastReceivedID = 0);
-
-    static void process(CommandHandler &command);
+    QString messageText() const { return m_messageText; }
+    QDateTime messageTime() const { return m_messageTime; }
 
 protected:
     virtual void processReply(quint8 state, const uchar *data, unsigned dataSize);
+
+private:
+    QString m_messageText;
+    QDateTime m_messageTime;
+    quint8 m_finalReplyState;
 };
 
 #endif // CHATMESSAGECOMMAND_H
