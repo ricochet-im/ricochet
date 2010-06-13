@@ -20,6 +20,7 @@
 
 #include <QWidget>
 #include <QVector>
+#include <QDate>
 
 class QDateTime;
 class ContactUser;
@@ -69,6 +70,8 @@ private:
 
     typedef QVector<QPair<QDateTime,QString> > OfflineMessageList;
     OfflineMessageList offlineMessages;
+
+    QDate lastMessageDate;
 
     int pUnread;
     quint16 lastReceivedID;

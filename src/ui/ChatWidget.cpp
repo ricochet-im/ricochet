@@ -204,7 +204,7 @@ void ChatWidget::addChatMessage(ContactUser *from, quint16 messageID, const QDat
             for (;;)
             {
                 QTextBlock next = priorMessageBlock.next();
-                if (!next.isValid() || (unsigned(next.userState()) >> 16) != unsigned(user->uniqueID))
+                if (!next.isValid() || (next.userState() && (unsigned(next.userState()) >> 16) != unsigned(user->uniqueID)))
                     break;
                 priorMessageBlock = next;
             }
@@ -222,6 +222,21 @@ void ChatWidget::addChatMessage(ContactUser *from, quint16 messageID, const QDat
 
     if (!cursor.atBlockStart())
         cursor.insertBlock();
+
+    if (lastMessageDate.isNull())
+        lastMessageDate = QDate::currentDate();
+
+    if (lastMessageDate != when.date())
+    {
+        lastMessageDate = when.date();
+
+        QTextCharFormat charFormat;
+        charFormat.setForeground(QColor(160, 160, 164));
+        charFormat.setFontItalic(true);
+
+        cursor.insertText(when.date().toString(QLatin1String("dddd, MMMM d")), charFormat);
+        cursor.insertBlock();
+    }
 
     if (messageID)
         cursor.block().setUserState(makeBlockIdentifier(from, messageID));
