@@ -85,9 +85,23 @@ private:
     void addChatMessage(ContactUser *user, quint16 messageID, const QDateTime &when, const QString &text,
                               quint16 priorMessage = 0);
 
-    /* Upper 16 bits of the block identifier are either a user ID, 0 (indicating local), or -1 (indicating local offline) */
-    int makeBlockIdentifier(qint16 num, quint16 messageid) const { return int((unsigned(num) << 16) | unsigned(messageid)); }
-    int makeBlockIdentifier(ContactUser *user, quint16 messageid) const;
+    /* The upper 16 bits of a text block identifier hold the message type; the lower 16 are a type-specific identifier */
+    enum MessageType
+    {
+        LocalUserMessage = 1,
+        RemoteUserMessage,
+        OfflineMessage
+    };
+
+    int makeBlockIdentifier(MessageType type, quint16 messageid) const
+    {
+        return int((unsigned(type) << 16) | unsigned(messageid));
+    }
+    MessageType blockIdentifierType(int identifier) const
+    {
+        return static_cast<MessageType>(unsigned(identifier) >> 16);
+    }
+
     bool findBlockIdentifier(int identifier, class QTextBlock &block);
     bool changeBlockIdentifier(int oldIdentifier, int newIdentifier);
 

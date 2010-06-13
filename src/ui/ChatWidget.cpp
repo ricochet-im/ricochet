@@ -49,6 +49,11 @@ ChatWidget *ChatWidget::widgetForUser(ContactUser *u, bool create)
 ChatWidget::ChatWidget(ContactUser *u)
     : user(u), offlineNotice(0), pUnread(0), lastReceivedID(0)
 {
+    /* Peace of mind; verify that makeBlockIdentifier behaves sanely, as i'm unsure
+     * of its behavior on big endian machines and have no ability to test. */
+    Q_ASSERT(makeBlockIdentifier(LocalUserMessage, 1) != makeBlockIdentifier(RemoteUserMessage, 1));
+    Q_ASSERT(makeBlockIdentifier(LocalUserMessage, 1) != makeBlockIdentifier(LocalUserMessage, 2));
+
     useMessageOrdering = config->value("ui/chatMessageOrdering", true).toBool();
 
     Q_ASSERT(user);
@@ -117,7 +122,7 @@ void ChatWidget::sendInputMessage()
     {
         int n = addOfflineMessage(when, text);
         addChatMessage(NULL, (quint16)-1, when, text);
-        changeBlockIdentifier(makeBlockIdentifier((ContactUser*)0, (quint16)-1), makeBlockIdentifier(-1, n));
+        changeBlockIdentifier(makeBlockIdentifier(LocalUserMessage, (quint16)-1), makeBlockIdentifier(OfflineMessage, n));
     }
 }
 
@@ -157,14 +162,15 @@ void ChatWidget::messageReply()
             return;
 
         int n = addOfflineMessage(command->messageTime(), command->messageText());
-        changeBlockIdentifier(makeBlockIdentifier((ContactUser*)0, command->identifier()), makeBlockIdentifier(-1, n));
+        changeBlockIdentifier(makeBlockIdentifier(LocalUserMessage, command->identifier()),
+                              makeBlockIdentifier(OfflineMessage, n));
         return;
     }
 
     /* Update text colors to indicate that the message was received */
 
     QTextBlock block;
-    if (findBlockIdentifier(makeBlockIdentifier((ContactUser*)0, command->identifier()), block))
+    if (findBlockIdentifier(makeBlockIdentifier(LocalUserMessage, command->identifier()), block))
     {
         /* Loop through the fragments in this block, and see if any have alternate text colors.
          * If they do, set that color. */
@@ -198,13 +204,13 @@ void ChatWidget::addChatMessage(ContactUser *from, quint16 messageID, const QDat
         /* Position this message after the provided *outgoing* message (found by ID),
          * and after any incoming messages, but before the next outgoing message. */
         QTextBlock priorMessageBlock;
-        if (findBlockIdentifier(makeBlockIdentifier((ContactUser*)0, priorMessage), priorMessageBlock))
+        if (findBlockIdentifier(makeBlockIdentifier(LocalUserMessage, priorMessage), priorMessageBlock))
         {
             /* Go past any previous incoming messages */
             for (;;)
             {
                 QTextBlock next = priorMessageBlock.next();
-                if (!next.isValid() || (next.userState() && (unsigned(next.userState()) >> 16) != unsigned(user->uniqueID)))
+                if (!next.isValid() || blockIdentifierType(next.userState()) == LocalUserMessage)
                     break;
                 priorMessageBlock = next;
             }
@@ -239,7 +245,7 @@ void ChatWidget::addChatMessage(ContactUser *from, quint16 messageID, const QDat
     }
 
     if (messageID)
-        cursor.block().setUserState(makeBlockIdentifier(from, messageID));
+        cursor.block().setUserState(makeBlockIdentifier(from ? RemoteUserMessage : LocalUserMessage, messageID));
 
     /* These are the colors used for the timestamp, nickname, and text. Each has two colors;
      * the full color, and the 'faded' color for when the message hasn't been received yet. */
@@ -292,11 +298,6 @@ void ChatWidget::addChatMessage(ContactUser *from, quint16 messageID, const QDat
 void ChatWidget::scrollToBottom()
 {
     textArea->verticalScrollBar()->setValue(textArea->verticalScrollBar()->maximum());
-}
-
-int ChatWidget::makeBlockIdentifier(ContactUser *user, quint16 messageid) const
-{
-    return makeBlockIdentifier(user ? user->uniqueID : 0, messageid);
 }
 
 bool ChatWidget::findBlockIdentifier(int identifier, QTextBlock &dst)
@@ -437,7 +438,7 @@ void ChatWidget::sendOfflineMessages()
         connect(command, SIGNAL(commandFinished()), this, SLOT(messageReply()));
         command->send(user->conn(), messages[i].first, messages[i].second);
 
-        changeBlockIdentifier(makeBlockIdentifier(-1, i), makeBlockIdentifier((ContactUser*)0, command->identifier()));
+        changeBlockIdentifier(makeBlockIdentifier(OfflineMessage, i), makeBlockIdentifier(LocalUserMessage, command->identifier()));
     }
 }
 
