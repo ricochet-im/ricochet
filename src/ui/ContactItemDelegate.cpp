@@ -31,8 +31,8 @@ ContactItemDelegate::ContactItemDelegate(ContactsView *view)
 
 QSize ContactItemDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-        Q_UNUSED(option);
-        Q_UNUSED(index);
+    Q_UNUSED(option);
+    Q_UNUSED(index);
     return QSize(160, 48);
 }
 
