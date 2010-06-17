@@ -17,6 +17,7 @@
 
 #include "main.h"
 #include "ui/MainWindow.h"
+#include "core/IdentityManager.h"
 #include "core/ContactsManager.h"
 #include "tor/TorControlManager.h"
 #include "tor/HiddenService.h"
@@ -72,6 +73,9 @@ int main(int argc, char *argv[])
     /* Tor control manager; this may enter into the TorConfigWizard. */
     if (!connectTorControl())
         return 0;
+
+    /* Identities */
+    identityManager = new IdentityManager;
 
     /* Contacts */
     contactsManager = new ContactsManager;

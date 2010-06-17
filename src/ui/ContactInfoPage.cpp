@@ -134,7 +134,7 @@ static const quint32 bottomData[] =
 
 void ContactInfoPage::createAvatar()
 {
-    QPixmap image = user->avatar(ContactUser::FullAvatar);
+    QPixmap image = user->avatar(FullAvatar);
 
     avatar = new QLabel;
     avatar->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);

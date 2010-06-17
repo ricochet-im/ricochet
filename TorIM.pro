@@ -81,7 +81,9 @@ SOURCES += src/main.cpp \
     src/ui/torconfig/VidaliaExitWidget.cpp \
     src/ui/torconfig/VidaliaStartWidget.cpp \
     src/ui/torconfig/VidaliaTestWidget.cpp \
-    src/ui/IdentityItemDelegate.cpp
+    src/ui/IdentityItemDelegate.cpp \
+    src/core/UserIdentity.cpp \
+    src/core/IdentityManager.cpp
 
 HEADERS += src/ui/MainWindow.h \
     src/ui/ChatWidget.h \
@@ -138,7 +140,9 @@ HEADERS += src/ui/MainWindow.h \
     src/ui/torconfig/VidaliaExitWidget.h \
     src/ui/torconfig/VidaliaStartWidget.h \
     src/ui/torconfig/VidaliaTestWidget.h \
-    src/ui/IdentityItemDelegate.h
+    src/ui/IdentityItemDelegate.h \
+    src/core/UserIdentity.h \
+    src/core/IdentityManager.h
 
 RESOURCES += res/resources.qrc \
     translation/embedded.qrc

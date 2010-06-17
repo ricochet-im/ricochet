@@ -18,6 +18,7 @@
 #ifndef CONTACTUSER_H
 #define CONTACTUSER_H
 
+#include "main.h"
 #include <QObject>
 #include <QImage>
 #include <QPixmap>
@@ -37,12 +38,6 @@ class ContactUser : public QObject
     friend class ContactsManager;
 
 public:
-    enum AvatarSize
-    {
-        FullAvatar, /* 160x160 */
-        TinyAvatar /* 35x35 */
-    };
-
     const int uniqueID;
 
     explicit ContactUser(int uniqueID, QObject *parent = 0);
