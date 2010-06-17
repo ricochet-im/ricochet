@@ -17,8 +17,7 @@
 
 #include "ContactsView.h"
 #include "ContactsModel.h"
-#include "ContactItemDelegate.h"
-#include "IdentityItemDelegate.h"
+#include "ContactsViewDelegate.h"
 #include "core/ContactUser.h"
 #include "ui/ChatWidget.h"
 #include <QHeaderView>
@@ -32,7 +31,7 @@ ContactsView::ContactsView(QWidget *parent)
     setHeaderHidden(true);
     setFrameStyle(QFrame::NoFrame);
     setModel(new ContactsModel(this));
-    setItemDelegate(new ContactItemDelegate(this));
+    setItemDelegate(new ContactsViewDelegate(this));
     setMouseTracking(true);
     setDragEnabled(true);
     setAcceptDrops(true);
@@ -130,7 +129,7 @@ void ContactsView::mousePressEvent(QMouseEvent *event)
 
     if (user)
     {
-        ContactItemDelegate *delegate = qobject_cast<ContactItemDelegate*>(this->itemDelegate(index));
+        ContactsViewDelegate *delegate = qobject_cast<ContactsViewDelegate*>(this->itemDelegate(index));
         Q_ASSERT(delegate);
 
         if (delegate)
@@ -140,7 +139,7 @@ void ContactsView::mousePressEvent(QMouseEvent *event)
             QPoint innerPos = event->pos() - itemRect.topLeft();
             ContactPage hitPage;
 
-            if (delegate->pageHitTest(itemRect.size(), innerPos, hitPage))
+            if (delegate->pageHitTest(index, itemRect.size(), innerPos, hitPage))
                 setContactPage(user, hitPage);
         }
 
@@ -189,7 +188,7 @@ void ContactsView::mouseReleaseEvent(QMouseEvent *event)
         return;
     }
 
-    ContactItemDelegate *delegate = qobject_cast<ContactItemDelegate*>(this->itemDelegate(index));
+    ContactsViewDelegate *delegate = qobject_cast<ContactsViewDelegate*>(this->itemDelegate(index));
     if (!delegate)
     {
         QTreeView::mouseReleaseEvent(event);
@@ -200,7 +199,7 @@ void ContactsView::mouseReleaseEvent(QMouseEvent *event)
     QPoint innerPos = event->pos() - itemRect.topLeft();
 
     ContactPage hitPage;
-    if (delegate->pageHitTest(itemRect.size(), innerPos, hitPage))
+    if (delegate->pageHitTest(index, itemRect.size(), innerPos, hitPage))
     {
         setContactPage(user, hitPage);
     }

@@ -15,27 +15,31 @@
  * along with TorIM. If not, see http://www.gnu.org/licenses/
  */
 
-#ifndef CONTACTITEMDELEGATE_H
-#define CONTACTITEMDELEGATE_H
+#ifndef CONTACTSVIEWDELEGATE_H
+#define CONTACTSVIEWDELEGATE_H
 
-#include "MainWindow.h"
-#include <QStyledItemDelegate>
+#include <QAbstractItemDelegate>
+#include "ContactItemDelegate.h"
+#include "IdentityItemDelegate.h"
+#include "ContactsView.h"
 
-class ContactsView;
-
-class ContactItemDelegate : public QStyledItemDelegate
+class ContactsViewDelegate : public QAbstractItemDelegate
 {
     Q_OBJECT
+    Q_DISABLE_COPY(ContactsViewDelegate)
+
 public:
-    explicit ContactItemDelegate(ContactsView *view);
+    explicit ContactsViewDelegate(ContactsView *view);
 
-    bool pageHitTest(const QSize &size, const QPoint &point, ContactPage &hitPage) const;
+    bool indexIsContact(const QModelIndex &index) const;
 
+    bool pageHitTest(const QModelIndex &index, const QSize &size, const QPoint &point, ContactPage &hitPage) const;
     virtual QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const;
     virtual void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
 
-protected:
-    ContactsView *contactsView;
+private:
+    ContactItemDelegate contactDelegate;
+    IdentityItemDelegate identityDelegate;
 };
 
-#endif // CONTACTITEMDELEGATE_H
+#endif // CONTACTSVIEWDELEGATE_H

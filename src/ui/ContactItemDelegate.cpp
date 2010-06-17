@@ -36,7 +36,7 @@ QSize ContactItemDelegate::sizeHint(const QStyleOptionViewItem &option, const QM
     return QSize(160, 48);
 }
 
-bool ContactItemDelegate::pageHitTest(const QSize &size, const QPoint &point, ContactPage &hitPage)
+bool ContactItemDelegate::pageHitTest(const QSize &size, const QPoint &point, ContactPage &hitPage) const
 {
     /* Point is from an origin of 0,0 in an item of the given size. Perform hit testing on
      * the page switch buttons. */

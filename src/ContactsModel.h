@@ -38,6 +38,8 @@ public:
 
     explicit ContactsModel(QObject *parent = 0);
 
+    bool indexIsContact(const QModelIndex &index) const;
+
     QModelIndex indexOfContact(ContactUser *user) const;
     QModelIndex indexOfIdentity(UserIdentity *user) const;
 

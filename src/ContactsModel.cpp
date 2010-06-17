@@ -78,6 +78,11 @@ void ContactsModel::populate()
     endResetModel();
 }
 
+bool ContactsModel::indexIsContact(const QModelIndex &index) const
+{
+    return index.internalPointer() != 0;
+}
+
 QModelIndex ContactsModel::indexOfContact(ContactUser *user) const
 {
     if (contacts.isEmpty())
