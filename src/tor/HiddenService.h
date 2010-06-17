@@ -43,14 +43,15 @@ public:
 
     enum Status
     {
-        Offline, /* Not published */
+        NotCreated = -1, /* Service has not been created yet */
+        Offline = 0, /* Data exists, but service is not published */
         Published, /* Published, but not confirmed to be accessible */
         Online /* Published and accessible */
     };
 
     const QString dataPath;
 
-    HiddenService(const QString &dataPath);
+    HiddenService(const QString &dataPath, QObject *parent = 0);
 
     Status status() const { return pStatus; }
 

@@ -19,14 +19,23 @@
 #include "TorControlManager.h"
 #include "TorServiceTest.h"
 #include "utils/CryptoKey.h"
+#include <QDir>
 #include <QFile>
 #include <QTimer>
 
 using namespace Tor;
 
-HiddenService::HiddenService(const QString &p)
-    : dataPath(p), selfTest(0), pStatus(Offline)
+HiddenService::HiddenService(const QString &p, QObject *parent)
+    : QObject(parent), dataPath(p), selfTest(0), pStatus(NotCreated)
 {
+    /* Set the initial status and, if possible, load the hostname */
+    QDir dir(dataPath);
+    if (dir.exists(QLatin1String("hostname")) && dir.exists(QLatin1String("private_key")))
+    {
+        readHostname();
+        if (!pHostname.isEmpty())
+            pStatus = Offline;
+    }
 }
 
 void HiddenService::setStatus(Status newStatus)
