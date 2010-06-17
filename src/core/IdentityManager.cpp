@@ -17,6 +17,7 @@
 
 #include "IdentityManager.h"
 #include "ContactIDValidator.h"
+#include <QDebug>
 
 IdentityManager *identityManager = 0;
 
@@ -49,6 +50,24 @@ void IdentityManager::loadFromSettings()
         UserIdentity *user = new UserIdentity(id, this);
         m_identities.append(user);
         highestID = qMax(id, highestID);
+    }
+
+    /* Attempt to convert from old style configs if necessary */
+    if (config->contains(QLatin1String("core/serviceDirectory")))
+    {
+        QString directory = config->value("core/serviceDirectory").toString();
+        foreach (UserIdentity *user, m_identities)
+        {
+            if (user->readSetting("dataDirectory").toString() == directory)
+                return;
+        }
+
+        qDebug() << "Creating new identity from old single-identity configuration";
+
+        config->setValue(QString::fromLatin1("identity/%1/dataDirectory").arg(highestID+1), directory);
+
+        UserIdentity *user = new UserIdentity(++highestID, this);
+        m_identities.append(user);
     }
 }
 

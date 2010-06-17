@@ -20,7 +20,6 @@
 #include "core/IdentityManager.h"
 #include "core/ContactsManager.h"
 #include "tor/TorControlManager.h"
-#include "tor/HiddenService.h"
 #include "ui/torconfig/TorConfigWizard.h"
 #include "protocol/IncomingSocket.h"
 #include "utils/SecureRNG.h"
@@ -34,7 +33,7 @@
 
 AppSettings *config = 0;
 
-static IncomingSocket *incomingSocket = 0;
+IncomingSocket *incomingSocket = 0;
 
 static void initSettings();
 static void initTranslation();
@@ -176,14 +175,6 @@ static bool connectTorControl()
 
     /* Authentication */
     torManager->setAuthPassword(config->value("tor/authPassword").toByteArray());
-
-    /* Hidden service */
-    QString serviceDir = config->value("core/serviceDirectory", QLatin1String("data")).toString();
-
-    Tor::HiddenService *service = new Tor::HiddenService(serviceDir);
-    service->addTarget(80, incomingSocket->serverAddress(), incomingSocket->serverPort());
-
-    torManager->addHiddenService(service);
 
     /* Connect */
     torManager->connect(address, port);

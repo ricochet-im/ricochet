@@ -17,15 +17,36 @@
 
 #include "main.h"
 #include "UserIdentity.h"
+#include "tor/TorControlManager.h"
+#include "tor/HiddenService.h"
+#include "protocol/IncomingSocket.h"
 #include <QImage>
 #include <QPixmap>
 #include <QPixmapCache>
 #include <QBuffer>
 
+/* Imported from main.cpp; will be obsolete when proper multiple identity support is done */
+extern IncomingSocket *incomingSocket;
+
 UserIdentity::UserIdentity(int id, QObject *parent)
     : QObject(parent), uniqueID(id)
 {
     m_nickname = readSetting("nickname", tr("Me")).toString();
+
+    QString dir = readSetting("dataDirectory", QLatin1String("data-") + QString::number(uniqueID)).toString();
+    hiddenService = new Tor::HiddenService(dir, this);
+
+    if (hiddenService->status() == Tor::HiddenService::NotCreated)
+    {
+        qWarning() << "Hidden service data for identity" << uniqueID << "in" << dir << "does not exist";
+        delete hiddenService;
+        hiddenService = 0;
+    }
+    else
+    {
+        hiddenService->addTarget(80, incomingSocket->serverAddress(), incomingSocket->serverPort());
+        torManager->addHiddenService(hiddenService);
+    }
 }
 
 QVariant UserIdentity::readSetting(const QString &key, const QVariant &defaultValue) const
@@ -41,6 +62,11 @@ void UserIdentity::writeSetting(const QString &key, const QVariant &value)
 void UserIdentity::removeSetting(const QString &key)
 {
     config->remove(QString::fromLatin1("identity/%1/%2").arg(uniqueID).arg(key));
+}
+
+QString UserIdentity::hostname() const
+{
+    return hiddenService ? hiddenService->hostname() : QString();
 }
 
 void UserIdentity::setNickname(const QString &nick)

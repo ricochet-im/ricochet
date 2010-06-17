@@ -25,6 +25,11 @@
 class QPixmap;
 class QImage;
 
+namespace Tor
+{
+    class HiddenService;
+}
+
 class UserIdentity : public QObject
 {
     Q_OBJECT
@@ -38,7 +43,7 @@ public:
     /* Properties */
     const QString &nickname() const { return m_nickname; }
     /* Hostname is .onion format, like ContactUser */
-    QString hostname() const { return m_hostname; }
+    QString hostname() const;
     QPixmap avatar(AvatarSize size);
 
     void setNickname(const QString &nickname);
@@ -64,8 +69,10 @@ public:
     }
 
 private:
-    QString m_nickname, m_hostname;
+    QString m_nickname;
     QPixmapCache::Key cachedAvatar[2];
+
+    Tor::HiddenService *hiddenService;
 };
 
 #endif // USERIDENTITY_H
