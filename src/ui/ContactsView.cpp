@@ -18,6 +18,7 @@
 #include "ContactsView.h"
 #include "ContactsModel.h"
 #include "ContactItemDelegate.h"
+#include "IdentityItemDelegate.h"
 #include "core/ContactUser.h"
 #include "ui/ChatWidget.h"
 #include <QHeaderView>
@@ -27,6 +28,7 @@ ContactsView::ContactsView(QWidget *parent)
     : QTreeView(parent), clickSetCurrent(false), clickItemMoved(false)
 {
     setRootIsDecorated(false);
+    setItemsExpandable(false);
     setHeaderHidden(true);
     setFrameStyle(QFrame::NoFrame);
     setModel(new ContactsModel(this));
@@ -34,6 +36,7 @@ ContactsView::ContactsView(QWidget *parent)
     setMouseTracking(true);
     setDragEnabled(true);
     setAcceptDrops(true);
+    setIndentation(0);
 
     QHeaderView *head = header();
     for (int i = 1; i < head->count(); ++i)
@@ -45,6 +48,8 @@ ContactsView::ContactsView(QWidget *parent)
 
     if (model()->rowCount())
         selectionModel()->setCurrentIndex(model()->index(0, 0), QItemSelectionModel::Select);
+
+    expandAll();
 }
 
 ContactPage ContactsView::activeContactPage() const
@@ -78,7 +83,7 @@ void ContactsView::setActivePage(ContactPage page)
 
 void ContactsView::contactSelected(const QModelIndex &current)
 {
-    ContactUser *user = current.data(ContactsModel::ContactUserRole).value<ContactUser*>();
+    ContactUser *user = current.data(ContactsModel::PointerRole).value<ContactUser*>();
     if (user != activeContact())
         setActiveContact(user);
 }
@@ -121,7 +126,7 @@ void ContactsView::mousePressEvent(QMouseEvent *event)
     dragIndex = index;
 
     /* Contact user for that index */
-    ContactUser *user = index.data(ContactsModel::ContactUserRole).value<ContactUser*>();
+    ContactUser *user = index.data(ContactsModel::PointerRole).value<ContactUser*>();
 
     if (user)
     {

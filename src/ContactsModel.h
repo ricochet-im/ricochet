@@ -18,29 +18,36 @@
 #ifndef CONTACTSMODEL_H
 #define CONTACTSMODEL_H
 
-#include <QAbstractListModel>
+#include <QAbstractItemModel>
 #include <QList>
 
+class UserIdentity;
 class ContactUser;
 
-class ContactsModel : public QAbstractListModel
+class ContactsModel : public QAbstractItemModel
 {
     Q_OBJECT
+    Q_DISABLE_COPY(ContactsModel)
+
 public:
     enum
     {
-        ContactUserRole = Qt::UserRole,
+        PointerRole = Qt::UserRole,
         StatusIndicator
     };
 
     explicit ContactsModel(QObject *parent = 0);
 
     QModelIndex indexOfContact(ContactUser *user) const;
+    QModelIndex indexOfIdentity(UserIdentity *user) const;
 
-    void moveRow(int from, int to);
+    void moveRow(int from, int to, const QModelIndex &parent = QModelIndex());
 
     virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
     virtual int columnCount(const QModelIndex &parent = QModelIndex()) const;
+
+    virtual QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;
+    virtual QModelIndex parent(const QModelIndex &child) const;
 
     virtual Qt::DropActions supportedDropActions() const;
     virtual Qt::ItemFlags flags(const QModelIndex &index) const;
@@ -52,10 +59,12 @@ private slots:
     void contactAdded(ContactUser *user);
 
 private:
-    QList<ContactUser*> contacts;
+    QList<UserIdentity*> identities;
+    QList<QList<ContactUser*> > contacts;
 
     void populate();
-    void savePositions();
+    void saveIdentityPositions();
+    void saveContactPositions(int identityRow);
 };
 
 #endif // CONTACTSMODEL_H

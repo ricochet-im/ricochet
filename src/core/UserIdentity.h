@@ -21,6 +21,7 @@
 #include "main.h"
 #include <QObject>
 #include <QPixmapCache>
+#include <QMetaType>
 
 class QPixmap;
 class QImage;
@@ -74,5 +75,7 @@ private:
 
     Tor::HiddenService *hiddenService;
 };
+
+Q_DECLARE_METATYPE(UserIdentity*)
 
 #endif // USERIDENTITY_H
