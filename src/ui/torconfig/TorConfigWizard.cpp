@@ -37,18 +37,30 @@ TorConfigWizard::TorConfigWizard(QWidget *parent)
 
 void TorConfigWizard::accept()
 {
+    QString torMethod;
+    switch (currentId())
+    {
+    case 1:
+        torMethod = QLatin1String("vidalia");
+        break;
+    case 2:
+        torMethod = QLatin1String("manual");
+        break;
+    }
+
     QString controlIp = field(QLatin1String("controlIp")).toString();
     quint16 controlPort = (quint16) field(QLatin1String("controlPort")).toUInt();
 
-    if (controlIp.isEmpty() || controlPort < 1)
+    if (torMethod.isEmpty() || controlIp.isEmpty() || controlPort < 1)
     {
         QMessageBox::critical(this, tr("Error"), tr("The wizard is incomplete; please go back and ensure all required "
                                                     "fields are filled"));
         return;
     }
 
-    config->setValue("tor/controlIp", field(QLatin1String("controlIp")));
-    config->setValue("tor/controlPort", field(QLatin1String("controlPort")));
+    config->setValue("tor/configMethod", torMethod);
+    config->setValue("tor/controlIp", controlIp);
+    config->setValue("tor/controlPort", controlPort);
 
     QString authPassword = field(QLatin1String("controlPassword")).toString();
     if (!authPassword.isEmpty())
