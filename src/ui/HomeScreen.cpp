@@ -19,6 +19,7 @@
 #include "HomeScreen.h"
 #include "tor/TorControlManager.h"
 #include "torconfig/TorConfigWizard.h"
+#include "tor/autoconfig/VidaliaConfigManager.h"
 #include "ui/ContactAddDialog.h"
 #include "ui/MainWindow.h"
 #include "ui/NotificationWidget.h"
@@ -208,14 +209,24 @@ void HomeScreen::updateTorStatus()
 
     QString message;
 
-    switch (torManager->status())
+    if (config->value("tor/configMethod").toString() == QLatin1String("vidalia"))
     {
-    case Tor::TorControlManager::Error:
-        message = tr("Unable to connect to Tor. Make sure Tor is running, or click to reconfigure.");
-        break;
-    default:
-        message = tr("Connecting to Tor. If you have trouble, make sure Tor is running.");
-        break;
+        VidaliaConfigManager vc;
+        if (!vc.isVidaliaRunning())
+            message = tr("Vidalia is not running. Click to start Vidalia and Tor");
+    }
+
+    if (message.isEmpty())
+    {
+        switch (torManager->status())
+        {
+        case Tor::TorControlManager::Error:
+            message = tr("Unable to connect to Tor. Make sure Tor is running, or click to reconfigure.");
+            break;
+        default:
+            message = tr("Connecting to Tor. If you have trouble, make sure Tor is running.");
+            break;
+        }
     }
 
     if (torNotification)
