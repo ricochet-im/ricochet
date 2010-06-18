@@ -50,6 +50,10 @@ public:
     void setNickname(const QString &nickname);
     void setAvatar(QImage image);
 
+    /* State */
+    bool isServiceOnline() const;
+    bool isServicePublished() const;
+
     /* Settings API */
     QVariant readSetting(const QString &key, const QVariant &defaultValue = QVariant()) const;
     QVariant readSetting(const char *key, const QVariant &defaultValue = QVariant()) const

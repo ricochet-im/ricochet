@@ -274,7 +274,12 @@ QVariant ContactsModel::data(const QModelIndex &index, int role) const
         if (role == PointerRole)
             return QVariant::fromValue(identity);
         else if (role == StatusIndicator)
-            return QPixmap(QLatin1String(":/icons/status-online.png"));
+        {
+            if (identity->isServiceOnline())
+                return QPixmap(QLatin1String(":/icons/status-online.png"));
+            else
+                return QPixmap(QLatin1String(":/icons/status-offline.png"));
+        }
 
         switch (index.column())
         {

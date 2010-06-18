@@ -159,8 +159,8 @@ void HiddenService::selfTestSucceeded()
 
 void HiddenService::selfTestFailed()
 {
-    qDebug() << "Hidden service self-test failed; trying again in 60 seconds";
+    qDebug() << "Hidden service self-test failed; trying again in 10 seconds";
     setStatus(Published);
 
-    QTimer::singleShot(60000, this, SLOT(startSelfTest()));
+    QTimer::singleShot(10000, this, SLOT(startSelfTest()));
 }

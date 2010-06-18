@@ -125,3 +125,13 @@ void UserIdentity::setAvatar(QImage image)
     for (int i = 0; i < 2; ++i)
         QPixmapCache::remove(cachedAvatar[i]);
 }
+
+bool UserIdentity::isServiceOnline() const
+{
+    return hiddenService->status() == Tor::HiddenService::Online;
+}
+
+bool UserIdentity::isServicePublished() const
+{
+    return hiddenService->status() >= Tor::HiddenService::Published;
+}
