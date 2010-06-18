@@ -352,11 +352,9 @@ void ChatWidget::showOfflineNotice()
 
     QLabel *icon = new QLabel;
     icon->setPixmap(QPixmap(QLatin1String(":/icons/information.png")));
-    icon->setAlignment(Qt::AlignLeft | Qt::AlignTop);
     layout->addWidget(icon);
 
     QLabel *message = new QLabel;
-    message->setAlignment(Qt::AlignLeft | Qt::AlignTop);
     message->setText(tr("<b>%1</b> is not online. Your messages will be delivered as soon as possible.")
                      .arg(Qt::escape(user->nickname())));
 
