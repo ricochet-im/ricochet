@@ -26,7 +26,9 @@ template<typename T> static inline bool userSort(const T *u1, const T *u2)
 {
     int p1 = u1->readSetting("listPosition", -1).toInt();
     int p2 = u2->readSetting("listPosition", -1).toInt();
-    if (p2 < 0)
+    if (p1 < 0 && p2 < 0)
+        return (u1->uniqueID < u2->uniqueID);
+    else if (p2 < 0)
         return true;
     else if (p1 < 0)
         return false;

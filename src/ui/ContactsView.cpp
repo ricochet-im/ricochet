@@ -228,13 +228,14 @@ void ContactsView::mouseMoveEvent(QMouseEvent *event)
         update(index);
 
         /* Drag and drop */
-        if (event->buttons() & Qt::LeftButton && dragIndex.isValid() && dragIndex != index)
+        if (event->buttons() & Qt::LeftButton && dragIndex.isValid() && dragIndex != index
+            && dragIndex.parent() == index.parent())
         {
-            ContactsModel *cmodel = qobject_cast<ContactsModel*>(model());
-            Q_ASSERT(cmodel);
+            Q_ASSERT(qobject_cast<ContactsModel*>(model()));
+            ContactsModel *cmodel = reinterpret_cast<ContactsModel*>(model());
 
-            cmodel->moveRow(dragIndex.row(), index.row());
-            dragIndex = cmodel->index(index.row(), 0);
+            cmodel->moveRow(dragIndex.row(), index.row(), index.parent());
+            dragIndex = cmodel->index(index.row(), 0, index.parent());
             Q_ASSERT(indexAt(event->pos()) == dragIndex);
 
             clickItemMoved = true;
