@@ -69,6 +69,17 @@ void IdentityManager::loadFromSettings()
         UserIdentity *user = new UserIdentity(++highestID, this);
         m_identities.append(user);
     }
+
+    if (m_identities.isEmpty())
+    {
+        /* No identities exist (probably inital run); create one */
+        ++highestID;
+        config->setValue(QString::fromLatin1("identity/%1/dataDirectory").arg(highestID),
+                         QLatin1String("data-") + QString::number(highestID));
+
+        UserIdentity *user = new UserIdentity(highestID, this);
+        m_identities.append(user);
+    }
 }
 
 UserIdentity *IdentityManager::lookupHostname(const QString &hostname) const
