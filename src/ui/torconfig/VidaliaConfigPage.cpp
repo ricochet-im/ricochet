@@ -89,6 +89,11 @@ void VidaliaConfigPage::doConfiguration()
     }
 
     /* Continue */
+    doTest();
+}
+
+void VidaliaConfigPage::doTest()
+{
     if (!vidaliaConfig->isVidaliaRunning())
     {
         /* Prompt the user to open Vidalia */
@@ -96,13 +101,9 @@ void VidaliaConfigPage::doConfiguration()
         VidaliaStartWidget *startWidget = new VidaliaStartWidget(vidaliaConfig, wasExited);
         connect(startWidget, SIGNAL(ready()), this, SLOT(doTest()));
         m_stack->setCurrentIndex(m_stack->addWidget(startWidget));
+        return;
     }
-    else
-        doTest();
-}
 
-void VidaliaConfigPage::doTest()
-{
     /* Set fields */
     QString address;
     QByteArray password;
