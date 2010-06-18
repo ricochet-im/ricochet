@@ -398,6 +398,7 @@ void ContactInfoPage::createNotes(QBoxLayout *layout)
     notesHeader->setContentsMargins(1, 0, 0, 0);
 
     QFont font = notesHeader->font();
+    font.setPointSize(8);
     font.setBold(true);
     notesHeader->setFont(font);
 
@@ -410,7 +411,10 @@ void ContactInfoPage::createNotes(QBoxLayout *layout)
     /* Edit */
     notesEdit = new QTextEdit;
     notesEdit->insertPlainText(user->notesText());
-    notesEdit->setFont(QFont(QLatin1String("Helvetica"), 9));
+    QFont notesFont;
+    notesFont.setStyleHint(QFont::SansSerif);
+    notesFont.setPointSize(9);
+    notesEdit->setFont(notesFont);
     layout->addWidget(notesEdit, 1);
 }
 
