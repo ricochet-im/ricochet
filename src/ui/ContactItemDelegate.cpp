@@ -129,7 +129,7 @@ void ContactItemDelegate::paint(QPainter *p, const QStyleOptionViewItem &opt,
     QString nickname = index.data().toString();
 
     QFont nickFont = p->font();
-    nickFont.setPointSize(11);
+    nickFont.setPointSize(10);
     p->setFont(nickFont);
 
     /* Caution: horrifically slow */
