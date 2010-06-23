@@ -63,6 +63,8 @@ void ContactsModel::populate()
     int i = 0;
     for (QList<UserIdentity*>::Iterator it = identities.begin(); it != identities.end(); ++it, ++i)
     {
+        connect(*it, SIGNAL(statusChanged()), SLOT(updateIdentity()));
+
         QList<ContactUser*> c = contactsManager->contacts();
         qSort(c.begin(), c.end(), userSort<ContactUser>);
 
@@ -145,6 +147,25 @@ void ContactsModel::contactAdded(ContactUser *user)
     connect(user, SIGNAL(connected()), this, SLOT(updateUser()));
     connect(user, SIGNAL(disconnected()), this, SLOT(updateUser()));
     connect(user, SIGNAL(statusLineChanged()), this, SLOT(updateUser()));
+}
+
+void ContactsModel::updateIdentity(UserIdentity *identity)
+{
+    if (!identity)
+    {
+        identity = qobject_cast<UserIdentity*>(sender());
+        if (!identity)
+            return;
+    }
+
+    QModelIndex idx = indexOfIdentity(identity);
+    if (!idx.isValid())
+    {
+        identity->disconnect(this);
+        return;
+    }
+
+    emit dataChanged(idx, index(idx.row(), columnCount(idx.parent())-1));
 }
 
 void ContactsModel::moveRow(int from, int to, const QModelIndex &parent)

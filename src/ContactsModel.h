@@ -60,6 +60,8 @@ private slots:
     void updateUser(ContactUser *user = 0);
     void contactAdded(ContactUser *user);
 
+    void updateIdentity(UserIdentity *identity = 0);
+
 private:
     QList<UserIdentity*> identities;
     QList<QList<ContactUser*> > contacts;

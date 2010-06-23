@@ -35,6 +35,7 @@ UserIdentity::UserIdentity(int id, QObject *parent)
 
     QString dir = readSetting("dataDirectory", QLatin1String("data-") + QString::number(uniqueID)).toString();
     hiddenService = new Tor::HiddenService(dir, this);
+    connect(hiddenService, SIGNAL(statusChanged(int,int)), SIGNAL(statusChanged()));
 
     if (hiddenService->status() == Tor::HiddenService::NotCreated)
     {
@@ -57,11 +58,13 @@ QVariant UserIdentity::readSetting(const QString &key, const QVariant &defaultVa
 void UserIdentity::writeSetting(const QString &key, const QVariant &value)
 {
     config->setValue(QString::fromLatin1("identity/%1/%2").arg(uniqueID).arg(key), value);
+    emit settingsChanged(key);
 }
 
 void UserIdentity::removeSetting(const QString &key)
 {
     config->remove(QString::fromLatin1("identity/%1/%2").arg(uniqueID).arg(key));
+    emit settingsChanged(key);
 }
 
 QString UserIdentity::hostname() const

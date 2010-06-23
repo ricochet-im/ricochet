@@ -73,6 +73,10 @@ public:
         removeSetting(QLatin1String(key));
     }
 
+signals:
+    void statusChanged();
+    void settingsChanged(const QString &key);
+
 private:
     QString m_nickname;
     QPixmapCache::Key cachedAvatar[2];
