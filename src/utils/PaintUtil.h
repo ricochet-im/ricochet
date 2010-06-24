@@ -24,5 +24,6 @@ class QSize;
 #include <QStyle>
 
 QPixmap customSelectionRect(const QSize &size, QStyle::State state);
+QPixmap shadowedAvatar(const QPixmap &avatar);
 
 #endif // PAINTUTIL_H
