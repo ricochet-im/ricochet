@@ -36,7 +36,7 @@ QSize ContactItemDelegate::sizeHint(const QStyleOptionViewItem &option, const QM
     return QSize(160, 48);
 }
 
-bool ContactItemDelegate::pageHitTest(const QSize &size, const QPoint &point, ContactPage &hitPage) const
+bool ContactItemDelegate::pageHitTest(const QSize &size, const QPoint &point, ContactsView::Page &hitPage) const
 {
     /* Point is from an origin of 0,0 in an item of the given size. Perform hit testing on
      * the page switch buttons. */
@@ -46,12 +46,12 @@ bool ContactItemDelegate::pageHitTest(const QSize &size, const QPoint &point, Co
 
     if (chatRect.contains(point))
     {
-        hitPage = ChatPage;
+        hitPage = ContactsView::ContactChatPage;
         return true;
     }
     else if (infoRect.contains(point))
     {
-        hitPage = InfoPage;
+        hitPage = ContactsView::ContactInfoPage;
         return true;
     }
     else
@@ -93,13 +93,13 @@ void ContactItemDelegate::paint(QPainter *p, const QStyleOptionViewItem &opt,
 
     if ((opt.state & QStyle::State_Selected) || (opt.state & QStyle::State_MouseOver))
     {
-        ContactPage activePage = contactsView->activeContactPage();
+        ContactsView::Page activePage = contactsView->activePage();
         bool isActive = (contactsView->currentIndex() == index);
 
         /* Chat page */
         QRect iconRect(r.right()-16+1, r.top()-1, 16, 16);
         QPixmap pm;
-        if (isActive && activePage == ChatPage)
+        if (isActive && activePage == ContactsView::ContactChatPage)
             pm = QPixmap(QLatin1String(":/icons/chat-active.png"));
         else if (iconRect.contains(ropt.widget->mapFromGlobal(QCursor::pos())))
             pm = QPixmap(QLatin1String(":/icons/chat-hover.png"));
@@ -110,7 +110,7 @@ void ContactItemDelegate::paint(QPainter *p, const QStyleOptionViewItem &opt,
 
         /* Info page */
         iconRect = QRect(r.right()-16+1, r.bottom()-16+1, 16, 16);
-        if (isActive && activePage == InfoPage)
+        if (isActive && activePage == ContactsView::ContactInfoPage)
             pm = QPixmap(QLatin1String(":/icons/info-active.png"));
         else if (iconRect.contains(ropt.widget->mapFromGlobal(QCursor::pos())))
             pm = QPixmap(QLatin1String(":/icons/info-hover.png"));

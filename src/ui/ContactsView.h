@@ -23,6 +23,7 @@
 #include <QHash>
 
 class ContactUser;
+class UserIdentity;
 
 class ContactsView : public QTreeView
 {
@@ -30,21 +31,29 @@ class ContactsView : public QTreeView
     Q_DISABLE_COPY(ContactsView)
 
 public:
+    enum Page
+    {
+        ContactChatPage,
+        ContactInfoPage,
+        IdentityInfoPage
+    };
+
     explicit ContactsView(QWidget *parent = 0);
 
-    ContactUser *activeContact() const { return pActiveContact; }
-    ContactPage activeContactPage() const;
+    Page activePage() const { return pActivePage; }
+    ContactUser *activeContact() const;
+    UserIdentity *activeIdentity() const;
 
 public slots:
     void setActiveContact(ContactUser *user);
-    void setActivePage(ContactPage page);
+    void setActiveIdentity(UserIdentity *identity);
+    void setActivePage(Page page);
 
     void showContactInfo(ContactUser *user);
     void showContactChat(ContactUser *user);
 
 signals:
-    void activeContactChanged(ContactUser *user);
-    void activePageChanged(ContactUser *user, ContactPage page);
+    void activePageChanged(int page, QObject *userObject);
 
 protected:
     virtual void mousePressEvent(QMouseEvent *event);
@@ -52,15 +61,15 @@ protected:
     virtual void mouseMoveEvent(QMouseEvent *event);
 
 private slots:
-    void contactSelected(const QModelIndex &current);
+    void currentChanged(const QModelIndex &current);
 
 private:
-    QHash<ContactUser*,ContactPage> activePage;
-    ContactUser *pActiveContact;
+    QHash<ContactUser*,Page> savedContactPage;
+    Page pActivePage;
     QModelIndex dragIndex;
     bool clickSetCurrent, clickItemMoved;
 
-    void setContactPage(ContactUser *user, ContactPage page);
+    void setContactPage(ContactUser *user, Page page);
 };
 
 #endif // CONTACTSVIEW_H

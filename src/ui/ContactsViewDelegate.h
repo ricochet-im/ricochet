@@ -33,7 +33,7 @@ public:
 
     bool indexIsContact(const QModelIndex &index) const;
 
-    bool pageHitTest(const QModelIndex &index, const QSize &size, const QPoint &point, ContactPage &hitPage) const;
+    bool pageHitTest(const QModelIndex &index, const QSize &size, const QPoint &point, ContactsView::Page &hitPage) const;
     virtual QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const;
     virtual void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
 

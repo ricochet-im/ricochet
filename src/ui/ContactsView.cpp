@@ -19,6 +19,7 @@
 #include "ContactsModel.h"
 #include "ContactsViewDelegate.h"
 #include "core/ContactUser.h"
+#include "core/UserIdentity.h"
 #include "ui/ChatWidget.h"
 #include <QHeaderView>
 #include <QMouseEvent>
@@ -43,7 +44,7 @@ ContactsView::ContactsView(QWidget *parent)
     head->setResizeMode(0, QHeaderView::Stretch);
 
     connect(selectionModel(), SIGNAL(currentChanged(QModelIndex,QModelIndex)), this,
-            SLOT(contactSelected(QModelIndex)));
+            SLOT(currentChanged(QModelIndex)));
 
     if (model()->rowCount())
         selectionModel()->setCurrentIndex(model()->index(0, 0), QItemSelectionModel::Select);
@@ -51,64 +52,90 @@ ContactsView::ContactsView(QWidget *parent)
     expandAll();
 }
 
-ContactPage ContactsView::activeContactPage() const
-{
-    return activePage.value(activeContact(), InfoPage);
-}
-
 void ContactsView::setActiveContact(ContactUser *user)
 {
-    ContactsModel *cmodel = qobject_cast<ContactsModel*>(model());
-    if (!cmodel)
+    Q_ASSERT(user);
+
+    ContactsModel *cmodel = static_cast<ContactsModel*>(model());
+    QModelIndex index = cmodel->indexOfContact(user);
+    if (!index.isValid())
         return;
 
-    QModelIndex index = cmodel->indexOfContact(user);
-
-    pActiveContact = user;
-    if (pActiveContact && !activePage.contains(pActiveContact))
-        activePage[pActiveContact] = InfoPage;
+    if (!savedContactPage.contains(user))
+        savedContactPage[user] = ContactInfoPage;
 
     setCurrentIndex(index);
-
-    emit activeContactChanged(pActiveContact);
-    if (pActiveContact)
-        emit activePageChanged(pActiveContact, activeContactPage());
 }
 
-void ContactsView::setActivePage(ContactPage page)
+void ContactsView::setActiveIdentity(UserIdentity *identity)
 {
-    setContactPage(activeContact(), page);
+    Q_ASSERT(identity);
+
+    ContactsModel *cmodel = static_cast<ContactsModel*>(model());
+    QModelIndex index = cmodel->indexOfIdentity(identity);
+    if (!index.isValid())
+        return;
+
+    setCurrentIndex(index);
 }
 
-void ContactsView::contactSelected(const QModelIndex &current)
+void ContactsView::setActivePage(Page page)
 {
-    ContactUser *user = current.data(ContactsModel::PointerRole).value<ContactUser*>();
-    if (user != activeContact())
-        setActiveContact(user);
-}
-
-void ContactsView::setContactPage(ContactUser *user, ContactPage page)
-{
-    activePage[user] = page;
-
-    ContactUser *activeUser = activeContact();
-    if (user == activeUser)
+    ContactUser *user;
+    if (page != activePage() && page < IdentityInfoPage && (user = activeContact()))
     {
+        savedContactPage[user] = pActivePage = page;
         update(selectionModel()->currentIndex());
-        emit activePageChanged(activeUser, page);
+        emit activePageChanged(pActivePage, user);
     }
+}
+
+ContactUser *ContactsView::activeContact() const
+{
+    return currentIndex().data(ContactsModel::PointerRole).value<ContactUser*>();
+}
+
+UserIdentity *ContactsView::activeIdentity() const
+{
+    return currentIndex().data(ContactsModel::PointerRole).value<UserIdentity*>();
+}
+
+void ContactsView::currentChanged(const QModelIndex &current)
+{
+    /* React to the active object (contact or identity) changing */
+    QVariant vObject = current.data(ContactsModel::PointerRole);
+    if (vObject.canConvert<ContactUser*>())
+    {
+        ContactUser *user = vObject.value<ContactUser*>();
+        savedContactPage[user] = pActivePage = savedContactPage.value(user, ContactInfoPage);
+        emit activePageChanged(pActivePage, user);
+    }
+    else if (vObject.canConvert<UserIdentity*>())
+    {
+        UserIdentity *identity = vObject.value<UserIdentity*>();
+        pActivePage = IdentityInfoPage;
+        emit activePageChanged(pActivePage, identity);
+    }
+}
+
+void ContactsView::setContactPage(ContactUser *user, Page page)
+{
+    if (user == activeContact())
+        setActivePage(page);
+    else
+        savedContactPage[user] = page;
 }
 
 void ContactsView::showContactChat(ContactUser *user)
 {
-    setContactPage(user, ChatPage);
+    setContactPage(user, ContactChatPage);
     if (user != activeContact())
         setActiveContact(user);
 }
 
 void ContactsView::showContactInfo(ContactUser *user)
 {
-    setContactPage(user, InfoPage);
+    setContactPage(user, ContactInfoPage);
     if (user != activeContact())
         setActiveContact(user);
 }
@@ -137,7 +164,7 @@ void ContactsView::mousePressEvent(QMouseEvent *event)
             /* Hit test for the page switch buttons and set the contact's page if one is matched */
             QRect itemRect = visualRect(index);
             QPoint innerPos = event->pos() - itemRect.topLeft();
-            ContactPage hitPage;
+            Page hitPage;
 
             if (delegate->pageHitTest(index, itemRect.size(), innerPos, hitPage))
                 setContactPage(user, hitPage);
@@ -146,7 +173,7 @@ void ContactsView::mousePressEvent(QMouseEvent *event)
         /* If there are any unread messages from the user, always go to chat */
         ChatWidget *chat = ChatWidget::widgetForUser(user, false);
         if (chat && chat->unreadMessages() > 0)
-            setContactPage(user, ChatPage);
+            setContactPage(user, ContactChatPage);
     }
 
     /* Index that was selected before the event */
@@ -198,23 +225,19 @@ void ContactsView::mouseReleaseEvent(QMouseEvent *event)
     QRect itemRect = visualRect(index);
     QPoint innerPos = event->pos() - itemRect.topLeft();
 
-    ContactPage hitPage;
-    if (delegate->pageHitTest(index, itemRect.size(), innerPos, hitPage))
-    {
-        setContactPage(user, hitPage);
-    }
-    else
+    Page hitPage;
+    if (!delegate->pageHitTest(index, itemRect.size(), innerPos, hitPage))
     {
         /* Clicking on an already selected contact, but not on the page buttons,
          * causes the page to toggle. */
-        hitPage = activePage[user];
-        if (hitPage == ChatPage)
-            hitPage = InfoPage;
+        hitPage = savedContactPage[user];
+        if (hitPage == ContactChatPage)
+            hitPage = ContactInfoPage;
         else
-            hitPage = ChatPage;
-
-        setContactPage(user, hitPage);
+            hitPage = ContactChatPage;
     }
+
+    setContactPage(user, hitPage);
 
     QTreeView::mouseReleaseEvent(event);
 }

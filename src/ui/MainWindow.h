@@ -21,12 +21,6 @@
 #include <QMainWindow>
 #include <QWeakPointer>
 
-enum ContactPage
-{
-    ChatPage,
-    InfoPage
-};
-
 class ContactUser;
 class ChatWidget;
 class NotificationWidget;
@@ -53,7 +47,7 @@ protected:
     virtual void closeEvent(QCloseEvent *);
 
 private slots:
-    void contactPageChanged(ContactUser *user, ContactPage page);
+    void contactPageChanged(int page, QObject *userObject);
 
     /* Incoming contact request notifications */
     void updateContactRequests();

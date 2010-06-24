@@ -32,7 +32,7 @@ bool ContactsViewDelegate::indexIsContact(const QModelIndex &index) const
 }
 
 bool ContactsViewDelegate::pageHitTest(const QModelIndex &index, const QSize &size, const QPoint &point,
-                                       ContactPage &hitPage) const
+                                       ContactsView::Page &hitPage) const
 {
     if (!indexIsContact(index))
         return false;

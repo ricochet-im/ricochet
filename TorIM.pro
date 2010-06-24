@@ -84,7 +84,8 @@ SOURCES += src/main.cpp \
     src/ui/IdentityItemDelegate.cpp \
     src/core/UserIdentity.cpp \
     src/core/IdentityManager.cpp \
-    src/ui/ContactsViewDelegate.cpp
+    src/ui/ContactsViewDelegate.cpp \
+    src/ui/IdentityInfoPage.cpp
 
 HEADERS += src/ui/MainWindow.h \
     src/ui/ChatWidget.h \
@@ -144,7 +145,8 @@ HEADERS += src/ui/MainWindow.h \
     src/ui/IdentityItemDelegate.h \
     src/core/UserIdentity.h \
     src/core/IdentityManager.h \
-    src/ui/ContactsViewDelegate.h
+    src/ui/ContactsViewDelegate.h \
+    src/ui/IdentityInfoPage.h
 
 RESOURCES += res/resources.qrc \
     translation/embedded.qrc

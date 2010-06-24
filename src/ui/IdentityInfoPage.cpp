@@ -15,25 +15,14 @@
  * along with TorIM. If not, see http://www.gnu.org/licenses/
  */
 
-#ifndef CONTACTITEMDELEGATE_H
-#define CONTACTITEMDELEGATE_H
+#include "IdentityInfoPage.h"
+#include "core/UserIdentity.h"
+#include "ContactIDWidget.h"
+#include <QBoxLayout>
+#include <QLabel>
 
-#include "ContactsView.h"
-#include <QStyledItemDelegate>
-
-class ContactItemDelegate : public QStyledItemDelegate
+IdentityInfoPage::IdentityInfoPage(UserIdentity *id, QWidget *parent)
+    : QWidget(parent), identity(id)
 {
-    Q_OBJECT
-public:
-    explicit ContactItemDelegate(ContactsView *view);
+}
 
-    bool pageHitTest(const QSize &size, const QPoint &point, ContactsView::Page &hitPage) const;
-
-    virtual QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const;
-    virtual void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
-
-protected:
-    ContactsView *contactsView;
-};
-
-#endif // CONTACTITEMDELEGATE_H

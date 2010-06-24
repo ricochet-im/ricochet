@@ -21,9 +21,11 @@
 #include "HomeContactWidget.h"
 #include "ChatWidget.h"
 #include "ContactInfoPage.h"
+#include "IdentityInfoPage.h"
 #include "HomeScreen.h"
 #include "NotificationWidget.h"
 #include "ContactRequestDialog.h"
+#include "core/UserIdentity.h"
 #include "core/IncomingRequestManager.h"
 #include "core/OutgoingContactRequest.h"
 #include "core/ContactsManager.h"
@@ -113,8 +115,7 @@ void MainWindow::createContactsView()
     contactsView = new ContactsView;
     contactsView->setFixedWidth(175);
 
-    connect(contactsView, SIGNAL(activePageChanged(ContactUser*,ContactPage)), this,
-            SLOT(contactPageChanged(ContactUser*,ContactPage)));
+    connect(contactsView, SIGNAL(activePageChanged(int,QObject*)), SLOT(contactPageChanged(int,QObject*)));
 }
 
 void MainWindow::createHomeContact()
@@ -156,7 +157,7 @@ void MainWindow::showHomeScreen()
     chatArea->setCurrentWidget(homeScreen);
 }
 
-void MainWindow::contactPageChanged(ContactUser *user, ContactPage page)
+void MainWindow::contactPageChanged(int page, QObject *userObject)
 {
     QWidget *old = chatArea->currentWidget();
     QWidget *newWidget = 0;
@@ -165,11 +166,14 @@ void MainWindow::contactPageChanged(ContactUser *user, ContactPage page)
 
     switch (page)
     {
-    case ChatPage:
-        newWidget = ChatWidget::widgetForUser(user);
+    case ContactsView::ContactChatPage:
+        newWidget = ChatWidget::widgetForUser(static_cast<ContactUser*>(userObject));
         break;
-    case InfoPage:
-        newWidget = new ContactInfoPage(user);
+    case ContactsView::ContactInfoPage:
+        newWidget = new ContactInfoPage(static_cast<ContactUser*>(userObject));
+        break;
+    case ContactsView::IdentityInfoPage:
+        newWidget = new IdentityInfoPage(static_cast<UserIdentity*>(userObject));
         break;
     default:
         Q_ASSERT_X(false, "contactPageChanged", "Called for unimplemented page type");
