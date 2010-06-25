@@ -21,6 +21,7 @@
 #include <QWidget>
 
 class UserIdentity;
+class QLabel;
 
 class IdentityInfoPage : public QWidget
 {
@@ -31,6 +32,15 @@ public:
     UserIdentity * const identity;
 
     explicit IdentityInfoPage(UserIdentity *identity, QWidget *parent = 0);
+
+private:
+    QLabel *m_avatar;
+    QAction *actAddContact, *actChangeAvatar;
+
+    void createActions();
+
+    QWidget *createAvatar();
+    QLayout *createButtons();
 };
 
 #endif // IDENTITYINFOPAGE_H
