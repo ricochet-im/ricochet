@@ -131,10 +131,10 @@ void UserIdentity::setAvatar(QImage image)
 
 bool UserIdentity::isServiceOnline() const
 {
-    return hiddenService->status() == Tor::HiddenService::Online;
+    return hiddenService && hiddenService->status() == Tor::HiddenService::Online;
 }
 
 bool UserIdentity::isServicePublished() const
 {
-    return hiddenService->status() >= Tor::HiddenService::Published;
+    return hiddenService && hiddenService->status() >= Tor::HiddenService::Published;
 }
