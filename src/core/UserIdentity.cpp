@@ -35,9 +35,9 @@ UserIdentity::UserIdentity(int id, QObject *parent)
 
     QString dir = readSetting("dataDirectory", QLatin1String("data-") + QString::number(uniqueID)).toString();
     hiddenService = new Tor::HiddenService(dir, this);
-    connect(hiddenService, SIGNAL(statusChanged(int,int)), SIGNAL(statusChanged()));
+    connect(hiddenService, SIGNAL(statusChanged(int,int)), SLOT(onStatusChanged(int,int)));
 
-    if (hiddenService->status() == Tor::HiddenService::NotCreated)
+    if (hiddenService->status() == Tor::HiddenService::NotCreated && !readSetting("createNewService", false).toBool())
     {
         qWarning() << "Hidden service data for identity" << uniqueID << "in" << dir << "does not exist";
         delete hiddenService;
@@ -48,6 +48,17 @@ UserIdentity::UserIdentity(int id, QObject *parent)
         hiddenService->addTarget(80, incomingSocket->serverAddress(), incomingSocket->serverPort());
         torManager->addHiddenService(hiddenService);
     }
+}
+
+UserIdentity *UserIdentity::createIdentity(int uniqueID, const QString &dataDirectory)
+{
+    config->beginGroup(QString::fromLatin1("identity/%1").arg(uniqueID));
+    config->setValue("createNewService", true);
+    if (!dataDirectory.isEmpty())
+        config->setValue("dataDirectory", dataDirectory);
+    config->endGroup();
+
+    return new UserIdentity(uniqueID);
 }
 
 QVariant UserIdentity::readSetting(const QString &key, const QVariant &defaultValue) const
@@ -127,6 +138,13 @@ void UserIdentity::setAvatar(QImage image)
 
     for (int i = 0; i < 2; ++i)
         QPixmapCache::remove(cachedAvatar[i]);
+}
+
+void UserIdentity::onStatusChanged(int newStatus, int oldStatus)
+{
+    if (oldStatus == Tor::HiddenService::NotCreated && newStatus > oldStatus)
+        removeSetting("createNewService");
+    emit statusChanged();
 }
 
 bool UserIdentity::isServiceOnline() const

@@ -34,6 +34,11 @@ public:
     UserIdentity *lookupNickname(const QString &nickname) const;
     UserIdentity *lookupHostname(const QString &hostname) const;
 
+    UserIdentity *createIdentity(const QString &serviceDirectory = QString(), const QString &nickname = QString());
+
+signals:
+    void identityAdded(UserIdentity *identity);
+
 private:
     QList<UserIdentity*> m_identities;
     int highestID;

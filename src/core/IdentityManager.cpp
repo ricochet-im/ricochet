@@ -63,23 +63,26 @@ void IdentityManager::loadFromSettings()
         }
 
         qDebug() << "Creating new identity from old single-identity configuration";
-
-        config->setValue(QString::fromLatin1("identity/%1/dataDirectory").arg(highestID+1), directory);
-
-        UserIdentity *user = new UserIdentity(++highestID, this);
-        m_identities.append(user);
+        createIdentity(directory);
     }
 
     if (m_identities.isEmpty())
     {
         /* No identities exist (probably inital run); create one */
-        ++highestID;
-        config->setValue(QString::fromLatin1("identity/%1/dataDirectory").arg(highestID),
-                         QLatin1String("data-") + QString::number(highestID));
-
-        UserIdentity *user = new UserIdentity(highestID, this);
-        m_identities.append(user);
+        createIdentity();
     }
+}
+
+UserIdentity *IdentityManager::createIdentity(const QString &serviceDirectory, const QString &nickname)
+{
+    UserIdentity *identity = UserIdentity::createIdentity(++highestID, serviceDirectory);
+    if (!nickname.isEmpty())
+        identity->setNickname(nickname);
+
+    m_identities.append(identity);
+    emit identityAdded(identity);
+
+    return identity;
 }
 
 UserIdentity *IdentityManager::lookupHostname(const QString &hostname) const

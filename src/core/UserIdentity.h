@@ -36,6 +36,8 @@ class UserIdentity : public QObject
     Q_OBJECT
     Q_DISABLE_COPY(UserIdentity)
 
+    friend class IdentityManager;
+
 public:
     const int uniqueID;
 
@@ -77,11 +79,16 @@ signals:
     void statusChanged();
     void settingsChanged(const QString &key);
 
+private slots:
+    void onStatusChanged(int newStatus, int oldStatus);
+
 private:
     QString m_nickname;
     QPixmapCache::Key cachedAvatar[2];
 
     Tor::HiddenService *hiddenService;
+
+    static UserIdentity *createIdentity(int uniqueID, const QString &dataDirectory = QString());
 };
 
 Q_DECLARE_METATYPE(UserIdentity*)
