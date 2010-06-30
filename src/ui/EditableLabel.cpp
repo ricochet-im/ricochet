@@ -48,6 +48,7 @@ void EditableLabel::stopEditing()
     setReadOnly(true);
     setFrame(false);
     setTextMargins(-2, 0, 0, 0);
+    deselect();
 }
 
 void EditableLabel::setPalette(const QPalette &nPalette)
