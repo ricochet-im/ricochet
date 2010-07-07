@@ -20,6 +20,7 @@
 #include "tor/TorControlManager.h"
 #include "tor/HiddenService.h"
 #include "protocol/IncomingSocket.h"
+#include "core/ContactIDValidator.h"
 #include <QImage>
 #include <QPixmap>
 #include <QPixmapCache>
@@ -81,6 +82,11 @@ void UserIdentity::removeSetting(const QString &key)
 QString UserIdentity::hostname() const
 {
     return hiddenService ? hiddenService->hostname() : QString();
+}
+
+QString UserIdentity::contactID() const
+{
+    return ContactIDValidator::idFromHostname(hostname());
 }
 
 void UserIdentity::setNickname(const QString &nick)

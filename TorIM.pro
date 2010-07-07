@@ -10,6 +10,12 @@ TEMPLATE = app
 CONFIG += debug_and_release
 QMAKE_RESOURCE_FLAGS += -no-compress
 
+# Create a pdb for release builds as well, to enable debugging
+win32-msvc2008|win32-msvc2010 {
+    QMAKE_CXXFLAGS_RELEASE += /Zi
+    QMAKE_LFLAGS_RELEASE += /DEBUG /OPT:REF,ICF
+}
+
 INCLUDEPATH += src
 
 unix {

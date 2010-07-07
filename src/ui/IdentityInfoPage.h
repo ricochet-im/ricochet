@@ -22,6 +22,7 @@
 
 class UserIdentity;
 class QLabel;
+class EditableLabel;
 
 class IdentityInfoPage : public QWidget
 {
@@ -33,13 +34,18 @@ public:
 
     explicit IdentityInfoPage(UserIdentity *identity, QWidget *parent = 0);
 
+private slots:
+    void setNickname();
+
 private:
     QLabel *m_avatar;
-    QAction *actAddContact, *actChangeAvatar;
+    EditableLabel *m_nickname;
+    QAction *actAddContact, *actChangeAvatar, *actRename, *actOptions;
 
     void createActions();
 
     QWidget *createAvatar();
+    QLayout *createInfo();
     QLayout *createButtons();
 };
 

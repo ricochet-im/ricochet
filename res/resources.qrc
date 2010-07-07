@@ -22,6 +22,7 @@
         <file>user--pencil.png</file>
         <file>cross.png</file>
         <file>cross-circle.png</file>
+        <file>vcard.png</file>
     </qresource>
     <qresource prefix="/graphics">
         <file>avatar-placeholder.png</file>

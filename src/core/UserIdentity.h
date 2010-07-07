@@ -47,6 +47,7 @@ public:
     const QString &nickname() const { return m_nickname; }
     /* Hostname is .onion format, like ContactUser */
     QString hostname() const;
+    QString contactID() const;
     QPixmap avatar(AvatarSize size);
 
     void setNickname(const QString &nickname);
