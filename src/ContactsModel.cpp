@@ -64,6 +64,7 @@ void ContactsModel::populate()
     for (QList<UserIdentity*>::Iterator it = identities.begin(); it != identities.end(); ++it, ++i)
     {
         connect(*it, SIGNAL(statusChanged()), SLOT(updateIdentity()));
+        connect(*it, SIGNAL(settingsChanged(QString)), SLOT(updateIdentity()));
 
         QList<ContactUser*> c = contactsManager->contacts();
         qSort(c.begin(), c.end(), userSort<ContactUser>);
