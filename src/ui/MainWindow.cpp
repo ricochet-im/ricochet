@@ -18,32 +18,38 @@
 #include "main.h"
 #include "MainWindow.h"
 #include "ContactsView.h"
-#include "HomeContactWidget.h"
 #include "ChatWidget.h"
 #include "ContactInfoPage.h"
 #include "IdentityInfoPage.h"
-#include "HomeScreen.h"
 #include "NotificationWidget.h"
 #include "ContactRequestDialog.h"
+#include "ContactAddDialog.h"
 #include "core/UserIdentity.h"
 #include "core/IncomingRequestManager.h"
 #include "core/OutgoingContactRequest.h"
 #include "core/ContactsManager.h"
+#include "tor/TorControlManager.h"
+#include "tor/autoconfig/VidaliaConfigManager.h"
+#include "ui/torconfig/TorConfigWizard.h"
 #include <QToolBar>
 #include <QBoxLayout>
 #include <QStackedWidget>
 #include <QFrame>
 #include <QTextDocument>
+#include <QAction>
+#include <QTimer>
 
 MainWindow *uiMain = 0;
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
+    : QMainWindow(parent), torNotificationEnabled(false)
 {
     Q_ASSERT(!uiMain);
     uiMain = this;
 
     setWindowTitle(QLatin1String("TorIM"));
+
+    createActions();
 
     /* Saved geometry */
     resize(config->value("ui/main/windowSize", QSize(730, 400)).toSize());
@@ -62,16 +68,11 @@ MainWindow::MainWindow(QWidget *parent)
     QBoxLayout *layout = new QHBoxLayout;
     topLayout->addLayout(layout);
 
+    /* Chat area */
+    createChatArea();
+
     /* Contacts */
-    QBoxLayout *contactsLayout = new QVBoxLayout;
-    layout->addLayout(contactsLayout);
-
     createContactsView();
-    contactsLayout->addWidget(contactsView);
-
-    /* Home contact */
-    createHomeContact();
-    contactsLayout->addWidget(homeContact);
 
     /* Separator line */
     QFrame *line = new QFrame;
@@ -81,16 +82,10 @@ MainWindow::MainWindow(QWidget *parent)
     p.setColor(QPalette::WindowText, p.color(QPalette::Dark));
     line->setPalette(p);
 
+    /* Put those in the layout */
+    layout->addWidget(contactsView);
     layout->addWidget(line);
-
-    /* Chat area */
-    createChatArea();
     layout->addWidget(chatArea);
-
-    homeScreen = new HomeScreen;
-    chatArea->addWidget(homeScreen);
-
-    showHomeScreen();
 
     /* Other things */
     connect(contactsManager->incomingRequests, SIGNAL(requestAdded(IncomingContactRequest*)), SLOT(updateContactRequests()));
@@ -104,10 +99,22 @@ MainWindow::MainWindow(QWidget *parent)
     }
 
     updateContactRequests();
+
+    /* Show the tor offline notification 10 seconds after startup, if Tor is not connected by that time.
+     * This avoids obnoxiously showing it for the normal case where Tor should connect *very* quickly. */
+    QTimer::singleShot(10000, this, SLOT(enableTorNotification()));
+
+    connect(torManager, SIGNAL(statusChanged(int,int)), this, SLOT(updateTorStatus()));
+    updateTorStatus();
 }
 
 MainWindow::~MainWindow()
 {
+}
+
+void MainWindow::createActions()
+{
+    actOptions = new QAction(QIcon(QLatin1String(":/icons/gear.png")), tr("Options"), this);
 }
 
 void MainWindow::createContactsView()
@@ -116,12 +123,7 @@ void MainWindow::createContactsView()
     contactsView->setFixedWidth(175);
 
     connect(contactsView, SIGNAL(activePageChanged(int,QObject*)), SLOT(contactPageChanged(int,QObject*)));
-}
-
-void MainWindow::createHomeContact()
-{
-    homeContact = new HomeContactWidget;
-    connect(homeContact, SIGNAL(selected()), this, SLOT(showHomeScreen()));
+    contactPageChanged(contactsView->activePage(), contactsView->activeObject());
 }
 
 void MainWindow::createChatArea()
@@ -143,26 +145,10 @@ void MainWindow::addChatWidget(ChatWidget *widget)
     chatArea->addWidget(widget);
 }
 
-void MainWindow::showHomeScreen()
-{
-    if (!homeContact->isSelected())
-    {
-        homeContact->setSelected(true);
-        return;
-    }
-
-    contactsView->selectionModel()->clearSelection();
-    contactsView->setCurrentIndex(QModelIndex());
-
-    chatArea->setCurrentWidget(homeScreen);
-}
-
 void MainWindow::contactPageChanged(int page, QObject *userObject)
 {
     QWidget *old = chatArea->currentWidget();
     QWidget *newWidget = 0;
-
-    homeContact->clearSelected();
 
     switch (page)
     {
@@ -182,7 +168,7 @@ void MainWindow::contactPageChanged(int page, QObject *userObject)
     if (old == newWidget)
         return;
 
-    if (old && !qobject_cast<ChatWidget*>(old) && old != homeScreen)
+    if (old && !qobject_cast<ChatWidget*>(old))
         old->deleteLater();
 
     if (newWidget)
@@ -203,6 +189,19 @@ NotificationWidget *MainWindow::showNotification(const QString &message, QObject
     widget->showAnimated();
 
     return widget;
+}
+
+void MainWindow::openAddContactDialog(UserIdentity *identity)
+{
+    Q_UNUSED(identity);
+    ContactAddDialog dialog(this);
+    dialog.exec();
+}
+
+void MainWindow::openTorConfig()
+{
+    TorConfigWizard wizard(this);
+    wizard.exec();
 }
 
 void MainWindow::updateContactRequests()
@@ -285,4 +284,53 @@ void MainWindow::showRequestInfo()
         return;
 
     contactsView->showContactInfo(user);
+}
+
+void MainWindow::updateTorStatus()
+{
+    /* Offline notification */
+    if ((torManager->status() == Tor::TorControlManager::Connected) ||
+        (!torNotificationEnabled && torManager->status() != Tor::TorControlManager::Error))
+    {
+        if (torNotification)
+        {
+            torNotification.data()->closeNotification();
+            torNotification.clear();
+        }
+
+        return;
+    }
+
+    QString message;
+
+    if (config->value("tor/configMethod").toString() == QLatin1String("vidalia"))
+    {
+        VidaliaConfigManager vc;
+        if (!vc.isVidaliaRunning())
+            message = tr("Vidalia is not running. Click to start Vidalia and Tor");
+    }
+
+    if (message.isEmpty())
+    {
+        switch (torManager->status())
+        {
+        case Tor::TorControlManager::Error:
+            message = tr("Unable to connect to Tor. Make sure Tor is running, or click to reconfigure.");
+            break;
+        default:
+            message = tr("Connecting to Tor. If you have trouble, make sure Tor is running.");
+            break;
+        }
+    }
+
+    if (torNotification)
+        torNotification.data()->setMessage(message);
+    else
+        torNotification = showNotification(message, this, SLOT(openTorConfig()));
+}
+
+void MainWindow::enableTorNotification()
+{
+    torNotificationEnabled = true;
+    updateTorStatus();
 }

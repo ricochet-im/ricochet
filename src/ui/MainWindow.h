@@ -22,10 +22,12 @@
 #include <QWeakPointer>
 
 class ContactUser;
+class UserIdentity;
 class ChatWidget;
 class NotificationWidget;
 class IncomingContactRequest;
 class OutgoingContactRequest;
+class QAction;
 
 class MainWindow : public QMainWindow
 {
@@ -35,13 +37,16 @@ class MainWindow : public QMainWindow
     friend class ChatWidget;
 
 public:
+    QAction *actOptions;
+
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
     NotificationWidget *showNotification(const QString &message, QObject *receiver = 0, const char *slot = 0);
 
 public slots:
-    void showHomeScreen();
+    void openAddContactDialog(UserIdentity *identity);
+    void openTorConfig();
 
 protected:
     virtual void closeEvent(QCloseEvent *);
@@ -58,15 +63,20 @@ private slots:
     void updateOutgoingRequest(OutgoingContactRequest *request = 0);
     void showRequestInfo();
 
+    /* Tor status notifications */
+    void updateTorStatus();
+    void enableTorNotification();
+
 private:
     class ContactsView *contactsView;
-    class HomeScreen *homeScreen;
-    class HomeContactWidget *homeContact;
     class QStackedWidget *chatArea;
-    QWeakPointer<NotificationWidget> contactReqNotification;
 
+    QWeakPointer<NotificationWidget> contactReqNotification;
+    QWeakPointer<NotificationWidget> torNotification;
+    bool torNotificationEnabled;
+
+    void createActions();
     void createContactsView();
-    void createHomeContact();
     void createChatArea();
     void addChatWidget(ChatWidget *widget);
 };

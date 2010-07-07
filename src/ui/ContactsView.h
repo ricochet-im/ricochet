@@ -41,6 +41,7 @@ public:
     explicit ContactsView(QWidget *parent = 0);
 
     Page activePage() const { return pActivePage; }
+    QObject *activeObject() const;
     ContactUser *activeContact() const;
     UserIdentity *activeIdentity() const;
 

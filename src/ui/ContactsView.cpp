@@ -90,6 +90,14 @@ void ContactsView::setActivePage(Page page)
     }
 }
 
+QObject *ContactsView::activeObject() const
+{
+    QObject *re = activeContact();
+    if (!re)
+        re = activeIdentity();
+    return re;
+}
+
 ContactUser *ContactsView::activeContact() const
 {
     return currentIndex().data(ContactsModel::PointerRole).value<ContactUser*>();

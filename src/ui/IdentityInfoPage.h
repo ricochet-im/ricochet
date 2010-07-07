@@ -34,13 +34,16 @@ public:
 
     explicit IdentityInfoPage(UserIdentity *identity, QWidget *parent = 0);
 
+public slots:
+    void openAddContactDialog();
+
 private slots:
     void setNickname();
 
 private:
     QLabel *m_avatar;
     EditableLabel *m_nickname;
-    QAction *actAddContact, *actChangeAvatar, *actRename, *actOptions;
+    QAction *actAddContact, *actChangeAvatar, *actRename;
 
     void createActions();
 

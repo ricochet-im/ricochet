@@ -16,6 +16,7 @@
  */
 
 #include "IdentityInfoPage.h"
+#include "ui/MainWindow.h"
 #include "core/UserIdentity.h"
 #include "ContactIDWidget.h"
 #include "EditableLabel.h"
@@ -122,10 +123,10 @@ QLayout *IdentityInfoPage::createInfo()
 void IdentityInfoPage::createActions()
 {
     actAddContact = new QAction(QIcon(QLatin1String(":/icons/user--plus.png")), tr("Add Contact"), this);
+    connect(actAddContact, SIGNAL(triggered()), SLOT(openAddContactDialog()));
     actChangeAvatar = new QAction(QIcon(QLatin1String(":/icons/image--pencil.png")), tr("Change Avatar"), this);
     actRename = new QAction(QIcon(QLatin1String(":/icons/user--pencil.png")), tr("Change Nickname"), this);
     actRename->setIconVisibleInMenu(false);
-    actOptions = new QAction(QIcon(QLatin1String(":/icons/gear.png")), tr("Options"), this);
 }
 
 QLayout *IdentityInfoPage::createButtons()
@@ -138,7 +139,7 @@ QLayout *IdentityInfoPage::createButtons()
 
     layout->setColumnStretch(column++, 1);
 
-    QAction *actions[] = { actAddContact, actChangeAvatar, actRename, actOptions };
+    QAction *actions[] = { actAddContact, actChangeAvatar, actRename, uiMain->actOptions };
     for (int i = 0; i < 4; ++i)
     {
         QToolButton *btn = new QToolButton;
@@ -159,4 +160,9 @@ void IdentityInfoPage::setNickname()
 {
     if (m_nickname->hasAcceptableInput())
         identity->setNickname(m_nickname->text());
+}
+
+void IdentityInfoPage::openAddContactDialog()
+{
+    uiMain->openAddContactDialog(identity);
 }
