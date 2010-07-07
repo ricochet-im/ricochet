@@ -56,8 +56,9 @@ UserIdentity *UserIdentity::createIdentity(int uniqueID, const QString &dataDire
     config->beginGroup(QString::fromLatin1("identity/%1").arg(uniqueID));
     config->setValue("createNewService", true);
     if (dataDirectory.isEmpty())
-        dataDirectory = QLatin1String("data-") + QString::number(uniqueID);
-    config->setValue("dataDirectory", dataDirectory);
+        config->setValue("dataDirectory", QLatin1String("data-") + QString::number(uniqueID));
+    else
+        config->setValue("dataDirectory", dataDirectory);
     config->endGroup();
 
     return new UserIdentity(uniqueID);

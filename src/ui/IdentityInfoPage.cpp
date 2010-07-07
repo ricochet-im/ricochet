@@ -43,6 +43,8 @@ IdentityInfoPage::IdentityInfoPage(UserIdentity *id, QWidget *parent)
 
     mainLayout->addStretch(1);
     mainLayout->addLayout(createButtons());
+
+    connect(identity, SIGNAL(statusChanged()), SLOT(statusChanged()));
 }
 
 QWidget *IdentityInfoPage::createAvatar()
@@ -94,28 +96,21 @@ QLayout *IdentityInfoPage::createInfo()
     layout->addWidget(m_nickname, row++, 0, 1, 2);
 
     /* ID */
-    p.setColor(QPalette::WindowText, QColor(0x80, 0x80, 0x80));
-
     QLabel *label = new QLabel;
     label->setPixmap(QPixmap(QLatin1String(":/icons/vcard.png")));
-    label->setContentsMargins(0, 0, 0, 0);
-    label->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-    label->setPalette(p);
     layout->addWidget(label, row, 0);
 
-    QLineEdit *id = new ContactIDWidget;
-    id->setText(identity->contactID());
-    id->setFrame(false);
-    id->setTextMargins(-2, 0, 0, 0);
+    m_contactId = new ContactIDWidget;
+    m_contactId->setText(identity->contactID());
+    m_contactId->setFrame(false);
+    m_contactId->setTextMargins(-2, 0, 0, 0);
 
-    QPalette idPalette = id->palette();
+    QPalette idPalette = m_contactId->palette();
     idPalette.setBrush(QPalette::Base, idPalette.window());
     idPalette.setBrush(QPalette::Text, idPalette.windowText());
-    id->setPalette(idPalette);
+    m_contactId->setPalette(idPalette);
 
-    layout->addWidget(id, row++, 1);
-
-
+    layout->addWidget(m_contactId, row++, 1);
     layout->setRowStretch(row++, 1);
     return layout;
 }
@@ -154,6 +149,12 @@ QLayout *IdentityInfoPage::createButtons()
 
     layout->setColumnStretch(column++, 1);
     return layout;
+}
+
+void IdentityInfoPage::statusChanged()
+{
+    if (m_contactId->text().isEmpty())
+        m_contactId->setText(identity->contactID());
 }
 
 void IdentityInfoPage::setNickname()

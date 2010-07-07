@@ -23,6 +23,7 @@
 class UserIdentity;
 class QLabel;
 class EditableLabel;
+class ContactIDWidget;
 
 class IdentityInfoPage : public QWidget
 {
@@ -40,9 +41,12 @@ public slots:
 private slots:
     void setNickname();
 
+    void statusChanged();
+
 private:
     QLabel *m_avatar;
     EditableLabel *m_nickname;
+    ContactIDWidget *m_contactId;
     QAction *actAddContact, *actChangeAvatar, *actRename;
 
     void createActions();
