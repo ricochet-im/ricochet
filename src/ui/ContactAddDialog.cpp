@@ -64,7 +64,7 @@ QWidget *ContactAddDialog::createUI()
     connect(m_nickname, SIGNAL(textChanged(QString)), SLOT(updateAcceptableInput()));
 
     // ID
-    m_id->setWhatsThis(tr("Enter the ID of your contact, e.g. w3rf2xcq1b88lbda@TorIM"));
+    m_id->setWhatsThis(tr("Enter the ID of your contact, e.g. w3rf2xcq1b88lbda@Torsion"));
     m_id->setValidator(new ContactIDValidator(m_id));
     connect(m_id, SIGNAL(textChanged(QString)), SLOT(updateAcceptableInput()));
 
@@ -152,13 +152,13 @@ void ContactAddDialog::checkClipboardForId()
 {
     const QClipboard *clipboard = QApplication::clipboard();
 
-    QRegExp r = QRegExp(QLatin1String("(?:^([a-z2-7]{16})$|([a-z2-7]{16})@TorIM)"), Qt::CaseInsensitive);
+    QRegExp r = QRegExp(QLatin1String("(?:^([a-z2-7]{16})$|([a-z2-7]{16})@Torsion)"), Qt::CaseInsensitive);
     if (r.indexIn(clipboard->text()) == -1)
         return;
 
     QStringList sl = r.capturedTexts();
-    if (sl.at(0).indexOf(QLatin1String("@TorIM"), 0, Qt::CaseInsensitive) == -1)
-        m_id->setText(sl.at(0) + QLatin1String("@TorIM"));
+    if (sl.at(0).indexOf(QLatin1String("@Torsion"), 0, Qt::CaseInsensitive) == -1)
+        m_id->setText(sl.at(0) + QLatin1String("@Torsion"));
     else
         m_id->setText(sl.at(0));
 }

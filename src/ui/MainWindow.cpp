@@ -47,7 +47,7 @@ MainWindow::MainWindow(QWidget *parent)
     Q_ASSERT(!uiMain);
     uiMain = this;
 
-    setWindowTitle(QLatin1String("TorIM"));
+    setWindowTitle(QLatin1String("Torsion"));
 
     createActions();
 

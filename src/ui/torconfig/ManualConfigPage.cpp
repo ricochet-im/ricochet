@@ -40,7 +40,7 @@ ManualConfigPage::ManualConfigPage(QWidget *parent)
     desc->setWordWrap(true);
     desc->setTextFormat(Qt::RichText);
     desc->setText(tr(
-        "TorIM requires a Tor controller connection instead of a normal proxy connection. "
+        "Torsion requires a Tor controller connection instead of a normal proxy connection. "
         "This is configured with the <i>ControlPort</i> and <i>HashedControlPassword</i> options in the "
         "Tor configuration. You must set these options in your Tor configuration, and input them here."
     ));

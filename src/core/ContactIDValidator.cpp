@@ -27,7 +27,7 @@ QValidator::State ContactIDValidator::validate(QString &text, int &pos) const
 {
     Q_UNUSED(pos);
 
-    /* [a-z2-7]{16}@TorIM */
+    /* [a-z2-7]{16}@Torsion */
     for (int i = 0; i < qMin(text.size(), 16); ++i)
     {
         char c = text[i].toLatin1();
@@ -37,16 +37,16 @@ QValidator::State ContactIDValidator::validate(QString &text, int &pos) const
 
     if (text.size() < 16)
         return QValidator::Intermediate;
-    else if (text.size() > 22)
+    else if (text.size() > 24)
         return QValidator::Invalid;
 
-    QString suffix = QLatin1String("@TorIM");
+    QString suffix = QLatin1String("@Torsion");
     suffix.truncate(text.size() - 16);
 
     if (QString::compare(text.mid(16), suffix, Qt::CaseInsensitive) != 0)
         return QValidator::Invalid;
 
-    if (suffix.size() != 6)
+    if (suffix.size() != 8)
         return QValidator::Intermediate;
 
     return QValidator::Acceptable;
@@ -54,7 +54,7 @@ QValidator::State ContactIDValidator::validate(QString &text, int &pos) const
 
 bool ContactIDValidator::isValidID(const QString &text)
 {
-    QRegExp regex(QLatin1String("^[a-z2-7]{16}@TorIM$"), Qt::CaseInsensitive);
+    QRegExp regex(QLatin1String("^[a-z2-7]{16}@Torsion$"), Qt::CaseInsensitive);
     return regex.exactMatch(text);
 }
 
@@ -78,7 +78,7 @@ QString ContactIDValidator::idFromHostname(const QString &hostname)
             return QString();
     }
 
-    re += QLatin1String("@TorIM");
+    re += QLatin1String("@Torsion");
 
     if (!isValidID(re))
         return QString();

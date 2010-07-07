@@ -1,10 +1,23 @@
-# -------------------------------------------------
-# Project created by QtCreator 2010-03-24T15:47:07
-# -------------------------------------------------
+# Torsion - http://github.com/special/torsion
+# Copyright (C) 2010, John Brooks <special@dereferenced.net>
+#
+# Torsion is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Torsion. If not, see http://www.gnu.org/licenses/
+
 QT += core \
     gui \
     network
-TARGET = TorIM
+TARGET = Torsion
 TEMPLATE = app
 
 CONFIG += debug_and_release
@@ -153,4 +166,4 @@ HEADERS += src/ui/MainWindow.h \
 RESOURCES += res/resources.qrc \
     translation/embedded.qrc
 
-TRANSLATIONS = translation/torim.ts
+TRANSLATIONS = translation/torsion.ts

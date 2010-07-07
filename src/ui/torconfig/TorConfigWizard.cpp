@@ -27,7 +27,7 @@ using namespace TorConfig;
 TorConfigWizard::TorConfigWizard(QWidget *parent)
     : QWizard(parent)
 {
-    setWindowTitle(tr("TorIM - Configure Tor"));
+    setWindowTitle(tr("Torsion - Configure Tor"));
     setFixedSize(550, 450);
 
     addPage(new IntroPage);

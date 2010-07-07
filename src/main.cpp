@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
 static void initSettings()
 {
     /* Defaults */
-    qApp->setOrganizationName(QLatin1String("TorIM"));
+    qApp->setOrganizationName(QLatin1String("Torsion"));
     QSettings::setDefaultFormat(QSettings::IniFormat);
     QSettings::setPath(QSettings::IniFormat, QSettings::UserScope, qApp->applicationDirPath());
 
@@ -114,7 +114,7 @@ static void initTranslation()
     QString configLang = config->value(QLatin1String("core/language")).toString();
     if (!configLang.isEmpty())
     {
-        QString filename = QLatin1String("torim.") + configLang;
+        QString filename = QLatin1String("torsion.") + configLang;
         QString separators = QLatin1String("_");
 
         /* Look in the application directory */
@@ -127,7 +127,7 @@ static void initTranslation()
     /* Next, try to load the system locale language, and allow it to fall back to the english default */
     if (!ok)
     {
-        QString filename = QLatin1String("torim.") + QLocale::system().name();
+        QString filename = QLatin1String("torsion.") + QLocale::system().name();
         ok = translator->load(filename, appPath);
         if (!ok)
             ok = translator->load(filename, resPath);
@@ -164,7 +164,7 @@ static bool connectTorControl()
 
         if (address.isNull() || !port)
         {
-            QMessageBox::critical(0, wizard.tr("TorIM - Error"),
+            QMessageBox::critical(0, wizard.tr("Torsion - Error"),
                 wizard.tr("The Tor configuration wizard did not complete successfully. Please restart the "
                 "application and try again."));
             return false;

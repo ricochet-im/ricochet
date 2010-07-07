@@ -55,7 +55,7 @@ ContactRequestDialog::ContactRequestDialog(IncomingContactRequest *r, QWidget *p
             "font-weight:bold;'>%2</td></tr><tr><td style='color:#808080;padding-right:9px;'>%3</td><td>%4</td></tr><tr>"
             "<td colspan=2><br>%5</td></tr></table>")
             .arg(tr("ID:"))
-            .arg(QString::fromLatin1(request->hostname) + QLatin1String("@TorIM"))
+            .arg(QString::fromLatin1(request->hostname) + QLatin1String("@Torsion"))
             .arg(tr("Date:"))
             .arg(QLatin1String("20 minutes ago (3/2/10 3:42pm)"))
             .arg(Qt::escape(request->message()).replace(QLatin1Char('\n'), QLatin1String("<br>")))

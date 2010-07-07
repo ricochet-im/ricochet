@@ -34,7 +34,7 @@ IntroPage::IntroPage(QWidget *parent)
     intro->setAlignment(Qt::AlignTop | Qt::AlignLeft);
     intro->setWordWrap(true);
     intro->setText(tr(
-        "First, TorIM must be configured to work with your installation of Tor. "
+        "First, Torsion must be configured to work with your installation of Tor. "
         "To continue, select your desired setup method below."
     ));
     layout->addWidget(intro);
@@ -47,12 +47,13 @@ IntroPage::IntroPage(QWidget *parent)
     /* Vidalia (temporary) */
     QCommandLinkButton *vidaliaBtn = new QCommandLinkButton;
     vidaliaBtn->setText(tr("Use Vidalia (Recommended)"));
-    vidaliaBtn->setDescription(tr("Automatically reconfigure Vidalia and Tor to work with TorIM"));
+    vidaliaBtn->setDescription(tr("Automatically reconfigure Vidalia and Tor to work with Torsion"));
 
     if (!VidaliaConfigManager::isVidaliaInstalled())
     {
         vidaliaBtn->setEnabled(false);
-        vidaliaBtn->setDescription(tr("If Vidalia is installed, it can be automatically configured to work with TorIM"));
+        vidaliaBtn->setDescription(tr("If Vidalia is installed, it can be automatically configured to"
+                                      " work with Torsion"));
     }
 
     connect(vidaliaBtn, SIGNAL(clicked()), btnMapper, SLOT(map()));
