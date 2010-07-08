@@ -22,6 +22,7 @@
 #include "tor/TorControlManager.h"
 #include "ui/torconfig/TorConfigWizard.h"
 #include "protocol/IncomingSocket.h"
+#include "utils/CryptoKey.h"
 #include "utils/SecureRNG.h"
 #include <QApplication>
 #include <QSettings>
@@ -29,6 +30,7 @@
 #include <QDir>
 #include <QTranslator>
 #include <QMessageBox>
+#include <QDesktopServices>
 #include <openssl/crypto.h>
 
 AppSettings *config = 0;
@@ -39,8 +41,6 @@ static void initSettings();
 static void initTranslation();
 static void initIncomingSocket();
 static bool connectTorControl();
-
-#include "utils/CryptoKey.h"
 
 int main(int argc, char *argv[])
 {
@@ -87,19 +87,62 @@ int main(int argc, char *argv[])
     return a.exec();
 }
 
+static QString userConfigPath()
+{
+#ifdef Q_OS_LINUX
+    QString re = QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
+    re += QLatin1String("/.config/Torsion/");
+    return re;
+#else
+    return QDesktopServices::storageLocation(QDesktopServices::DataLocation);
+#endif
+}
+
 static void initSettings()
 {
-    /* Defaults */
-    qApp->setOrganizationName(QLatin1String("Torsion"));
-    QSettings::setDefaultFormat(QSettings::IniFormat);
-    QSettings::setPath(QSettings::IniFormat, QSettings::UserScope, qApp->applicationDirPath());
+    /* The default QSettings logic is not desirable here. Instead, we do the following:
+     * If the application directory is writable, it is preferred. Otherwise, a
+     * platform-specific per-user config location is used, generally matching the
+     * QSettings user locations. Both locations will be checked before a new file is
+     * created (always in the preferred of the two). That file is always named Torsion.ini.
+     * If a filename is given as a parameter, that will always be used instead. */
 
-    /* Commandline */
+    qApp->setOrganizationName(QLatin1String("Torsion"));
+
+    QString configFile;
     QStringList args = qApp->arguments();
     if (args.size() > 1)
-        config = new AppSettings(args[1], QSettings::IniFormat);
+    {
+        configFile = args[1];
+    }
     else
-        config = new AppSettings;
+    {
+        QString appDirFile = qApp->applicationDirPath() + QLatin1String("/Torsion.ini");
+        QString userFile;
+        if (QFile::exists(appDirFile))
+        {
+            configFile = appDirFile;
+        }
+        else
+        {
+            userFile = userConfigPath() + QLatin1String("/Torsion.ini");
+            if (QFile::exists(userFile))
+                configFile = userFile;
+        }
+
+        if (configFile.isEmpty())
+        {
+            /* Attempt to create the config as appDirFile */
+            if (QFile(appDirFile).open(QIODevice::ReadWrite))
+                configFile = appDirFile;
+            else
+                configFile = userFile;
+        }
+    }
+
+    config = new AppSettings(configFile, QSettings::IniFormat);
+    if (!config->isWritable())
+        qWarning() << "Configuration file" << configFile << "is not writable";
 }
 
 static void initTranslation()
