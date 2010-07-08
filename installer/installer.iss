@@ -16,6 +16,11 @@ VersionInfoProductName=Torsion
 WizardImageFile=SetupModern11.bmp
 [Files]
 Source: ..\release\Torsion.exe; DestDir: {app}; DestName: Torsion.exe; Flags: replacesameversion
+Source: ..\COPYING; DestDir: {app}
+Source: ..\README.txt; DestDir: {app}
+Source: Tor\LICENSE; DestDir: {app}\Tor
+Source: Tor\README.txt; DestDir: {app}\Tor
+Source: Tor\tor.exe; DestDir: {app}\Tor; Flags: replacesameversion
 [Icons]
 Name: {group}\Torsion; Filename: {app}\Torsion.exe; WorkingDir: {app}; Comment: Start Torsion IM
 Name: {group}\Uninstall Torsion IM; Filename: {uninstallexe}
@@ -35,3 +40,7 @@ end;
 
 
 
+[Dirs]
+Name: {app}\Tor
+[UninstallDelete]
+Name: {app}\Tor; Type: filesandordirs
