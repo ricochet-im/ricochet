@@ -3,5 +3,7 @@ Makefile.*
 *.user
 *.user.*
 debug
+release
+installer/Output
 *.pdb
 notes
