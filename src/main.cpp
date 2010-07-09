@@ -21,6 +21,7 @@
 #include "core/ContactsManager.h"
 #include "tor/TorControlManager.h"
 #include "ui/torconfig/TorConfigWizard.h"
+#include "tor/autoconfig/BundledTorManager.h"
 #include "protocol/IncomingSocket.h"
 #include "utils/CryptoKey.h"
 #include "utils/SecureRNG.h"
@@ -182,20 +183,17 @@ static void initIncomingSocket()
 
 static bool connectTorControl()
 {
-    QHostAddress address(config->value("tor/controlIp").value<QString>());
-    quint16 port = (quint16)config->value("tor/controlPort", 0).toUInt();
+    QString method = config->value("tor/configMethod").toString();
 
-    if (address.isNull() || !port)
+    if (method.isNull())
     {
         TorConfigWizard wizard;
         int re = wizard.exec();
         if (re != QDialog::Accepted)
             return false;
 
-        address = config->value("tor/controlIp").value<QString>();
-        port = (quint16)config->value("tor/controlPort", 0).toUInt();
-
-        if (address.isNull() || !port)
+        method = config->value("tor/configMethod").toString();
+        if (method.isNull())
         {
             QMessageBox::critical(0, wizard.tr("Torsion - Error"),
                 wizard.tr("The Tor configuration wizard did not complete successfully. Please restart the "
@@ -204,12 +202,20 @@ static bool connectTorControl()
         }
     }
 
-    torManager = new Tor::TorControlManager;
+    if (method == QLatin1String("bundle"))
+    {
+        torManager = new Tor::TorControlManager;
+        BundledTorManager::instance()->start();
+        return true;
+    }
+    else
+    {
+        QHostAddress address(config->value("tor/controlIp", QLatin1String("127.0.0.1")).toString());
+        quint16 port = (quint16)config->value("tor/controlPort", 9051).toUInt();
 
-    /* Authentication */
-    torManager->setAuthPassword(config->value("tor/authPassword").toByteArray());
-
-    /* Connect */
-    torManager->connect(address, port);
-    return true;
+        torManager = new Tor::TorControlManager;
+        torManager->setAuthPassword(config->value("tor/authPassword").toByteArray());
+        torManager->connect(address, port);
+        return true;
+    }
 }

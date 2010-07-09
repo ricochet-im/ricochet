@@ -29,6 +29,7 @@ public:
     explicit TorConfigWizard(QWidget *parent = 0);
 
     virtual void accept();
+    void accept(const QString &method);
 };
 
 #endif // TORCONFIGWIZARD_H

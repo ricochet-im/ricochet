@@ -20,6 +20,8 @@
 
 #include <QWizardPage>
 
+class QCommandLinkButton;
+
 namespace TorConfig
 {
 
@@ -38,8 +40,11 @@ public:
 
 private slots:
     void setConfigChoice(int choice);
+    void useBundled();
 
 private:
+    QCommandLinkButton *vidaliaBtn, *bundleBtn, *manualBtn;
+
     int configChoice;
 };
 
