@@ -21,6 +21,11 @@
 #include <QObject>
 #include <QProcess>
 
+namespace Tor
+{
+    class TorControlManager;
+}
+
 class BundledTorManager : public QObject
 {
     Q_OBJECT
@@ -33,14 +38,24 @@ public:
 
     bool isRunning() const { return process.state() == QProcess::Running; }
 
+    void setTorManager(Tor::TorControlManager *torManager);
+
 public slots:
     void start();
+
+private slots:
+    void readOutput();
+    void processExited(int exitCode, QProcess::ExitStatus status);
 
 private:
     static BundledTorManager *m_instance;
     QProcess process;
+    Tor::TorControlManager *m_torControl;
+    quint16 controlPort, socksPort;
 
     BundledTorManager();
+
+    bool selectAvailablePorts();
 };
 
 #endif // BUNDLEDTORMANAGER_H

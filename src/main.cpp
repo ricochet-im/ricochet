@@ -205,6 +205,7 @@ static bool connectTorControl()
     if (method == QLatin1String("bundle"))
     {
         torManager = new Tor::TorControlManager;
+        BundledTorManager::instance()->setTorManager(torManager);
         BundledTorManager::instance()->start();
         return true;
     }

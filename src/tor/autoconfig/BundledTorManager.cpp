@@ -16,21 +16,26 @@
  */
 
 #include "BundledTorManager.h"
+#include "tor/TorControlManager.h"
 #include <QApplication>
 #include <QFile>
+#include <QTcpServer>
 #include <QDebug>
+
+using namespace Tor;
 
 BundledTorManager *BundledTorManager::m_instance = 0;
 
 BundledTorManager::BundledTorManager()
+    : m_torControl(0), controlPort(0), socksPort(0)
 {
     Q_ASSERT(!m_instance);
     m_instance = this;
 
     process.setProcessChannelMode(QProcess::MergedChannels);
     process.setReadChannel(QProcess::StandardOutput);
-
-    start();
+    connect(&process, SIGNAL(readyRead()), SLOT(readOutput()));
+    connect(&process, SIGNAL(finished(int,QProcess::ExitStatus)), SLOT(processExited(int,QProcess::ExitStatus)));
 }
 
 BundledTorManager *BundledTorManager::instance()
@@ -60,21 +65,98 @@ bool BundledTorManager::isAvailable()
     return QFile::exists(torExecutable());
 }
 
+void BundledTorManager::setTorManager(Tor::TorControlManager *tor)
+{
+    m_torControl = tor;
+}
+
 void BundledTorManager::start()
 {
     if (isRunning())
         return;
+
+    Q_ASSERT(m_torControl);
 
     qDebug() << "Launching bundled Tor from" << torExecutable();
 
     QString dir = torDirectory();
     QStringList args;
 
-    args << QLatin1String("-f") << dir;
-    args << QLatin1String("--DataDirectory") << dir;
-    // ControlPort
+    QString torrc = dir + QLatin1String("torrc");
+    if (!QFile::exists(torrc))
+    {
+        if (!QFile(torrc).open(QIODevice::ReadWrite))
+        {
+            /* TODO handle errors */
+            qWarning() << "Failed to create torrc for bundled tor";
+            return;
+        }
+    }
+
+    args << QLatin1String("-f") << QLatin1String("torrc");
+    args << QLatin1String("--DataDirectory") << QLatin1String(".");
+
+    if (!selectAvailablePorts())
+    {
+        qWarning() << "Failed to select ports for bundled tor";
+        return;
+    }
+
+    args << QLatin1String("--SocksPort") << QString::number(socksPort);
+    args << QLatin1String("--ControlPort") << QString::number(controlPort);
     // HashedControlPassword
 
     process.setWorkingDirectory(dir);
     process.start(torExecutable(), args, QIODevice::ReadOnly);
+
+    m_torControl->connect(QHostAddress::LocalHost, controlPort);
+}
+
+void BundledTorManager::readOutput()
+{
+    for (;;)
+    {
+        QByteArray line = process.readLine(1024);
+        if (line.isEmpty())
+            return;
+
+        qDebug() << "Tor:" << line.trimmed();
+    }
+}
+
+void BundledTorManager::processExited(int exitCode, QProcess::ExitStatus status)
+{
+    qDebug() << "Tor exited:" << exitCode << status << process.error() << process.errorString();
+}
+
+bool BundledTorManager::selectAvailablePorts()
+{
+    /* Select two different random ports that are not in use, for SOCKS and control */
+    controlPort = socksPort = 0;
+
+    QTcpServer testSocket;
+    for (;;)
+    {
+        quint16 port = quint16((qrand() % 45535) + 20000);
+        if (!testSocket.listen(QHostAddress::LocalHost, port))
+        {
+            if (testSocket.serverError() == QAbstractSocket::AddressInUseError)
+                continue;
+            return false;
+        }
+
+        testSocket.close();
+
+        if (!controlPort)
+        {
+            controlPort = port;
+        }
+        else if (controlPort != port)
+        {
+            socksPort = port;
+            break;
+        }
+    }
+
+    return true;
 }
