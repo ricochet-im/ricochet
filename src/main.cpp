@@ -103,9 +103,10 @@ static void initSettings()
     /* The default QSettings logic is not desirable here. Instead, we do the following:
      * If the application directory is writable, it is preferred. Otherwise, a
      * platform-specific per-user config location is used, generally matching the
-     * QSettings user locations. Both locations will be checked before a new file is
-     * created (always in the preferred of the two). That file is always named Torsion.ini.
-     * If a filename is given as a parameter, that will always be used instead. */
+     * QSettings user locations. To avoid odd behavior when a per-user config already
+     * exists, the application directory is *always* used if possible. The file is always
+     * named Torsion.ini. If a filename is given as a parameter, that will always be used
+     * instead. */
 
     qApp->setOrganizationName(QLatin1String("Torsion"));
 
@@ -118,26 +119,15 @@ static void initSettings()
     else
     {
         QString appDirFile = qApp->applicationDirPath() + QLatin1String("/Torsion.ini");
-        QString userFile;
-        if (QFile::exists(appDirFile))
+        if (!QFile::exists(appDirFile))
         {
-            configFile = appDirFile;
-        }
-        else
-        {
-            userFile = userConfigPath() + QLatin1String("/Torsion.ini");
-            if (QFile::exists(userFile))
-                configFile = userFile;
-        }
-
-        if (configFile.isEmpty())
-        {
-            /* Attempt to create the config as appDirFile */
             if (QFile(appDirFile).open(QIODevice::ReadWrite))
                 configFile = appDirFile;
             else
-                configFile = userFile;
+                configFile = userConfigPath() + QLatin1String("/Torsion.ini");
         }
+        else
+            configFile = appDirFile;
     }
 
     config = new AppSettings(configFile, QSettings::IniFormat);
