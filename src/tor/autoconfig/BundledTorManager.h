@@ -51,6 +51,7 @@ private:
     static BundledTorManager *m_instance;
     QProcess process;
     Tor::TorControlManager *m_torControl;
+    int m_killAttempts;
     quint16 controlPort, socksPort;
 
     BundledTorManager();

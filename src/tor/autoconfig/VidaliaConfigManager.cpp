@@ -16,6 +16,7 @@
  */
 
 #include "VidaliaConfigManager.h"
+#include "utils/OSUtil.h"
 #include <QFile>
 #include <QDir>
 #include <QLibrary>
@@ -25,10 +26,6 @@
 #ifdef Q_OS_WIN
 #include <Windows.h>
 #include <ShlObj.h>
-#else
-#include <errno.h>
-#include <sys/types.h>
-#include <signal.h>
 #endif
 
 VidaliaConfigManager::VidaliaConfigManager(QObject *parent)
@@ -72,47 +69,12 @@ QString VidaliaConfigManager::vidaliaConfigPath()
 
 qint64 VidaliaConfigManager::currentPid() const
 {
-    QFile pidFile(m_path + QLatin1String("/vidalia.pid"));
-    if (!pidFile.open(QIODevice::ReadOnly))
-        return -1;
-
-    bool ok = false;
-    qint64 re = static_cast<qint64>(pidFile.readAll().toULongLong(&ok));
-    if (!ok)
-        re = -1;
-
-    return re;
+    return readPidFile(m_path + QLatin1String("/vidalia.pid"));
 }
 
 bool VidaliaConfigManager::isVidaliaRunning() const
 {
-    qint64 pid = currentPid();
-    if (pid < 0)
-        return false;
-
-#ifdef Q_OS_WIN
-    DWORD access;
-    if (QSysInfo::windowsVersion() & QSysInfo::WV_NT_based && QSysInfo::windowsVersion() >= QSysInfo::WV_VISTA)
-        access = PROCESS_QUERY_LIMITED_INFORMATION;
-    else
-        access = PROCESS_QUERY_INFORMATION;
-
-    HANDLE hProcess = OpenProcess(access, FALSE, static_cast<DWORD>(pid));
-    if (!hProcess)
-        return false;
-
-    DWORD exitCode;
-    if (!GetExitCodeProcess(hProcess, &exitCode))
-        exitCode = 0;
-
-    CloseHandle(hProcess);
-
-    return (exitCode == STILL_ACTIVE);
-#else
-    if (kill(static_cast<pid_t>(pid), 0) < 0)
-        return (errno != ESRCH);
-    return true;
-#endif
+    return isProcessRunning(currentPid());
 }
 
 bool VidaliaConfigManager::hasCompatibleConfig() const

@@ -17,17 +17,19 @@
 
 #include "BundledTorManager.h"
 #include "tor/TorControlManager.h"
+#include "utils/OSUtil.h"
 #include <QApplication>
 #include <QFile>
 #include <QTcpServer>
 #include <QDebug>
+#include <QTimer>
 
 using namespace Tor;
 
 BundledTorManager *BundledTorManager::m_instance = 0;
 
 BundledTorManager::BundledTorManager()
-    : m_torControl(0), controlPort(0), socksPort(0)
+    : m_torControl(0), m_killAttempts(0), controlPort(0), socksPort(0)
 {
     Q_ASSERT(!m_instance);
     m_instance = this;
@@ -77,9 +79,36 @@ void BundledTorManager::start()
 
     Q_ASSERT(m_torControl);
 
-    qDebug() << "Launching bundled Tor from" << torExecutable();
-
     QString dir = torDirectory();
+
+    qint64 oldPid = readPidFile(dir + QLatin1String("pid"));
+    qDebug() << oldPid;
+    if (oldPid > 0 && isProcessRunning(oldPid))
+    {
+        /* Existing instance is running, but we can't connect to it, because the
+         * control port, socks port, and password are all unknown now. Kill the
+         * existing process, and start a new one once it has exited */
+        if (m_killAttempts && ++m_killAttempts < 10)
+        {
+            QTimer::singleShot(500, this, SLOT(start()));
+            return;
+        }
+
+        bool force = (m_killAttempts == 10);
+        qDebug() << "Attempting to kill old bundled tor instance" << (force ? "forcefully" : "");
+        if (m_killAttempts > 10 || !killProcess(oldPid, force))
+        {
+            qWarning() << "Failed to kill old instance of bundled tor; trying to start anyway";
+        }
+        else
+        {
+            QTimer::singleShot(500, this, SLOT(start()));
+            return;
+        }
+    }
+
+    m_killAttempts = 0;
+
     QStringList args;
 
     QString torrc = dir + QLatin1String("torrc");
@@ -95,6 +124,7 @@ void BundledTorManager::start()
 
     args << QLatin1String("-f") << QLatin1String("torrc");
     args << QLatin1String("--DataDirectory") << QLatin1String(".");
+    args << QLatin1String("--PidFile") << QLatin1String("pid");
 
     if (!selectAvailablePorts())
     {
@@ -104,7 +134,9 @@ void BundledTorManager::start()
 
     args << QLatin1String("--SocksPort") << QString::number(socksPort);
     args << QLatin1String("--ControlPort") << QString::number(controlPort);
-    // HashedControlPassword
+    // HashedControlPassword (or __HashedControlSessionPassword? seems possible to set via commandline)
+
+    qDebug() << "Launching bundled Tor from" << torExecutable();
 
     process.setWorkingDirectory(dir);
     process.start(torExecutable(), args, QIODevice::ReadOnly);
