@@ -115,7 +115,8 @@ void ContactsView::currentChanged(const QModelIndex &current)
     if (vObject.canConvert<ContactUser*>())
     {
         ContactUser *user = vObject.value<ContactUser*>();
-        savedContactPage[user] = pActivePage = savedContactPage.value(user, ContactInfoPage);
+        pActivePage = savedContactPage.value(user, ContactInfoPage);
+        savedContactPage.insert(user, pActivePage);
         emit activePageChanged(pActivePage, user);
     }
     else if (vObject.canConvert<UserIdentity*>())
