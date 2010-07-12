@@ -25,7 +25,7 @@ Source: Tor\tor.exe; DestDir: {app}\Tor; Flags: replacesameversion uninsrestartd
 Name: {group}\Torsion; Filename: {app}\Torsion.exe; WorkingDir: {app}; Comment: Start Torsion IM
 Name: {group}\Uninstall Torsion IM; Filename: {uninstallexe}
 [Run]
-Filename: {app}\Torsion.exe; WorkingDir: {app}; Description: Launch Torsion IM; Flags: postinstall
+Filename: {app}\Torsion.exe; WorkingDir: {app}; Description: Launch Torsion IM; Flags: postinstall nowait
 [Messages]
 WelcomeLabel2=This will install [name] on your computer.
 [Code]
