@@ -19,9 +19,8 @@
 #define DATEUTIL_H
 
 #include <QString>
+#include <QDateTime>
 
-class QDateTime;
-
-QString timeDifferenceString(const QDateTime &from, const QDateTime &to);
+QString timeDifferenceString(const QDateTime &from, const QDateTime &to = QDateTime::currentDateTime());
 
 #endif // DATEUTIL_H

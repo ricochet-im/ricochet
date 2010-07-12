@@ -20,6 +20,7 @@
 #include "core/ContactsManager.h"
 #include "core/IncomingRequestManager.h"
 #include "core/NicknameValidator.h"
+#include "utils/DateUtil.h"
 #include <QBoxLayout>
 #include <QGridLayout>
 #include <QDialogButtonBox>
@@ -57,7 +58,8 @@ ContactRequestDialog::ContactRequestDialog(IncomingContactRequest *r, QWidget *p
             .arg(tr("ID:"))
             .arg(QString::fromLatin1(request->hostname) + QLatin1String("@Torsion"))
             .arg(tr("Date:"))
-            .arg(QLatin1String("20 minutes ago (3/2/10 3:42pm)"))
+            .arg(tr("%1 (%2)").arg(timeDifferenceString(request->requestDate()),
+                                   request->requestDate().toString(Qt::SystemLocaleShortDate)))
             .arg(Qt::escape(request->message()).replace(QLatin1Char('\n'), QLatin1String("<br>")))
     );
 
