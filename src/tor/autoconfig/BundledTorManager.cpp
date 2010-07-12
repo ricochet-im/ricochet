@@ -18,6 +18,8 @@
 #include "BundledTorManager.h"
 #include "tor/TorControlManager.h"
 #include "utils/OSUtil.h"
+#include "utils/CryptoKey.h"
+#include "utils/SecureRNG.h"
 #include <QApplication>
 #include <QFile>
 #include <QTcpServer>
@@ -122,10 +124,12 @@ void BundledTorManager::start()
         }
     }
 
+    /* Files */
     args << QLatin1String("-f") << QLatin1String("torrc");
     args << QLatin1String("--DataDirectory") << QLatin1String(".");
     args << QLatin1String("--PidFile") << QLatin1String("pid");
 
+    /* Ports */
     if (!selectAvailablePorts())
     {
         qWarning() << "Failed to select ports for bundled tor";
@@ -134,8 +138,20 @@ void BundledTorManager::start()
 
     args << QLatin1String("--SocksPort") << QString::number(socksPort);
     args << QLatin1String("--ControlPort") << QString::number(controlPort);
-    // HashedControlPassword (or __HashedControlSessionPassword? seems possible to set via commandline)
 
+    /* Password */
+    QByteArray password = SecureRNG::random(16);
+    QByteArray hashedPassword = torControlHashedPassword(password);
+    if (password.isNull() || hashedPassword.isNull())
+    {
+        qWarning() << "Failed to create control password for bundled tor";
+        return;
+    }
+
+    m_torControl->setAuthPassword(password);
+    args << QLatin1String("--__HashedControlSessionPassword") << QString::fromLatin1(hashedPassword);
+
+    /* Launch it. */
     qDebug() << "Launching bundled Tor from" << torExecutable();
 
     process.setWorkingDirectory(dir);

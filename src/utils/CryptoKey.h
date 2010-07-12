@@ -60,4 +60,6 @@ private:
     QExplicitlySharedDataPointer<Data> d;
 };
 
+QByteArray torControlHashedPassword(const QByteArray &password);
+
 #endif // CRYPTOKEY_H

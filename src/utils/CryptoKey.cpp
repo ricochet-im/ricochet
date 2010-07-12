@@ -247,6 +247,34 @@ void CryptoKey::test(const QString &file)
     qDebug() << "(crypto test) Verified signature:" << ok;
 }
 
+/* Cryptographic hash of a password as expected by Tor's HashedControlPassword */
+QByteArray torControlHashedPassword(const QByteArray &password)
+{
+    QByteArray salt = SecureRNG::random(8);
+    if (salt.isNull())
+        return QByteArray();
+
+    int count = ((quint32)16 + (96 & 15)) << ((96 >> 4) + 6);
+
+    SHA_CTX hash;
+    SHA1_Init(&hash);
+
+    QByteArray tmp = salt + password;
+    while (count)
+    {
+        int c = qMin(count, tmp.size());
+        SHA1_Update(&hash, reinterpret_cast<const void*>(tmp.constData()), c);
+        count -= c;
+    }
+
+    unsigned char md[20];
+    SHA1_Final(md, &hash);
+
+    /* 60 is the hex-encoded value of 96, which is a constant used by Tor's algorithm. */
+    return QByteArray("16:") + salt.toHex().toUpper() + QByteArray("60") +
+           QByteArray::fromRawData(reinterpret_cast<const char*>(md), 20).toHex().toUpper();
+}
+
 /* Copyright (c) 2001-2004, Roger Dingledine
  * Copyright (c) 2004-2006, Roger Dingledine, Nick Mathewson
  * Copyright (c) 2007-2010, The Tor Project, Inc.
