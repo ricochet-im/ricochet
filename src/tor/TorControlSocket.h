@@ -32,7 +32,7 @@ Q_OBJECT
 public:
     explicit TorControlSocket(QObject *parent = 0);
 
-    void sendCommand(const QByteArray &data);
+    void sendCommand(const QByteArray &data) { sendCommand(0, data); }
     void sendCommand(TorControlCommand *command, const QByteArray &data);
 
 signals:

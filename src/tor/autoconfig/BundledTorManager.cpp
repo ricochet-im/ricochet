@@ -70,6 +70,7 @@ bool BundledTorManager::isAvailable()
 void BundledTorManager::setTorManager(Tor::TorControlManager *tor)
 {
     m_torControl = tor;
+    connect(qApp, SIGNAL(aboutToQuit()), m_torControl, SLOT(shutdownSync()));
 }
 
 void BundledTorManager::start()
@@ -82,7 +83,6 @@ void BundledTorManager::start()
     QString dir = torDirectory();
 
     qint64 oldPid = readPidFile(dir + QLatin1String("pid"));
-    qDebug() << oldPid;
     if (oldPid > 0 && isProcessRunning(oldPid))
     {
         /* Existing instance is running, but we can't connect to it, because the

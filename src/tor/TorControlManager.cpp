@@ -386,3 +386,18 @@ void TorControlManager::publishServices()
 
     socket->sendCommand(command, command->build(settings));
 }
+
+void TorControlManager::shutdown()
+{
+    socket->sendCommand("SIGNAL SHUTDOWN\r\n");
+}
+
+void TorControlManager::shutdownSync()
+{
+    shutdown();
+    while (socket->bytesToWrite())
+    {
+        if (!socket->waitForBytesWritten(5000))
+            return;
+    }
+}

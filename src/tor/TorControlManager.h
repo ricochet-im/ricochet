@@ -72,6 +72,12 @@ signals:
     void disconnected();
     void socksReady();
 
+public slots:
+    /* Instruct Tor to shutdown */
+    void shutdown();
+    /* Call shutdown(), and wait synchronously for the command to be written */
+    void shutdownSync();
+
 private slots:
     void socketConnected();
     void socketDisconnected();
