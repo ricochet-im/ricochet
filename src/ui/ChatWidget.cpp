@@ -33,6 +33,10 @@
 
 QHash<ContactUser*,ChatWidget*> ChatWidget::userMap;
 
+static const int maxMessageChars = 512;
+static const int maxInputLines = 15;
+static const int defaultBacklog = 125;
+
 ChatWidget *ChatWidget::widgetForUser(ContactUser *u, bool create)
 {
     ChatWidget *widget = userMap.value(u);
@@ -88,6 +92,7 @@ void ChatWidget::createTextArea()
     textArea = new QTextEdit;
     textArea->setReadOnly(true);
     textArea->setFont(config->value("ui/chatFont", QFont(QLatin1String("Calibri"), 10)).value<QFont>());
+    textArea->document()->setMaximumBlockCount(config->value("ui/chatBacklog", defaultBacklog).toInt());
 
     connect(textArea->verticalScrollBar(), SIGNAL(rangeChanged(int,int)), this, SLOT(scrollToBottom()));
 }
@@ -96,7 +101,7 @@ void ChatWidget::createTextInput()
 {
     textInput = new QLineEdit;
     textArea->setFont(config->value("ui/chatFont", QFont(QLatin1String("Calibri"), 10)).value<QFont>());
-    textInput->setMaxLength(512);
+    textInput->setMaxLength(maxMessageChars);
 
     connect(textInput, SIGNAL(returnPressed()), this, SLOT(sendInputMessage()));
 }
@@ -110,26 +115,41 @@ void ChatWidget::sendInputMessage()
 
     QDateTime when = QDateTime::currentDateTime();
 
-    if (user->isConnected())
-    {
-        ChatMessageCommand *command = new ChatMessageCommand;
-        connect(command, SIGNAL(commandFinished()), this, SLOT(messageReply()));
-        command->send(user->conn(), when, text, lastReceivedID);
+    QStringList messages = text.split(QLatin1Char('\n'), QString::SkipEmptyParts);
+    if (messages.size() > maxInputLines)
+        messages.erase(messages.begin() + maxInputLines, messages.end());
 
-        addChatMessage(NULL, command->identifier(), when, text);
-    }
-    else
+    foreach (QString message, messages)
     {
-        int n = addOfflineMessage(when, text);
-        addChatMessage(NULL, (quint16)-1, when, text);
-        changeBlockIdentifier(makeBlockIdentifier(LocalUserMessage, (quint16)-1), makeBlockIdentifier(OfflineMessage, n));
+        message = message.trimmed();
+        if (message.isEmpty())
+            continue;
+        message.truncate(maxMessageChars);
+
+        if (user->isConnected())
+        {
+            ChatMessageCommand *command = new ChatMessageCommand;
+            connect(command, SIGNAL(commandFinished()), this, SLOT(messageReply()));
+            command->send(user->conn(), when, message, lastReceivedID);
+
+            addChatMessage(NULL, command->identifier(), when, message);
+        }
+        else
+        {
+            int n = addOfflineMessage(when, message);
+            addChatMessage(NULL, (quint16)-1, when, message);
+            changeBlockIdentifier(makeBlockIdentifier(LocalUserMessage, (quint16)-1), makeBlockIdentifier(OfflineMessage, n));
+        }
     }
 }
 
 void ChatWidget::receiveMessage(const QDateTime &when, const QString &text, quint16 messageID, quint16 priorMessageID)
 {
+    QString message = text.trimmed();
+    message.truncate(maxMessageChars);
+
     lastReceivedID = messageID;
-    addChatMessage(user, messageID, when, text, priorMessageID);
+    addChatMessage(user, messageID, when, message, priorMessageID);
     emit messageReceived();
 
     if (!isVisible() || !window()->isActiveWindow() || window()->isMinimized())
