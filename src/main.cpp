@@ -25,6 +25,7 @@
 #include "protocol/IncomingSocket.h"
 #include "utils/CryptoKey.h"
 #include "utils/SecureRNG.h"
+#include "utils/OSUtil.h"
 #include <QApplication>
 #include <QSettings>
 #include <QTime>
@@ -35,6 +36,7 @@
 #include <openssl/crypto.h>
 
 AppSettings *config = 0;
+static FileLock configLock;
 
 IncomingSocket *incomingSocket = 0;
 
@@ -85,7 +87,9 @@ int main(int argc, char *argv[])
     MainWindow w;
     w.show();
 
-    return a.exec();
+    int r = a.exec();
+    configLock.release();
+    return r;
 }
 
 static QString userConfigPath()
@@ -130,6 +134,19 @@ static void initSettings()
         else
             configFile = appDirFile;
     }
+
+    configLock.setPath(configFile);
+    int r = configLock.acquire();
+    if (!r)
+    {
+        /* File is locked */
+        QMessageBox::information(0, QApplication::tr("Torsion"),
+                                 QApplication::tr("Torsion is already running."),
+                                 QMessageBox::Ok);
+        exit(0);
+    }
+    else if (r < 0)
+        qWarning() << "Failed to acquire a lock on the configuration file";
 
     config = new AppSettings(configFile, QSettings::IniFormat);
     if (!config->isWritable())
