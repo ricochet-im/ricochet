@@ -131,7 +131,7 @@ int FileLock::acquire()
         return -1;
 
     BOOL ok = LockFile(handle, 0, 0, 1, 0);
-    if (ok != TRUE)
+    if (!ok)
     {
         DWORD error = GetLastError();
         CloseHandle(handle);
