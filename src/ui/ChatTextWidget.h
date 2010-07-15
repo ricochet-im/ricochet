@@ -25,6 +25,8 @@ class ChatTextWidget : public QTextEdit
     Q_OBJECT
     Q_DISABLE_COPY(ChatTextWidget)
 
+    Q_PROPERTY(QFont font READ font WRITE setFont NOTIFY fontChanged STORED true)
+
 public:
     explicit ChatTextWidget(QWidget *parent = 0);
 

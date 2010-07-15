@@ -33,6 +33,8 @@ ChatTextWidget::ChatTextWidget(QWidget *parent)
     document()->setMaximumBlockCount(config->value("ui/chatBacklog", defaultBacklog).toInt());
 
     connect(verticalScrollBar(), SIGNAL(rangeChanged(int,int)), SLOT(scrollToBottom()));
+
+    config->addTrackingProperty(QLatin1String("ui/chatFont"), this, "font");
 }
 
 void ChatTextWidget::scrollToBottom()

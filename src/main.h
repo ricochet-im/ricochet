@@ -24,44 +24,6 @@ enum AvatarSize
     TinyAvatar /* 35x35 */
 };
 
-#include <QtGlobal>
-#include <QSettings>
-
-class AppSettings : public QSettings
-{
-public:
-    AppSettings(QObject *parent = 0)
-        : QSettings(parent)
-    {
-    }
-
-    AppSettings(const QString &filename, Format format, QObject *parent = 0)
-        : QSettings(filename, format, parent)
-    {
-    }
-
-    using QSettings::value;
-
-    QVariant value(const char *key, const QVariant &defaultValue = QVariant()) const
-    {
-        return QSettings::value(QLatin1String(key), defaultValue);
-    }
-
-    using QSettings::setValue;
-
-    void setValue(const char *key, const QVariant &value)
-    {
-        QSettings::setValue(QLatin1String(key), value);
-    }
-
-    using QSettings::remove;
-
-    void remove(const char *key)
-    {
-        QSettings::remove(QLatin1String(key));
-    }
-};
-
-extern AppSettings *config;
+#include "utils/AppSettings.h"
 
 #endif // MAIN_H
