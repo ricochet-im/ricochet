@@ -276,3 +276,15 @@ void ContactsView::mouseMoveEvent(QMouseEvent *event)
 
     QTreeView::mouseMoveEvent(event);
 }
+
+void ContactsView::rowsAboutToBeRemoved(const QModelIndex &parent, int start, int end)
+{
+    QModelIndex current = currentIndex();
+    if (current.parent() == parent && current.row() >= start && current.row() <= end)
+    {
+        /* Currently selected contact will be removed; select the associated identity instead */
+        setCurrentIndex(parent);
+    }
+
+    QTreeView::rowsAboutToBeRemoved(parent, start, end);
+}

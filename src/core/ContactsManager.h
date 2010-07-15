@@ -52,6 +52,9 @@ signals:
     void contactAdded(ContactUser *user);
     void outgoingRequestAdded(OutgoingContactRequest *request);
 
+private slots:
+    void contactDeleted(ContactUser *user);
+
 private:
     QList<ContactUser*> pContacts;
     int highestID;

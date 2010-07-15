@@ -177,6 +177,29 @@ void ProtocolManager::addSocket(QTcpSocket *socket, quint8 purpose)
         Q_ASSERT_X(false, "add non-primary socket", "not implemented");
 }
 
+void ProtocolManager::disconnectAll()
+{
+    qDebug() << "Forcefully disconnecting all connections for user" << user->uniqueID;
+
+    if (pPrimary)
+    {
+        pPrimary->blockSignals(true);
+        pPrimary->abort();
+        pPrimary->blockSignals(false);
+        delete pPrimary;
+    }
+
+    if (remotePrimary && remotePrimary != pPrimary)
+    {
+        remotePrimary->blockSignals(true);
+        remotePrimary->abort();
+        remotePrimary->blockSignals(false);
+        delete remotePrimary;
+    }
+
+    remotePrimary = pPrimary = 0;
+}
+
 void ProtocolManager::onPrimaryConnected()
 {
     emit primaryConnected();

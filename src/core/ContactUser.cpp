@@ -265,3 +265,32 @@ void ContactUser::setNotesText(const QString &text)
     else
         config->setValue(key, text);
 }
+
+void ContactUser::deleteContact()
+{
+    /* Anything that uses ContactUser is required to either respond to the contactDeleted signal
+     * synchronously, or make use of QWeakPointer. */
+
+    qDebug() << "Deleting contact" << uniqueID;
+
+    if (isContactRequest())
+    {
+        OutgoingContactRequest *request = OutgoingContactRequest::requestForUser(this);
+        if (request)
+        {
+            qDebug() << "Cancelling request associated with contact to be deleted";
+            request->cancel();
+            delete request;
+        }
+    }
+
+    emit contactDeleted(this);
+
+    pConn->disconnectAll();
+    delete pConn;
+    pConn = 0;
+
+    config->remove(QLatin1String("contacts/") + QString::number(uniqueID));
+
+    deleteLater();
+}

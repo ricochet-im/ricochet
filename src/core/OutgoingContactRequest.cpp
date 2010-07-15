@@ -67,6 +67,12 @@ OutgoingContactRequest::OutgoingContactRequest(ContactUser *u)
     }
 }
 
+OutgoingContactRequest::~OutgoingContactRequest()
+{
+    Q_ASSERT(!m_client);
+    user->setProperty("contactRequest", QVariant());
+}
+
 QString OutgoingContactRequest::myNickname() const
 {
     return user->readSetting("request/myNickname").toString();
@@ -169,6 +175,11 @@ void OutgoingContactRequest::reject(bool error, const QString &reason)
     }
 
     emit rejected(reason);
+}
+
+void OutgoingContactRequest::cancel()
+{
+    removeRequest();
 }
 
 void OutgoingContactRequest::requestAcknowledged()

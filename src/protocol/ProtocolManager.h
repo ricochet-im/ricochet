@@ -57,6 +57,7 @@ public:
 
 public slots:
     void connectPrimary();
+    void disconnectAll();
 
 signals:
     void primaryConnected();

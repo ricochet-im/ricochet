@@ -59,6 +59,7 @@ public:
 private slots:
     void updateUser(ContactUser *user = 0);
     void contactAdded(ContactUser *user);
+    void contactRemoved(ContactUser *user);
 
     void updateIdentity(UserIdentity *identity = 0);
 

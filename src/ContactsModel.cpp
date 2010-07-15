@@ -75,6 +75,7 @@ void ContactsModel::populate()
             connect(*it, SIGNAL(connected()), this, SLOT(updateUser()));
             connect(*it, SIGNAL(disconnected()), this, SLOT(updateUser()));
             connect(*it, SIGNAL(statusLineChanged()), this, SLOT(updateUser()));
+            connect(*it, SIGNAL(contactDeleted(ContactUser*)), this, SLOT(contactRemoved(ContactUser*)));
         }
 
         contacts.insert(i, c);
@@ -148,6 +149,26 @@ void ContactsModel::contactAdded(ContactUser *user)
     connect(user, SIGNAL(connected()), this, SLOT(updateUser()));
     connect(user, SIGNAL(disconnected()), this, SLOT(updateUser()));
     connect(user, SIGNAL(statusLineChanged()), this, SLOT(updateUser()));
+    connect(user, SIGNAL(contactDeleted(ContactUser*)), this, SLOT(contactRemoved(ContactUser*)));
+}
+
+void ContactsModel::contactRemoved(ContactUser *user)
+{
+    if (!user && !(user = qobject_cast<ContactUser*>(sender())))
+        return;
+
+    QModelIndex idx = indexOfContact(user);
+    QModelIndex parent = idx.parent();
+
+    Q_ASSERT(parent.isValid());
+
+    beginRemoveRows(parent, idx.row(), idx.row());
+    contacts[parent.row()].removeAt(idx.row());
+    endRemoveRows();
+
+    saveContactPositions(parent.row());
+
+    disconnect(user, 0, this, 0);
 }
 
 void ContactsModel::updateIdentity(UserIdentity *identity)

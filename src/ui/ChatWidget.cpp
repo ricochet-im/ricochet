@@ -53,6 +53,8 @@ ChatWidget *ChatWidget::widgetForUser(ContactUser *u, bool create)
 ChatWidget::ChatWidget(ContactUser *u)
     : user(u), offlineNotice(0), pUnread(0), lastReceivedID(0)
 {
+    connect(user, SIGNAL(contactDeleted(ContactUser*)), SLOT(deleteLater()));
+
     /* Peace of mind; verify that makeBlockIdentifier behaves sanely, as i'm unsure
      * of its behavior on big endian machines and have no ability to test. */
     Q_ASSERT(makeBlockIdentifier(LocalUserMessage, 1) != makeBlockIdentifier(RemoteUserMessage, 1));

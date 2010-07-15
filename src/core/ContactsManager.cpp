@@ -73,6 +73,11 @@ ContactUser *ContactsManager::addContact(const QString &nickname)
     return user;
 }
 
+void ContactsManager::contactDeleted(ContactUser *user)
+{
+    pContacts.removeOne(user);
+}
+
 ContactUser *ContactsManager::lookupSecret(const QByteArray &secret) const
 {
     Q_ASSERT(secret.size() == 16);

@@ -28,6 +28,11 @@
 #include <QVariant>
 #include "protocol/ProtocolManager.h"
 
+/* Represents a user on the contact list.
+ * All persistent uses of a ContactUser instance must either connect to the
+ * contactDeleted() signal, or use a QWeakPointer to track deletion. A ContactUser
+ * can be removed at essentially any time. */
+
 class ContactUser : public QObject
 {
     Q_OBJECT
@@ -76,6 +81,8 @@ public:
         removeSetting(QLatin1String(key));
     }
 
+    void deleteContact();
+
 public slots:
     void setNickname(const QString &nickname);
     void setHostname(const QString &hostname);
@@ -87,8 +94,8 @@ public slots:
 signals:
     void connected();
     void disconnected();
-
     void statusLineChanged();
+    void contactDeleted(ContactUser *user);
 
 private slots:
     void onConnected();

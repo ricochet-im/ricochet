@@ -33,10 +33,14 @@
 #include <QDateTime>
 #include <QLineEdit>
 #include <QMenu>
+#include <QMessageBox>
+#include <QPushButton>
 
 ContactInfoPage::ContactInfoPage(ContactUser *u, QWidget *parent)
     : QWidget(parent), user(u)
 {
+    connect(user, SIGNAL(contactDeleted(ContactUser*)), SLOT(deleteLater()));
+
     createActions();
 
     QBoxLayout *mainLayout = new QVBoxLayout(this);
@@ -79,6 +83,7 @@ void ContactInfoPage::createActions()
 
     deleteAction = new QAction(deleteIcon, tr("Delete Contact"), this);
     deleteAction->setIconVisibleInMenu(false);
+    connect(deleteAction, SIGNAL(triggered()), SLOT(deleteContact()));
 }
 
 void ContactInfoPage::createAvatar()
@@ -328,6 +333,23 @@ void ContactInfoPage::setNickname()
 {
     if (nickname->hasAcceptableInput())
         user->setNickname(nickname->text());
+}
+
+void ContactInfoPage::deleteContact()
+{
+    QMessageBox msg(this);
+    msg.setWindowTitle(tr("Delete Contact"));
+    msg.setText(tr("Are you sure you want to permanently remove <b>%1</b> from your contacts?").arg(Qt::escape(user->nickname())));
+    msg.setIcon(QMessageBox::Question);
+    QAbstractButton *deleteBtn = msg.addButton(tr("Delete"), QMessageBox::DestructiveRole);
+    msg.addButton(QMessageBox::Cancel);
+    msg.setDefaultButton(QMessageBox::Cancel);
+
+    msg.exec();
+    if (msg.clickedButton() != deleteBtn)
+        return;
+
+    user->deleteContact();
 }
 
 void ContactInfoPage::hideEvent(QHideEvent *ev)

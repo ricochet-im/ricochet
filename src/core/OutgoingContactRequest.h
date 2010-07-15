@@ -44,6 +44,8 @@ public:
 
     ContactUser * const user;
 
+    ~OutgoingContactRequest();
+
     QString myNickname() const;
     QString message() const;
     Status status() const;
@@ -54,6 +56,7 @@ public:
 public slots:
     void accept();
     void reject(bool error = false, const QString &reason = QString());
+    void cancel();
 
 signals:
     void statusChanged(int newStatus, int oldStatus);

@@ -40,6 +40,7 @@ public slots:
 
 private slots:
     void setNickname();
+    void deleteContact();
 
 protected:
     virtual void hideEvent(QHideEvent *);

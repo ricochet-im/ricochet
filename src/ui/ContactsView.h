@@ -61,6 +61,8 @@ protected:
     virtual void mouseReleaseEvent(QMouseEvent *event);
     virtual void mouseMoveEvent(QMouseEvent *event);
 
+    virtual void rowsAboutToBeRemoved(const QModelIndex &parent, int start, int end);
+
 private slots:
     void currentChanged(const QModelIndex &current);
 

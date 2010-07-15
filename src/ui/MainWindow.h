@@ -43,6 +43,7 @@ public:
     ~MainWindow();
 
     NotificationWidget *showNotification(const QString &message, QObject *receiver = 0, const char *slot = 0);
+    QList<NotificationWidget*> notifications() const { return m_notifications; }
 
 public slots:
     void openAddContactDialog(UserIdentity *identity);
@@ -54,6 +55,8 @@ protected:
 private slots:
     void contactPageChanged(int page, QObject *userObject);
 
+    void notificationRemoved(QObject *object);
+
     /* Incoming contact request notifications */
     void updateContactRequests();
     void showContactRequest();
@@ -62,6 +65,7 @@ private slots:
     void outgoingRequestAdded(OutgoingContactRequest *request);
     void updateOutgoingRequest(OutgoingContactRequest *request = 0);
     void showRequestInfo();
+    void clearRequestNotification(ContactUser *user);
 
     /* Tor status notifications */
     void updateTorStatus();
@@ -71,6 +75,7 @@ private:
     class ContactsView *contactsView;
     class QStackedWidget *chatArea;
 
+    QList<NotificationWidget*> m_notifications;
     QWeakPointer<NotificationWidget> contactReqNotification;
     QWeakPointer<NotificationWidget> torNotification;
     bool torNotificationEnabled;

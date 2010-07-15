@@ -188,7 +188,17 @@ NotificationWidget *MainWindow::showNotification(const QString &message, QObject
     mainLayout->insertWidget(mainIndex, widget);
     widget->showAnimated();
 
+    m_notifications.append(widget);
+    connect(widget, SIGNAL(destroyed(QObject*)), SLOT(notificationRemoved(QObject*)));
+
     return widget;
+}
+
+void MainWindow::notificationRemoved(QObject *object)
+{
+    /* static_cast is necessary to get the correct offset pointer; it's safe because we never
+     * actually dereference the pointer. */
+    m_notifications.removeOne(static_cast<NotificationWidget*>(object));
 }
 
 void MainWindow::openAddContactDialog(UserIdentity *identity)
@@ -245,6 +255,8 @@ void MainWindow::outgoingRequestAdded(OutgoingContactRequest *request)
 {
     connect(request, SIGNAL(statusChanged(int,int)), SLOT(updateOutgoingRequest()));
     updateOutgoingRequest(request);
+
+    connect(request->user, SIGNAL(contactDeleted(ContactUser*)), SLOT(clearRequestNotification(ContactUser*)));
 }
 
 void MainWindow::updateOutgoingRequest(OutgoingContactRequest *request)
@@ -257,7 +269,7 @@ void MainWindow::updateOutgoingRequest(OutgoingContactRequest *request)
     switch (request->status())
     {
     case OutgoingContactRequest::Accepted:
-        message = tr("%1 accepted your contact request!").arg(Qt::escape(request->user->nickname()));
+        message = tr("%1 accepted your contact request!");
         break;
     case OutgoingContactRequest::Error:
         message = tr("There was an error with your contact request to %1 - click for more information");
@@ -284,6 +296,20 @@ void MainWindow::showRequestInfo()
         return;
 
     contactsView->showContactInfo(user);
+}
+
+void MainWindow::clearRequestNotification(ContactUser *user)
+{
+    /* Find the notification for this user */
+    QList<NotificationWidget*> widgets = notifications();
+    for (QList<NotificationWidget*>::iterator it = widgets.begin(); it != widgets.end(); ++it)
+    {
+        if (reinterpret_cast<ContactUser*>((*it)->property("user").value<void*>()) == user)
+        {
+            (*it)->closeNotification();
+            return;
+        }
+    }
 }
 
 void MainWindow::updateTorStatus()
