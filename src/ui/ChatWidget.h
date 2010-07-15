@@ -24,6 +24,8 @@
 
 class QDateTime;
 class ContactUser;
+class ChatTextWidget;
+class QLineEdit;
 
 class ChatWidget : public QWidget
 {
@@ -50,13 +52,13 @@ private slots:
     void sendInputMessage();
     void messageReply();
 
-    void scrollToBottom();
-
     void showOfflineNotice();
     void clearOfflineNotice();
     void clearOfflineNoticeInstantly();
 
     void sendOfflineMessages();
+
+    void setInputFont(const QFont &font);
 
 protected:
     virtual bool event(QEvent *event);
@@ -64,9 +66,9 @@ protected:
 private:
     static QHash<ContactUser*,ChatWidget*> userMap;
 
-    class QTextEdit *textArea;
-    class QLineEdit *textInput;
-    class QWidget *offlineNotice;
+    ChatTextWidget *textArea;
+    QLineEdit *textInput;
+    QWidget *offlineNotice;
 
     typedef QVector<QPair<QDateTime,QString> > OfflineMessageList;
     OfflineMessageList offlineMessages;
@@ -79,7 +81,6 @@ private:
 
     explicit ChatWidget(ContactUser *user);
 
-    void createTextArea();
     void createTextInput();
 
     void addChatMessage(ContactUser *user, quint16 messageID, const QDateTime &when, const QString &text,

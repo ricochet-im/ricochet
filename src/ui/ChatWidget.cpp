@@ -17,11 +17,11 @@
 
 #include "main.h"
 #include "ChatWidget.h"
+#include "ChatTextWidget.h"
 #include "core/ContactUser.h"
 #include "protocol/ChatMessageCommand.h"
 #include "ui/MainWindow.h"
 #include <QBoxLayout>
-#include <QTextEdit>
 #include <QLineEdit>
 #include <QDateTime>
 #include <QTextDocument>
@@ -30,12 +30,13 @@
 #include <QScrollBar>
 #include <QApplication>
 #include <QPropertyAnimation>
+#include <QFontDialog>
+#include <QAction>
 
 QHash<ContactUser*,ChatWidget*> ChatWidget::userMap;
 
 static const int maxMessageChars = 512;
 static const int maxInputLines = 15;
-static const int defaultBacklog = 125;
 
 ChatWidget *ChatWidget::widgetForUser(ContactUser *u, bool create)
 {
@@ -72,7 +73,8 @@ ChatWidget::ChatWidget(ContactUser *u)
     QBoxLayout *layout = new QVBoxLayout(this);
     layout->setMargin(0);
 
-    createTextArea();
+    textArea = new ChatTextWidget(this);
+    connect(textArea, SIGNAL(fontChanged(QFont)), SLOT(setInputFont(QFont)));
     layout->addWidget(textArea);
 
     createTextInput();
@@ -89,20 +91,10 @@ ChatWidget::~ChatWidget()
         userMap.erase(it);
 }
 
-void ChatWidget::createTextArea()
-{
-    textArea = new QTextEdit;
-    textArea->setReadOnly(true);
-    textArea->setFont(config->value("ui/chatFont", QFont(QLatin1String("Calibri"), 10)).value<QFont>());
-    textArea->document()->setMaximumBlockCount(config->value("ui/chatBacklog", defaultBacklog).toInt());
-
-    connect(textArea->verticalScrollBar(), SIGNAL(rangeChanged(int,int)), this, SLOT(scrollToBottom()));
-}
-
 void ChatWidget::createTextInput()
 {
     textInput = new QLineEdit;
-    textArea->setFont(config->value("ui/chatFont", QFont(QLatin1String("Calibri"), 10)).value<QFont>());
+    textInput->setFont(textArea->font());
     textInput->setMaxLength(maxMessageChars);
 
     connect(textInput, SIGNAL(returnPressed()), this, SLOT(sendInputMessage()));
@@ -314,12 +306,7 @@ void ChatWidget::addChatMessage(ContactUser *from, quint16 messageID, const QDat
 
     cursor.insertText(text, textFormat);
 
-    scrollToBottom();
-}
-
-void ChatWidget::scrollToBottom()
-{
-    textArea->verticalScrollBar()->setValue(textArea->verticalScrollBar()->maximum());
+    textArea->scrollToBottom();
 }
 
 bool ChatWidget::findBlockIdentifier(int identifier, QTextBlock &dst)
@@ -472,4 +459,9 @@ bool ChatWidget::event(QEvent *event)
     }
 
     return QWidget::event(event);
+}
+
+void ChatWidget::setInputFont(const QFont &font)
+{
+    textInput->setFont(font);
 }

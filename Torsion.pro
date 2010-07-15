@@ -104,7 +104,8 @@ SOURCES += src/main.cpp \
     src/ui/ContactsViewDelegate.cpp \
     src/ui/IdentityInfoPage.cpp \
     src/tor/autoconfig/BundledTorManager.cpp \
-    src/utils/OSUtil.cpp
+    src/utils/OSUtil.cpp \
+    src/ui/ChatTextWidget.cpp
 
 HEADERS += src/ui/MainWindow.h \
     src/ui/ChatWidget.h \
@@ -165,7 +166,8 @@ HEADERS += src/ui/MainWindow.h \
     src/ui/ContactsViewDelegate.h \
     src/ui/IdentityInfoPage.h \
     src/tor/autoconfig/BundledTorManager.h \
-    src/utils/OSUtil.h
+    src/utils/OSUtil.h \
+    src/ui/ChatTextWidget.h
 
 RESOURCES += res/resources.qrc \
     translation/embedded.qrc
