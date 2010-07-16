@@ -22,6 +22,8 @@
 #include <QMenu>
 #include <QAction>
 #include <QFontDialog>
+#include <QApplication>
+#include <QWindowsVistaStyle>
 
 static const int defaultBacklog = 125;
 
@@ -29,8 +31,17 @@ ChatTextWidget::ChatTextWidget(QWidget *parent)
     : QTextEdit(parent)
 {
     setReadOnly(true);
-    setFont(config->value("ui/chatFont", QFont(QLatin1String("Calibri"), 10)).value<QFont>());
     document()->setMaximumBlockCount(config->value("ui/chatBacklog", defaultBacklog).toInt());
+
+#ifdef Q_OS_WIN
+    if (qobject_cast<QWindowsVistaStyle*>(style()))
+    {
+        QFont defaultFont(QLatin1String("Segoe UI, MS Shell Dlg 2"), 9);
+        setFont(config->value("ui/chatFont", defaultFont).value<QFont>());
+    }
+    else
+#endif
+        setFont(config->value("ui/chatFont", QApplication::font(this)).value<QFont>());
 
     connect(verticalScrollBar(), SIGNAL(rangeChanged(int,int)), SLOT(scrollToBottom()));
 
