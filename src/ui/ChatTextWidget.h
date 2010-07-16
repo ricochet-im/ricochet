@@ -30,8 +30,6 @@ class ChatTextWidget : public QTextEdit
 public:
     explicit ChatTextWidget(QWidget *parent = 0);
 
-    void setFont(const QFont &font);
-
 public slots:
     void scrollToBottom();
     void showFontDialog();
@@ -41,6 +39,7 @@ signals:
 
 protected:
     virtual void contextMenuEvent(QContextMenuEvent *e);
+    virtual bool event(QEvent *e);
 };
 
 #endif // CHATTEXTWIDGET_H

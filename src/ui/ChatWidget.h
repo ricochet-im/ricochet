@@ -58,8 +58,6 @@ private slots:
 
     void sendOfflineMessages();
 
-    void setInputFont(const QFont &font);
-
 protected:
     virtual bool event(QEvent *event);
 

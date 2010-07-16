@@ -52,10 +52,14 @@ void ChatTextWidget::contextMenuEvent(QContextMenuEvent *e)
     delete menu;
 }
 
-void ChatTextWidget::setFont(const QFont &font)
+bool ChatTextWidget::event(QEvent *e)
 {
-    QTextEdit::setFont(font);
-    emit fontChanged(font);
+    bool re = QTextEdit::event(e);
+
+    if (e->type() == QEvent::FontChange)
+        emit fontChanged(font());
+
+    return re;
 }
 
 void ChatTextWidget::showFontDialog()

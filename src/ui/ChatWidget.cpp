@@ -74,7 +74,6 @@ ChatWidget::ChatWidget(ContactUser *u)
     layout->setMargin(0);
 
     textArea = new ChatTextWidget(this);
-    connect(textArea, SIGNAL(fontChanged(QFont)), SLOT(setInputFont(QFont)));
     layout->addWidget(textArea);
 
     createTextInput();
@@ -96,6 +95,8 @@ void ChatWidget::createTextInput()
     textInput = new QLineEdit;
     textInput->setFont(textArea->font());
     textInput->setMaxLength(maxMessageChars);
+
+    config->addTrackingProperty(QLatin1String("ui/chatFont"), textInput, "font");
 
     connect(textInput, SIGNAL(returnPressed()), this, SLOT(sendInputMessage()));
 }
@@ -459,9 +460,4 @@ bool ChatWidget::event(QEvent *event)
     }
 
     return QWidget::event(event);
-}
-
-void ChatWidget::setInputFont(const QFont &font)
-{
-    textInput->setFont(font);
 }
