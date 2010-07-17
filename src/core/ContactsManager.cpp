@@ -51,6 +51,7 @@ void ContactsManager::loadFromSettings()
         }
 
     	ContactUser *user = new ContactUser(id, this);
+        connect(user, SIGNAL(contactDeleted(ContactUser*)), SLOT(contactDeleted(ContactUser*)));
     	pContacts.append(user);
         highestID = qMax(id, highestID);
     }
@@ -64,6 +65,7 @@ ContactUser *ContactsManager::addContact(const QString &nickname)
     ContactUser *user = ContactUser::addNewContact(highestID);
     user->setParent(this);
     user->setNickname(nickname);
+    connect(user, SIGNAL(contactDeleted(ContactUser*)), SLOT(contactDeleted(ContactUser*)));
 
     qDebug() << "Added new contact" << nickname << "with ID" << user->uniqueID;
 
