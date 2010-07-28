@@ -43,9 +43,13 @@ public:
 public slots:
     void start();
 
+signals:
+    void torError(const QString &message);
+
 private slots:
     void readOutput();
     void processExited(int exitCode, QProcess::ExitStatus status);
+    void shutdown();
 
 private:
     static BundledTorManager *m_instance;
@@ -53,6 +57,7 @@ private:
     Tor::TorControlManager *m_torControl;
     int m_killAttempts;
     quint16 controlPort, socksPort;
+    bool m_wantExit;
 
     BundledTorManager();
 

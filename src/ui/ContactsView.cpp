@@ -23,6 +23,9 @@
 #include "ui/ChatWidget.h"
 #include <QHeaderView>
 #include <QMouseEvent>
+#include <QContextMenuEvent>
+#include <QMenu>
+#include <QAction>
 
 ContactsView::ContactsView(QWidget *parent)
     : QTreeView(parent), clickSetCurrent(false), clickItemMoved(false)
@@ -37,6 +40,7 @@ ContactsView::ContactsView(QWidget *parent)
     setDragEnabled(true);
     setAcceptDrops(true);
     setIndentation(0);
+    setContextMenuPolicy(Qt::DefaultContextMenu);
 
     QHeaderView *head = header();
     for (int i = 1; i < head->count(); ++i)
@@ -287,4 +291,20 @@ void ContactsView::rowsAboutToBeRemoved(const QModelIndex &parent, int start, in
     }
 
     QTreeView::rowsAboutToBeRemoved(parent, start, end);
+}
+
+void ContactsView::contextMenuEvent(QContextMenuEvent *event)
+{
+    QMenu menu(this);
+
+    ContactUser *user;
+    if ((user = activeContact()))
+    {
+        menu.addAction(QIcon(QLatin1String(":/icons/vcard.png")), tr("Copy contact ID"), 0, 0);
+        menu.addAction(tr("Change nickname"), 0, 0);
+        menu.addSeparator();
+        menu.addAction(QIcon(QLatin1String(":/icons/cross.png")), tr("Remove contact"), 0, 0);
+    }
+
+    menu.exec(event->globalPos());
 }

@@ -31,7 +31,7 @@ using namespace Tor;
 BundledTorManager *BundledTorManager::m_instance = 0;
 
 BundledTorManager::BundledTorManager()
-    : m_torControl(0), m_killAttempts(0), controlPort(0), socksPort(0)
+    : m_torControl(0), m_killAttempts(0), controlPort(0), socksPort(0), m_wantExit(false)
 {
     Q_ASSERT(!m_instance);
     m_instance = this;
@@ -72,7 +72,7 @@ bool BundledTorManager::isAvailable()
 void BundledTorManager::setTorManager(Tor::TorControlManager *tor)
 {
     m_torControl = tor;
-    connect(qApp, SIGNAL(aboutToQuit()), m_torControl, SLOT(shutdownSync()));
+    connect(qApp, SIGNAL(aboutToQuit()), SLOT(shutdown()));
 }
 
 void BundledTorManager::start()
@@ -118,8 +118,7 @@ void BundledTorManager::start()
     {
         if (!QFile(torrc).open(QIODevice::ReadWrite))
         {
-            /* TODO handle errors */
-            qWarning() << "Failed to create torrc for bundled tor";
+            emit torError(QLatin1String("Cannot create configuration file"));
             return;
         }
     }
@@ -132,7 +131,7 @@ void BundledTorManager::start()
     /* Ports */
     if (!selectAvailablePorts())
     {
-        qWarning() << "Failed to select ports for bundled tor";
+        emit torError(QLatin1String("Unable to choose local ports"));
         return;
     }
 
@@ -144,7 +143,7 @@ void BundledTorManager::start()
     QByteArray hashedPassword = torControlHashedPassword(password);
     if (password.isNull() || hashedPassword.isNull())
     {
-        qWarning() << "Failed to create control password for bundled tor";
+        emit torError(QLatin1String("Random number generation failed"));
         return;
     }
 
@@ -154,10 +153,20 @@ void BundledTorManager::start()
     /* Launch it. */
     qDebug() << "Launching bundled Tor from" << torExecutable();
 
+    m_wantExit = false;
+
     process.setWorkingDirectory(dir);
     process.start(torExecutable(), args, QIODevice::ReadOnly);
 
     m_torControl->connect(QHostAddress::LocalHost, controlPort);
+}
+
+/* Does not ensure that Tor actually exits; it just asks nicely. This is intended for application quit. */
+void BundledTorManager::shutdown()
+{
+    if (m_torControl)
+        m_torControl->shutdownSync();
+    m_wantExit = true;
 }
 
 void BundledTorManager::readOutput()
@@ -174,7 +183,14 @@ void BundledTorManager::readOutput()
 
 void BundledTorManager::processExited(int exitCode, QProcess::ExitStatus status)
 {
-    qDebug() << "Tor exited:" << exitCode << status << process.error() << process.errorString();
+    if (m_wantExit)
+    {
+        m_wantExit = false;
+        return;
+    }
+
+    /* Exit was unexpected */
+    qWarning() << "Bundled tor process exited unexpectedly:" << exitCode << process.errorString();
 }
 
 bool BundledTorManager::selectAvailablePorts()
