@@ -23,6 +23,7 @@
 #include "utils/PaintUtil.h"
 #include "core/NicknameValidator.h"
 #include "core/OutgoingContactRequest.h"
+#include "ui/MainWindow.h"
 #include <QBoxLayout>
 #include <QLabel>
 #include <QTextEdit>
@@ -81,7 +82,7 @@ void ContactInfoPage::createActions()
     deleteIcon.addFile(QLatin1String(":/icons/cross.png"), QSize(), QIcon::Active);
     deleteIcon.addPixmap(deleteIcon.pixmap(24, QIcon::Disabled));
 
-    deleteAction = new QAction(deleteIcon, tr("Delete Contact"), this);
+    deleteAction = new QAction(deleteIcon, tr("Remove Contact"), this);
     deleteAction->setIconVisibleInMenu(false);
     connect(deleteAction, SIGNAL(triggered()), SLOT(deleteContact()));
 }
@@ -337,19 +338,7 @@ void ContactInfoPage::setNickname()
 
 void ContactInfoPage::deleteContact()
 {
-    QMessageBox msg(this);
-    msg.setWindowTitle(tr("Delete Contact"));
-    msg.setText(tr("Are you sure you want to permanently remove <b>%1</b> from your contacts?").arg(Qt::escape(user->nickname())));
-    msg.setIcon(QMessageBox::Question);
-    QAbstractButton *deleteBtn = msg.addButton(tr("Delete"), QMessageBox::DestructiveRole);
-    msg.addButton(QMessageBox::Cancel);
-    msg.setDefaultButton(QMessageBox::Cancel);
-
-    msg.exec();
-    if (msg.clickedButton() != deleteBtn)
-        return;
-
-    user->deleteContact();
+    uiMain->uiRemoveContact(user);
 }
 
 void ContactInfoPage::hideEvent(QHideEvent *ev)

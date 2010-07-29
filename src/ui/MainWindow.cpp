@@ -38,6 +38,8 @@
 #include <QTextDocument>
 #include <QAction>
 #include <QTimer>
+#include <QMessageBox>
+#include <QPushButton>
 
 MainWindow *uiMain = 0;
 
@@ -359,4 +361,21 @@ void MainWindow::enableTorNotification()
 {
     torNotificationEnabled = true;
     updateTorStatus();
+}
+
+void MainWindow::uiRemoveContact(ContactUser *user)
+{
+    QMessageBox msg(this);
+    msg.setWindowTitle(tr("Remove Contact"));
+    msg.setText(tr("Are you sure you want to permanently remove <b>%1</b> from your contacts?").arg(Qt::escape(user->nickname())));
+    msg.setIcon(QMessageBox::Question);
+    QAbstractButton *deleteBtn = msg.addButton(tr("Remove"), QMessageBox::DestructiveRole);
+    msg.addButton(QMessageBox::Cancel);
+    msg.setDefaultButton(QMessageBox::Cancel);
+
+    msg.exec();
+    if (msg.clickedButton() != deleteBtn)
+        return;
+
+    user->deleteContact();
 }

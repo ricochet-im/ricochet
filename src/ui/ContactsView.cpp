@@ -26,6 +26,8 @@
 #include <QContextMenuEvent>
 #include <QMenu>
 #include <QAction>
+#include <QClipboard>
+#include <QApplication>
 
 ContactsView::ContactsView(QWidget *parent)
     : QTreeView(parent), clickSetCurrent(false), clickItemMoved(false)
@@ -300,11 +302,37 @@ void ContactsView::contextMenuEvent(QContextMenuEvent *event)
     ContactUser *user;
     if ((user = activeContact()))
     {
-        menu.addAction(QIcon(QLatin1String(":/icons/vcard.png")), tr("Copy contact ID"), 0, 0);
-        menu.addAction(tr("Change nickname"), 0, 0);
+        QAction *actChat = menu.addAction(tr("Send IM"));
+        QAction *actInfo = menu.addAction(tr("View profile"));
         menu.addSeparator();
-        menu.addAction(QIcon(QLatin1String(":/icons/cross.png")), tr("Remove contact"), 0, 0);
-    }
+        QAction *actCopyID = menu.addAction(QIcon(QLatin1String(":/icons/vcard.png")), tr("Copy contact ID"));
+        QAction *actChangeName = menu.addAction(tr("Change nickname"));
+        menu.addSeparator();
+        QAction *actRemove = menu.addAction(QIcon(QLatin1String(":/icons/cross.png")), tr("Remove contact"));
 
-    menu.exec(event->globalPos());
+        menu.setDefaultAction((activePage() == ContactInfoPage) ? actChat : actInfo);
+
+        QAction *action = menu.exec(event->globalPos());
+
+        if (action == actChat)
+        {
+            setActivePage(ContactChatPage);
+        }
+        else if (action == actInfo)
+        {
+            setActivePage(ContactInfoPage);
+        }
+        else if (action == actCopyID)
+        {
+            qApp->clipboard()->setText(user->contactID());
+        }
+        else if (action == actChangeName)
+        {
+            edit(currentIndex());
+        }
+        else if (action == actRemove)
+        {
+            uiMain->uiRemoveContact(user);
+        }
+    }
 }

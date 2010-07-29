@@ -49,6 +49,8 @@ public slots:
     void openAddContactDialog(UserIdentity *identity);
     void openTorConfig();
 
+    void uiRemoveContact(ContactUser *user);
+
 protected:
     virtual void closeEvent(QCloseEvent *);
 
