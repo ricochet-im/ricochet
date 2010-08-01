@@ -19,9 +19,13 @@
 #include "ContactsView.h"
 #include "ContactsModel.h"
 #include "utils/PaintUtil.h"
+#include "core/NicknameValidator.h"
+#include "core/ContactUser.h"
 #include <QPainter>
 #include <QApplication>
 #include <QCursor>
+#include <QLineEdit>
+#include <QFontMetrics>
 
 ContactItemDelegate::ContactItemDelegate(ContactsView *view)
     : QStyledItemDelegate(view), contactsView(view)
@@ -151,4 +155,78 @@ void ContactItemDelegate::paint(QPainter *p, const QStyleOptionViewItem &opt,
     p->drawText(r.bottomLeft() - QPoint(0, 1), infoText);
 
     p->restore();
+}
+
+QWidget *ContactItemDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
+{
+    /* This is necessary because QTreeView (at least) clips the delegate to the editor area during editing,
+     * and we need to render the entire thing. The container widget covers the entire area (which will be
+     * the clip), and the actual editor is within that. */
+    QWidget *container = new QWidget(parent);
+    QLineEdit *widget = new QLineEdit(container);
+    container->setFocusProxy(widget);
+
+    QFont nickFont = widget->font();
+    nickFont.setPointSize(10);
+    widget->setFont(nickFont);
+    widget->setFrame(false);
+    widget->setTextMargins(0, 0, 0, 0);
+    widget->setContentsMargins(0, 0, 0, 0);
+
+    NicknameValidator *validator = new NicknameValidator(widget);
+    validator->setValidateUnique(true, index.data(ContactsModel::PointerRole).value<ContactUser*>());
+    validator->setWidget(widget);
+    widget->setValidator(validator);
+
+    connect(widget, SIGNAL(editingFinished()), SLOT(editingFinished()));
+
+    return container;
+}
+
+void ContactItemDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const
+{
+    /* Container is the full size of the index */
+    editor->setGeometry(option.rect);
+
+    QWidget *widget = editor->focusProxy();
+    if (widget)
+    {
+        QFontMetrics fm(widget->font());
+        widget->setGeometry(QRect(46, 5, option.rect.width()-70, fm.height()));
+    }
+}
+
+void ContactItemDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const
+{
+    QLineEdit *widget = qobject_cast<QLineEdit*>(editor->focusProxy());
+    Q_ASSERT(widget);
+    if (!widget)
+        return;
+
+    widget->setText(index.data(Qt::EditRole).toString());
+    widget->selectAll();
+}
+
+void ContactItemDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const
+{
+    QLineEdit *widget = qobject_cast<QLineEdit*>(editor->focusProxy());
+    Q_ASSERT(widget);
+    if (!widget || !widget->isModified() || !widget->hasAcceptableInput())
+        return;
+
+    model->setData(index, widget->text(), Qt::EditRole);
+}
+
+void ContactItemDelegate::editingFinished()
+{
+    QWidget *editor = qobject_cast<QWidget*>(sender());
+    Q_ASSERT(editor);
+    if (!editor)
+        return;
+
+    /* The actual editor is the container */
+    editor = editor->parentWidget();
+
+    emit commitData(editor);
+    emit closeEditor(editor, QAbstractItemDelegate::SubmitModelCache);
 }

@@ -22,6 +22,20 @@ ContactsViewDelegate::ContactsViewDelegate(ContactsView *view)
     : QAbstractItemDelegate(view), contactDelegate(view)
 {
     contactDelegate.setParent(0);
+
+    QAbstractItemDelegate *d = &contactDelegate;
+    do
+    {
+        connect(d, SIGNAL(closeEditor(QWidget*,QAbstractItemDelegate::EndEditHint)),
+                SIGNAL(closeEditor(QWidget*,QAbstractItemDelegate::EndEditHint)));
+        connect(d, SIGNAL(commitData(QWidget*)), SIGNAL(commitData(QWidget*)));
+        connect(d, SIGNAL(sizeHintChanged(QModelIndex)), SIGNAL(sizeHintChanged(QModelIndex)));
+
+        if (d == &contactDelegate)
+            d = &identityDelegate;
+        else
+            d = 0;
+    } while (d);
 }
 
 bool ContactsViewDelegate::indexIsContact(const QModelIndex &index) const
@@ -42,19 +56,38 @@ bool ContactsViewDelegate::pageHitTest(const QModelIndex &index, const QSize &si
 
 QSize ContactsViewDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    if (indexIsContact(index))
-        return contactDelegate.sizeHint(option, index);
-    else
-        return identityDelegate.sizeHint(option, index);
+    return delegateForIndex(index)->sizeHint(option, index);
 }
 
 void ContactsViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option,
                                  const QModelIndex &index) const
 {
-    if (indexIsContact(index))
-        contactDelegate.paint(painter, option, index);
-    else
-        identityDelegate.paint(painter, option, index);
+    delegateForIndex(index)->paint(painter, option, index);
 }
 
+void ContactsViewDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option,
+                                                const QModelIndex &index) const
+{
+    delegateForIndex(index)->updateEditorGeometry(editor, option, index);
+}
 
+QWidget *ContactsViewDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
+{
+    return delegateForIndex(index)->createEditor(parent, option, index);
+}
+
+bool ContactsViewDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option,
+                                       const QModelIndex &index)
+{
+    return delegateForIndex(index)->editorEvent(event, model, option, index);
+}
+
+void ContactsViewDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const
+{
+    delegateForIndex(index)->setEditorData(editor, index);
+}
+
+void ContactsViewDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const
+{
+    delegateForIndex(index)->setModelData(editor, model, index);
+}

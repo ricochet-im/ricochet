@@ -37,9 +37,25 @@ public:
     virtual QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const;
     virtual void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
 
+    virtual QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+    virtual void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+    virtual bool editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index);
+    virtual void setEditorData(QWidget *editor, const QModelIndex &index) const;
+    virtual void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const;
+
 private:
     ContactItemDelegate contactDelegate;
     IdentityItemDelegate identityDelegate;
+
+    QAbstractItemDelegate *delegateForIndex(const QModelIndex &index) const;
 };
+
+inline QAbstractItemDelegate *ContactsViewDelegate::delegateForIndex(const QModelIndex &index) const
+{
+    if (indexIsContact(index))
+        return const_cast<ContactItemDelegate*>(&contactDelegate);
+    else
+        return const_cast<IdentityItemDelegate*>(&identityDelegate);
+}
 
 #endif // CONTACTSVIEWDELEGATE_H

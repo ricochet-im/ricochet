@@ -18,6 +18,7 @@
 #include "ContactsModel.h"
 #include "core/IdentityManager.h"
 #include "core/ContactsManager.h"
+#include "core/NicknameValidator.h"
 #include <QImage>
 #include <QColor>
 
@@ -296,10 +297,16 @@ Qt::DropActions ContactsModel::supportedDropActions() const
 
 Qt::ItemFlags ContactsModel::flags(const QModelIndex &index) const
 {
+    Qt::ItemFlags re = 0;
+
     if (index.isValid())
-        return Qt::ItemIsSelectable | Qt::ItemIsEnabled;
-    else
-        return 0;
+    {
+        re |= Qt::ItemIsSelectable | Qt::ItemIsEnabled;
+        if (index.column() == 0)
+            re |= Qt::ItemIsEditable;
+    }
+
+    return re;
 }
 
 QVariant ContactsModel::data(const QModelIndex &index, int role) const
@@ -327,7 +334,7 @@ QVariant ContactsModel::data(const QModelIndex &index, int role) const
         switch (index.column())
         {
         case 0:
-            if (role == Qt::DisplayRole)
+            if (role == Qt::DisplayRole || role == Qt::EditRole)
                 return identity->nickname();
             else if (role == Qt::DecorationRole)
                 return identity->avatar(TinyAvatar);
@@ -349,7 +356,7 @@ QVariant ContactsModel::data(const QModelIndex &index, int role) const
         switch (index.column())
         {
         case 0:
-            if (role == Qt::DisplayRole)
+            if (role == Qt::DisplayRole || role == Qt::EditRole)
                 return user->nickname();
             else if (role == Qt::DecorationRole)
                 return user->avatar(TinyAvatar);
@@ -366,4 +373,39 @@ QVariant ContactsModel::data(const QModelIndex &index, int role) const
     }
 
     return QVariant();
+}
+
+bool ContactsModel::setData(const QModelIndex &index, const QVariant &value, int role)
+{
+    if (!index.isValid() || index.column() != 0 || role != Qt::EditRole)
+        return false;
+
+    QString nickname = value.toString();
+    NicknameValidator validator;
+
+    ContactUser *user = reinterpret_cast<ContactUser*>(index.internalPointer());
+    if (user)
+    {
+        validator.setValidateUnique(true, user);
+        int pos;
+        if (validator.validate(nickname, pos) != QValidator::Acceptable)
+            return false;
+
+        user->setNickname(nickname);
+    }
+    else
+    {
+        if (index.row() < 0 || index.row() >= identities.size())
+            return false;
+
+        UserIdentity *identity = identities[index.row()];
+
+        int pos;
+        if (validator.validate(nickname, pos) != QValidator::Acceptable)
+            return false;
+
+        identity->setNickname(nickname);
+    }
+
+    return true;
 }
