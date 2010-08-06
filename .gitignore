@@ -8,3 +8,4 @@ installer/Output
 installer/Tor
 *.pdb
 notes
+*.app

@@ -31,17 +31,19 @@ win32-msvc2008|win32-msvc2010 {
 
 INCLUDEPATH += src
 
-unix {
+unix:!macx {
     CONFIG += link_pkgconfig
     PKGCONFIG += openssl
-} else {
+}
+win32 {
     isEmpty(OPENSSLDIR):error(You must pass OPENSSLDIR=path/to/openssl to qmake on this platform)
     INCLUDEPATH += $${OPENSSLDIR}/include
     LIBS += -L$${OPENSSLDIR}/lib -llibeay32
 
     # required by openssl
-    win32:LIBS += -lUser32 -lGdi32 -ladvapi32
+    LIBS += -lUser32 -lGdi32 -ladvapi32
 }
+macx:LIBS += -lssl -lcrypto
 
 DEFINES += QT_NO_CAST_FROM_ASCII QT_NO_CAST_TO_ASCII
 

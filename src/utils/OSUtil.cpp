@@ -164,7 +164,7 @@ int FileLock::acquire()
     if (fd < 0)
         return -1;
 
-    flock lock;
+    struct flock lock;
     memset(&lock, 0, sizeof(lock));
     lock.l_type = F_WRLCK;
     lock.l_whence = SEEK_SET;
