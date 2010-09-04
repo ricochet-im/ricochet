@@ -25,6 +25,7 @@
 #include <QPixmap>
 #include <QPixmapCache>
 #include <QBuffer>
+#include <QDir>
 
 /* Imported from main.cpp; will be obsolete when proper multiple identity support is done */
 extern IncomingSocket *incomingSocket;

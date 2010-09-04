@@ -51,8 +51,6 @@ int main(int argc, char *argv[])
 
     a.setApplicationVersion(QLatin1String("1.0.0"));
 
-    QDir::setCurrent(a.applicationDirPath());
-
     initSettings();
     initTranslation();
 
@@ -151,6 +149,8 @@ static void initSettings()
     config = new AppSettings(configFile, QSettings::IniFormat);
     if (!config->isWritable())
         qWarning() << "Configuration file" << configFile << "is not writable";
+
+    QDir::setCurrent(QFileInfo(configFile).absoluteDir().path());
 }
 
 static void initTranslation()
