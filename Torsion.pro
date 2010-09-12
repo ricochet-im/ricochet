@@ -20,6 +20,11 @@ QT += core \
 TARGET = Torsion
 TEMPLATE = app
 
+unix {
+    target.path = /usr/bin
+    INSTALLS += target
+}
+
 CONFIG += debug_and_release
 QMAKE_RESOURCE_FLAGS += -no-compress
 
