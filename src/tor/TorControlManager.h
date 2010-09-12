@@ -43,10 +43,19 @@ public:
         Connected
     };
 
+    enum TorStatus
+    {
+        TorUnknown,
+        TorOffline,
+        TorBootstrapping,
+        TorReady,
+    };
+
     explicit TorControlManager(QObject *parent = 0);
 
     /* Information */
     Status status() const { return pStatus; }
+    TorStatus torStatus() const { return (pStatus == Connected) ? pTorStatus : TorOffline; }
     QString torVersion() const { return pTorVersion; }
     QString statusText() const;
 
@@ -68,6 +77,7 @@ public:
 
 signals:
     void statusChanged(int newStatus, int oldStatus);
+    void torStatusChanged(int newStatus, int oldStatus);
     void connected();
     void disconnected();
     void socksReady();
@@ -88,6 +98,7 @@ private slots:
     void commandFinished(class TorControlCommand *command);
 
     void protocolInfoReply();
+    void getTorStatusReply();
     void getSocksInfoReply();
 
     void setError(const QString &message);
@@ -102,9 +113,12 @@ private:
     QList<HiddenService*> pServices;
     quint16 pControlPort, pSocksPort;
     Status pStatus;
+    TorStatus pTorStatus;
 
     void setStatus(Status status);
+    void setTorStatus(TorStatus status);
 
+    void getTorStatus();
     void getSocksInfo();
     void publishServices();
 };

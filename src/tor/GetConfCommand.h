@@ -31,7 +31,7 @@ class GetConfCommand : public TorControlCommand
     Q_DISABLE_COPY(GetConfCommand)
 
 public:
-    GetConfCommand();
+    GetConfCommand(const char *type = "GETCONF");
 
     QByteArray build(const QByteArray &key);
     QByteArray build(const QList<QByteArray> &keys);

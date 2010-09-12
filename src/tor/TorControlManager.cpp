@@ -35,7 +35,7 @@ Tor::TorControlManager *torManager = 0;
 using namespace Tor;
 
 TorControlManager::TorControlManager(QObject *parent)
-    : QObject(parent), pControlPort(0), pSocksPort(0), pStatus(NotConnected)
+    : QObject(parent), pControlPort(0), pSocksPort(0), pStatus(NotConnected), pTorStatus(TorOffline)
 {
     socket = new TorControlSocket;
     QObject::connect(socket, SIGNAL(commandFinished(TorControlCommand*)), this,
@@ -68,6 +68,17 @@ void TorControlManager::setStatus(Status n)
         emit connected();
     else if (pStatus < Connected && old >= Connected)
         emit disconnected();
+}
+
+void TorControlManager::setTorStatus(TorStatus n)
+{
+    if (n == pTorStatus)
+        return;
+
+    TorStatus old = pTorStatus;
+    pTorStatus = n;
+
+    emit torStatusChanged(pTorStatus, old);
 }
 
 void TorControlManager::setError(const QString &message)
@@ -115,6 +126,7 @@ void TorControlManager::connect(const QHostAddress &address, quint16 port)
 
     pTorAddress = address;
     pControlPort = port;
+    setTorStatus(TorUnknown);
 
     bool b = socket->blockSignals(true);
     socket->abort();
@@ -156,6 +168,9 @@ void TorControlManager::commandFinished(TorControlCommand *command)
         qDebug() << "torctrl: Authentication successful";
         setStatus(Connected);
 
+        setTorStatus(TorUnknown);
+
+        getTorStatus();
         getSocksInfo();
         publishServices();
     }
@@ -179,6 +194,7 @@ void TorControlManager::socketDisconnected()
     pTorVersion.clear();
     pSocksAddress.clear();
     pSocksPort = 0;
+    setTorStatus(TorOffline);
 
     /* This emits the disconnected() signal as well */
     setStatus(NotConnected);
@@ -265,6 +281,42 @@ void TorControlManager::protocolInfoReply()
 
         socket->sendCommand(auth, data);
     }
+}
+
+void TorControlManager::getTorStatus()
+{
+    Q_ASSERT(isConnected());
+
+    GetConfCommand *command = new GetConfCommand("GETINFO");
+    QObject::connect(command, SIGNAL(replyFinished()), this, SLOT(getTorStatusReply()));
+
+    QList<QByteArray> keys;
+    keys << QByteArray("status/circuit-established") << QByteArray("status/bootstrap-phase");
+
+    socket->sendCommand(command, command->build(keys));
+}
+
+void TorControlManager::getTorStatusReply()
+{
+    GetConfCommand *command = qobject_cast<GetConfCommand*>(sender());
+    if (!command || !isConnected())
+        return;
+
+    Q_ASSERT(QLatin1String(command->keyword) == QLatin1String("GETINFO"));
+
+    QByteArray re;
+    if (command->get(QByteArray("status/circuit-established"), re) && re.toInt() == 1)
+    {
+        qDebug() << "torctrl: Tor indicates that circuits have been established; state is TorReady";
+        setTorStatus(TorReady);
+        return;
+    }
+
+    /* Not handled yet */
+    if (command->get(QByteArray("status/bootstrap-phase"), re))
+        qDebug() << "torctrl: bootstrap-phase:" << re;
+
+    setTorStatus(TorOffline);
 }
 
 void TorControlManager::getSocksInfo()
