@@ -38,7 +38,7 @@ INCLUDEPATH += src
 
 unix:!macx {
     CONFIG += link_pkgconfig
-    PKGCONFIG += openssl
+    PKGCONFIG += libcrypto # Using libcrypto instead of openssl to avoid needlessly linking libssl
 }
 win32 {
     isEmpty(OPENSSLDIR):error(You must pass OPENSSLDIR=path/to/openssl to qmake on this platform)
@@ -48,7 +48,7 @@ win32 {
     # required by openssl
     LIBS += -lUser32 -lGdi32 -ladvapi32
 }
-macx:LIBS += -lssl -lcrypto
+macx:LIBS += -lcrypto
 
 DEFINES += QT_NO_CAST_FROM_ASCII QT_NO_CAST_TO_ASCII
 
