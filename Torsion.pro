@@ -22,7 +22,10 @@ TEMPLATE = app
 
 unix {
     target.path = /usr/bin
+    shortcut.path = /usr/share/applications
+    shortcut.files = src/Torsion.desktop
     INSTALLS += target
+    unix:!macx:INSTALLS += shortcut
 }
 
 CONFIG += debug_and_release
