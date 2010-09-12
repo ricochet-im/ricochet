@@ -130,6 +130,7 @@ void OutgoingContactRequest::startConnection()
 
     connect(m_client, SIGNAL(accepted()), SLOT(accept()));
     connect(m_client, SIGNAL(rejected(int)), SLOT(requestRejected(int)));
+    connect(m_client, SIGNAL(acknowledged()), SLOT(requestAcknowledged()));
 
     m_client->setMyNickname(myNickname());
     m_client->setMessage(message());
