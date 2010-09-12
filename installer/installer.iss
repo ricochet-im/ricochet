@@ -6,17 +6,17 @@ PrivilegesRequired=lowest
 DefaultDirName={localappdata}\Torsion\
 DisableProgramGroupPage=true
 DisableDirPage=false
-DisableReadyPage=true
+DisableReadyPage=false
 DefaultGroupName=Torsion IM
 AppID={{B700250B-D3E2-407F-A534-8818EB8E3D93}
 AppVersion=1.0.0
 UninstallDisplayName=Torsion IM
 Uninstallable=not IsPortableInstall
-VersionInfoDescription=Torsion - Anonymous IM
+VersionInfoDescription=Torsion - Anonymous Instant Messaging
 VersionInfoProductName=Torsion
 WizardImageFile=SetupModern11.bmp
 [Files]
-Source: ..\release\Torsion.exe; DestDir: {app}; DestName: Torsion.exe; Flags: replacesameversion
+Source: Torsion.exe; DestDir: {app}; DestName: Torsion.exe; Flags: replacesameversion
 Source: ..\COPYING; DestDir: {app}
 Source: ..\README.txt; DestDir: {app}
 Source: Tor\LICENSE; DestDir: {app}\Tor
@@ -91,4 +91,14 @@ begin
 				WizardForm.DirEdit.Text := DefaultInstallDir;
 		end;
 	end;
+end;
+
+function ShouldSkipPage(PageID: Integer): Boolean;
+begin
+	if (PageID = wpSelectDir) and (not IsPortableInstall()) then
+		Result := True
+	else if (PageID = wpReady) and (IsPortableInstall()) then
+	    Result := True
+	else
+	    Result := False;
 end;

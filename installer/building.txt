@@ -1,5 +1,7 @@
 Building the installer requires Inno Setup; see http://www.jrsoftware.org/isinfo.php
 
+Place the statically linked executable (Torsion.exe) in the installer directory.
+
 You must also place the 'LICENSE' and 'tor.exe' files from the official Tor installer
 into the installer\Tor directory, along with a file called 'README' that includes
 license and version information.

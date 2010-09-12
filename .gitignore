@@ -4,6 +4,7 @@ Makefile.*
 *.user.*
 debug
 release
+installer/*.exe
 installer/Output
 installer/Tor
 *.pdb
