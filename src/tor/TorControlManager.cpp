@@ -27,6 +27,7 @@
 #include <QHostAddress>
 #include <QDir>
 #include <QNetworkProxy>
+#include <QTimer>
 #include <QDebug>
 
 Tor::TorControlManager *torManager = 0;
@@ -34,7 +35,7 @@ Tor::TorControlManager *torManager = 0;
 using namespace Tor;
 
 TorControlManager::TorControlManager(QObject *parent)
-    : QObject(parent), pStatus(NotConnected)
+    : QObject(parent), pControlPort(0), pSocksPort(0), pStatus(NotConnected)
 {
     socket = new TorControlSocket;
     QObject::connect(socket, SIGNAL(commandFinished(TorControlCommand*)), this,
@@ -77,6 +78,8 @@ void TorControlManager::setError(const QString &message)
     qWarning() << "torctrl: Error:" << pErrorMessage;
 
     socket->abort();
+
+    QTimer::singleShot(15000, this, SLOT(reconnect()));
 }
 
 QString TorControlManager::statusText() const
@@ -104,10 +107,31 @@ void TorControlManager::setAuthPassword(const QByteArray &password)
 
 void TorControlManager::connect(const QHostAddress &address, quint16 port)
 {
+    if (status() > Connecting)
+    {
+        qDebug() << "Ignoring TorControlManager::connect due to existing connection";
+        return;
+    }
+
+    pTorAddress = address;
+    pControlPort = port;
+
+    bool b = socket->blockSignals(true);
     socket->abort();
-    socket->connectToHost(address, port);
+    socket->blockSignals(b);
 
     setStatus(Connecting);
+    socket->connectToHost(address, port);
+}
+
+void TorControlManager::reconnect()
+{
+    Q_ASSERT(!pTorAddress.isNull() && pControlPort);
+    if (pTorAddress.isNull() || !pControlPort || status() >= Connecting)
+        return;
+
+    setStatus(Connecting);
+    socket->connectToHost(pTorAddress, pControlPort);
 }
 
 void TorControlManager::commandFinished(TorControlCommand *command)

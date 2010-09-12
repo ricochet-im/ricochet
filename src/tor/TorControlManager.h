@@ -78,6 +78,8 @@ public slots:
     /* Call shutdown(), and wait synchronously for the command to be written */
     void shutdownSync();
 
+    void reconnect();
+
 private slots:
     void socketConnected();
     void socketDisconnected();
@@ -92,12 +94,13 @@ private slots:
 
 private:
     class TorControlSocket *socket;
+    QHostAddress pTorAddress;
     QString pErrorMessage;
     QString pTorVersion;
     QByteArray pAuthPassword;
     QHostAddress pSocksAddress;
     QList<HiddenService*> pServices;
-    quint16 pSocksPort;
+    quint16 pControlPort, pSocksPort;
     Status pStatus;
 
     void setStatus(Status status);
