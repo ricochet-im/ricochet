@@ -18,6 +18,7 @@
 #include "ui/ContactAddDialog.h"
 #include "ui/FancyTextEdit.h"
 #include "core/ContactsManager.h"
+#include "core/IdentityManager.h"
 #include "core/OutgoingContactRequest.h"
 #include "core/NicknameValidator.h"
 #include "core/ContactIDValidator.h"
@@ -103,6 +104,12 @@ void ContactAddDialog::accept()
 
     QString hostname = ContactIDValidator::hostnameFromID(m_id->text());
     Q_ASSERT(!hostname.isNull());
+
+    if (identityManager->lookupHostname(hostname))
+    {
+        QMessageBox::critical(this, tr("Error"), tr("You can't add yourself as a contact."));
+        return;
+    }
 
     ContactUser *user;
 

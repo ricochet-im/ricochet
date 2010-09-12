@@ -16,6 +16,7 @@
  */
 
 #include "main.h"
+#include "IdentityManager.h"
 #include "IncomingRequestManager.h"
 #include "ContactsManager.h"
 #include "OutgoingContactRequest.h"
@@ -64,6 +65,14 @@ void IncomingRequestManager::addRequest(const QByteArray &hostname, const QByteA
         if (connection)
             connection->sendRejection();
 
+        return;
+    }
+
+    if (identityManager->lookupHostname(QString::fromLatin1(hostname)))
+    {
+        qDebug() << "Rejecting contact request from a local identity (??)";
+        if (connection)
+            connection->sendRejection();
         return;
     }
 
