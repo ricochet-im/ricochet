@@ -98,10 +98,12 @@ QLayout *IdentityInfoPage::createInfo()
     /* ID */
     QLabel *label = new QLabel;
     label->setPixmap(QPixmap(QLatin1String(":/icons/vcard.png")));
+    label->setToolTip(tr("Double click to copy your contact ID. Share this to let people add you as a contact."));
     layout->addWidget(label, row, 0);
 
     m_contactId = new ContactIDWidget;
     m_contactId->setText(identity->contactID());
+    m_contactId->setToolTip(label->toolTip());
     m_contactId->setFrame(false);
     m_contactId->setTextMargins(-2, 0, 0, 0);
 
