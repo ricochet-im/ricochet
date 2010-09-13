@@ -120,6 +120,7 @@ void IdentityInfoPage::createActions()
     actAddContact = new QAction(QIcon(QLatin1String(":/icons/user--plus.png")), tr("Add Contact"), this);
     connect(actAddContact, SIGNAL(triggered()), SLOT(openAddContactDialog()));
     actChangeAvatar = new QAction(QIcon(QLatin1String(":/icons/image--pencil.png")), tr("Change Avatar"), this);
+    actChangeAvatar->setEnabled(false);
     actRename = new QAction(QIcon(QLatin1String(":/icons/user--pencil.png")), tr("Change Nickname"), this);
     actRename->setIconVisibleInMenu(false);
 }

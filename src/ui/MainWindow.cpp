@@ -117,6 +117,7 @@ MainWindow::~MainWindow()
 void MainWindow::createActions()
 {
     actOptions = new QAction(QIcon(QLatin1String(":/icons/gear.png")), tr("Options"), this);
+    actOptions->setEnabled(false);
 }
 
 void MainWindow::createContactsView()
