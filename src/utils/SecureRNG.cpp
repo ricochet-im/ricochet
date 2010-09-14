@@ -19,6 +19,7 @@
 #include <QtDebug>
 #include <openssl/rand.h>
 #include <openssl/err.h>
+#include <limits.h>
 
 #ifdef Q_OS_WIN
 #include <Wincrypt.h>

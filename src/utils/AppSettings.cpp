@@ -55,7 +55,7 @@ bool AppSettings::addTrackingProperty(const QString &key, QObject *object, const
     QMultiHash<QObject*,QPair<QString,int> >::Iterator it = trackingObjectMap.find(object);
     for (; it != trackingObjectMap.end() && it.key() == object; ++it)
     {
-        if (it->first == key && it->second == property.propertyIndex())
+        if (it->first == key && it->second == metaObject->indexOfProperty(propname))
         {
             qWarning() << "AppSettings: Duplicate tracking of key" << key << "by object" << object->objectName()
                     << "of class" << metaObject->className() << "for property" << property.name();
@@ -98,7 +98,7 @@ bool AppSettings::addTrackingProperty(const QString &key, QObject *object, const
 
     /* Insert key/object mappings */
     trackingKeyMap.insertMulti(key, object);
-    trackingObjectMap.insertMulti(object, qMakePair(key, property.propertyIndex()));
+    trackingObjectMap.insertMulti(object, qMakePair(key, metaObject->indexOfProperty(propname)));
 
     return true;
 }

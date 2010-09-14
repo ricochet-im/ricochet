@@ -104,12 +104,12 @@ private slots:
 private:
     ProtocolManager *pConn;
     QString pNickname;
-    QPixmapCache::Key cachedAvatar[2];
 
     /* See ContactsManager::addContact */
     static ContactUser *addNewContact(int id);
 
     void loadSettings();
+    QString avatarCacheKey(AvatarSize size);
 };
 
 Q_DECLARE_METATYPE(ContactUser*)

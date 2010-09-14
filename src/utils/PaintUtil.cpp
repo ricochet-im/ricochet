@@ -37,7 +37,7 @@ QPixmap customSelectionRect(const QSize &size, QStyle::State state)
         return QPixmap();
 
     QPixmap re;
-    if (QPixmapCache::find(cacheKey, &re))
+    if (QPixmapCache::find(cacheKey, re))
         return re;
 
     re = QPixmap(size);

@@ -19,7 +19,10 @@
 #include <QTextLayout>
 #include <QPainter>
 #include <QLinearGradient>
+
+#if QT_VERSION >= 0x040600
 #include <QPropertyAnimation>
+#endif
 
 static int wMargin = 2, hMargin = 6;
 
@@ -62,6 +65,7 @@ void NotificationWidget::visualSetup()
 
 void NotificationWidget::showAnimated()
 {
+#if QT_VERSION >= 0x040600
     setMaximumHeight(0);
 
     QPropertyAnimation *ani = new QPropertyAnimation(this, QByteArray("maximumHeight"));
@@ -70,6 +74,7 @@ void NotificationWidget::showAnimated()
     ani->setDuration(500);
     ani->setEasingCurve(QEasingCurve::InCubic);
     ani->start(QAbstractAnimation::DeleteWhenStopped);
+#endif
 }
 
 void NotificationWidget::closeNotification()
@@ -145,7 +150,7 @@ void NotificationWidget::layoutMessage(QTextLayout &layout, const QRect &rect) c
     layout.setTextOption(option);
 
     layout.beginLayout();
-    qreal height = 0;
+    qreal height = 0, leading = QFontMetrics(layout.font()).leading();
     for (;;)
     {
         QTextLine line = layout.createLine();
@@ -153,9 +158,8 @@ void NotificationWidget::layoutMessage(QTextLayout &layout, const QRect &rect) c
             break;
 
         line.setLineWidth(rect.width());
-        line.setLeadingIncluded(true);
         line.setPosition(QPointF(rect.x(), rect.y() + height));
-        height += line.height();
+        height += line.height() + leading;
     }
     layout.endLayout();
 }

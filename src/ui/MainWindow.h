@@ -20,6 +20,7 @@
 
 #include <QMainWindow>
 #include <QWeakPointer>
+#include <QPointer>
 
 class ContactUser;
 class UserIdentity;
@@ -78,8 +79,13 @@ private:
     class QStackedWidget *chatArea;
 
     QList<NotificationWidget*> m_notifications;
+#if QT_VERSION >= 0x040600
     QWeakPointer<NotificationWidget> contactReqNotification;
     QWeakPointer<NotificationWidget> torNotification;
+#else
+    QPointer<NotificationWidget> contactReqNotification;
+    QPointer<NotificationWidget> torNotification;
+#endif
     bool torNotificationEnabled;
 
     void createActions();

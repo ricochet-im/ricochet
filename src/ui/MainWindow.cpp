@@ -229,7 +229,7 @@ void MainWindow::updateContactRequests()
     else if (!numRequests && contactReqNotification)
     {
         contactReqNotification.data()->closeNotification();
-        contactReqNotification.clear();
+        contactReqNotification = (NotificationWidget*)0;
     }
 }
 
@@ -324,7 +324,7 @@ void MainWindow::updateTorStatus()
         if (torNotification)
         {
             torNotification.data()->closeNotification();
-            torNotification.clear();
+            torNotification = (NotificationWidget*)0;
         }
 
         return;

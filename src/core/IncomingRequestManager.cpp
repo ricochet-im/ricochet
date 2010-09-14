@@ -70,7 +70,7 @@ void IncomingRequestManager::addRequest(const QByteArray &hostname, const QByteA
 
     if (identityManager->lookupHostname(QString::fromLatin1(hostname)))
     {
-        qDebug() << "Rejecting contact request from a local identity (??)";
+        qDebug() << "Rejecting contact request from a local identity (?)";
         if (connection)
             connection->sendRejection();
         return;
@@ -251,7 +251,7 @@ void IncomingContactRequest::accept(ContactUser *user)
     if (connection)
     {
         connection.data()->sendAccept(user);
-        connection.clear();
+        connection = (ContactRequestServer*)0;
     }
 
     /* Remove the request */

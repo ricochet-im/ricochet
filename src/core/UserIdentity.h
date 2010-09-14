@@ -85,11 +85,12 @@ private slots:
 
 private:
     QString m_nickname;
-    QPixmapCache::Key cachedAvatar[2];
 
     Tor::HiddenService *hiddenService;
 
     static UserIdentity *createIdentity(int uniqueID, const QString &dataDirectory = QString());
+
+    QString avatarCacheKey(AvatarSize size);
 };
 
 Q_DECLARE_METATYPE(UserIdentity*)

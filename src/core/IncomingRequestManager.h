@@ -20,6 +20,7 @@
 
 #include <QObject>
 #include <QWeakPointer>
+#include <QPointer>
 #include <QDateTime>
 #include "protocol/ContactRequestServer.h"
 
@@ -64,7 +65,11 @@ public slots:
     void reject();
 
 private:
+#if QT_VERSION >= 0x040600
     QWeakPointer<ContactRequestServer> connection;
+#else
+    QPointer<ContactRequestServer> connection;
+#endif
     QByteArray m_remoteSecret;
     QString m_message, m_nickname;
     QDateTime m_requestDate, m_lastRequestDate;

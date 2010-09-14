@@ -41,8 +41,11 @@ protected:
     virtual void mouseDoubleClickEvent(QMouseEvent *ev);
 
 private:
-    QMargins originalMargins;
     QPalette originalPalette;
+    struct
+    {
+        int left, right, top, bottom;
+    } originalMargins;
 };
 
 #endif // EDITABLELABEL_H

@@ -29,9 +29,12 @@
 #include <QLabel>
 #include <QScrollBar>
 #include <QApplication>
-#include <QPropertyAnimation>
 #include <QFontDialog>
 #include <QAction>
+
+#if QT_VERSION >= 0x040600
+#include <QPropertyAnimation>
+#endif
 
 QHash<ContactUser*,ChatWidget*> ChatWidget::userMap;
 
@@ -375,13 +378,6 @@ void ChatWidget::showOfflineNotice()
     layout->addWidget(message);
     layout->addStretch();
 
-    /* Create the size animation */
-    offlineNotice->setMaximumHeight(0);
-
-    QPropertyAnimation *ani = new QPropertyAnimation(offlineNotice, QByteArray("maximumHeight"), offlineNotice);
-    ani->setEndValue(offlineNotice->sizeHint().height());
-    ani->setDuration(300);
-
     /* Add to the window */
     QBoxLayout *windowLayout = qobject_cast<QBoxLayout*>(this->layout());
     Q_ASSERT(windowLayout);
@@ -393,11 +389,21 @@ void ChatWidget::showOfflineNotice()
     }
 
     windowLayout->insertWidget(1, offlineNotice);
+
+#if QT_VERSION >= 0x040600
+    /* Create the size animation */
+    offlineNotice->setMaximumHeight(0);
+
+    QPropertyAnimation *ani = new QPropertyAnimation(offlineNotice, QByteArray("maximumHeight"), offlineNotice);
+    ani->setEndValue(offlineNotice->sizeHint().height());
+    ani->setDuration(300);
     ani->start(QAbstractAnimation::DeleteWhenStopped);
+#endif
 }
 
 void ChatWidget::clearOfflineNotice()
 {
+#if QT_VERSION >= 0x040600
     if (!offlineNotice)
         return;
 
@@ -409,6 +415,9 @@ void ChatWidget::clearOfflineNotice()
     connect(ani, SIGNAL(finished()), this, SLOT(clearOfflineNoticeInstantly()));
 
     ani->start(QAbstractAnimation::DeleteWhenStopped);
+#else
+    clearOfflineNoticeInstantly();
+#endif
 }
 
 void ChatWidget::clearOfflineNoticeInstantly()

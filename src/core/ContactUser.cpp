@@ -198,19 +198,25 @@ void ContactUser::setHostname(const QString &hostname)
     conn()->setHost(fh);
 }
 
+QString ContactUser::avatarCacheKey(AvatarSize size)
+{
+    return QString::fromLatin1("cnt-avatar-") + int(size);
+}
+
 QPixmap ContactUser::avatar(AvatarSize size)
 {
     QPixmap re;
-    if (QPixmapCache::find(cachedAvatar[size], &re))
+    QString cacheKey = avatarCacheKey(size);
+    if (QPixmapCache::find(cacheKey, re))
         return re;
 
-    QString settingsKey = QString::fromLatin1("contacts/%1/avatar").arg(uniqueID);
-    if (size == TinyAvatar)
-        settingsKey.append(QLatin1String("-tiny"));
+    QByteArray data = readSetting((size == TinyAvatar) ? "avatar-tiny" : "avatar").toByteArray();
+    if (data.isEmpty())
+        return QPixmap();
 
-    re.loadFromData(config->value(settingsKey).toByteArray());
+    re.loadFromData(data);
 
-    cachedAvatar[size] = QPixmapCache::insert(re);
+    QPixmapCache::insert(cacheKey, re);
     return re;
 }
 
@@ -219,21 +225,23 @@ void ContactUser::setAvatar(QImage image)
     if (image.width() > 160 || image.height() > 160)
         image = image.scaled(QSize(160, 160), Qt::KeepAspectRatio, Qt::SmoothTransformation);
 
-    QString key = QString::fromLatin1("contacts/%1/avatar").arg(uniqueID);
-
     if (!image.isNull())
     {
         QBuffer buffer;
         buffer.open(QBuffer::ReadWrite);
         if (image.save(&buffer, "jpeg", 100))
         {
-            config->setValue(key, buffer.buffer());
+            writeSetting("avatar", buffer.buffer());
+            QPixmapCache::insert(avatarCacheKey(FullAvatar), QPixmap::fromImage(image));
 
             QImage tiny = image.scaled(QSize(35, 35), Qt::KeepAspectRatio, Qt::SmoothTransformation);
             buffer.close();
             buffer.open(QBuffer::ReadWrite);
             if (tiny.save(&buffer, "jpeg", 100))
-                config->setValue(key + QLatin1String("-tiny"), buffer.buffer());
+            {
+                QPixmapCache::insert(avatarCacheKey(TinyAvatar), QPixmap::fromImage(tiny));
+                writeSetting("avatar-tiny", buffer.buffer());
+            }
             else
                 image = QImage();
         }
@@ -243,12 +251,12 @@ void ContactUser::setAvatar(QImage image)
 
     if (image.isNull())
     {
-        config->remove(key);
-        config->remove(key + QLatin1String("-tiny"));
-    }
+        removeSetting("avatar");
+        removeSetting("avatar-tiny");
 
-    for (int i = 0; i < 2; ++i)
-        QPixmapCache::remove(cachedAvatar[i]);
+        QPixmapCache::remove(avatarCacheKey(FullAvatar));
+        QPixmapCache::remove(avatarCacheKey(TinyAvatar));
+    }
 }
 
 QString ContactUser::notesText() const

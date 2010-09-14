@@ -47,7 +47,9 @@ ContactsModel::ContactsModel(QObject *parent)
 
 void ContactsModel::populate()
 {
+#if QT_VERSION >= 0x040600
     beginResetModel();
+#endif
 
     foreach (QList<ContactUser*> c, contacts)
     {
@@ -82,7 +84,11 @@ void ContactsModel::populate()
         contacts.insert(i, c);
     }
 
+#if QT_VERSION >= 0x040600
     endResetModel();
+#else
+    reset();
+#endif
 }
 
 bool ContactsModel::indexIsContact(const QModelIndex &index) const
@@ -199,11 +205,17 @@ void ContactsModel::moveRow(int from, int to, const QModelIndex &parent)
         if (from < 0 || from >= c.size() || to < 0 || to >= c.size() || from == to)
             return;
 
+#if QT_VERSION >= 0x040600
         bool ok = beginMoveRows(parent, from, from, parent, (to > from) ? (to+1) : to);
         Q_ASSERT(ok);
 
         c.move(from, to);
         endMoveRows();
+#else
+        emit layoutAboutToBeChanged();
+        c.move(from, to);
+        emit layoutChanged();
+#endif
 
         saveContactPositions(parent.row());
     }
@@ -212,11 +224,17 @@ void ContactsModel::moveRow(int from, int to, const QModelIndex &parent)
         if (from < 0 || from >= identities.size() || to < 0 || to >= identities.size() || from == to)
             return;
 
+#if QT_VERSION >= 0x040600
         bool ok = beginMoveRows(parent, from, from, parent, (to > from) ? (to+1) : to);
         Q_ASSERT(ok);
 
         identities.move(from, to);
         endMoveRows();
+#else
+        emit layoutAboutToBeChanged();
+        identities.move(from, to);
+        emit layoutChanged();
+#endif
 
         saveIdentityPositions();
     }

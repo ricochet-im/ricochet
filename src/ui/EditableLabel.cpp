@@ -21,7 +21,8 @@
 EditableLabel::EditableLabel(QWidget *parent)
     : QLineEdit(parent)
 {
-    originalMargins = textMargins();
+    getTextMargins(&originalMargins.left, &originalMargins.top,
+                   &originalMargins.right, &originalMargins.bottom);
     originalPalette = palette();
     setFocusPolicy(Qt::NoFocus);
 
@@ -34,7 +35,8 @@ void EditableLabel::startEditing()
 {
     setReadOnly(false);
     setFrame(true);
-    setTextMargins(originalMargins);
+    setTextMargins(originalMargins.left, originalMargins.top, originalMargins.right,
+                   originalMargins.bottom);
     QLineEdit::setPalette(originalPalette);
 }
 
