@@ -17,7 +17,8 @@ VersionInfoProductName=Torsion
 WizardImageFile=SetupModern11.bmp
 [Files]
 Source: Torsion.exe; DestDir: {app}; DestName: Torsion.exe; Flags: replacesameversion
-Source: ..\COPYING; DestDir: {app}
+Source: ..\LICENSE; DestDir: {app}
+Source: ..\LICENSE-GPLv2; DestDir: {app}
 Source: ..\README.txt; DestDir: {app}
 Source: Tor\LICENSE; DestDir: {app}\Tor
 Source: Tor\README.txt; DestDir: {app}\Tor
@@ -102,4 +103,5 @@ begin
 	else
 	    Result := False;
 end;
+
 
