@@ -1,4 +1,4 @@
-/* Torsion - http://github.com/special/torsion
+/* Torsion - http://torsionim.org/
  * Copyright (C) 2010, Robin Burchell <robin.burchell@collabora.co.uk>
  *
  * Torsion is free software: you can redistribute it and/or modify

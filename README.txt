@@ -1,4 +1,4 @@
-http://github.com/special/torsion
+http://torsionim.org/
 
 Torsion is a completely anonymous instant messaging system built around Tor.
 It works just like any instant messenger, but nobody (not even your contacts)
