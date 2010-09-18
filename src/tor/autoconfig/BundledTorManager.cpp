@@ -17,11 +17,13 @@
 
 #include "BundledTorManager.h"
 #include "tor/TorControlManager.h"
+#include "utils/AppSettings.h"
 #include "utils/OSUtil.h"
 #include "utils/CryptoKey.h"
 #include "utils/SecureRNG.h"
 #include <QApplication>
 #include <QFile>
+#include <QDir>
 #include <QTcpServer>
 #include <QDebug>
 #include <QTimer>
@@ -50,27 +52,27 @@ BundledTorManager *BundledTorManager::instance()
     return m_instance;
 }
 
-static QString torDirectory()
+static QString torDataDirectory()
+{
+    return config->configLocation() + QLatin1String("tor/");
+}
+
+static QString torExecutable()
 {
     static QString dir;
     if (dir.isNull())
     {
-        dir = qApp->applicationDirPath() + QLatin1String("/Tor/");
+        dir = qApp->applicationDirPath() + QLatin1String("/tor/");
 #ifdef BUNDLED_TOR_PATH
         if (!QFile::exists(dir))
             dir = QString::fromLatin1(BUNDLED_TOR_PATH);
 #endif
     }
 
-    return dir;
-}
-
-static QString torExecutable()
-{
 #ifdef Q_OS_WIN
-    return torDirectory() + QLatin1String("tor.exe");
+    return dir + QLatin1String("tor.exe");
 #else
-    return torDirectory() + QLatin1String("tor");
+    return dir + QLatin1String("tor");
 #endif
 }
 
@@ -92,7 +94,7 @@ void BundledTorManager::start()
 
     Q_ASSERT(m_torControl);
 
-    QString dir = torDirectory();
+    QString dir = torDataDirectory();
 
     qint64 oldPid = readPidFile(dir + QLatin1String("pid"));
     if (oldPid > 0 && isProcessRunning(oldPid))
@@ -126,6 +128,17 @@ void BundledTorManager::start()
     QString torrc = dir + QLatin1String("torrc");
     if (!QFile::exists(torrc))
     {
+        if (!QFile::exists(dir))
+        {
+            QDir pd(dir);
+            QString dirname = pd.dirName();
+            if (!pd.cdUp() || !pd.mkdir(dirname))
+            {
+                emit torError(QLatin1String("Cannot create data directory"));
+                return;
+            }
+        }
+
         if (!QFile(torrc).open(QIODevice::ReadWrite))
         {
             emit torError(QLatin1String("Cannot create configuration file"));

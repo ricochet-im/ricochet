@@ -37,6 +37,8 @@ public:
     {
     }
 
+    QString configLocation() const;
+
     /* Convenience overloads that take const char*, to avoid the need for QLatin1String */
     using QSettings::value;
     QVariant value(const char *key, const QVariant &defaultValue = QVariant()) const

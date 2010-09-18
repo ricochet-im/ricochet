@@ -18,7 +18,15 @@
 #include "AppSettings.h"
 #include <QMetaObject>
 #include <QMetaProperty>
+#include <QDir>
 #include <QDebug>
+
+QString AppSettings::configLocation() const
+{
+    QString s = QDir::toNativeSeparators(fileName());
+    int n = s.lastIndexOf(QLatin1Char('/'));
+    return s.mid(0, (n < 0) ? n : (n+1));
+}
 
 void AppSettings::setValue(const QString &key, const QVariant &value)
 {

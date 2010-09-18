@@ -27,12 +27,12 @@ unix {
     INSTALLS += target
     unix:!macx:INSTALLS += shortcut
 
-    exists(Tor) {
+    exists(tor) {
         message(Adding bundled Tor to installations)
-        bundletor.path = /usr/share/torsion/Tor/
-        bundletor.files = Tor/*
+        bundletor.path = /usr/lib/torsion/tor/
+        bundletor.files = tor/*
         INSTALLS += bundletor
-        DEFINES += BUNDLED_TOR_PATH=\\\"/usr/share/torsion/Tor/\\\"
+        DEFINES += BUNDLED_TOR_PATH=\\\"/usr/lib/torsion/tor/\\\"
     }
 }
 
