@@ -1,7 +1,7 @@
 Source: torsion
 Section: net
 Priority: extra
-Maintainer: John Brooks <john.brooks@dereferenced.net>
+Maintainer: John Brooks <special@dereferenced.net>
 Build-Depends: cdbs, debhelper (>= 7), libqt4-dev (>= 4.5.0), qt4-qmake (>= 4.5.0), pkg-config, libssl-dev
 Standards-Version: 3.8.4
 Homepage: http://www.torsionim.org/
