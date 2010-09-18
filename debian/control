@@ -2,13 +2,14 @@ Source: torsion
 Section: net
 Priority: extra
 Maintainer: John Brooks <special@dereferenced.net>
-Build-Depends: cdbs, debhelper (>= 7), libqt4-dev (>= 4.5.0), qt4-qmake (>= 4.5.0), pkg-config, libssl-dev
+Build-Depends: cdbs, debhelper (>= 7), libqt4-dev (>= 4.5.0), qt4-qmake (>= 4.5.0), pkg-config, libssl-dev, libevent-dev (>= 1.4.13-stable)
 Standards-Version: 3.8.4
 Homepage: http://www.torsionim.org/
 
 Package: torsion
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, vidalia
+Depends: ${shlibs:Depends}, ${misc:Depends}, libevent-1.4-2 (>= 1.4.13-stable), libssl0.9.8 (>= 0.9.8k-1), zlib1g (>= 1:1.1.4)
+Recommends: vidalia
 Description: Anonymous instant messaging system using Tor
  Torsion is just like normal instant messaging, but nobody - not even your
  contacts - can find out who you are. Protect your privacy and your
