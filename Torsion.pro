@@ -26,6 +26,14 @@ unix {
     shortcut.files = src/Torsion.desktop
     INSTALLS += target
     unix:!macx:INSTALLS += shortcut
+
+    exists(Tor) {
+        message(Adding bundled Tor to installations)
+        bundletor.path = /usr/share/torsion/Tor/
+        bundletor.files = Tor/*
+        INSTALLS += bundletor
+        DEFINES += BUNDLED_TOR_PATH=\\\"/usr/share/torsion/Tor/\\\"
+    }
 }
 
 CONFIG += debug_and_release

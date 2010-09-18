@@ -52,7 +52,17 @@ BundledTorManager *BundledTorManager::instance()
 
 static QString torDirectory()
 {
-    return qApp->applicationDirPath() + QLatin1String("/Tor/");
+    static QString dir;
+    if (dir.isNull())
+    {
+        dir = qApp->applicationDirPath() + QLatin1String("/Tor/");
+#ifdef BUNDLED_TOR_PATH
+        if (!QFile::exists(dir))
+            dir = QString::fromLatin1(BUNDLED_TOR_PATH);
+#endif
+    }
+
+    return dir;
 }
 
 static QString torExecutable()
