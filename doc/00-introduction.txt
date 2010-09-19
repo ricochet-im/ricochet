@@ -1,0 +1,117 @@
+Torsion is an instant messaging system designed around Tor hidden services.
+This document intends to explain the goals and concept of the project, as well
+as providing an overview of its design.
+
+Goals of the project
+====================
+To design an implement an instant messaging system, which:
+
+    - Provides user anonymity from all other parties, including their contacts
+    - Resists censorship, invasive firewalls, and other methods of control
+    - Provides the user privacy in who they contact, what they say, and
+      their usage of the software as whole
+    - Is accessible and easily usable by everyone, regardless of skill level,
+      language, and familiarity with anonymity software 
+    - Is developed openly and transparently, with public review and discussion
+
+Recommended reading
+===================
+The reader should be familiar with Tor (https://www.torproject.org) and 
+Tor hidden services (https://www.torproject.org/hidden-services.html).
+
+For details on the implementation of Tor and hidden services, see the
+doc/spec/ directory in the Tor distribution. The mechanism behind hidden
+services is discussed in the doc/spec/rend-spec.txt file.
+
+Concept introduction
+====================
+Each user identity in Torsion is represented by a hidden service. An identity
+is a unique, individual identifier that is the basis for all communication in
+Torsion, much like an email address or IM username. The identity is further
+represented by its contact ID, which includes the onion hostname - the sole
+piece of information necessary to make bidirectionally anonymous contact
+through Tor. A contact ID looks like "qjj5g7bxwcvs3d7i@Torsion".
+
+The communication between these identities forms the basis of Torsion. Each
+identity maintains a list of other identities that it knows and will
+communicate with; its contact list. This works like any instant messenger - 
+only your contacts can send you messages, and anybody can ask to become your
+contact.
+
+Behind the hidden service is an asymmetric private key. The fingerprint of this
+key forms the onion hostname, and only a person who posesses a matching private
+key can publish the service descriptor for that hostname. The descriptor
+contains (among other things) its public key and a list of psuedorandomly
+selected contact points within the Tor network. Tor clients wishing to connect
+to the service look up its descriptor, and then contact one of these nodes and
+arrange a circuit through another randomly selected rendezvous node. Both the
+connecting client and the service establish onion routing circuits to this
+rendezvous, and the resulting chain is used to exchange data.
+
+A contact is considered online when there is an open connection with that
+contact. As a result, identities periodically make attempts to connect to their
+contacts, especially when first starting up. 
+
+Contact requests
+================
+To add a contact, you must establish a connection to that contact's service,
+send a request (including information about your own service), and wait for the
+approval of that remote user. The only piece of information required to send a
+request is the other user's contact ID.
+
+To accomplish this, the hidden service represented by that ID must be published
+and connectable. This poses some privacy risks, in that it is possible for any
+person to discover if a user (by their contact ID) has the software running.
+The untrusted connections are also subject to greater security risk. This
+topic, and potential solutions, are discussed in greater detail in the
+security-overview.txt document.
+
+When a contact request arrives, the receiving end must verify the requesting
+user's identity - that is, their hidden service. This is done by requiring the
+requesting client to sign a random value with its hidden service key, which can
+be verified to prove that the requester has the ability to publish that hidden
+service. In other words, it proves that the requester has a given contact ID.
+There are some security concerns with the use of the hidden service key for
+this purpose - a subject also discussed in security-overview.txt.
+
+The receiving end is given the opportunity to accept or reject a request once
+it has been received. If rejected, the ID associated with that request is
+placed onto a blacklist to prevent abusive repeat attempts. If accepted,
+authentication information is exchanged and the two clients may begin
+communication.
+
+Connections and authentication
+==============================
+As mentioned prior, a contact is online only if there is an established
+connection. In this state, chat or other exchanges may occur immediately.
+Holding these open connections does place some load on the Tor network, and
+due to their long-term establishment, potentially assist with discovering
+information about their connection through the Tor network. However, it would
+not be possible to provide the user with accurate information on whether a
+contact is available without having established such a connection, and a
+persistent connection may provide better security properties as opposed to
+frequently creating new connections.
+
+Due to the nature of hidden services, the receiving end of a connection (the
+service being connected to) is implicitly authenticated; it would not otherwise
+be possible to establish the connection. Current protocol takes advantage of
+this, and requires authentication only by the connecting end. A previously
+shared secret (occuring during the contact request), unique to each peer, is
+used for this purpose. Research is needed into if this method is sufficient,
+and what should be done to make it more robust.
+
+Future development
+==================
+Torsion's design is still early in development. Many areas take simple and
+obvious approaches, as opposed to those which may have better properties for
+anonymity. Research and review is needed into better ways to accomplish these
+goals that may be incorporated into Torsion.
+
+An overview of the threats and weaknesses to security or anonymity in Torsion
+is available in the security-overview.txt file. As is the nature of security,
+not all of these problems can be solved, and some solutions will be imperfect.
+
+Of course, development is not just about security. The user-friendly aspects
+of Torsion, and the features it provides to its users, are also in constant
+need of improvement. It is a firm principle of the software that anonymity can
+coexist with user-friendly simplicity and abilities.

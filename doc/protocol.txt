@@ -1,0 +1,310 @@
+This file aims to document the low-level details of communication and protocol
+in Torsion.
+
+Unless otherwise noted, this document describes protocol version 0. Section 1
+(protocol negotiation) is intended to be invariant, as it is responsible for
+negotiating the protocol version.
+
+This document attempts to describe the protocol in Torsion as it exists now.
+It is open to (and likely in need of) significant refinement. Every attempt
+will be made to preserve backwards compatibility in this process, but that may
+be broken if necessary during the beta period.
+
+Some aspects may not yet be (entirely) implemented, or implemented well.
+
+Table of contents:
+    0. Conventions in this document
+    1. The hidden service layer
+    2. Protocol negotiation
+        2.1. Introduction syntax
+    3. Connection purpose and authentication
+        3.1. Authenticated contact connections
+    4. Primary connections
+    5. Message processing
+    6. Commands and replies
+        6.1. Length field
+        6.2. Command field
+        6.3. State field
+        6.4. Identifier field
+        6.5. Data
+    7. Defined commands
+        7.1. 0x00 - Ping
+        7.2. 0x01 - Get connection secret
+        7.3. 0x10 - Chat message
+    8. Contact request connections
+
+0. Conventions in this document
+    
+    'Client' refers to the peer creating the connection
+    'Server' refers to the peer receiving an incoming connection. After
+             authentication, this distinction is irrelevant.
+
+2. Protocol negotiation
+
+    Immediately after establishing a connection, the client must send an
+    introduction. The server is expected to expire any connection on which
+    this introduction does not arrive in a reasonable amount of time.
+
+2.1. Introduction syntax
+    
+    The client must send the following sequence:
+        0x49
+        0x4D
+        nVersions                               [1 octet]
+        versions                                [nVersions bytes]
+    
+    'nVersions' describes the number of version fields to follow. Each version
+    field is a single octet, where each value identifies an incompatible
+    protocol. The value 0xFF is reserved to indicate failure in a later reply.
+    
+    In response, once the entire introduction has been received, the server
+    responds with a single octet containing the protocol version chosen from
+    the list provided by the client. This should be the highest mutually
+    supported version. If there is no mutual version, the server sends 0xff
+    (which is not a valid version value), and terminates the connection.
+
+    Implementations MUST NOT expect any more than 4 octets (the introduction
+    with one version) to arrive before attempting to process them. The client
+    MUST NOT expect more than one octet (the response version) before
+    processing that data, regardless of any data which may immediately follow.
+
+3. Connection purpose and authentication
+
+    Immediately after version negotiation has finished (i.e. the server has
+    responded), the client must send a connection purpose field, which defines
+    the type of connection. This is a single octet, with the following
+    currently recognized values:
+    
+        0x00         Primary contact connection
+        0x01 - 0x19  Auxiliary contact connection
+        0x80         Contact request
+    
+    Any value below 0x20 (non-inclusive) shares the same immediate usage for
+    authentication. The 0x00 value indicates a primary connection (4.),
+    while all others are auxiliary connections.
+    
+3.1. Authenticated contact connections
+
+    For connections with a purpose value below 0x20, the following
+    authentication process is used to prove the identity of existing
+    contacts.
+
+    After sending the purpose, the client must follow with a 16-octet
+    pre-exchanged secret. This secret is specific to each peer, and is defined
+    during the contact request (or shortly thereafter). Because of the
+    hidden service layer pre-authenticating the server end of the connection,
+    and the existing layers of encryption, this value is sent in plaintext.
+    
+    The server looks up this value and matches it to any known contacts.
+    It then sends a one-octet response code; the value 0x00 for this code
+    indicates success, while all other values are assumed to be failure.
+    Any failure response may be followed by the server immediately closing
+    the connection, or may be followed by additional information. No response
+    other than 0x00 will result in the connection continuing to exist. The
+    following responses are currently defined:
+
+        0x00        Success
+        0x01        General failure; immediately closes the connection
+        0x02        Unrecognized secret
+
+    After a success reply, the connection transitions into message parsing
+    and may be used bidirectionally as desired.
+
+4. Primary connections
+
+    At present, Torsion makes a primitive distinction for commands that must
+    be processed in the same order as they were sent. This is done by defining
+    one connection as the 'primary connection', indicated by setting a purpose
+    of 0x00. This has the following effects:
+
+        - A contact is considered online if a primary connection is established
+        - Many types of commands that are sensitive to order are always sent on
+          the primary connection (such as chat messages)
+        - Peers may (and should) use the same connection as their primary, but
+          are not required to.
+
+    The majority of commands should be sent over the primary connection. The
+    exception to this is that the primary must remain low-latency - so commands
+    with large amounts of data (particularly unbuffered commands) should never
+    be on the primary connection. This should usually be the reasoning behind
+    the decision to send a command on the primary or an auxiliary connection,
+    but some commands may choose to leverage auxiliary connections if desired.
+
+    The specifics of auxiliary connections are not yet defined. This subject is
+    left open for usage in future development, particularly around file
+    transfers and mitigating latency or unreliable circuits.
+
+5. Message processing
+
+    Most communication takes place over the command or message protocol, used
+    on authenticated connections with contacts. This is a sequence of messages,
+    each of which is a command or a reply.
+
+    All commands must generate a reply, unless otherwise specifically defined.
+    This is done to allow intelligent handling of various error situations, and
+    to enable better internal API for managing outstanding commands. Replies
+    have a concept of finality; a command may generate many replies, but must
+    have exactly one final reply, which obviously must be the last.
+
+    Each command also has an identifier; this is a 16-bit value unique to the
+    sender of the command, which serves to relate replies back to the original
+    command. As a result of this, there is no requirement that replies be
+    immediate, and they may even be interleaved with other replies. The
+    identifier may be considered unused immediately after a final reply arrives
+    with that identifier set. Identifiers are specific to a single connection.
+    0 is reserved for identifiers, and should not be used.
+
+    One last distinction is between two types of messages that have very
+    different behavior for processing. Buffered messages (which are the
+    majority) include their length, which may not exceed 65,540 octets
+    inclusive of the header and the length itself, meaning that they may
+    have a maximum payload of 65,534 octets. As the name implies, buffered
+    messages are buffered until all data has arrived, and processed once.
+
+    Unbuffered messages, which are indicated by a message length of 0, have
+    no limitation on size. An unbuffered message will save the header, and
+    process all incoming data after as it arrives, using the same command
+    and header values. The command is responsible for indicating to the message
+    parsing layer when the unbuffered message has finished, after which normal
+    processing should resume. Unbuffered messages exist to allow for file
+    transfers and other large data payloads.
+    
+    One critical limitation to unbuffered messages is that commands (as opposed
+    to replies) may not be unbuffered. This is done to avoid tying up a
+    connection in a very long unbuffered command, while the remote end is
+    waiting on a reply on that same connection. In other words, unbuffered
+    messages always use a 'pull' model (asking for data and receiving it)
+    instead of pushing their data onto the peer.
+
+6. Commands and replies
+
+    The syntax of a message (a command or reply) is:
+    
+        length                      [16-bit big endian integer]
+        command                     [1 octet]
+        state                       [1 octet]
+        identifier                  [16-bit big endian integer]
+        data                        [length-1 octets, or unspecified]
+
+    These fields will be addressed in order.
+
+6.1. Length field
+
+    The length is a 16-bit big endian integer, the value of which is ONE PLUS
+    the size in bytes of the data payload in the message. This length does not
+    include the header of the message, but it must not be 0 for commands that
+    have no data (it is instead 1).
+
+    For a reply (see section 6.3), the length may be 0 when the command is
+    defined as expecting an unbuffered reply. See section 5 for a description
+    of unbuffered replies.
+
+6.2. Command field
+
+    The command is a one octet identifier for the command that should be
+    performed. When adding commands, great care should be taken to avoid
+    collisions with any other implementation. Command values below 0x80 should
+    be reserved for definition in this official document, while those above
+    are open for third party usage with appropriate precautions. A feature
+    inspection command may be introduced in the future to handle this issue.
+
+    For details on existing commands, see section 7.
+
+6.3. State field
+
+    The state field can be thought of as a subdivision of the command. It
+    enables different usages of the same command, and is also used to indicate
+    replies and reply status. The state is one octet, which is to be
+    interpreted as follows, where 0 is the most significant bit (0x80), and 7
+    is the least significant (0x01).
+
+    Bit 0 (0x80) indicates if the message is a reply.
+    
+    If bit 0 is NOT set, the message is a command:
+        Bit 1 (0x40) is reserved, and should have a value of 1. 
+        Bits 2 through 7 are available for command-specific usage.
+
+    If bit 0 IS set:
+        Bit 1 (0x40) indicates if the reply is a final reply. No more replies
+        may arrive with the same identifier for that command after the final
+        reply.
+
+        Bit 2 (0x20) indicates if the command was successful. This bit should
+        be set for any reply which does not indicate failure, but is largely
+        intepreted by the command itself.
+
+        IF bit 2 is NOT set (i.e. the command failed), all values with bit 3
+        (0x10) set are reserved for protocol usage as defined below.
+
+        All other bits (3-7 for success, 4-7 for failure) are available for
+        command-specific usage.
+
+    The following chart describes these values and their meaning:
+        0x00 to 0x3F        Reserved (unused)
+        0x40 to 0x7F        Command
+        0x80 to 0x8F        Reply   Intermediate    Failure     Available
+        0x90 to 0x9F        Reply   Intermediate    Failure     Reserved
+        0xA0 to 0xBF        Reply   Intermediate    Successful
+        0xC0 to 0xCF        Reply   Final           Failure     Available
+        0xD0 to 0xDF        Reply   Final           Failure     Reserved
+        0xE0 to 0xFF        Reply   Final           Successful
+
+6.4. Identifier field
+
+    The identifier is a 16-bit big endian integer, selected when sending the
+    command. It is unique to the peer and connection. It is illegal to send a
+    command with the same identifier as a command for which a final reply has
+    not arrived. It is illegal to send a reply with an identifier that does not
+    match an outstanding command from the peer.
+
+    The identifier 0 is reserved.
+
+6.5. Data
+
+    The data is arbitrary data, specific to the command (and possibly state).
+    Its length is equal to the length field minus one, which may be 0.
+
+    Alternatively, on an unbuffered reply, the data does not have any length
+    defined by the protocol. In this case, the command handler is responsible
+    for recognizing the end of the data for a command. In an unbuffered reply,
+    the data will be processed in chunks, and is not generally kept in memory.
+
+7. Defined commands
+
+    This is a comprehensive listing of all commands implemented in the version
+    of Torsion to which this document corrosponds, and potentially those used
+    by other applications that are considered reserved for that purpose.
+
+7.1. 0x00 - Ping
+
+    The ping command has no data, and results in a single, final, successful
+    reply with a command-specific state of 0 (0xE0). It has no other effect.
+
+7.2. 0x01 - Get connection secret
+
+    The command has no data. If successful, the peer will send a single, final
+    reply with a command state of 0 (0xE0), and the 16-byte secret that is
+    used to authenticate the local (command outgoing) end when establishing a
+    connection.
+
+    This is a dirty trick used during contact requests to allow the requesting
+    end of the request to discover the secret that it should use.
+
+7.3. 0x10 - Chat message
+
+    The command sends the following data:
+
+		timeDelta               32-bit signed big-endian integer; seconds
+                                before now that the message was written. A
+                                negative value (indicating the future) may be
+                                rejected.
+		lastReceived            16-bit big-endian integer; command identifier
+                                of the last chat message that had been received
+                                from the peer when this message was sent.
+        length                  16-big unsigned big-endian integer; length in
+                                octets of the text field
+        text                    UTF8-encoded message text of 'length' octets.
+
+    If successful, a single, final reply will be sent.
+
+8. Contact request connections

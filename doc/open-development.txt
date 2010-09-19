@@ -1,0 +1,25 @@
+In software designed for security and anonymity, public review and
+participation is critical to build trust from users and the community. Torsion
+cannot succeed without openly discussing design and problems, or without the
+participation and research of everyone willing to offer it.
+
+For this reason, it's an explicit goal of this project to be transparent.
+
+This means:
+
+    - Design and technical documentation; open discussion of threats and
+      potential solutions.
+    - Incorporating external ideas and concepts
+    - Encouraging others to become involved in development and design
+    - Visible and archived forums for discussion
+
+Of course, not all ideas are usable ideas. Many issues arise with tradeoffs
+between goals of the project. Compromises must be found between security and
+usability; the user experience can't be harmed to protect against a theoretical
+and perhaps impossible attack, but the user's anonymity can't be sacrificed for
+their simple convenience. The community and all participants must be equally
+open-minded in incorporating other ideas and priorities into their work.
+
+Feedback on ideas for encouraging openness and community participation are
+welcomed; for now, you can contact the author (special@dereferenced.net) in
+this regard.
