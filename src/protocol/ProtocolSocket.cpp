@@ -224,7 +224,12 @@ void ProtocolSocket::read()
 
         msgLength = qFromBigEndian(msgLength);
         if (!msgLength)
-            qFatal("Unbuffered protocol replies are not implemented");
+        {
+            /* Unbuffered replies aren't implemented; the connection cannot continue */
+            qWarning() << "Closing connection: Unbuffered protocol replies are not implemented";
+            socket->close();
+            return;
+        }
 
         /* Message length is one more than the actual data length, and does not include the header. */
         msgLength--;
