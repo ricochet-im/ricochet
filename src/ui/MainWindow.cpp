@@ -50,14 +50,16 @@ MainWindow::MainWindow(QWidget *parent)
     uiMain = this;
 
     setWindowTitle(QLatin1String("Torsion"));
+    resize(QSize(730, 400));
 
     createActions();
 
     /* Saved geometry */
-    resize(config->value("ui/main/windowSize", QSize(730, 400)).toSize());
-    QPoint pos = config->value("ui/main/windowPosition").toPoint();
-    if (!pos.isNull())
-        move(pos);
+    restoreGeometry(config->value("ui/main/windowGeometry").toByteArray());
+
+    /* Old config values (v0.8.0) */
+    config->remove("ui/main/windowSize");
+    config->remove("ui/main/windowPosition");
 
     /* Center widget */
     QWidget *center = new QWidget;
@@ -137,9 +139,7 @@ void MainWindow::createChatArea()
 
 void MainWindow::closeEvent(QCloseEvent *ev)
 {
-    config->setValue("ui/main/windowSize", size());
-    config->setValue("ui/main/windowPosition", pos());
-
+    config->setValue("ui/main/windowGeometry", saveGeometry());
     QMainWindow::closeEvent(ev);
 }
 
