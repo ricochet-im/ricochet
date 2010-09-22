@@ -200,7 +200,7 @@ void ContactUser::setHostname(const QString &hostname)
 
 QString ContactUser::avatarCacheKey(AvatarSize size)
 {
-    return QString::fromLatin1("cnt-avatar-") + int(size);
+    return QString::fromLatin1("cnt-avatar-%1-%2").arg(uniqueID).arg(int(size));
 }
 
 QPixmap ContactUser::avatar(AvatarSize size)

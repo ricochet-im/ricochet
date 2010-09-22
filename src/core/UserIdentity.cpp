@@ -103,7 +103,7 @@ void UserIdentity::setNickname(const QString &nick)
 
 QString UserIdentity::avatarCacheKey(AvatarSize size)
 {
-    return QString::fromLatin1("id-avatar-") + int(size);
+    return QString::fromLatin1("id-avatar-%1-%2").arg(uniqueID).arg(int(size));
 }
 
 QPixmap UserIdentity::avatar(AvatarSize size)
