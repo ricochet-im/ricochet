@@ -1,0 +1,61 @@
+This file lists tasks, changes, and features that are *planned* for
+implementation in Torsion. This listing is meant for tasks that are ready to be
+written immediately, or are waiting only on prerequisite tasks.
+
+This is not a comprehensive wishlist. Ideas and plans may be found in other
+documents. This is also not a comprehensive listing of known bugs, or of bugs
+for which fixes are intended.
+
+Critical priority:
+    * Improve the Tor system, particularly in regards to error handling
+        - Bundled Tor should detect and report any issues in great detail
+        - Watch tor events and info to gather, use, and report information
+          on if it is successfully connected and working properly. Requires
+          control event handling.
+    * Allow cookie authentication in manual Tor config 
+    * Optionally remove configuration (including identities) during uninstall
+        - Windows installer
+        - Debian package
+    * Improve alerts for new messages or other events (esp. contact req)
+        - Better visibility, possibly including animation, in the contacts list
+    * Add a context item on contacts to trigger a connection attempt
+    * Review OutgoingContactRequest; it may be a memory leak
+High priority:
+    * System tray support, including notifications
+        - Requires an icon of some kind
+        - Provide options to control notification behavior; note that some
+          users may wish for the application to keep a very low profile, and
+          not show names or text on screen without their explicit action
+    * Allow adding oneself as a contact for testing purposes
+        - Treat this normally (i.e. accepting the request), but disable message
+          reordering, as it would have broken behavior in this situation
+        - Suggested by gmaxwell
+    * Context menu for identities
+    * Improve communication of self-test/connectivity status for identities
+        - ideas/identity-connectivity.txt
+    * Mac OS X support
+    * Update the contact info page when status changes, particularly requests
+    * Use GETCONF to avoid overwriting existing hidden services in Tor
+    * Detect config reload on Tor and replace any settings we have
+        - Research is needed into how we can detect this situation
+    * Options dialog
+    * Improve UX of the add contact dialog
+        - Consider the situation regarding the nickname & message
+        - Don't disable the button
+Normal priority:
+    * Allow multi-line chat messages
+        - Increase the maximum length for a message/input accordingly
+        - Allow shift+enter to create a new line in the input
+        - Expand the text input to show the entire message
+    * URL handling in chat
+        - Allow the user to choose from various options, including clipboard.
+          Allow this to be made a permanent preference; dialog otherwise.
+    * Explicitly handle the time when an identity is being created
+        - Display a message on the info page
+        - Prevent adding contacts, or prevent the requests from starting
+    * Implement redelivery and, possibly, expiration for contact requests
+    * Improve error handling around identities, including creation
+Low priority:
+    * Show the number of outstanding offline messages in the contact list
+    * Allow removing offline messages that haven't been sent
+    * Drag-and-drop of text into the chat area / input
