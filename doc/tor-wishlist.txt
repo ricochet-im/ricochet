@@ -1,0 +1,68 @@
+This document is a wishlist for (reasonable) features and changes to Tor that
+would be useful for Torsion. Feel free to go wild with any of them.
+
+Hidden services without filesystem directories
+    https://trac.torproject.org/projects/tor/ticket/1949
+    
+    This will enable Torsion to manage the hidden service keys, and to encrypt
+    them along with user information. Provides a vast improvement to local
+    security for users who don't already have robust encryption set up.
+    
+    This also enables Torsion to work with Tor when running as a different
+    user, which is something that Tor is currently very unhappy about (due to
+    permissions on the hidden service dir).
+
+Control protocol event for configuration reloads
+    https://trac.torproject.org/projects/tor/ticket/1955
+    
+    Allows Torsion to replace its hidden services and any other configuration
+    changes when the config is reloaded by external forces (scripts, the user,
+    vidalia). Right now, those changes would either be lost, or must be written
+    to disk with SAVECONF (which is undesirable on several levels).
+
+Research issues with to publishing multiple hidden services from a Tor instance
+    Not much research has been done into issues that may arise when publishing
+    multiple hidden services from the same connection (or Tor instance).
+    Potential problems include the ability to recognize that these services are
+    published from the same location, or being used to make other attacks on
+    hidden services more effective.
+    
+    Particular areas to focus here are on publication time, the status of
+    connectivity, intro points and circuits, and how easily activity on one
+    service could be detected by a connection to another service.
+    
+    One known issue at present is that upon configuration (such as startup),
+    Tor will publish all descriptors immediately, and include the precise
+    timestamp (i.e., multiple services will be published at the same time, and
+    with the same timestamp). This only applies to the initial descriptor; the
+    times will jitter significantly afterwards.
+
+Improved handling of hidden service descriptors & privacy issues
+    Every RendPostPeriod (1 hour by default, contrary to docs), Tor updates the
+    hidden service descriptor and uploads it to the directories.
+    
+    A second-resolution timestamp from the system clock is put in this
+    descriptor. This level of specificity could be dangerous, allowing an
+    adversary to correlate it with other data. At best, it's unnecessary.
+    
+    Every hour, the descriptor ID will change, resulting in a different
+    selection of service directory nodes. This selection may also vary slightly
+    when the consensus changes (and HSDir nodes are added or removed). Notably,
+    this means that the next published descriptor will go to a new directory.
+    
+    Directories cache all descriptors for three days from when they arrived.
+    As a result of the hourly directory changes, this means that a good portion
+    of the status each hour over the past three days is likely to be cached.
+    
+    There are efficiency concerns here too. If the client's clock is off,
+    resulting in a different hour for the descriptor ID, it will request an old
+    ID, potentially with a new consensus. This means it may be incorrect about
+    some or all of the directories holding that descriptor. It will also be
+    requesting the descriptor from that time period - which may have intro
+    nodes that are no longer in use, resulting in a slower or even failed
+    connection.
+    
+    One potential approach would be to use the consensus timestamp for these
+    IDs. This would avoid issues with incorrect client clocks, and would ensure
+    that the client is requesting a descriptor that corrosponds to the
+    consensus it has (meaning, it will select the right directories to ask).

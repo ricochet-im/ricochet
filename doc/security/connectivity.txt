@@ -1,0 +1,154 @@
+At present, information about a contact's connectivity is accurate and close to
+realtime. This has several undesirable attributes for anonymity, the most
+severe of which is discussed here.
+
+Description
+===========
+
+In the context of Torsion, a contact is connectable if:
+    1. They are connected to the Internet
+    2. They are running Torsion
+    3. Their Tor client has successfully published a service descriptor
+    4. The entry points for that service are accessible
+    5. Their Tor client responds to the rendezvous circuit request
+    6. The nodes chosen for a rendezvous circuit are accessible
+
+The attack focuses on correlating items 1 and 2 (if the client is connected to
+the Internet, and if they are running Torsion) with external data to prove a
+relation between different services used from the same location (i.e., by the
+same person).
+
+If an adversary is able to monitor both the connectivity of the Torsion
+service and connectivity to other services that maintain stable connections,
+such as other chat and instant messaging software, they can correlate the
+time of connections and disconnections between these services to prove the
+relation - that they are being used from the same place, or by the same person.
+
+For example, if the adversary suspects that a Torsion contact may frequent a
+specific chat service, that adversary could track the connection state with
+that Torsion contact, along with connections and disconnections to the chat,
+and correlate these events to show who the contact is on that chat.
+
+Additionally, an adversary could actively manipulate the connectivity of a
+suspected person, such as with denial of service attacks, and observe this
+effect on the Torsion connection. This same approach could work on a larger
+scale, such as by disconnecting a subsection of users on an ISP.
+
+This attack could further be used to show that two Torsion identities, even
+in separate instances of the software, are likely to be used by the same
+person.
+
+The Tor layer has shown to be very reliable, so its effect on tainting the
+results should be minimal in practice. Regardless, unreliability at this level
+would serve only to require more time to achieve a reasonably certain
+correlation.
+
+Tor's hidden service directory, as of 0.2.2.16-alpha, also exhibits a variant
+on this problem, by publishing descriptors every hour, rotating them between
+directories, and caching them for 3 days. This may allow an adversary to query
+uptime history, especially the last known uptime. See "Improved handling of
+hidden service descriptors & privacy issues" in tor-wishlist.txt.
+
+Mitigation
+==========
+
+This attack requires an adversary to suspect a specific person, or a specific
+medium used by the person, and allows them only to prove or disprove this
+suspicion. That is, it cannot be used to outright break the anonymity of an
+unknown person; only to prove or disprove an existing theory.
+
+This attack requires the adversary to be able to observe, over a reasonably
+long period, the user's connectivity both with their Torsion identity and to
+the other service. The other service must also use a constant connection,
+preferably one which connects and reconnects automatically, which makes these
+events visible to the adversary.
+
+Because Torsion closes unknown connections reasonably quickly, the attack could
+be easily detected if done by someone who was not a Torsion contact, as it
+would require repeated attempts to poll the connectivity in this case. Torsion
+currently leaves a contact request connection open to allow for a quick
+response; this could be abused for the purpose of this attack, but would more
+likely gain the user's attention with unknown contact requests. Thus, the
+attack is more complicated, but not impossible, if the adversary is not a
+Torsion contact.
+
+The adversary must account for other factors that can influence connectivity,
+including if the user is running one service but not the other, unreliability
+in the Tor connection, and unreliability specific to the other service.
+
+Design Rationale
+================
+
+Much of the accuracy in determining connectivity results from the hidden
+service layer. Because Tor expires hidden service descriptors, and requires
+the active participation of the endpoint (i.e. the Tor client used by Torsion),
+it is always possible for any person to easily poll if a hidden service is
+actively online.
+
+Torsion builds on this to show the status of contacts to the user. An open
+connection is maintained to every contact when possible. This enables the user
+to determine, at a glance, if a given contact is available and will receive
+their messages.
+
+Contact request connections are left open to enable a quick and reliable
+response to the request. Otherwise, there would be significant delay in
+reporting a rejection to the requesting user. This open connection also
+enables a quick transition into a fully connected state after a request is
+accepted, which is useful when expecting to receive a request and immediately
+begin talking to that person.
+
+Overview of solutions
+=====================
+
+Any solution to this attack must base itself in obfuscating if a contact is
+connectable at a specific time.
+
+Ultimately, even with an architecture where no inherent means reveals the
+presence of a client, variations on this concept will exist. Instant messaging
+is, by its nature and the name, a realtime process, and this makes it subject
+to these attacks in the same way that Tor is subject to correlation between
+entry and exit traffic.
+
+However, it's not feasible to completely obfuscate this information. Direct
+hidden services connections will always reveal if the endpoint is available.
+From a user experience point of view, it would be incredibly frustrating to
+not know if a contact is at all online, or is still online.
+
+Priority should be placed on, as much as possible, reducing the ability of a
+non-contact to determine connectivity. This can at least reduce the attack to
+adversaries known to the user, and enable them to control risk.
+
+Allowing the user to control specifically how they wish to be connected (i.e.,
+if their public service is published), and with whom they wish to connect at a
+given time, would aid significantly in allowing the user, knowingly or as a
+result of other goals, mitigate this attack.
+
+If contact requests were refactored to happen either via an indirect mechanism,
+or with some manner of delay or scheduling, it could mostly or entirely
+eliminate the attack from non-contacts.
+
+If idle connections were not made with contacts, it could reduce the ease and
+effectiveness of measuring connectivity. They would still be able to measure
+connectivity during active exchanges, or with a more coarse timing by testing
+connection periodically or in response to specific external events. Some other
+mechanism may be able to provide more coarse information to the user on if a
+contact might be online.
+
+Research needed
+===============
+
+If either end of a rendezvous circuit disappears unexpectedly, and with no
+application traffic on that circuit, how long will it take for this to be
+noticed?
+
+How could contact requests be redesigned to remove the need for an always-on,
+publicly accessible service? Would periodic exposure, drop points, or other
+mechanisms cause too much delay in the process? Can we allow for the user to
+indicate that they are expecting a request (and speed the process up as a
+result)?
+
+If no idle connections were maintained with contacts, how could we determine
+the availiability of a contact? Forming connections periodically seems like the
+only option.
+
+tor-wishlist.txt: "Improved handling of hidden service descriptors & privacy.."
