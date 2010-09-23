@@ -39,6 +39,10 @@ Table of contents:
     'Server' refers to the peer receiving an incoming connection. After
              authentication, this distinction is irrelevant.
 
+1. The hidden service layer
+
+
+
 2. Protocol negotiation
 
     Immediately after establishing a connection, the client must send an
@@ -308,3 +312,82 @@ Table of contents:
     If successful, a single, final reply will be sent.
 
 8. Contact request connections
+
+    Contact requests are indicated by a connection with a purpose of 0x80.
+    Immediately after receiving the purpose, the server will respond with a
+    16-octet randomly generated cookie.
+    
+    Once the cookie is received, the client (i.e. the peer that is sending a
+    request) must send the following:
+    
+        length                  16-bit big-endian unsigned integer; length in
+                                octets of the entire request message, inclusive
+                                of itself.
+        hostname                16 octets, base32-encoded sha1 fingerprint of
+                                the public key. Identical to the peer's onion
+                                hostname.
+        connSecret              16 octets, random data that the recipient can
+                                use to authenticate for a contact connection.
+        pubKeyLength            16-bit big-endian unsigned integer; length in
+                                octets of the pubKey field
+        pubKey                  PEM-encoded RSA public key of pubKeyLength
+                                octets
+        signedCookieLength      16-bit big-endian unsigned integer; length in
+                                octets of the signedCookie field
+        signedCookie            RSA signature of the cookie provided by the
+                                server, with pubKey. signedCookieLength octets
+        nicknameLength          16-bit big-endian unsigned integer; length in
+                                octets of the nickname field
+        nickname                UTF-8 encoded string of nicknameLength octets;
+                                suggested nickname for this contact
+        messageLength           16-bit big-endian unsigned integer; length in
+                                octets of the message field
+        message                 UTF-8 encoded string of messageLength octets;
+                                freeform message to be shown with the request
+    
+    The key step to a contact request is allowing the recipient (server) to
+    verify the sender's (client's) contact ID - which is their onion service
+    hostname, or the first 10 bytes of the SHA1 hash of their onion service's
+    public key.
+    
+    To do so, the sender is required to sign a server-provided cookie with the
+    public key, and send that signature along with the public key itself. This
+    allows the recipient to verify that the sender has the public key for that
+    contact ID; i.e., it proves that they can publish the hidden service.
+    
+    The direct use of the hidden service key here may be problematic from a
+    security point of view. This needs to be reviewed.
+    
+    After the request, the server will respond with a response code. All
+    responses with the exception of 0x00 (acknowledge) and 0x01 (accept) are
+    considered errors. The following are currently-defined responses:
+    
+        0x00        Acknowledged (see below)
+        0x01        Accepted (see below)
+        0x40        Rejected by user
+        0x80        Syntax error
+        0x81        Public key / signature verification error
+        0x82        Request requires either a nickname or a message
+    
+    All of the error responses (that is, any with a value greater than 0x01)
+    will be followed closing the connection. In the case of user rejection,
+    and potentially others, the contact ID used for this request may be added
+    to a blacklist, causing any further requests to be immediately rejected
+    without notifying the user.
+    
+    The acknowledged response is a special case; this indicates that the
+    request was valid and has been processed, but that no response has yet been
+    made. After the acknowledged response, the client should leave open the
+    connection and wait for another response code to arrive. However, this is
+    not a requirement.
+    
+    Immediately after the accepted response, both peers are expected to
+    transition the connection to an established and authenticated primary
+    connection (i.e., they begin the message protocol).
+    
+    The requesting peer MUST be willing to accept normal contact connections,
+    authenticated with the connSecret field from the request, at any time after
+    the request has been sent. If such a connection is established, the
+    requesting peer should treat that as implicitly accepting the request. This
+    allows the request to be accepted if the request connection has since been
+    lost.

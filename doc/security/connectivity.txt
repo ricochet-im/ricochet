@@ -152,3 +152,11 @@ the availiability of a contact? Forming connections periodically seems like the
 only option.
 
 tor-wishlist.txt: "Improved handling of hidden service descriptors & privacy.."
+
+Would the use of multiple hidden service ports assist in selectively exposing
+ourselves to contact requests? Would the rendezvous circuit give us away in
+this case, regardless?
+
+How could stealth authentication or non-stealth authentication factor in;
+Does this mean we need a separate service to do stealth? Could non-stealth
+be coerced into serving as the mechanism for enabling contact requests safely?
