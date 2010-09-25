@@ -206,6 +206,8 @@ void BundledTorManager::readOutput()
 
 void BundledTorManager::processExited(int exitCode, QProcess::ExitStatus status)
 {
+    Q_UNUSED(status);
+
     if (m_wantExit)
     {
         m_wantExit = false;

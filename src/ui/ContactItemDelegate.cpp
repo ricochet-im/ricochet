@@ -159,6 +159,8 @@ void ContactItemDelegate::paint(QPainter *p, const QStyleOptionViewItem &opt,
 
 QWidget *ContactItemDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
+    Q_UNUSED(option);
+
     /* This is necessary because QTreeView (at least) clips the delegate to the editor area during editing,
      * and we need to render the entire thing. The container widget covers the entire area (which will be
      * the clip), and the actual editor is within that. */
@@ -185,6 +187,8 @@ QWidget *ContactItemDelegate::createEditor(QWidget *parent, const QStyleOptionVi
 
 void ContactItemDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
+    Q_UNUSED(index);
+
     /* Container is the full size of the index */
     editor->setGeometry(option.rect);
 
