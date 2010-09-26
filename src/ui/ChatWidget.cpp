@@ -19,6 +19,7 @@
 #include "ChatWidget.h"
 #include "ChatTextWidget.h"
 #include "core/ContactUser.h"
+#include "core/UserIdentity.h"
 #include "protocol/ChatMessageCommand.h"
 #include "ui/MainWindow.h"
 #include <QBoxLayout>
@@ -298,7 +299,7 @@ void ChatWidget::addChatMessage(ContactUser *from, quint16 messageID, const QDat
             nickFormat.setProperty(QTextFormat::UserProperty, nickColor[!light]);
     }
 
-    QString nickname = from ? from->nickname() : tr("Me");
+    QString nickname = from ? from->nickname() : user->identity->nickname();
 
     cursor.insertText(nickname + QLatin1String(": "), nickFormat);
 
