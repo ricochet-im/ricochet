@@ -22,6 +22,7 @@
 
 class QTcpSocket;
 class ContactUser;
+class UserIdentity;
 
 class ContactRequestServer : public QObject
 {
@@ -29,7 +30,9 @@ class ContactRequestServer : public QObject
     Q_DISABLE_COPY(ContactRequestServer)
 
 public:
-    explicit ContactRequestServer(QTcpSocket *socket);
+    UserIdentity * const identity;
+
+    explicit ContactRequestServer(UserIdentity *identity, QTcpSocket *socket);
 
     void sendAccept(ContactUser *user);
     void sendRejection();

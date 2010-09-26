@@ -100,7 +100,7 @@ void IncomingRequestManager::addRequest(const QByteArray &hostname, const QByteA
     }
 
     /* Check if this request matches any existing users, including any outgoing requests. */
-    ContactUser *existingUser = contactsManager->lookupHostname(QString::fromLatin1(hostname));
+    ContactUser *existingUser = contacts->lookupHostname(QString::fromLatin1(hostname));
     if (existingUser)
     {
         /* If the existing user is an outgoing contact request, that is considered accepted */
@@ -240,7 +240,7 @@ void IncomingContactRequest::accept(ContactUser *user)
     if (!user)
     {
         Q_ASSERT(!nickname().isEmpty());
-        user = contactsManager->addContact(nickname());
+        user = user->identity->contacts.addContact(nickname());
         user->setHostname(QString::fromLatin1(hostname));
     }
 

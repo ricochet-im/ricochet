@@ -24,14 +24,13 @@
 
 ContactsManager *contactsManager = 0;
 
-ContactsManager::ContactsManager()
-    : incomingRequests(new IncomingRequestManager(this)),
-      highestID(-1)
+ContactsManager::ContactsManager(UserIdentity *id)
+    : identity(id), incomingRequests(this), highestID(-1)
 {
     contactsManager = this;
 
     loadFromSettings();
-    incomingRequests->loadRequests();
+    incomingRequests.loadRequests();
 }
 
 void ContactsManager::loadFromSettings()
@@ -50,7 +49,7 @@ void ContactsManager::loadFromSettings()
             continue;
         }
 
-    	ContactUser *user = new ContactUser(id, this);
+    	ContactUser *user = new ContactUser(identity, id, this);
         connect(user, SIGNAL(contactDeleted(ContactUser*)), SLOT(contactDeleted(ContactUser*)));
     	pContacts.append(user);
         highestID = qMax(id, highestID);
@@ -62,7 +61,7 @@ ContactUser *ContactsManager::addContact(const QString &nickname)
     Q_ASSERT(!nickname.isEmpty());
 
     highestID++;
-    ContactUser *user = ContactUser::addNewContact(highestID);
+    ContactUser *user = ContactUser::addNewContact(identity, highestID);
     user->setParent(this);
     user->setNickname(nickname);
     connect(user, SIGNAL(contactDeleted(ContactUser*)), SLOT(contactDeleted(ContactUser*)));

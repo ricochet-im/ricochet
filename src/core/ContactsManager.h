@@ -21,8 +21,11 @@
 #include <QObject>
 #include <QList>
 #include "ContactUser.h"
+#include "IncomingRequestManager.h"
 
 class OutgoingContactRequest;
+class UserIdentity;
+class IncomingRequestManager;
 
 class ContactsManager : public QObject
 {
@@ -32,9 +35,10 @@ class ContactsManager : public QObject
     friend class OutgoingContactRequest;
 
 public:
-    class IncomingRequestManager * const incomingRequests;
+    UserIdentity * const identity;
+    IncomingRequestManager incomingRequests;
 
-    explicit ContactsManager();
+    explicit ContactsManager(UserIdentity *identity);
 
     const QList<ContactUser*> &contacts() const { return pContacts; }
     ContactUser *lookupSecret(const QByteArray &secret) const;
@@ -61,7 +65,5 @@ private:
 
     void loadFromSettings();
 };
-
-extern ContactsManager *contactsManager;
 
 #endif // CONTACTSMANAGER_H

@@ -19,6 +19,7 @@
 #define USERIDENTITY_H
 
 #include "main.h"
+#include "ContactsManager.h"
 #include <QObject>
 #include <QPixmapCache>
 #include <QMetaType>
@@ -31,6 +32,8 @@ namespace Tor
     class HiddenService;
 }
 
+class IncomingSocket;
+
 class UserIdentity : public QObject
 {
     Q_OBJECT
@@ -40,6 +43,7 @@ class UserIdentity : public QObject
 
 public:
     const int uniqueID;
+    ContactsManager contacts;
 
     explicit UserIdentity(int uniqueID, QObject *parent = 0);
 
@@ -87,6 +91,7 @@ private:
     QString m_nickname;
 
     Tor::HiddenService *hiddenService;
+    IncomingSocket *incomingSocket;
 
     static UserIdentity *createIdentity(int uniqueID, const QString &dataDirectory = QString());
 

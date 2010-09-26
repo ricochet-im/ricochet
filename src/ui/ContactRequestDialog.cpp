@@ -78,7 +78,7 @@ ContactRequestDialog::ContactRequestDialog(IncomingContactRequest *r, QWidget *p
 #endif
     NicknameValidator *nickValidator = new NicknameValidator(m_nickname);
     nickValidator->setWidget(m_nickname);
-    nickValidator->setValidateUnique(true);
+    nickValidator->setValidateUnique(r->manager->contacts->identity);
     m_nickname->setValidator(nickValidator);
     m_nickname->setFixedWidth(200);
     bLayout->addWidget(m_nickname, 1, Qt::AlignLeft | Qt::AlignVCenter);
@@ -93,7 +93,7 @@ ContactRequestDialog::ContactRequestDialog(IncomingContactRequest *r, QWidget *p
     bLayout->addWidget(btns);
 
     /* Other */
-    connect(contactsManager->incomingRequests, SIGNAL(requestRemoved(IncomingContactRequest*)),
+    connect(&r->manager->contacts->incomingRequests, SIGNAL(requestRemoved(IncomingContactRequest*)),
             SLOT(requestRemoved(IncomingContactRequest*)));
 }
 
@@ -108,7 +108,7 @@ void ContactRequestDialog::accept()
     }
 
     /* Disconnect from the requestRemoved signal to avoid hitting it here */
-    contactsManager->incomingRequests->disconnect(this, SLOT(requestRemoved(IncomingContactRequest*)));
+    request->manager->contacts->incomingRequests.disconnect(this, SLOT(requestRemoved(IncomingContactRequest*)));
 
     /* Accept request */
     request->setNickname(m_nickname->text());
@@ -121,7 +121,7 @@ void ContactRequestDialog::accept()
 void ContactRequestDialog::rejectRequest()
 {
     /* Disconnect from the requestRemoved signal to avoid hitting it here */
-    contactsManager->incomingRequests->disconnect(this, SLOT(requestRemoved(IncomingContactRequest*)));
+    request->manager->contacts->incomingRequests.disconnect(this, SLOT(requestRemoved(IncomingContactRequest*)));
 
     request->reject();
     this->done(QDialog::Rejected);

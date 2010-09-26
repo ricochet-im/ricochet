@@ -18,11 +18,9 @@
 #include "main.h"
 #include "ui/MainWindow.h"
 #include "core/IdentityManager.h"
-#include "core/ContactsManager.h"
 #include "tor/TorControlManager.h"
 #include "ui/torconfig/TorConfigWizard.h"
 #include "tor/autoconfig/BundledTorManager.h"
-#include "protocol/IncomingSocket.h"
 #include "utils/CryptoKey.h"
 #include "utils/SecureRNG.h"
 #include "utils/OSUtil.h"
@@ -37,8 +35,6 @@
 
 AppSettings *config = 0;
 static FileLock configLock;
-
-IncomingSocket *incomingSocket = 0;
 
 static void initSettings();
 static void initTranslation();
@@ -67,19 +63,12 @@ int main(int argc, char *argv[])
     if (!SecureRNG::seed())
         qFatal("Failed to initialize RNG");
 
-    /* Incoming socket */
-    initIncomingSocket();
-
     /* Tor control manager; this may enter into the TorConfigWizard. */
     if (!connectTorControl())
         return 0;
 
     /* Identities */
     identityManager = new IdentityManager;
-
-    /* Contacts */
-    contactsManager = new ContactsManager;
-    QObject::connect(torManager, SIGNAL(socksReady()), contactsManager, SLOT(connectToAll()));
 
     /* Window */
     MainWindow w;
@@ -186,16 +175,6 @@ static void initTranslation()
 
     if (ok)
         qApp->installTranslator(translator);
-}
-
-static void initIncomingSocket()
-{
-    QHostAddress address(config->value("core/listenIp", QLatin1String("127.0.0.1")).toString());
-    quint16 port = (quint16)config->value("core/listenPort", 0).toUInt();
-
-    incomingSocket = new IncomingSocket;
-    if (!incomingSocket->listen(address, port))
-        qFatal("Failed to open incoming socket: %s", qPrintable(incomingSocket->errorString()));
 }
 
 static bool connectTorControl()

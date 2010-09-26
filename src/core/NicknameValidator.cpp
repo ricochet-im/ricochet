@@ -16,13 +16,13 @@
  */
 
 #include "NicknameValidator.h"
-#include "core/ContactsManager.h"
+#include "core/UserIdentity.h"
 #include <QToolTip>
 #include <QWidget>
 #include <QTextDocument>
 
 NicknameValidator::NicknameValidator(QObject *parent)
-    : QValidator(parent), m_widget(0), m_validateUnique(false)
+    : QValidator(parent), m_widget(0), m_uniqueIdentity(0), m_uniqueException(0)
 {
 }
 
@@ -31,9 +31,9 @@ void NicknameValidator::setWidget(QWidget *widget)
     m_widget = widget;
 }
 
-void NicknameValidator::setValidateUnique(bool unique, ContactUser *exception)
+void NicknameValidator::setValidateUnique(UserIdentity *identity, ContactUser *exception)
 {
-    m_validateUnique = unique;
+    m_uniqueIdentity = identity;
     m_uniqueException = exception;
 }
 
@@ -70,12 +70,13 @@ QValidator::State NicknameValidator::validate(QString &text, int &pos) const
     else if (wssuf)
         return Intermediate;
 
-    if (m_validateUnique)
+    if (m_uniqueIdentity)
     {
         ContactUser *u;
-        if ((u = contactsManager->lookupNickname(text)) && u != m_uniqueException)
+        if (((u = m_uniqueIdentity->contacts.lookupNickname(text)) && u != m_uniqueException)
+            || QString::compare(text, m_uniqueIdentity->nickname(), Qt::CaseInsensitive) == 0)
         {
-            showMessage(tr("You already have a contact named <b>%1</b>").arg(Qt::escape(u->nickname())));
+            showMessage(tr("You already have a contact named <b>%1</b>").arg(Qt::escape(text)));
             return Intermediate;
         }
     }

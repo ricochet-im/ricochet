@@ -18,7 +18,6 @@ Critical priority:
         - Debian package
     * Improve alerts for new messages or other events (esp. contact req)
         - Better visibility, possibly including animation, in the contacts list
-    * Add a context item on contacts to trigger a connection attempt
     * Review OutgoingContactRequest; it may be a memory leak
 High priority:
     * System tray support, including notifications

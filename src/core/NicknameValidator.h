@@ -22,6 +22,7 @@
 
 class QWidget;
 class ContactUser;
+class UserIdentity;
 
 class NicknameValidator : public QValidator
 {
@@ -32,14 +33,14 @@ public:
     explicit NicknameValidator(QObject *parent = 0);
 
     void setWidget(QWidget *widget);
-    void setValidateUnique(bool unique, ContactUser *exception = 0);
+    void setValidateUnique(UserIdentity *identity, ContactUser *exception = 0);
 
     virtual State validate(QString &text, int &pos) const;
 
 private:
     QWidget *m_widget;
+    UserIdentity *m_uniqueIdentity;
     ContactUser *m_uniqueException;
-    bool m_validateUnique;
 
     void showMessage(const QString &message) const;
 };

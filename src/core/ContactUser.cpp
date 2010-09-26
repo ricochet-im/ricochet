@@ -17,6 +17,7 @@
 
 #include "main.h"
 #include "ContactUser.h"
+#include "UserIdentity.h"
 #include "ContactsManager.h"
 #include "ui/ChatWidget.h"
 #include "utils/DateUtil.h"
@@ -29,8 +30,8 @@
 #include <QBuffer>
 #include <QDateTime>
 
-ContactUser::ContactUser(int id, QObject *parent)
-    : QObject(parent), uniqueID(id)
+ContactUser::ContactUser(UserIdentity *ident, int id, QObject *parent)
+    : QObject(parent), identity(ident), uniqueID(id)
 {
     Q_ASSERT(uniqueID >= 0);
 
@@ -81,9 +82,9 @@ void ContactUser::removeSetting(const QString &key)
     config->remove(QString::fromLatin1("contacts/%1/%2").arg(uniqueID).arg(key));
 }
 
-ContactUser *ContactUser::addNewContact(int id)
+ContactUser *ContactUser::addNewContact(UserIdentity *identity, int id)
 {
-    ContactUser *user = new ContactUser(id);
+    ContactUser *user = new ContactUser(identity, id);
     user->writeSetting("whenCreated", QDateTime::currentDateTime());
 
     /* Generate the local secret and set it */
@@ -169,7 +170,7 @@ void ContactUser::setNickname(const QString &nickname)
         return;
 
     /* non-critical, just a safety net for UI checks */
-    Q_ASSERT(!contactsManager->lookupNickname(nickname));
+    Q_ASSERT(!identity->contacts.lookupNickname(nickname));
 
     pNickname = nickname;
 

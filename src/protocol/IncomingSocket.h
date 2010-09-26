@@ -25,6 +25,7 @@
 
 class QTcpServer;
 class QTcpSocket;
+class UserIdentity;
 
 class IncomingSocket : public QObject
 {
@@ -32,7 +33,9 @@ class IncomingSocket : public QObject
     Q_DISABLE_COPY(IncomingSocket)
 
 public:
-    explicit IncomingSocket(QObject *parent = 0);
+    UserIdentity * const identity;
+
+    explicit IncomingSocket(UserIdentity *identity, QObject *parent = 0);
 
     bool listen(const QHostAddress &address, quint16 port);
     QString errorString() const;

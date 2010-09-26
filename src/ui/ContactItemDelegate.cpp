@@ -175,8 +175,11 @@ QWidget *ContactItemDelegate::createEditor(QWidget *parent, const QStyleOptionVi
     widget->setTextMargins(0, 0, 0, 0);
     widget->setContentsMargins(0, 0, 0, 0);
 
+    ContactUser *user = index.data(ContactsModel::PointerRole).value<ContactUser*>();
+    Q_ASSERT(user);
+
     NicknameValidator *validator = new NicknameValidator(widget);
-    validator->setValidateUnique(true, index.data(ContactsModel::PointerRole).value<ContactUser*>());
+    validator->setValidateUnique(user->identity, user);
     validator->setWidget(widget);
     widget->setValidator(validator);
 

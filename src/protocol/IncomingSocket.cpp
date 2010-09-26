@@ -16,6 +16,7 @@
  */
 
 #include "IncomingSocket.h"
+#include "core/UserIdentity.h"
 #include "ProtocolManager.h"
 #include "core/ContactsManager.h"
 #include "ContactRequestServer.h"
@@ -24,8 +25,8 @@
 #include <QDateTime>
 #include <QtDebug>
 
-IncomingSocket::IncomingSocket(QObject *parent)
-    : QObject(parent), server(new QTcpServer(this))
+IncomingSocket::IncomingSocket(UserIdentity *id, QObject *parent)
+    : QObject(parent), identity(id), server(new QTcpServer(this))
 {
     connect(server, SIGNAL(newConnection()), this, SLOT(incomingConnection()));
 }
@@ -212,7 +213,7 @@ void IncomingSocket::handleIntro(QTcpSocket *socket, uchar version)
         secret.remove(0, 1);
         Q_ASSERT(secret.size() == 16);
 
-        ContactUser *user = contactsManager->lookupSecret(secret);
+        ContactUser *user = identity->contacts.lookupSecret(secret);
 
         /* Response; 0x00 is success, while all others are error. 0x01 is generic error. */
         char response = 0x01;
@@ -252,7 +253,7 @@ void IncomingSocket::handleIntro(QTcpSocket *socket, uchar version)
         pendingSockets.removeOne(socket);
         socket->disconnect(this);
 
-        new ContactRequestServer(socket);
+        new ContactRequestServer(identity, socket);
         Q_ASSERT(socket->parent() != this);
     }
     else

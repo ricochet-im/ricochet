@@ -23,6 +23,7 @@
 class QLineEdit;
 class FancyTextEdit;
 class QDialogButtonBox;
+class UserIdentity;
 
 class ContactAddDialog : public QDialog
 {
@@ -32,6 +33,7 @@ class ContactAddDialog : public QDialog
 public:
     explicit ContactAddDialog(QWidget *parent = 0);
 
+    void setIdentity(UserIdentity *identity);
     bool hasAcceptableInput() const;
 
     virtual void accept();
@@ -45,6 +47,7 @@ private:
     QLineEdit * const m_id;
     FancyTextEdit * const m_message;
     QDialogButtonBox * const m_buttonBox;
+    UserIdentity *m_identity;
 
     QWidget *createUI();
 };

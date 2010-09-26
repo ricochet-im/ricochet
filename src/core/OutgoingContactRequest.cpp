@@ -19,6 +19,7 @@
 #include "OutgoingContactRequest.h"
 #include "ContactsManager.h"
 #include "ContactUser.h"
+#include "UserIdentity.h"
 #include "IncomingRequestManager.h"
 #include "protocol/ContactRequestClient.h"
 #include "tor/TorControlManager.h"
@@ -55,7 +56,7 @@ OutgoingContactRequest::OutgoingContactRequest(ContactUser *u)
 {
     Q_ASSERT(user->isContactRequest());
 
-    emit contactsManager->outgoingRequestAdded(this);
+    emit user->identity->contacts.outgoingRequestAdded(this);
 
     attemptAutoAccept();
 
@@ -109,7 +110,7 @@ void OutgoingContactRequest::attemptAutoAccept()
      * automatically and accept that incoming request for this user */
     QByteArray hostname = user->hostname().left(16).toLatin1();
 
-    IncomingContactRequest *incomingReq = contactsManager->incomingRequests->requestFromHostname(hostname);
+    IncomingContactRequest *incomingReq = user->identity->contacts.incomingRequests.requestFromHostname(hostname);
     if (incomingReq)
     {
         qDebug() << "Automatically accepting an incoming contact request matching a newly created outgoing request";

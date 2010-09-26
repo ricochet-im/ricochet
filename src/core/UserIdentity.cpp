@@ -27,17 +27,17 @@
 #include <QBuffer>
 #include <QDir>
 
-/* Imported from main.cpp; will be obsolete when proper multiple identity support is done */
-extern IncomingSocket *incomingSocket;
-
 UserIdentity::UserIdentity(int id, QObject *parent)
-    : QObject(parent), uniqueID(id)
+    : QObject(parent), uniqueID(id), contacts(this), incomingSocket(0)
 {
     m_nickname = readSetting("nickname", tr("Me")).toString();
 
     QString dir = readSetting("dataDirectory", QLatin1String("data-") + QString::number(uniqueID)).toString();
     hiddenService = new Tor::HiddenService(dir, this);
     connect(hiddenService, SIGNAL(statusChanged(int,int)), SLOT(onStatusChanged(int,int)));
+
+    QHostAddress address(config->value("core/listenIp", QLatin1String("127.0.0.1")).toString());
+    quint16 port = (quint16)config->value("core/listenPort", 0).toUInt();
 
     if (hiddenService->status() == Tor::HiddenService::NotCreated && !readSetting("createNewService", false).toBool())
     {
@@ -47,9 +47,18 @@ UserIdentity::UserIdentity(int id, QObject *parent)
     }
     else
     {
+        incomingSocket = new IncomingSocket(this, this);
+        if (!incomingSocket->listen(address, port))
+        {
+            qWarning() << "Failed to open incoming socket:" << incomingSocket->errorString();
+            return;
+        }
+
         hiddenService->addTarget(80, incomingSocket->serverAddress(), incomingSocket->serverPort());
         torManager->addHiddenService(hiddenService);
     }
+
+    connect(torManager, SIGNAL(socksReady()), &contacts,  SLOT(connectToAll()));
 }
 
 UserIdentity *UserIdentity::createIdentity(int uniqueID, const QString &dataDirectory)

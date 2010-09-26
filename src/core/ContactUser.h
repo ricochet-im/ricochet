@@ -28,6 +28,8 @@
 #include <QVariant>
 #include "protocol/ProtocolManager.h"
 
+class UserIdentity;
+
 /* Represents a user on the contact list.
  * All persistent uses of a ContactUser instance must either connect to the
  * contactDeleted() signal, or use a QWeakPointer to track deletion. A ContactUser
@@ -43,9 +45,10 @@ class ContactUser : public QObject
     friend class ContactsManager;
 
 public:
+    UserIdentity * const identity;
     const int uniqueID;
 
-    explicit ContactUser(int uniqueID, QObject *parent = 0);
+    explicit ContactUser(UserIdentity *identity, int uniqueID, QObject *parent = 0);
 
     ProtocolManager *conn() const { return pConn; }
     bool isConnected() const { return pConn->isPrimaryConnected(); }
@@ -106,7 +109,7 @@ private:
     QString pNickname;
 
     /* See ContactsManager::addContact */
-    static ContactUser *addNewContact(int id);
+    static ContactUser *addNewContact(UserIdentity *identity, int id);
 
     void loadSettings();
     QString avatarCacheKey(AvatarSize size);

@@ -41,8 +41,6 @@ ContactsModel::ContactsModel(QObject *parent)
     : QAbstractItemModel(parent)
 {
     populate();
-
-    connect(contactsManager, SIGNAL(contactAdded(ContactUser*)), this, SLOT(contactAdded(ContactUser*)));
 }
 
 void ContactsModel::populate()
@@ -57,6 +55,12 @@ void ContactsModel::populate()
             (*it)->disconnect(this);
     }
 
+    foreach (UserIdentity *i, identities)
+    {
+        i->disconnect(this);
+        i->contacts.disconnect(this);
+    }
+
     contacts.clear();
     identities.clear();
 
@@ -66,10 +70,11 @@ void ContactsModel::populate()
     int i = 0;
     for (QList<UserIdentity*>::Iterator it = identities.begin(); it != identities.end(); ++it, ++i)
     {
+        connect(&(*it)->contacts, SIGNAL(contactAdded(ContactUser*)), SLOT(contactAdded(ContactUser*)));
         connect(*it, SIGNAL(statusChanged()), SLOT(updateIdentity()));
         connect(*it, SIGNAL(settingsChanged(QString)), SLOT(updateIdentity()));
 
-        QList<ContactUser*> c = contactsManager->contacts();
+        QList<ContactUser*> c = (*it)->contacts.contacts();
         qSort(c.begin(), c.end(), userSort<ContactUser>);
 
         for (QList<ContactUser*>::Iterator it = c.begin(); it != c.end(); ++it)
@@ -404,7 +409,7 @@ bool ContactsModel::setData(const QModelIndex &index, const QVariant &value, int
     ContactUser *user = reinterpret_cast<ContactUser*>(index.internalPointer());
     if (user)
     {
-        validator.setValidateUnique(true, user);
+        validator.setValidateUnique(user->identity, user);
         int pos;
         if (validator.validate(nickname, pos) != QValidator::Acceptable)
             return false;

@@ -37,7 +37,8 @@ ContactAddDialog::ContactAddDialog(QWidget *parent) :
     m_nickname(new QLineEdit),
     m_id(new QLineEdit),
     m_message(new FancyTextEdit),
-    m_buttonBox(new QDialogButtonBox(Qt::Horizontal))
+    m_buttonBox(new QDialogButtonBox(Qt::Horizontal)),
+    m_identity(0)
 {
     setModal(true);
     setWindowTitle(tr("Add Contact"));
@@ -97,6 +98,12 @@ QWidget *ContactAddDialog::createUI()
     return introPage;
 }
 
+void ContactAddDialog::setIdentity(UserIdentity *identity)
+{
+    m_identity = identity;
+    updateAcceptableInput();
+}
+
 void ContactAddDialog::accept()
 {
     if (!hasAcceptableInput())
@@ -113,14 +120,14 @@ void ContactAddDialog::accept()
 
     ContactUser *user;
 
-    if ((user = contactsManager->lookupHostname(hostname)))
+    if ((user = m_identity->contacts.lookupHostname(hostname)))
     {
         QMessageBox::critical(this, tr("Error"), tr("You already have <b>%1</b> as a contact.")
                               .arg(Qt::escape(user->nickname())));
         return;
     }
 
-    if ((user = contactsManager->lookupNickname(m_nickname->text())))
+    if ((user = m_identity->contacts.lookupNickname(m_nickname->text())))
     {
         QMessageBox::critical(this, tr("Error"), tr("You already have another contact named "
                                                     "<b>%1</b>. Please choose another nickname.")
@@ -130,7 +137,7 @@ void ContactAddDialog::accept()
         return;
     }
 
-    user = contactsManager->addContact(m_nickname->text());
+    user = m_identity->contacts.addContact(m_nickname->text());
     if (!user)
     {
         QMessageBox::critical(this, tr("Error"), tr("An error occurred while trying to add"
@@ -147,7 +154,7 @@ void ContactAddDialog::accept()
 bool ContactAddDialog::hasAcceptableInput() const
 {
     return m_nickname->hasAcceptableInput() && m_id->hasAcceptableInput()
-            && !m_message->isTextEmpty();
+            && !m_message->isTextEmpty() && m_identity;
 }
 
 void ContactAddDialog::updateAcceptableInput()

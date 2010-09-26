@@ -27,7 +27,7 @@
 #include "core/UserIdentity.h"
 #include "core/IncomingRequestManager.h"
 #include "core/OutgoingContactRequest.h"
-#include "core/ContactsManager.h"
+#include "core/IdentityManager.h"
 #include "tor/TorControlManager.h"
 #include "tor/autoconfig/VidaliaConfigManager.h"
 #include "ui/torconfig/TorConfigWizard.h"
@@ -92,14 +92,18 @@ MainWindow::MainWindow(QWidget *parent)
     layout->addWidget(chatArea);
 
     /* Other things */
-    connect(contactsManager->incomingRequests, SIGNAL(requestAdded(IncomingContactRequest*)), SLOT(updateContactRequests()));
-    connect(contactsManager->incomingRequests, SIGNAL(requestRemoved(IncomingContactRequest*)), SLOT(updateContactRequests()));
-    connect(contactsManager, SIGNAL(outgoingRequestAdded(OutgoingContactRequest*)), SLOT(outgoingRequestAdded(OutgoingContactRequest*)));
+    connect(identityManager, SIGNAL(incomingRequestAdded(IncomingContactRequest*,UserIdentity*)), SLOT(updateContactRequests()));
+    connect(identityManager, SIGNAL(incomingRequestRemoved(IncomingContactRequest*,UserIdentity*)), SLOT(updateContactRequests()));
+    connect(identityManager, SIGNAL(outgoingRequestAdded(OutgoingContactRequest*,UserIdentity*)),
+            SLOT(outgoingRequestAdded(OutgoingContactRequest*)));
 
-    foreach (ContactUser *user, contactsManager->contacts())
+    foreach (UserIdentity *identity, identityManager->identities())
     {
-        if (user->isContactRequest())
-            outgoingRequestAdded(OutgoingContactRequest::requestForUser(user));
+        foreach (ContactUser *user, identity->contacts.contacts())
+        {
+            if (user->isContactRequest())
+                outgoingRequestAdded(OutgoingContactRequest::requestForUser(user));
+        }
     }
 
     updateContactRequests();
@@ -208,6 +212,7 @@ void MainWindow::openAddContactDialog(UserIdentity *identity)
 {
     Q_UNUSED(identity);
     ContactAddDialog dialog(this);
+    dialog.setIdentity(identity);
     dialog.exec();
 }
 
@@ -219,7 +224,11 @@ void MainWindow::openTorConfig()
 
 void MainWindow::updateContactRequests()
 {
-    int numRequests = contactsManager->incomingRequests->requests().size();
+    /* This will likely be redesigned to emphasize the identity tied to the request when real
+     * support for multiple identities is done. */
+    int numRequests = 0;
+    foreach (UserIdentity *identity, identityManager->identities())
+        numRequests += identity->contacts.incomingRequests.requests().size();
 
     if (numRequests && !contactReqNotification)
     {
@@ -238,11 +247,21 @@ void MainWindow::showContactRequest()
     /* This cannot iterate a list because it is technically possible for that list to change during the loop */
     for (;;)
     {
-        QList<IncomingContactRequest*> requests = contactsManager->incomingRequests->requests();
-        if (requests.isEmpty())
+        IncomingContactRequest *request = 0;
+        foreach (UserIdentity *identity, identityManager->identities())
+        {
+            const QList<IncomingContactRequest*> &reqs = identity->contacts.incomingRequests.requests();
+            if (!reqs.isEmpty())
+            {
+                request = reqs.first();
+                break;
+            }
+        }
+
+        if (!request)
             break;
 
-        ContactRequestDialog *dialog = new ContactRequestDialog(requests.first(), this);
+        ContactRequestDialog *dialog = new ContactRequestDialog(request, this);
 
         /* Allow the user a way out of a loop of requests by cancelling */
         if (dialog->exec() == ContactRequestDialog::Cancelled)

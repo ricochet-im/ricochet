@@ -17,6 +17,7 @@
 
 #include "IdentityManager.h"
 #include "ContactIDValidator.h"
+#include "core/OutgoingContactRequest.h"
 #include <QDebug>
 
 IdentityManager *identityManager = 0;
@@ -34,6 +35,22 @@ IdentityManager::~IdentityManager()
     identityManager = 0;
 }
 
+void IdentityManager::addIdentity(UserIdentity *identity)
+{
+    m_identities.append(identity);
+    highestID = qMax(identity->uniqueID, highestID);
+
+    connect(&identity->contacts, SIGNAL(contactAdded(ContactUser*)), SLOT(onContactAdded(ContactUser*)));
+    connect(&identity->contacts, SIGNAL(outgoingRequestAdded(OutgoingContactRequest*)),
+            SLOT(onOutgoingRequest(OutgoingContactRequest*)));
+    connect(&identity->contacts.incomingRequests, SIGNAL(requestAdded(IncomingContactRequest*)),
+            SLOT(onIncomingRequest(IncomingContactRequest*)));
+    connect(&identity->contacts.incomingRequests, SIGNAL(requestRemoved(IncomingContactRequest*)),
+            SLOT(onIncomingRequestRemoved(IncomingContactRequest*)));
+
+    emit identityAdded(identity);
+}
+
 void IdentityManager::loadFromSettings()
 {
     config->beginGroup(QLatin1String("identity"));
@@ -48,8 +65,7 @@ void IdentityManager::loadFromSettings()
             continue;
 
         UserIdentity *user = new UserIdentity(id, this);
-        m_identities.append(user);
-        highestID = qMax(id, highestID);
+        addIdentity(user);
     }
 
     /* Attempt to convert from old style configs if necessary */
@@ -79,8 +95,7 @@ UserIdentity *IdentityManager::createIdentity(const QString &serviceDirectory, c
     if (!nickname.isEmpty())
         identity->setNickname(nickname);
 
-    m_identities.append(identity);
-    emit identityAdded(identity);
+    addIdentity(identity);
 
     return identity;
 }
@@ -112,4 +127,24 @@ UserIdentity *IdentityManager::lookupNickname(const QString &nickname) const
     }
 
     return 0;
+}
+
+void IdentityManager::onContactAdded(ContactUser *user)
+{
+    emit contactAdded(user, user->identity);
+}
+
+void IdentityManager::onOutgoingRequest(OutgoingContactRequest *request)
+{
+    emit outgoingRequestAdded(request, request->user->identity);
+}
+
+void IdentityManager::onIncomingRequest(IncomingContactRequest *request)
+{
+    emit incomingRequestAdded(request, request->manager->contacts->identity);
+}
+
+void IdentityManager::onIncomingRequestRemoved(IncomingContactRequest *request)
+{
+    emit incomingRequestRemoved(request, request->manager->contacts->identity);
 }
