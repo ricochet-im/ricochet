@@ -1,0 +1,63 @@
+If an adversary can insert themselves into a contact request (such as by
+changing or lying about the Torsion ID out-of-band), they can relay the entire
+request process and many or all future communications, resulting in the ability
+to fully view and modify any communication between those contacts.
+
+Description
+===========
+
+This attack applies only to an adversary who is capable of intercepting the
+communication before a contact request takes place, and of redirecting that
+request to be delivered to a hidden service of their choosing instead. By
+relaying the request itself and any other communication, this adversary can
+fool both the requester and the recipient into communicating while sitting
+between all actual communications.
+
+Because all information necessary to form connections is sent in the contact
+request (or shortly thereafter), and the attacker can convince both peers that
+their ID (i.e. their service) is the other peer's, this attack can be used to
+permanently intercept all communcations with a contact.
+
+Mitigation
+==========
+
+The attack applies only when the attacker can fool a peer into using the wrong
+contact ID (generally exchanged out-of-band). It does not apply to established
+contact relationships, or to situations where the contact ID can be verified
+as coming from the person from whom it was expected.
+
+The attack can be detected by the user, by comparing the actual contact IDs
+shown in Torsion with their peer's actual ID, if that ID is known. For example,
+this could be done by saying an obfuscated version of your own ID in
+conversation, which would not be possible to automatically modify in transit.
+
+Solutions
+=========
+
+The core problem here is binding the contact ID (i.e. a hidden service secret
+key) to the person the user expects to communicate with.
+
+In the case of a contact request where the recipient knows nothing about their
+peer (a cold request), there is little that can be done - no information is
+known about the peer that could be leveraged as proof. In this case, the best
+choice is for the user to communicate their ID in an obfuscated form that would
+not be feasible to replace during transit, and for their peer to compare this
+information to the ID they see. Any automated means of doing this would be
+equally subject to replacement in-transit.
+
+However, once you know the contact, a piece of shared information, either as
+a shared secret or a question/answer, can be used along with the Socialist
+Millionaires' Protocol to prove the relationship between the person with whom
+you are speaking and the contact ID. See 
+http://www.cypherpunks.ca/otr/Protocol-v2-3.1.0.html and
+http://www.cypherpunks.ca/~iang/pubs/impauth.pdf for details on the
+implementation of this protocol in Off-the-Record messaging.
+
+The ideal solution to this problem is:
+    1) Implementing the Socialist Millionaire's Protocol, similar to its use
+       in OTR, and UI surrounding it.
+    2) Encouraging the user to initiate the SMP challenge when they feel that
+       they know enough about their contact to create a challenge question
+    3) Phrasing the UI of this feature to be simple and easily understood by
+       any user.
+    4) Including information on what to do if SMP fails

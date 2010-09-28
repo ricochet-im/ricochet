@@ -41,6 +41,9 @@ High priority:
     * Improve UX of the add contact dialog
         - Consider the situation regarding the nickname & message
         - Don't disable the button
+    * Implement the Socialist Millionaires' Protocol as a solution to relay
+      attacks from enticing the user to send a request to the wrong contact ID.
+      See security/long-term-relay.txt
 Normal priority:
     * Allow multi-line chat messages
         - Increase the maximum length for a message/input accordingly
