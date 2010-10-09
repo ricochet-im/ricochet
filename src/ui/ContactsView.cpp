@@ -43,6 +43,7 @@ ContactsView::ContactsView(QWidget *parent)
     setAcceptDrops(true);
     setIndentation(0);
     setContextMenuPolicy(Qt::DefaultContextMenu);
+    setEditTriggers(QAbstractItemView::NoEditTriggers);
 
     QHeaderView *head = header();
     for (int i = 1; i < head->count(); ++i)
