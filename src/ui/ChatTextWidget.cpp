@@ -31,6 +31,7 @@ ChatTextWidget::ChatTextWidget(QWidget *parent)
     : QTextEdit(parent)
 {
     setReadOnly(true);
+    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     document()->setMaximumBlockCount(config->value("ui/chatBacklog", defaultBacklog).toInt());
 
 #ifdef Q_OS_WIN
