@@ -33,7 +33,8 @@ public:
     enum
     {
         PointerRole = Qt::UserRole,
-        StatusIndicator
+        StatusIndicator,
+        AlertRole /* bool */
     };
 
     explicit ContactsModel(QObject *parent = 0);

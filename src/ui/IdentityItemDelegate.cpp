@@ -47,11 +47,10 @@ void IdentityItemDelegate::paint(QPainter *p, const QStyleOptionViewItem &opt, c
     QRect r = opt.rect.adjusted(0, (index.row() ? topShadow : 0), 0, -bottomShadow);
 
     /* Selection */
-    QPixmap selection = customSelectionRect(r.size(), opt.state);
-
-    if (!selection.isNull())
+    if (opt.state & (QStyle::State_Selected | QStyle::State_MouseOver))
     {
-        p->drawPixmap(r.topLeft(), selection);
+        SelectionState sst = (opt.state & QStyle::State_Selected) ? Selected : MouseOver;
+        p->drawPixmap(r.topLeft(), customSelectionRect(r.size(), (opt.state & QStyle::State_Selected) ? Selected : MouseOver));
     }
     else
     {
@@ -70,14 +69,11 @@ void IdentityItemDelegate::paint(QPainter *p, const QStyleOptionViewItem &opt, c
 
         int shd[4] = { 216, 232, 243, 251 };
 
-        p->setPen(QColor(shd[0], shd[0], shd[0]));
-        p->drawLine(QPoint(left, bottom - 3), QPoint(right, bottom - 3));
-        p->setPen(QColor(shd[1], shd[1], shd[1]));
-        p->drawLine(QPoint(left, bottom - 2), QPoint(right, bottom - 2));
-        p->setPen(QColor(shd[2], shd[2], shd[2]));
-        p->drawLine(QPoint(left, bottom - 1), QPoint(right, bottom - 1));
-        p->setPen(QColor(shd[3], shd[3], shd[3]));
-        p->drawLine(QPoint(left, bottom), QPoint(right, bottom));
+        for (int i = 0; i < 4; ++i)
+        {
+            p->setPen(QColor(shd[i], shd[i], shd[i]));
+            p->drawLine(QPoint(left, bottom - (3-i)), QPoint(right, bottom - (3-i)));
+        }
 
         if (index.row() != 0)
         {

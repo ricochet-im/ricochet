@@ -51,7 +51,8 @@ Normal priority:
         - Expand the text input to show the entire message
     * URL handling in chat
         - Allow the user to choose from various options, including clipboard.
-          Allow this to be made a permanent preference; dialog otherwise.
+        - Allow this to be made a permanent preference; dialog otherwise.
+        - Provide tor:// URLs as an option, for torbutton >=1.3.0 users
     * Explicitly handle the time when an identity is being created
         - Display a message on the info page
         - Prevent adding contacts, or prevent the requests from starting

@@ -65,6 +65,7 @@ public:
     QPixmap avatar(AvatarSize size);
 
     QString statusLine() const;
+    bool statusIsError() const;
 
     QVariant readSetting(const QString &key, const QVariant &defaultValue = QVariant()) const;
     QVariant readSetting(const char *key, const QVariant &defaultValue = QVariant()) const

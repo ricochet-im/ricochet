@@ -16,6 +16,7 @@
  */
 
 #include "ContactItemDelegate.h"
+#include "ContactsViewDelegate.h"
 #include "ContactsView.h"
 #include "ContactsModel.h"
 #include "utils/PaintUtil.h"
@@ -27,10 +28,10 @@
 #include <QLineEdit>
 #include <QFontMetrics>
 
-ContactItemDelegate::ContactItemDelegate(ContactsView *view)
-    : QStyledItemDelegate(view), contactsView(view)
+ContactItemDelegate::ContactItemDelegate(ContactsViewDelegate *cvd)
+    : QStyledItemDelegate(cvd), parentDelegate(cvd)
 {
-    Q_ASSERT(view);
+    Q_ASSERT(cvd);
 }
 
 QSize ContactItemDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -73,7 +74,26 @@ void ContactItemDelegate::paint(QPainter *p, const QStyleOptionViewItem &opt,
 
     /* Selection (behind the avatar) */
     ropt.rect.adjust(0, 0, 0, -3);
-    p->drawPixmap(ropt.rect.topLeft(), customSelectionRect(ropt.rect.size(), ropt.state));
+
+    SelectionState sst = NoSelectionState;
+    if (opt.state & QStyle::State_Selected)
+        sst = Selected;
+    else if (opt.state & QStyle::State_MouseOver)
+        sst = MouseOver;
+    else if (index.data(ContactsModel::AlertRole).toBool())
+    {
+        sst = Alert;
+        p->setOpacity(parentDelegate->alertOpacity());
+        parentDelegate->startAlertAnimation();
+    }
+
+    if (sst != NoSelectionState)
+    {
+        p->drawPixmap(ropt.rect.topLeft(), customSelectionRect(ropt.rect.size(), sst));
+
+        if (sst == Alert)
+            p->setOpacity(1);
+    }
 
     /* Avatar */
     QPixmap avatar = index.data(Qt::DecorationRole).value<QPixmap>();
@@ -97,8 +117,8 @@ void ContactItemDelegate::paint(QPainter *p, const QStyleOptionViewItem &opt,
 
     if ((opt.state & QStyle::State_Selected) || (opt.state & QStyle::State_MouseOver))
     {
-        ContactsView::Page activePage = contactsView->activePage();
-        bool isActive = (contactsView->currentIndex() == index);
+        ContactsView::Page activePage = parentDelegate->view->activePage();
+        bool isActive = (parentDelegate->view->currentIndex() == index);
 
         /* Chat page */
         QRect iconRect(r.right()-16+1, r.top()-1, 16, 16);
@@ -143,7 +163,8 @@ void ContactItemDelegate::paint(QPainter *p, const QStyleOptionViewItem &opt,
     p->drawText(r.topLeft() + QPoint(0, nickRect.height()+1), nickname);
 
     /* Draw info text */
-    QString infoText = index.model()->index(index.row(), 2, index.parent()).data(Qt::DisplayRole).toString();
+    QModelIndex infoIndex(index.model()->index(index.row(), 2, index.parent()));
+    QString infoText = infoIndex.data(Qt::DisplayRole).toString();
 
     QFont infoFont = QFont(QLatin1String("Arial"), 8);
     infoFont.setStyleHint(QFont::SansSerif);
@@ -151,7 +172,7 @@ void ContactItemDelegate::paint(QPainter *p, const QStyleOptionViewItem &opt,
 
     infoText = QFontMetrics(infoFont).elidedText(infoText, Qt::ElideRight, textWidth);
 
-    p->setPen(Qt::gray);
+    p->setPen(infoIndex.data(Qt::ForegroundRole).value<QColor>());
     p->drawText(r.bottomLeft() - QPoint(0, 1), infoText);
 
     p->restore();

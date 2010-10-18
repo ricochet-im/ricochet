@@ -21,12 +21,14 @@
 #include "ContactsView.h"
 #include <QStyledItemDelegate>
 
+class ContactsViewDelegate;
+
 class ContactItemDelegate : public QStyledItemDelegate
 {
     Q_OBJECT
 
 public:
-    explicit ContactItemDelegate(ContactsView *view);
+    explicit ContactItemDelegate(ContactsViewDelegate *parent);
 
     bool pageHitTest(const QSize &size, const QPoint &point, ContactsView::Page &hitPage) const;
 
@@ -42,7 +44,7 @@ private slots:
     void editingFinished();
 
 protected:
-    ContactsView *contactsView;
+    ContactsViewDelegate *parentDelegate;
 };
 
 #endif // CONTACTITEMDELEGATE_H

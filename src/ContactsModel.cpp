@@ -19,6 +19,7 @@
 #include "core/IdentityManager.h"
 #include "core/ContactsManager.h"
 #include "core/NicknameValidator.h"
+#include "ui/ChatWidget.h"
 #include <QImage>
 #include <QColor>
 
@@ -375,6 +376,11 @@ QVariant ContactsModel::data(const QModelIndex &index, int role) const
             else
                 return QPixmap(QLatin1String(":/icons/status-offline.png"));
         }
+        else if (role == AlertRole)
+        {
+            ChatWidget *chat = ChatWidget::widgetForUser(user, false);
+            return (chat && chat->unreadMessages());
+        }
 
         switch (index.column())
         {
@@ -391,6 +397,8 @@ QVariant ContactsModel::data(const QModelIndex &index, int role) const
         case 2:
             if (role == Qt::DisplayRole)
                 return user->statusLine();
+            else if (role == Qt::ForegroundRole)
+                return user->statusIsError() ? QColor(199, 22, 22) : QColor(Qt::gray);
             break;
         }
     }

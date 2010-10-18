@@ -16,25 +16,27 @@
  */
 
 #include "main.h"
+#include "PaintUtil.h"
 #include <QPainter>
 #include <QPixmap>
 #include <QLinearGradient>
 #include <QPixmapCache>
 #include <QStyle>
 
-QPixmap customSelectionRect(const QSize &size, QStyle::State state)
+QPixmap customSelectionRect(const QSize &size, SelectionState state)
 {
     QString cacheKey;
     cacheKey.reserve(32);
     cacheKey += QLatin1String("cselr-");
     cacheKey += QString::number(size.width()) + QLatin1Char('x') + QString::number(size.height());
 
-    if (state & QStyle::State_Selected)
-        cacheKey += QLatin1String("-s");
-    else if (state & QStyle::State_MouseOver)
-        cacheKey += QLatin1String("-h");
-    else
-        return QPixmap();
+    switch (state)
+    {
+    case Selected: cacheKey += QLatin1String("-s"); break;
+    case MouseOver: cacheKey += QLatin1String("-h"); break;
+    case Alert: cacheKey += QLatin1String("-a"); break;
+    default: return QPixmap();
+    }
 
     QPixmap re;
     if (QPixmapCache::find(cacheKey, re))
@@ -48,19 +50,15 @@ QPixmap customSelectionRect(const QSize &size, QStyle::State state)
     QLinearGradient gradient(0, 0, 0, 1);
     gradient.setCoordinateMode(QGradient::ObjectBoundingMode);
 
-    if (state & QStyle::State_Selected)
-    {
-        gradient.setColorAt(0, QColor(242, 248, 255));
-        gradient.setColorAt(1, QColor(211, 232, 255));
-        p.setPen(QPen(QColor(114, 180, 211)));
-    }
-    else if (state & QStyle::State_MouseOver)
-    {
-        gradient.setColorAt(0, QColor(250, 250, 255));
-        gradient.setColorAt(1, QColor(235, 244, 255));
-        p.setPen(QPen(QColor(160, 201, 220)));
-    }
+    QColor colors[][3] = {
+        { QColor(242, 248, 255), QColor(211, 232, 255), QColor(114, 180, 211) },
+        { QColor(250, 250, 255), QColor(235, 244, 255), QColor(160, 201, 220) },
+        { QColor(255, 240, 214), QColor(255, 221, 140), QColor(255, 186, 0) }
+    };
 
+    gradient.setColorAt(0, colors[state][0]);
+    gradient.setColorAt(1, colors[state][1]);
+    p.setPen(QPen(colors[state][2]));
     p.setBrush(QBrush(gradient));
 
     p.drawRoundedRect(QRect(1, 1, size.width() - 2, size.height() - 2), 3, 3);

@@ -17,9 +17,11 @@
 
 #include "ContactsViewDelegate.h"
 #include "ContactsModel.h"
+#include <QPropertyAnimation>
+#include <QSequentialAnimationGroup>
 
-ContactsViewDelegate::ContactsViewDelegate(ContactsView *view)
-    : QAbstractItemDelegate(view), contactDelegate(view)
+ContactsViewDelegate::ContactsViewDelegate(ContactsView *v)
+    : QAbstractItemDelegate(v), view(v), contactDelegate(this), m_alertAnimation(0), m_alertOpacity(0)
 {
     contactDelegate.setParent(0);
 
@@ -90,4 +92,64 @@ void ContactsViewDelegate::setEditorData(QWidget *editor, const QModelIndex &ind
 void ContactsViewDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const
 {
     delegateForIndex(index)->setModelData(editor, model, index);
+}
+
+void ContactsViewDelegate::startAlertAnimation()
+{
+    if (!m_alertAnimation)
+    {
+        QSequentialAnimationGroup *ag = new QSequentialAnimationGroup(this);
+        m_alertAnimation = ag;
+
+        QPropertyAnimation *aIn = new QPropertyAnimation(this, "alertOpacity");
+        aIn->setEndValue(qreal(1));
+        aIn->setEasingCurve(QEasingCurve::OutQuad);
+        aIn->setDuration(750);
+
+        QPropertyAnimation *aOut = new QPropertyAnimation(this, "alertOpacity");
+        aOut->setEndValue(qreal(0.2));
+        aOut->setEasingCurve(QEasingCurve::InQuad);
+        aOut->setDuration(750);
+
+        ag->addAnimation(aIn);
+        ag->addPause(150);
+        ag->addAnimation(aOut);
+        ag->setLoopCount(-1);
+        ag->start();
+    }
+}
+
+static inline bool updateAlerts(QAbstractItemView *view, QAbstractItemModel *model, const QModelIndex &parent)
+{
+    bool re = false;
+    for (int r = 0, rc = model->rowCount(parent); r < rc; ++r)
+    {
+        /* Assuming that only column 0 needs to be updated */
+        QModelIndex index = model->index(r, 0, parent);
+        if (index.data(ContactsModel::AlertRole).toBool())
+        {
+            view->update(index);
+            re = true;
+        }
+
+        if (model->hasChildren(index) && updateAlerts(view, model, index))
+            re = true;
+    }
+
+    return re;
+}
+
+void ContactsViewDelegate::setAlertOpacity(qreal alertOpacity)
+{
+    if (alertOpacity == m_alertOpacity)
+        return;
+
+    m_alertOpacity = alertOpacity;
+
+    if (!updateAlerts(view, view->model(), view->rootIndex()))
+    {
+        m_alertAnimation->stop();
+        m_alertAnimation->deleteLater();
+        m_alertAnimation = 0;
+    }
 }

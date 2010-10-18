@@ -128,6 +128,24 @@ QString ContactUser::statusLine() const
     return QString();
 }
 
+bool ContactUser::statusIsError() const
+{
+    if (isContactRequest())
+    {
+        OutgoingContactRequest *request = OutgoingContactRequest::requestForUser(const_cast<ContactUser*>(this));
+        switch (request->status())
+        {
+        case OutgoingContactRequest::Error:
+        case OutgoingContactRequest::Rejected:
+            return true;
+        default:
+            break;
+        }
+    }
+
+    return false;
+}
+
 void ContactUser::updateStatusLine()
 {
     emit statusLineChanged();

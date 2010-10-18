@@ -23,7 +23,15 @@ class QSize;
 
 #include <QStyle>
 
-QPixmap customSelectionRect(const QSize &size, QStyle::State state);
+enum SelectionState
+{
+    NoSelectionState = -1,
+    Selected,
+    MouseOver,
+    Alert
+};
+
+QPixmap customSelectionRect(const QSize &size, SelectionState state);
 QPixmap shadowedAvatar(const QPixmap &avatar);
 
 #endif // PAINTUTIL_H

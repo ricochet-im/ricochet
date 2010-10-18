@@ -23,12 +23,18 @@
 #include "IdentityItemDelegate.h"
 #include "ContactsView.h"
 
+class QAbstractAnimation;
+
 class ContactsViewDelegate : public QAbstractItemDelegate
 {
     Q_OBJECT
     Q_DISABLE_COPY(ContactsViewDelegate)
 
+    Q_PROPERTY(qreal alertOpacity READ alertOpacity WRITE setAlertOpacity)
+
 public:
+    ContactsView * const view;
+
     explicit ContactsViewDelegate(ContactsView *view);
 
     bool indexIsContact(const QModelIndex &index) const;
@@ -43,9 +49,17 @@ public:
     virtual void setEditorData(QWidget *editor, const QModelIndex &index) const;
     virtual void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const;
 
+    qreal alertOpacity() const { return m_alertOpacity; }
+    void setAlertOpacity(qreal alertOpacity);
+
+    void startAlertAnimation();
+
 private:
     ContactItemDelegate contactDelegate;
     IdentityItemDelegate identityDelegate;
+
+    QAbstractAnimation *m_alertAnimation;
+    qreal m_alertOpacity;
 
     QAbstractItemDelegate *delegateForIndex(const QModelIndex &index) const;
 };
