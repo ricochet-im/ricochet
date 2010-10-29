@@ -337,3 +337,13 @@ void ContactsView::contextMenuEvent(QContextMenuEvent *event)
         }
     }
 }
+
+void ContactsView::keyPressEvent(QKeyEvent *event)
+{
+    /* We can lose focus in response to a key event, particularly because ChatWidget will attempt
+     * to steal it. This interrupts the user, and should be prevented. */
+    bool hadFocus = hasFocus();
+    QTreeView::keyPressEvent(event);
+    if (hadFocus && !hasFocus())
+        setFocus(Qt::OtherFocusReason);
+}

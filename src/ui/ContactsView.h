@@ -64,6 +64,8 @@ protected:
 
     virtual void rowsAboutToBeRemoved(const QModelIndex &parent, int start, int end);
 
+    virtual void keyPressEvent(QKeyEvent *event);
+
 private slots:
     void currentChanged(const QModelIndex &current);
 

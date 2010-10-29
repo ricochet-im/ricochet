@@ -33,6 +33,7 @@ ChatTextWidget::ChatTextWidget(QWidget *parent)
 {
     setReadOnly(true);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    setFocusPolicy(static_cast<Qt::FocusPolicy>(focusPolicy() & ~Qt::TabFocus));
     document()->setMaximumBlockCount(config->value("ui/chatBacklog", defaultBacklog).toInt());
 
 #ifdef Q_OS_WIN
