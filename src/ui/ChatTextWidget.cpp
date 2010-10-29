@@ -24,6 +24,7 @@
 #include <QFontDialog>
 #include <QApplication>
 #include <QWindowsVistaStyle>
+#include <QShortcut>
 
 static const int defaultBacklog = 125;
 
@@ -47,6 +48,8 @@ ChatTextWidget::ChatTextWidget(QWidget *parent)
     connect(verticalScrollBar(), SIGNAL(rangeChanged(int,int)), SLOT(scrollToBottom()));
 
     config->addTrackingProperty(QLatin1String("ui/chatFont"), this, "font");
+
+    new QShortcut(QKeySequence(Qt::Key_F10), this, SLOT(clear()));
 }
 
 void ChatTextWidget::scrollToBottom()
@@ -56,7 +59,8 @@ void ChatTextWidget::scrollToBottom()
 
 void ChatTextWidget::contextMenuEvent(QContextMenuEvent *e)
 {
-    QMenu *menu = createStandardContextMenu();
+    QMenu *menu = createStandardContextMenu(e->pos());
+    menu->addAction(tr("Clear"), this, SLOT(clear()), QKeySequence(Qt::Key_F10));
     menu->addSeparator();
     menu->addAction(tr("Change Font"), this, SLOT(showFontDialog()));
 
