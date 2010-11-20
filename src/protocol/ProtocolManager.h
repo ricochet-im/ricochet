@@ -53,7 +53,7 @@ public:
 
     ProtocolSocket *primary() { return pPrimary; }
 
-    void addSocket(QTcpSocket *socket, quint8 purpose);
+    void addSocket(QTcpSocket *socket, ProtocolSocket::Purpose purpose);
 
 public slots:
     void connectPrimary();

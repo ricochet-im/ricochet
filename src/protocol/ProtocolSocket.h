@@ -32,6 +32,16 @@ class ProtocolSocket : public QObject
     Q_DISABLE_COPY(ProtocolSocket)
 
 public:
+    enum Purpose
+    {
+        PurposePrimary = 0x00,
+        PurposeAuxGeneral = 0x01,
+        PurposeContactReq = 0x80,
+
+        PurposeAuxMin = 0x01,
+        PurposeAuxMax = 0x20
+    };
+
     ProtocolManager * const manager;
     QTcpSocket * const socket;
 

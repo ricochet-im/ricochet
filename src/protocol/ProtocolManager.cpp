@@ -143,13 +143,13 @@ void ProtocolManager::spawnReconnect()
     QTimer::singleShot(delay * 1000, this, SLOT(connectPrimary()));
 }
 
-void ProtocolManager::addSocket(QTcpSocket *socket, quint8 purpose)
+void ProtocolManager::addSocket(QTcpSocket *socket, ProtocolSocket::Purpose purpose)
 {
     Q_ASSERT(socket->state() == QAbstractSocket::ConnectedState);
 
     ProtocolSocket *psocket = new ProtocolSocket(socket, this);
 
-    if (purpose == 0x00)
+    if (purpose == ProtocolSocket::PurposePrimary)
     {
         /* Remote primary connection. */
         if (remotePrimary)

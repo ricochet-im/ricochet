@@ -106,7 +106,7 @@ void ProtocolSocket::sendAuth()
 {
     Q_ASSERT(!authPending && !authFinished);
 
-    QByteArray intro = IncomingSocket::introData(0x00);
+    QByteArray intro = IncomingSocket::introData(ProtocolSocket::PurposePrimary);
 
     QByteArray secret = manager->secret();
     Q_ASSERT(secret.size() == 16);

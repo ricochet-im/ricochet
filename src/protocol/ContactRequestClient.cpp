@@ -98,7 +98,7 @@ void ContactRequestClient::spawnReconnect()
 
 void ContactRequestClient::socketConnected()
 {
-    socket->write(IncomingSocket::introData(0x80));
+    socket->write(IncomingSocket::introData(ProtocolSocket::PurposePrimary));
     state = WaitConnect;
 
     qDebug() << "Contact request for" << user->uniqueID << "connected";
@@ -252,7 +252,7 @@ bool ContactRequestClient::handleResponse()
         emit accepted();
 
         socket->disconnect(this);
-        user->conn()->addSocket(socket, 0x00);
+        user->conn()->addSocket(socket, ProtocolSocket::PurposePrimary);
         Q_ASSERT(socket->parent() != this);
         socket = 0;
 

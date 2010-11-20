@@ -90,7 +90,7 @@ void ContactRequestServer::sendAccept(ContactUser *user)
     qDebug() << "Contact request accepted with an active connection; sending accept and morphing to primary";
 
     socket->disconnect(this);
-    user->conn()->addSocket(socket, 0x00);
+    user->conn()->addSocket(socket, ProtocolSocket::PurposePrimary);
     Q_ASSERT(socket->parent() != this);
 
     deleteLater();

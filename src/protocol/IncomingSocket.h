@@ -22,6 +22,7 @@
 #include <QHostAddress>
 #include <QList>
 #include <QBasicTimer>
+#include "ProtocolSocket.h"
 
 class QTcpServer;
 class QTcpSocket;
@@ -44,7 +45,7 @@ public:
     quint16 serverPort() const;
 
     /* The intro based on supported protocols; anything after the purpose is left to the caller. */
-    static QByteArray introData(uchar purpose);
+    static QByteArray introData(ProtocolSocket::Purpose purpose);
 
 private slots:
     void incomingConnection();

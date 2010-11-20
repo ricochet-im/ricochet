@@ -201,7 +201,7 @@ void IncomingSocket::handleIntro(QTcpSocket *socket, uchar version)
      * 0x00 has special meaning as a primary connection, while all others are
      * treated as generic unidirectional auxiliary connections. */
 
-    if (purpose < 0x20)
+    if (purpose <= ProtocolSocket::PurposeAuxMax)
     {
         /* Wait until the auth data is available */
         quint64 available = socket->bytesAvailable();
@@ -238,10 +238,10 @@ void IncomingSocket::handleIntro(QTcpSocket *socket, uchar version)
         socket->disconnect(this);
 
         /* The protocolmanager also takes ownership */
-        user->conn()->addSocket(socket, purpose);
+        user->conn()->addSocket(socket, static_cast<ProtocolSocket::Purpose>(purpose));
         Q_ASSERT(socket->parent() != this);
     }
-    else if (purpose == 0x80)
+    else if (purpose == ProtocolSocket::PurposeContactReq)
     {
         /* Incoming contact request connection */
 
@@ -265,7 +265,7 @@ void IncomingSocket::handleIntro(QTcpSocket *socket, uchar version)
     }
 }
 
-QByteArray IncomingSocket::introData(uchar purpose)
+QByteArray IncomingSocket::introData(ProtocolSocket::Purpose purpose)
 {
     QByteArray re;
     re.resize(5);
