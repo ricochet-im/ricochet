@@ -19,6 +19,9 @@ Critical priority:
     * Improve alerts for new messages or other events (esp. contact req)
         - Better visibility, possibly including animation, in the contacts list
     * Review OutgoingContactRequest; it may be a memory leak
+    * Drop connections when there is reason to believe they've died, in a
+      shorter time than Tor does. Especially with regards to chat messages that
+      have no acknowledgement.
 High priority:
     * System tray support, including notifications
         - Requires an icon of some kind
