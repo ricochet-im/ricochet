@@ -22,6 +22,7 @@
 #include "core/UserIdentity.h"
 #include "protocol/ChatMessageCommand.h"
 #include "ui/MainWindow.h"
+#include "ChatTextInput.h"
 #include <QBoxLayout>
 #include <QLineEdit>
 #include <QDateTime>
@@ -40,8 +41,8 @@
 
 QHash<ContactUser*,ChatWidget*> ChatWidget::userMap;
 
-static const int maxMessageChars = 512;
-static const int maxInputLines = 15;
+static const int maxMessageChars = 4000;
+static const int maxInputLines = 50;
 
 ChatWidget *ChatWidget::widgetForUser(ContactUser *u, bool create)
 {
@@ -86,6 +87,8 @@ ChatWidget::ChatWidget(ContactUser *u)
 
     if (!user->isConnected())
         showOfflineNotice();
+
+    addChatMessage(0, 0, QDateTime::currentDateTime(), QString(5000, QLatin1Char('x')));
 }
 
 ChatWidget::~ChatWidget()
@@ -97,21 +100,21 @@ ChatWidget::~ChatWidget()
 
 void ChatWidget::createTextInput()
 {
-    textInput = new QLineEdit;
+    textInput = new ChatTextInput;
     textInput->setFont(textArea->font());
     textInput->setMaxLength(maxMessageChars);
+    textInput->setMaxLines(maxInputLines);
+    textInput->setMaximumHeight(250);
 
     config->addTrackingProperty(QLatin1String("ui/chatFont"), textInput, "font");
 
-    connect(textInput, SIGNAL(returnPressed()), this, SLOT(sendInputMessage()));
+    connect(textInput, SIGNAL(textSubmitted(QString)), this, SLOT(sendMessage(QString)));
 }
 
-void ChatWidget::sendInputMessage()
+void ChatWidget::sendMessage(const QString &text)
 {
-    QString text = textInput->text();
     if (text.isEmpty())
         return;
-    textInput->clear();
 
     QDateTime when = QDateTime::currentDateTime();
 

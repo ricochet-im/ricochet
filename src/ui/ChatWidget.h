@@ -25,7 +25,7 @@
 class QDateTime;
 class ContactUser;
 class ChatTextWidget;
-class QLineEdit;
+class ChatTextInput;
 
 class ChatWidget : public QWidget
 {
@@ -42,6 +42,7 @@ public:
     int unreadMessages() const { return pUnread; }
 
 public slots:
+    void sendMessage(const QString &text);
     void clearUnreadMessages();
 
 signals:
@@ -49,7 +50,6 @@ signals:
     void unreadMessagesChanged(int unread);
 
 private slots:
-    void sendInputMessage();
     void messageReply();
 
     void showOfflineNotice();
@@ -65,7 +65,7 @@ private:
     static QHash<ContactUser*,ChatWidget*> userMap;
 
     ChatTextWidget *textArea;
-    QLineEdit *textInput;
+    ChatTextInput *textInput;
     QWidget *offlineNotice;
 
     typedef QVector<QPair<QDateTime,QString> > OfflineMessageList;
