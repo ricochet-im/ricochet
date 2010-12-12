@@ -118,31 +118,19 @@ void ChatWidget::sendMessage(const QString &text)
 
     QDateTime when = QDateTime::currentDateTime();
 
-    QStringList messages = text.split(QLatin1Char('\n'), QString::SkipEmptyParts);
-    if (messages.size() > maxInputLines)
-        messages.erase(messages.begin() + maxInputLines, messages.end());
-
-    foreach (QString message, messages)
+    if (user->isConnected())
     {
-        message = message.trimmed();
-        if (message.isEmpty())
-            continue;
-        message.truncate(maxMessageChars);
+        ChatMessageCommand *command = new ChatMessageCommand;
+        connect(command, SIGNAL(commandFinished()), this, SLOT(messageReply()));
+        command->send(user->conn(), when, text, lastReceivedID);
 
-        if (user->isConnected())
-        {
-            ChatMessageCommand *command = new ChatMessageCommand;
-            connect(command, SIGNAL(commandFinished()), this, SLOT(messageReply()));
-            command->send(user->conn(), when, message, lastReceivedID);
-
-            addChatMessage(NULL, command->identifier(), when, message);
-        }
-        else
-        {
-            int n = addOfflineMessage(when, message);
-            addChatMessage(NULL, (quint16)-1, when, message);
-            changeBlockIdentifier(makeBlockIdentifier(LocalUserMessage, (quint16)-1), makeBlockIdentifier(OfflineMessage, n));
-        }
+        addChatMessage(NULL, command->identifier(), when, text);
+    }
+    else
+    {
+        int n = addOfflineMessage(when, text);
+        addChatMessage(NULL, (quint16)-1, when, text);
+        changeBlockIdentifier(makeBlockIdentifier(LocalUserMessage, (quint16)-1), makeBlockIdentifier(OfflineMessage, n));
     }
 }
 
