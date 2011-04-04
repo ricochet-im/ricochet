@@ -98,7 +98,7 @@ void ContactRequestClient::spawnReconnect()
 
 void ContactRequestClient::socketConnected()
 {
-    socket->write(IncomingSocket::introData(ProtocolSocket::PurposePrimary));
+    socket->write(IncomingSocket::introData(ProtocolSocket::PurposeContactReq));
     state = WaitConnect;
 
     qDebug() << "Contact request for" << user->uniqueID << "connected";
