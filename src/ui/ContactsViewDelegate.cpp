@@ -64,6 +64,20 @@ QSize ContactsViewDelegate::sizeHint(const QStyleOptionViewItem &option, const Q
 void ContactsViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option,
                                  const QModelIndex &index) const
 {
+#ifdef Q_OS_MAC
+    if (option.state & QStyle::State_MouseOver)
+    {
+        /* Work around a Qt bug that leaves the MouseOver state set after the mouse has
+        * left the widget (as of Qt 4.7.2). See ContactsView::leaveEvent. */
+        const QWidget *widget = QStyleOptionViewItemV4(option).widget;
+        if (widget && !QRect(widget->mapToGlobal(QPoint(0,0)),widget->size())
+                       .contains(QCursor::pos()))
+        {
+            const_cast<QStyleOptionViewItem&>(option).state &= ~QStyle::State_MouseOver;
+        }
+    }
+#endif
+
     delegateForIndex(index)->paint(painter, option, index);
 }
 

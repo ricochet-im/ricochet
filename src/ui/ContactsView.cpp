@@ -284,6 +284,17 @@ void ContactsView::mouseMoveEvent(QMouseEvent *event)
     QTreeView::mouseMoveEvent(event);
 }
 
+void ContactsView::leaveEvent(QEvent *event)
+{
+#ifdef Q_OS_MAC
+    /* Work around a Qt bug that leaves the MouseOver state set after the mouse
+     * has left the widget (as of Qt 4.7.2). See ContactsViewDelegate::paint. */
+    update();
+#endif
+
+    QTreeView::leaveEvent(event);
+}
+
 void ContactsView::rowsAboutToBeRemoved(const QModelIndex &parent, int start, int end)
 {
     QModelIndex current = currentIndex();
