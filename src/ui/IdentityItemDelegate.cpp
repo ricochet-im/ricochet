@@ -33,7 +33,7 @@ static const int topShadow = 3, bottomShadow = 4;
 QSize IdentityItemDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     QFont font = option.font;
-    font.setPointSize(12);
+    font.setPixelSize(16);
     QFontMetrics fm(font);
 
     return QSize(160, fm.height() + (2*yMargin) + bottomShadow + (index.row() ? topShadow : 0));
@@ -94,7 +94,7 @@ void IdentityItemDelegate::paint(QPainter *p, const QStyleOptionViewItem &opt, c
 
     /* Name */
     QFont nameFont = opt.font;
-    nameFont.setPointSize(12);
+    nameFont.setPixelSize(16);
     p->setFont(nameFont);
     p->setPen(QColor(0x00, 0x66, 0xaa));
 

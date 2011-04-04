@@ -153,7 +153,7 @@ void ContactItemDelegate::paint(QPainter *p, const QStyleOptionViewItem &opt,
     QString nickname = index.data().toString();
 
     QFont nickFont = p->font();
-    nickFont.setPointSize(10);
+    nickFont.setPixelSize(12);
     p->setFont(nickFont);
 
     /* Caution: horrifically slow */
@@ -166,7 +166,8 @@ void ContactItemDelegate::paint(QPainter *p, const QStyleOptionViewItem &opt,
     QModelIndex infoIndex(index.model()->index(index.row(), 2, index.parent()));
     QString infoText = infoIndex.data(Qt::DisplayRole).toString();
 
-    QFont infoFont = QFont(QLatin1String("Arial"), 8);
+    QFont infoFont = QFont(QLatin1String("Arial"));
+    infoFont.setPixelSize(10);
     infoFont.setStyleHint(QFont::SansSerif);
     p->setFont(infoFont);
 
@@ -190,7 +191,7 @@ QWidget *ContactItemDelegate::createEditor(QWidget *parent, const QStyleOptionVi
     container->setFocusProxy(widget);
 
     QFont nickFont = widget->font();
-    nickFont.setPointSize(10);
+    nickFont.setPixelSize(12);
     widget->setFont(nickFont);
     widget->setFrame(false);
     widget->setTextMargins(0, 0, 0, 0);

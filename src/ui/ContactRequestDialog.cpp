@@ -47,7 +47,7 @@ ContactRequestDialog::ContactRequestDialog(IncomingContactRequest *r, QWidget *p
     QTextEdit *message = new QTextEdit;
     message->setReadOnly(true);
     QFont f;
-    f.setPointSize(9);
+    f.setPixelSize(12);
     f.setStyleHint(QFont::SansSerif);
     message->setFont(f);
 

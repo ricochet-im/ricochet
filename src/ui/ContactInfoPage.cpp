@@ -120,7 +120,7 @@ QLayout *ContactInfoPage::createInfo()
     nickname->setValidator(validator);
 
     QFont font = nickname->font();
-    font.setPointSize(11);
+    font.setPixelSize(15);
     nickname->setFont(font);
 
     QPalette p = nickname->palette();
@@ -149,7 +149,11 @@ QLayout *ContactInfoPage::createInfo()
     QLineEdit *id = new ContactIDWidget;
     id->setText(user->contactID());
     id->setFrame(false);
+#ifdef Q_OS_MAC
+    id->setTextMargins(0, -2, 0, 0);
+#else
     id->setTextMargins(-2, 0, 0, 0);
+#endif
 
     QPalette idPalette = id->palette();
     idPalette.setBrush(QPalette::Base, idPalette.window());
@@ -248,7 +252,7 @@ QLayout *ContactInfoPage::createRequestInfo()
     textLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
 
     QFont f = textLabel->font();
-    f.setPointSize(10);
+    f.setPointSize(qRound(f.pointSize()*1.2));
     textLabel->setFont(f);
 
     reqLayout->addWidget(textLabel);
@@ -301,7 +305,7 @@ void ContactInfoPage::createNotes(QBoxLayout *layout)
     notesHeader->setContentsMargins(1, 0, 0, 0);
 
     QFont font = notesHeader->font();
-    font.setPointSize(8);
+    font.setPixelSize(12);
     font.setBold(true);
     notesHeader->setFont(font);
 
@@ -317,7 +321,7 @@ void ContactInfoPage::createNotes(QBoxLayout *layout)
     notesEdit->insertPlainText(user->notesText());
     QFont notesFont;
     notesFont.setStyleHint(QFont::SansSerif);
-    notesFont.setPointSize(9);
+    notesFont.setPixelSize(12);
     notesEdit->setFont(notesFont);
     layout->addWidget(notesEdit, 1);
 }

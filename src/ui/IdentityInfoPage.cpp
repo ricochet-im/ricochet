@@ -80,7 +80,7 @@ QLayout *IdentityInfoPage::createInfo()
     m_nickname->setValidator(validator);
 
     QFont font = m_nickname->font();
-    font.setPointSize(11);
+    font.setPixelSize(14);
     m_nickname->setFont(font);
 
     QPalette p = m_nickname->palette();

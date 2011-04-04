@@ -27,8 +27,8 @@ ContactIDWidget::ContactIDWidget(QWidget *parent)
 
 QFont ContactIDWidget::idFont()
 {
-    QFont font = QFont(QLatin1String("Consolas, \"Courier New\""), 9);
-    font.setStyleHint(QFont::TypeWriter);
+    QFont font = QFont(QLatin1String("Consolas, Menlo, \"Courier New\""));
+    font.setPointSize(QFont().pointSize()); font.setStyleHint(QFont::TypeWriter);
     return font;
 }
 
