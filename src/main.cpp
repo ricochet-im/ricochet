@@ -91,11 +91,30 @@ static QString userConfigPath()
 #endif
 }
 
+#ifdef Q_OS_MAC
+static QString appBundlePath()
+{
+    QString path = QApplication::applicationDirPath();
+    int p = path.lastIndexOf(QLatin1String(".app/"));
+    if (p >= 0)
+    {
+        p = path.lastIndexOf(QLatin1Char('/'), p);
+        path = path.left(p+1);
+    }
+
+    return path;
+}
+#endif
+
 static void initSettings()
 {
     /* The default QSettings logic is not desirable here. Instead, we do the following:
-     * If the application directory is writable, it is preferred. Otherwise, a
-     * platform-specific per-user config location is used, generally matching the
+     * If the application directory is writable, it is preferred, except on OS X.
+     *
+     * On OS X, if the directory that contains the application bundle contains a directory
+     * named, case-sensitively, 'Torsion.config', that folder will be used.
+     *
+     * Otherwise, a platform-specific per-user config location is used, generally matching the
      * QSettings user locations. To avoid odd behavior when a per-user config already
      * exists, the application directory is *always* used if possible. The file is always
      * named Torsion.ini. If a filename is given as a parameter, that will always be used
@@ -111,6 +130,7 @@ static void initSettings()
     }
     else
     {
+#ifndef Q_OS_MAC
         QString appDirFile = qApp->applicationDirPath() + QLatin1String("/Torsion.ini");
         if (!QFile::exists(appDirFile))
         {
@@ -121,6 +141,14 @@ static void initSettings()
         }
         else
             configFile = appDirFile;
+#else
+        QString portableLocation = appBundlePath() + QLatin1String("Torsion.config");
+        QFileInfo fi(portableLocation);
+        if (fi.exists() && fi.isDir())
+            configFile = portableLocation + QLatin1String("/Torsion.ini");
+        else
+            configFile = userConfigPath() + QLatin1String("/Torsion.ini");
+#endif
     }
 
     configLock.setPath(configFile);
