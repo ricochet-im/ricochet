@@ -21,6 +21,7 @@
 #include "ContactsManager.h"
 #include "OutgoingContactRequest.h"
 #include "protocol/ContactRequestServer.h"
+#include <QDebug>
 
 IncomingRequestManager::IncomingRequestManager(ContactsManager *c)
     : QObject(c), contacts(c)

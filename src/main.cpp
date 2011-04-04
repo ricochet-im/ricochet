@@ -31,6 +31,7 @@
 #include <QTranslator>
 #include <QMessageBox>
 #include <QDesktopServices>
+#include <QLocale>
 #include <openssl/crypto.h>
 
 AppSettings *config = 0;
@@ -133,11 +134,11 @@ static void initSettings()
         exit(0);
     }
     else if (r < 0)
-        qWarning() << "Failed to acquire a lock on the configuration file";
+        qWarning("Failed to acquire a lock on the configuration file");
 
     config = new AppSettings(configFile, QSettings::IniFormat);
     if (!config->isWritable())
-        qWarning() << "Configuration file" << configFile << "is not writable";
+        qWarning("Configuration file %s is not writable", qPrintable(configFile));
 
     QDir::setCurrent(QFileInfo(configFile).absoluteDir().path());
 }

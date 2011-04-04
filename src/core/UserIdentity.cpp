@@ -41,7 +41,7 @@ UserIdentity::UserIdentity(int id, QObject *parent)
 
     if (hiddenService->status() == Tor::HiddenService::NotCreated && !readSetting("createNewService", false).toBool())
     {
-        qWarning() << "Hidden service data for identity" << uniqueID << "in" << dir << "does not exist";
+        qWarning("Hidden service data for identity %d in %s does not exist", uniqueID, qPrintable(dir));
         delete hiddenService;
         hiddenService = 0;
     }
@@ -50,7 +50,7 @@ UserIdentity::UserIdentity(int id, QObject *parent)
         incomingSocket = new IncomingSocket(this, this);
         if (!incomingSocket->listen(address, port))
         {
-            qWarning() << "Failed to open incoming socket:" << incomingSocket->errorString();
+            qWarning("Failed to open incoming socket: %s", qPrintable(incomingSocket->errorString()));
             return;
         }
 

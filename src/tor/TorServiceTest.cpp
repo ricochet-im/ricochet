@@ -18,6 +18,7 @@
 #include "TorServiceTest.h"
 #include "TorControlManager.h"
 #include <QNetworkProxy>
+#include <QDebug>
 
 using namespace Tor;
 

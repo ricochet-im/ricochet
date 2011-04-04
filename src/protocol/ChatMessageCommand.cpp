@@ -20,6 +20,7 @@
 #include "ui/ChatWidget.h"
 #include <QDateTime>
 #include <QBuffer>
+#include <QDebug>
 
 REGISTER_COMMAND_HANDLER(0x10, ChatMessageCommand)
 

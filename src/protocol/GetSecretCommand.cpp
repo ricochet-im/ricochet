@@ -17,6 +17,7 @@
 
 #include "GetSecretCommand.h"
 #include "CommandDataParser.h"
+#include <QDebug>
 
 REGISTER_COMMAND_HANDLER(0x01, GetSecretCommand)
 

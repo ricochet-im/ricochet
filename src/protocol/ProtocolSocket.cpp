@@ -23,6 +23,7 @@
 #include "tor/TorControlManager.h"
 #include <QNetworkProxy>
 #include <QtEndian>
+#include <QDebug>
 
 /* Create with an established, authenticated connection */
 ProtocolSocket::ProtocolSocket(QTcpSocket *s, ProtocolManager *m)

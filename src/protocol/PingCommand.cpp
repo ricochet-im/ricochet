@@ -16,6 +16,7 @@
  */
 
 #include "PingCommand.h"
+#include <QDebug>
 
 REGISTER_COMMAND_HANDLER(0x00, PingCommand)
 

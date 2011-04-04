@@ -19,6 +19,7 @@
 #include "ProtocolCommand.h"
 #include "tor/TorControlManager.h"
 #include <QTimer>
+#include <QDebug>
 
 ProtocolManager::ProtocolManager(ContactUser *u, const QString &host, quint16 port)
     : QObject(u), user(u), pPrimary(0), remotePrimary(0), pHost(host), pPort(port), connectAttempts(0)

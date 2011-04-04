@@ -21,6 +21,7 @@
 #include "OutgoingContactRequest.h"
 #include "ContactIDValidator.h"
 #include <QStringList>
+#include <QDebug>
 
 ContactsManager *contactsManager = 0;
 
@@ -45,7 +46,7 @@ void ContactsManager::loadFromSettings()
         int id = it->toInt(&ok);
         if (!ok)
         {
-            qWarning() << "Ignoring contact" << *it << "with a non-integer ID";
+            qWarning("Ignoring contact %s with a non-integer ID", qPrintable(*it));
             continue;
         }
 

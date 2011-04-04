@@ -24,6 +24,7 @@
 #include "core/IncomingRequestManager.h"
 #include <QTcpSocket>
 #include <QtEndian>
+#include <QDebug>
 
 ContactRequestServer::ContactRequestServer(UserIdentity *id, QTcpSocket *s)
     : identity(id), socket(s), state(WaitRequest)
@@ -142,7 +143,7 @@ void ContactRequestServer::handleRequest(const QByteArray &data)
 
     if (request.hasError())
     {
-        qWarning() << "Incoming contact request has a syntax error; rejecting";
+        qWarning("Incoming contact request has a syntax error; rejecting");
         sendResponse(0x80);
         return;
     }
@@ -151,7 +152,7 @@ void ContactRequestServer::handleRequest(const QByteArray &data)
     CryptoKey key;
     if (!key.loadFromData(encodedPublicKey))
     {
-        qWarning() << "Incoming contact request has an unparsable public key; rejecting";
+        qWarning("Incoming contact request has an unparsable public key; rejecting");
         sendResponse(0x81);
         return;
     }
@@ -159,7 +160,7 @@ void ContactRequestServer::handleRequest(const QByteArray &data)
     /* Verify that the public key corrosponds to the hidden service hostname */
     if (key.torServiceID().toLatin1() != hostname)
     {
-        qWarning() << "Incoming contact request hostname does not match the provided public key; rejecting";
+        qWarning("Incoming contact request hostname does not match the provided public key; rejecting");
         sendResponse(0x81);
         return;
     }
@@ -168,7 +169,7 @@ void ContactRequestServer::handleRequest(const QByteArray &data)
     Q_ASSERT(!cookie.isNull());
     if (!key.verifySignature(cookie, signedCookie))
     {
-        qWarning() << "Incoming contact request has an invalid signature; rejecting";
+        qWarning("Incoming contact request has an invalid signature; rejecting");
         sendResponse(0x81);
         return;
     }
@@ -176,7 +177,7 @@ void ContactRequestServer::handleRequest(const QByteArray &data)
     /* Either a nickname or a message must be sent */
     if (nickname.isEmpty() && message.isEmpty())
     {
-        qWarning() << "Incoming contact request has neither a nickname nor a message; rejecting";
+        qWarning("Incoming contact request has neither a nickname nor a message; rejecting");
         sendResponse(0x82);
         return;
     }

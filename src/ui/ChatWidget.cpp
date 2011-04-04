@@ -32,6 +32,7 @@
 #include <QApplication>
 #include <QFontDialog>
 #include <QAction>
+#include <QDebug>
 
 #if QT_VERSION >= 0x040600
 #include <QPropertyAnimation>

@@ -26,6 +26,7 @@
 #include <QNetworkProxy>
 #include <QtEndian>
 #include <QTimer>
+#include <QDebug>
 
 ContactRequestClient::ContactRequestClient(ContactUser *u)
     : QObject(u), user(u), socket(0), connectAttempts(0), m_response(NoResponse), state(NotConnected)
