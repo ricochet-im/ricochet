@@ -20,12 +20,11 @@ QT += core \
 TARGET = Torsion
 TEMPLATE = app
 
-unix {
+unix:!macx {
     target.path = /usr/bin
     shortcut.path = /usr/share/applications
     shortcut.files = src/Torsion.desktop
-    INSTALLS += target
-    unix:!macx:INSTALLS += shortcut
+    INSTALLS += target shortcut
 
     exists(tor) {
         message(Adding bundled Tor to installations)
@@ -33,6 +32,13 @@ unix {
         bundletor.files = tor/*
         INSTALLS += bundletor
         DEFINES += BUNDLED_TOR_PATH=\\\"/usr/lib/torsion/tor/\\\"
+    }
+} else:macx {
+    CONFIG += bundle
+
+    exists(tor) {
+        # Copy the entire tor/ directory, which should contain tor/tor (the binary itself)
+        QMAKE_POST_LINK += cp -R $${_PRO_FILE_PWD_}/tor $${OUT_PWD}/$${TARGET}.app/Contents/MacOS/;
     }
 }
 
