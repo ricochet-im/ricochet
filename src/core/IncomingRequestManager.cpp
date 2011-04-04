@@ -241,7 +241,7 @@ void IncomingContactRequest::accept(ContactUser *user)
     if (!user)
     {
         Q_ASSERT(!nickname().isEmpty());
-        user = user->identity->contacts.addContact(nickname());
+        user = manager->contacts->addContact(nickname());
         user->setHostname(QString::fromLatin1(hostname));
     }
 
