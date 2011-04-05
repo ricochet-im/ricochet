@@ -39,7 +39,6 @@ static FileLock configLock;
 
 static void initSettings();
 static void initTranslation();
-static void initIncomingSocket();
 static bool connectTorControl();
 
 int main(int argc, char *argv[])

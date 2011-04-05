@@ -182,7 +182,8 @@ void AppSettings::objectChanged(QObject *object, int index)
      * In the QMultiHash, these are stored from the most-recently inserted to the least recently
      * inserted, so we need to invert the number and get the entry at that offset. */
     int propCount = 0;
-    for (; it != trackingObjectMap.end() && it.key() == object; ++it, ++propCount);
+    for (; it != trackingObjectMap.end() && it.key() == object; ++it, ++propCount)
+        ;
 
     /* First connection (index=0) is the last in the map (propCount-1) */
     index = propCount - 1 - index;

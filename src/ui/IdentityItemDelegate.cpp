@@ -50,7 +50,7 @@ void IdentityItemDelegate::paint(QPainter *p, const QStyleOptionViewItem &opt, c
     if (opt.state & (QStyle::State_Selected | QStyle::State_MouseOver))
     {
         SelectionState sst = (opt.state & QStyle::State_Selected) ? Selected : MouseOver;
-        p->drawPixmap(r.topLeft(), customSelectionRect(r.size(), (opt.state & QStyle::State_Selected) ? Selected : MouseOver));
+        p->drawPixmap(r.topLeft(), customSelectionRect(r.size(), sst));
     }
     else
     {
