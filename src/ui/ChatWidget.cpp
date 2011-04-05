@@ -33,6 +33,7 @@
 #include <QApplication>
 #include <QFontDialog>
 #include <QAction>
+#include <QTextDocumentFragment>
 #include <QDebug>
 
 #if QT_VERSION >= 0x040600
@@ -87,8 +88,6 @@ ChatWidget::ChatWidget(ContactUser *u)
 
     if (!user->isConnected())
         showOfflineNotice();
-
-    addChatMessage(0, 0, QDateTime::currentDateTime(), QString(5000, QLatin1Char('x')));
 }
 
 ChatWidget::~ChatWidget()
@@ -237,6 +236,8 @@ void ChatWidget::addChatMessage(ContactUser *from, quint16 messageID, const QDat
         cursor.movePosition(QTextCursor::End);
     }
 
+    cursor.beginEditBlock();
+
     if (!cursor.atBlockStart())
         cursor.insertBlock();
 
@@ -301,7 +302,9 @@ void ChatWidget::addChatMessage(ContactUser *from, quint16 messageID, const QDat
     if (light)
         textFormat.setProperty(QTextFormat::UserProperty, textColor[!light]);
 
-    cursor.insertText(text, textFormat);
+    cursor.insertText(QString(text).replace(QLatin1Char('\n'), QChar::LineSeparator), textFormat);
+
+    cursor.endEditBlock();
 
     textArea->scrollToBottom();
 }

@@ -5,6 +5,7 @@ ChatTextInput::ChatTextInput(QWidget *parent)
     : ExpandingTextEdit(parent)
 {
     setTabChangesFocus(true);
+    setAcceptRichText(false);
 }
 
 void ChatTextInput::keyPressEvent(QKeyEvent *e)
