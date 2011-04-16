@@ -66,16 +66,6 @@ You can share your contact ID (something like w3rf2xcq1b88lbda@Torsion) to allow
 people to add you; you will be given the choice of accepting or rejecting any requests.
 Once you've added a contact, they will connect automatically whenever they're online.
 
-Licensing & Modifications
-=========================
-
-Torsion is released under the GNU General Public License, version 2 or later. You are
-free to modify and redistribute the software under the terms of this license. An additional
-exception is applied to allow redistribution with the OpenSSL toolkit. See the LICENSE and
-LICENSE-GPLv2 files for details.
-
-Patches are accepted and encouraged, and can be submitted through GitHub or via email.
-
 Technical Information
 =====================
 
