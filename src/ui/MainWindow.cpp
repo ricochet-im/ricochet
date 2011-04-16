@@ -72,7 +72,7 @@ MainWindow::MainWindow(QWidget *parent)
     /* Saved geometry */
     restoreGeometry(config->value("ui/main/windowGeometry").toByteArray());
 
-    /* Old config values (v0.8.0) */
+    /* Old config values */
     config->remove("ui/main/windowSize");
     config->remove("ui/main/windowPosition");
 

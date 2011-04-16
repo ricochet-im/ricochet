@@ -9,7 +9,7 @@ DisableDirPage=false
 DisableReadyPage=false
 DefaultGroupName=Torsion IM
 AppID={{B700250B-D3E2-407F-A534-8818EB8E3D93}
-AppVersion=0.8.0
+AppVersion=0.1.0
 UninstallDisplayName=Torsion IM
 Uninstallable=not IsPortableInstall
 VersionInfoDescription=Torsion - Anonymous Instant Messaging
@@ -103,5 +103,6 @@ begin
 	else
 	    Result := False;
 end;
+
 
 
