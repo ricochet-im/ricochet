@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    a.setApplicationVersion(QLatin1String("0.1.0"));
+    a.setApplicationVersion(QLatin1String("0.2.0-dev"));
 
     initSettings();
     initTranslation();
