@@ -1,25 +1,14 @@
 <RCC>
     <qresource prefix="/icons">
-        <file>chat-active.png</file>
-        <file>chat-hover.png</file>
-        <file>chat-inactive.png</file>
-        <file>info-active.png</file>
-        <file>info-hover.png</file>
-        <file>info-inactive.png</file>
-        <file>status-offline.png</file>
-        <file>status-online.png</file>
         <file>gear.png</file>
         <file>image--pencil.png</file>
-        <file>user--plus.png</file>
         <file>exclamation-red.png</file>
         <file>tick-circle.png</file>
         <file>information.png</file>
-        <file>user--pencil.png</file>
         <file>cross.png</file>
         <file>vcard.png</file>
     </qresource>
     <qresource prefix="/graphics">
-        <file>avatar-placeholder.png</file>
         <file>vidalia-tray.png</file>
     </qresource>
     <qresource prefix="/ui">
