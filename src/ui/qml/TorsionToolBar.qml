@@ -62,7 +62,7 @@ Rectangle {
             height: parent.height
             width: height
 
-            //source:
+            sourceIdentity: userIdentity
         }
 
         Column {

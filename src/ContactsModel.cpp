@@ -53,7 +53,6 @@ ContactsModel::ContactsModel(UserIdentity *i, QObject *parent)
 {
     QHash<int,QByteArray> roles;
     roles[Qt::DisplayRole] = "nickname";
-    roles[Qt::DecorationRole] = "avatarPath";
     roles[PointerRole] = "contact";
     roles[StatusRole] = "status";
     setRoleNames(roles);
@@ -363,8 +362,6 @@ QVariant ContactsModel::data(const QModelIndex &index, int role) const
         case Qt::DisplayRole:
         case Qt::EditRole:
             return user->nickname();
-        case Qt::DecorationRole:
-            return user->avatar(TinyAvatar);
         case PointerRole:
             return QVariant::fromValue(user);
         case StatusRole:

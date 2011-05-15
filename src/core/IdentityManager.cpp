@@ -144,6 +144,17 @@ UserIdentity *IdentityManager::lookupNickname(const QString &nickname) const
     return 0;
 }
 
+UserIdentity *IdentityManager::lookupUniqueID(int uniqueID) const
+{
+    for (QList<UserIdentity*>::ConstIterator it = m_identities.begin(); it != m_identities.end(); ++it)
+    {
+        if ((*it)->uniqueID == uniqueID)
+            return *it;
+    }
+
+    return 0;
+}
+
 void IdentityManager::onContactAdded(ContactUser *user)
 {
     emit contactAdded(user, user->identity);

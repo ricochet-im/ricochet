@@ -59,7 +59,7 @@ PopoutItem {
             anchors.margins: 8
             width: height
 
-            source: contact.avatarPath
+            sourceContact: contact
         }
 
         Column {

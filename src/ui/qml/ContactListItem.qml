@@ -45,7 +45,7 @@ Item {
         anchors.verticalCenter: parent.verticalCenter
         sourceSize: Qt.size(32, 32)
 
-        source: avatarPath
+        sourceContact: contact
     }
 
     Text {

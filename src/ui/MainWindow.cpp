@@ -44,6 +44,7 @@
 #include "ui/PopoutManager.h"
 #include "ui/PageSwitcherBase.h"
 #include "ui/UIHelper.h"
+#include "ui/AvatarImageProvider.h"
 #include "ContactsModel.h"
 #include <QToolBar>
 #include <QBoxLayout>
@@ -78,6 +79,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     Q_ASSERT(!identityManager->identities().isEmpty());
     rootContext()->setContextProperty(QLatin1String("userIdentity"), identityManager->identities()[0]);
+
+    engine()->addImageProvider(QLatin1String("avatar"), new AvatarImageProvider);
 
     createContactsModel();
 

@@ -36,6 +36,19 @@ Image {
     fillMode: Image.PreserveAspectFit
     smooth: true
 
+    property QtObject sourceContact
+    property QtObject sourceIdentity
+
+    source: {
+        if (sourceContact !== null)
+            return "image://avatar/" + sourceContact.identity.uniqueID
+                   + "/contact/" + sourceContact.uniqueID
+        else if (sourceIdentity !== null)
+            return "image://avatar/" + sourceIdentity.uniqueID + "/identity"
+        else
+            return undefined
+    }
+
     BorderImage {
         source: "avatar-border.png"
         border.bottom: 2

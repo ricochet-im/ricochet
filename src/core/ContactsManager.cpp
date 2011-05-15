@@ -137,6 +137,17 @@ ContactUser *ContactsManager::lookupNickname(const QString &nickname) const
     return 0;
 }
 
+ContactUser *ContactsManager::lookupUniqueID(int uniqueID) const
+{
+    for (QList<ContactUser*>::ConstIterator it = pContacts.begin(); it != pContacts.end(); ++it)
+    {
+        if ((*it)->uniqueID == uniqueID)
+            return *it;
+    }
+
+    return 0;
+}
+
 void ContactsManager::connectToAll()
 {
     qDebug() << "Attempting connections to all contacts";

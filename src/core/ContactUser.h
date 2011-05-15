@@ -58,6 +58,8 @@ class ContactUser : public QObject
     Q_DISABLE_COPY(ContactUser)
     Q_ENUMS(Status)
 
+    Q_PROPERTY(int uniqueID READ getUniqueID CONSTANT)
+    Q_PROPERTY(UserIdentity* identity READ getIdentity CONSTANT)
     Q_PROPERTY(QString nickname READ nickname WRITE setNickname NOTIFY nicknameChanged)
     Q_PROPERTY(QString contactID READ contactID CONSTANT)
     Q_PROPERTY(Status status READ status NOTIFY statusChanged)
@@ -84,12 +86,14 @@ public:
 
     bool isContactRequest() const { return status() == RequestPending; }
 
+    UserIdentity *getIdentity() const { return identity; }
+    int getUniqueID() const { return uniqueID; }
+
     const QString &nickname() const { return m_nickname; }
     /* Hostname is in the onion hostname format, i.e. it ends with .onion */
     QString hostname() const;
     /* Contact ID in the @Torsion format */
     QString contactID() const;
-    QPixmap avatar(AvatarSize size);
 
     Status status() const { return m_status; }
     QString statusString() const { return statusString(m_status); }
@@ -147,7 +151,6 @@ private:
     static ContactUser *addNewContact(UserIdentity *identity, int id);
 
     void loadSettings();
-    QString avatarCacheKey(AvatarSize size);
 };
 
 Q_DECLARE_METATYPE(ContactUser*)

@@ -33,12 +33,6 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-enum AvatarSize
-{
-    FullAvatar, /* 160x160 */
-    TinyAvatar /* 35x35 */
-};
-
 #include "utils/AppSettings.h"
 
 #endif // MAIN_H

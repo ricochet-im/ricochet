@@ -59,6 +59,7 @@ public:
     ContactUser *lookupSecret(const QByteArray &secret) const;
     ContactUser *lookupHostname(const QString &hostname) const;
     ContactUser *lookupNickname(const QString &nickname) const;
+    ContactUser *lookupUniqueID(int uniqueID) const;
 
     ContactUser *addContact(const QString &nickname);
 

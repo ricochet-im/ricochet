@@ -126,28 +126,6 @@ void UserIdentity::setNickname(const QString &nick)
     emit nicknameChanged();
 }
 
-QString UserIdentity::avatarCacheKey(AvatarSize size)
-{
-    return QString::fromLatin1("id-avatar-%1-%2").arg(uniqueID).arg(int(size));
-}
-
-QPixmap UserIdentity::avatar(AvatarSize size)
-{
-    QPixmap re;
-    QString cacheKey = avatarCacheKey(size);
-    if (QPixmapCache::find(cacheKey, re))
-        return re;
-
-    QByteArray data = readSetting((size == TinyAvatar) ? "avatar-tiny" : "avatar").toByteArray();
-    if (data.isEmpty())
-        return QPixmap();
-
-    re.loadFromData(data);
-
-    QPixmapCache::insert(cacheKey, re);
-    return re;
-}
-
 void UserIdentity::setAvatar(QImage image)
 {
     if (image.width() > 160 || image.height() > 160)
@@ -157,34 +135,14 @@ void UserIdentity::setAvatar(QImage image)
     {
         QBuffer buffer;
         buffer.open(QBuffer::ReadWrite);
-        if (image.save(&buffer, "jpeg", 100))
-        {
+        if (image.save(&buffer, "jpeg", 90))
             writeSetting("avatar", buffer.buffer());
-            QPixmapCache::insert(avatarCacheKey(FullAvatar), QPixmap::fromImage(image));
-
-            QImage tiny = image.scaled(QSize(35, 35), Qt::KeepAspectRatio, Qt::SmoothTransformation);
-            buffer.close();
-            buffer.open(QBuffer::ReadWrite);
-            if (tiny.save(&buffer, "jpeg", 100))
-            {
-                QPixmapCache::insert(avatarCacheKey(TinyAvatar), QPixmap::fromImage(tiny));
-                writeSetting("avatar-tiny", buffer.buffer());
-            }
-            else
-                image = QImage();
-        }
         else
             image = QImage();
     }
 
     if (image.isNull())
-    {
         removeSetting("avatar");
-        removeSetting("avatar-tiny");
-
-        QPixmapCache::remove(avatarCacheKey(FullAvatar));
-        QPixmapCache::remove(avatarCacheKey(TinyAvatar));
-    }
 }
 
 void UserIdentity::onStatusChanged(int newStatus, int oldStatus)

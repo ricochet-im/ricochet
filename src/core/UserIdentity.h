@@ -56,6 +56,7 @@ class UserIdentity : public QObject
 
     friend class IdentityManager;
 
+    Q_PROPERTY(int uniqueID READ getUniqueID CONSTANT)
     Q_PROPERTY(QString nickname READ nickname WRITE setNickname NOTIFY nicknameChanged)
     Q_PROPERTY(QString contactID READ contactID NOTIFY contactIDChanged)
 
@@ -66,11 +67,11 @@ public:
     explicit UserIdentity(int uniqueID, QObject *parent = 0);
 
     /* Properties */
+    int getUniqueID() const { return uniqueID; }
     const QString &nickname() const { return m_nickname; }
     /* Hostname is .onion format, like ContactUser */
     QString hostname() const;
     QString contactID() const;
-    QPixmap avatar(AvatarSize size);
 
     void setNickname(const QString &nickname);
     void setAvatar(QImage image);
@@ -114,8 +115,6 @@ private:
     IncomingSocket *incomingSocket;
 
     static UserIdentity *createIdentity(int uniqueID, const QString &dataDirectory = QString());
-
-    QString avatarCacheKey(AvatarSize size);
 };
 
 Q_DECLARE_METATYPE(UserIdentity*)
