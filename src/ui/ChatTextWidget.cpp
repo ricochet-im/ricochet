@@ -45,6 +45,7 @@
 #include <QTextDocument>
 #include <QTextBlock>
 #include <QTextDocumentFragment>
+#include <QDebug>
 
 static const int defaultBacklog = 125;
 

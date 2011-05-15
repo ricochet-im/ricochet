@@ -36,6 +36,7 @@
 #include "core/NicknameValidator.h"
 #include <QImage>
 #include <QColor>
+#include <QDebug>
 
 inline bool contactSort(const ContactUser *c1, const ContactUser *c2)
 {
