@@ -100,7 +100,6 @@ SOURCES += src/main.cpp \
     src/protocol/ProtocolCommand.cpp \
     src/protocol/ProtocolManager.cpp \
     src/protocol/PingCommand.cpp \
-    src/ui/ContactInfoPage.cpp \
     src/protocol/IncomingSocket.cpp \
     src/protocol/ChatMessageCommand.cpp \
     src/protocol/CommandHandler.cpp \
@@ -125,11 +124,9 @@ SOURCES += src/main.cpp \
     src/core/IncomingRequestManager.cpp \
     src/core/ContactIDValidator.cpp \
     src/core/NicknameValidator.cpp \
-    src/ui/NotificationWidget.cpp \
     src/ui/ContactRequestDialog.cpp \
     src/protocol/GetSecretCommand.cpp \
     src/ui/EditableLabel.cpp \
-    src/ui/ContactIDWidget.cpp \
     src/tor/autoconfig/VidaliaConfigManager.cpp \
     src/ui/torconfig/VidaliaConfigPage.cpp \
     src/ui/torconfig/VidaliaExitWidget.cpp \
@@ -137,7 +134,6 @@ SOURCES += src/main.cpp \
     src/ui/torconfig/VidaliaTestWidget.cpp \
     src/core/UserIdentity.cpp \
     src/core/IdentityManager.cpp \
-    src/ui/IdentityInfoPage.cpp \
     src/tor/autoconfig/BundledTorManager.cpp \
     src/utils/OSUtil.cpp \
     src/ui/ChatTextWidget.cpp \
@@ -162,7 +158,6 @@ HEADERS += src/ui/MainWindow.h \
     src/protocol/ProtocolCommand.h \
     src/protocol/ProtocolManager.h \
     src/protocol/PingCommand.h \
-    src/ui/ContactInfoPage.h \
     src/protocol/IncomingSocket.h \
     src/main.h \
     src/protocol/ChatMessageCommand.h \
@@ -188,11 +183,9 @@ HEADERS += src/ui/MainWindow.h \
     src/core/IncomingRequestManager.h \
     src/core/ContactIDValidator.h \
     src/core/NicknameValidator.h \
-    src/ui/NotificationWidget.h \
     src/ui/ContactRequestDialog.h \
     src/protocol/GetSecretCommand.h \
     src/ui/EditableLabel.h \
-    src/ui/ContactIDWidget.h \
     src/tor/autoconfig/VidaliaConfigManager.h \
     src/ui/torconfig/VidaliaConfigPage.h \
     src/ui/torconfig/VidaliaExitWidget.h \
@@ -200,7 +193,6 @@ HEADERS += src/ui/MainWindow.h \
     src/ui/torconfig/VidaliaTestWidget.h \
     src/core/UserIdentity.h \
     src/core/IdentityManager.h \
-    src/ui/IdentityInfoPage.h \
     src/tor/autoconfig/BundledTorManager.h \
     src/utils/OSUtil.h \
     src/ui/ChatTextWidget.h \
