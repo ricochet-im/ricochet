@@ -45,6 +45,7 @@
 
 class UserIdentity;
 struct ChatMessageData;
+class ChatMessageCommand;
 
 /* Represents a user on the contact list.
  * All persistent uses of a ContactUser instance must either connect to the
