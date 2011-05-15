@@ -38,104 +38,92 @@
 #include <QImage>
 #include <QColor>
 
-/* Used for both identities and contacts, as they share this API */
-template<typename T> static inline bool userSort(const T *u1, const T *u2)
+inline bool contactSort(const ContactUser *c1, const ContactUser *c2)
 {
-    int p1 = u1->readSetting("listPosition", -1).toInt();
-    int p2 = u2->readSetting("listPosition", -1).toInt();
-    if (p1 < 0 && p2 < 0)
-        return (u1->uniqueID < u2->uniqueID);
-    else if (p2 < 0)
-        return true;
-    else if (p1 < 0)
-        return false;
-    else
-        return (p1 < p2);
+    return c1->nickname().localeAwareCompare(c2->nickname()) < 0;
 }
 
-ContactsModel::ContactsModel(QObject *parent)
-    : QAbstractItemModel(parent)
+inline bool ContactsModel::groupSort(const ContactGroup &g1, const ContactGroup &g2)
 {
+    return g1.status < g2.status;
+}
+
+ContactsModel::ContactsModel(UserIdentity *i, QObject *parent)
+    : QAbstractItemModel(parent), identity(i)
+{
+    QHash<int,QByteArray> roles;
+    roles[Qt::DisplayRole] = "nickname";
+    roles[Qt::DecorationRole] = "avatarPath";
+    roles[PointerRole] = "contact";
+    roles[StatusRole] = "status";
+    setRoleNames(roles);
+
+    connect(&identity->contacts, SIGNAL(contactAdded(ContactUser*)), SLOT(contactAdded(ContactUser*)));
+
     populate();
 }
 
 void ContactsModel::populate()
 {
-#if QT_VERSION >= 0x040600
     beginResetModel();
-#endif
 
-    foreach (QList<ContactUser*> c, contacts)
+    foreach (const ContactGroup &g, items)
     {
-        for (QList<ContactUser*>::Iterator it = c.begin(); it != c.end(); ++it)
+        for (QList<ContactUser*>::ConstIterator it = g.contacts.begin(); it != g.contacts.end(); ++it)
             (*it)->disconnect(this);
     }
 
-    foreach (UserIdentity *i, identities)
+    items.clear();
+
+    QList<ContactUser*> c = identity->contacts.contacts();
+
+    for (QList<ContactUser*>::Iterator it = c.begin(); it != c.end(); ++it)
     {
-        i->disconnect(this);
-        i->contacts.disconnect(this);
-    }
+        int status = (*it)->status();
 
-    contacts.clear();
-    identities.clear();
-
-    identities = identityManager->identities();
-    qSort(identities.begin(), identities.end(), userSort<UserIdentity>);
-
-    int i = 0;
-    for (QList<UserIdentity*>::Iterator it = identities.begin(); it != identities.end(); ++it, ++i)
-    {
-        connect(&(*it)->contacts, SIGNAL(contactAdded(ContactUser*)), SLOT(contactAdded(ContactUser*)));
-        connect(*it, SIGNAL(statusChanged()), SLOT(updateIdentity()));
-        connect(*it, SIGNAL(settingsChanged(QString)), SLOT(updateIdentity()));
-
-        QList<ContactUser*> c = (*it)->contacts.contacts();
-        qSort(c.begin(), c.end(), userSort<ContactUser>);
-
-        for (QList<ContactUser*>::Iterator it = c.begin(); it != c.end(); ++it)
+        int groupRow = -1;
+        for (int i = 0; i < items.size(); ++i)
         {
-            /* Duplicated in contactAdded() */
-            connect(*it, SIGNAL(connected()), this, SLOT(updateUser()));
-            connect(*it, SIGNAL(disconnected()), this, SLOT(updateUser()));
-            connect(*it, SIGNAL(statusLineChanged()), this, SLOT(updateUser()));
-            connect(*it, SIGNAL(contactDeleted(ContactUser*)), this, SLOT(contactRemoved(ContactUser*)));
+            if (items[i].status == status)
+            {
+                groupRow = i;
+                break;
+            }
         }
 
-        contacts.insert(i, c);
+        if (groupRow < 0)
+        {
+            ContactGroup g;
+            g.title = ContactUser::statusString((ContactUser::Status)status);
+            g.status = status;
+
+            QList<ContactGroup>::Iterator gp = qLowerBound(items.begin(), items.end(), g, groupSort);
+            gp = items.insert(gp, g);
+
+            groupRow = gp - items.begin();
+        }
+
+        connect(*it, SIGNAL(statusChanged()), SLOT(updateUser()));
+        connect(*it, SIGNAL(contactDeleted(ContactUser*)), SLOT(contactRemoved(ContactUser*)));
+
+        QList<ContactUser*> &list = items[groupRow].contacts;
+        QList<ContactUser*>::Iterator lp = qLowerBound(list.begin(), list.end(), *it, contactSort);
+        list.insert(lp, *it);
     }
 
-#if QT_VERSION >= 0x040600
     endResetModel();
-#else
-    reset();
-#endif
-}
-
-bool ContactsModel::indexIsContact(const QModelIndex &index) const
-{
-    return index.internalPointer() != 0;
 }
 
 QModelIndex ContactsModel::indexOfContact(ContactUser *user) const
 {
-    if (contacts.isEmpty())
-        return QModelIndex();
+    for (int i = 0; i < items.size(); ++i)
+    {
+        int r = items[i].contacts.indexOf(user);
+        if (r >= 0)
+            return index(r, 0, index(i, 0));
+    }
 
-    int row = contacts[0].indexOf(user);
-    if (row < 0)
-        return QModelIndex();
-
-    return index(row, 0, index(0, 0));
-}
-
-QModelIndex ContactsModel::indexOfIdentity(UserIdentity *user) const
-{
-    int row = identities.indexOf(user);
-    if (row < 0)
-        return QModelIndex();
-
-    return index(row, 0);
+    return QModelIndex();
 }
 
 void ContactsModel::updateUser(ContactUser *user)
@@ -154,30 +142,111 @@ void ContactsModel::updateUser(ContactUser *user)
         return;
     }
 
-    emit dataChanged(idx, index(idx.row(), columnCount(idx.parent())-1));
+    QModelIndex parent = idx.parent();
+    int groupRow = parent.row();
+
+    if (user->status() != items[groupRow].status)
+    {
+        int newGroupRow = -1;
+        for (int i = 0; i < items.size(); ++i)
+        {
+            if (items[i].status == user->status())
+            {
+                newGroupRow = i;
+                break;
+            }
+        }
+
+        if (newGroupRow < 0)
+        {
+            ContactGroup g;
+            g.title = user->statusString();
+            g.status = user->status();
+
+            QList<ContactGroup>::Iterator gp = qLowerBound(items.begin(), items.end(), g, groupSort);
+            newGroupRow = gp - items.begin();
+
+            qDebug() << "newGroupRow" << newGroupRow;
+
+            beginInsertRows(QModelIndex(), newGroupRow, newGroupRow);
+            gp = items.insert(gp, g);
+            endInsertRows();
+
+            idx = indexOfContact(user);
+            parent = idx.parent();
+            groupRow = parent.row();
+        }
+
+        QList<ContactUser*> &list = items[newGroupRow].contacts;
+        QList<ContactUser*>::Iterator lp = qLowerBound(list.begin(), list.end(), user, contactSort);
+        int newRow = lp - list.begin();
+
+        beginMoveRows(parent, idx.row(), idx.row(), index(newGroupRow, 0), newRow);
+        list.insert(lp, user);
+        qDebug() << "removing" << idx.row() << "from grouprow" << groupRow << "after moving to" << newGroupRow
+                 << "old" << items[groupRow].contacts[idx.row()]->nickname() << "new" << user->nickname();
+        items[groupRow].contacts.removeAt(idx.row());
+        endMoveRows();
+
+        /* XXX remove empty old group */
+
+        for (int i = 0; i < items.size(); ++i)
+        {
+            qDebug() << "idx" << i << "status" << items[i].status << ":";
+            for (int j = 0; j < items[i].contacts.size(); ++j)
+            {
+                qDebug() << "    idx" << j << "status" << items[i].contacts[j]->status()
+                         << "nickname" << items[i].contacts[j]->nickname();
+            }
+        }
+    }
+    else
+        emit dataChanged(idx, idx);
 }
 
 void ContactsModel::contactAdded(ContactUser *user)
 {
-    int identityRow = 0;
-    if (identities.isEmpty())
-        return;
+    Q_ASSERT(!indexOfContact(user).isValid());
 
-    int i;
-    for (i = 0; i < contacts[identityRow].size(); ++i)
-        if (!userSort(contacts[identityRow][i], user))
+    connect(user, SIGNAL(statusChanged()), SLOT(updateUser()));
+    connect(user, SIGNAL(contactDeleted(ContactUser*)), SLOT(contactRemoved(ContactUser*)));
+
+    int status = user->status();
+
+    int groupRow = -1;
+    for (int i = 0; i < items.size(); ++i)
+    {
+        if (items[i].status == status)
+        {
+            groupRow = i;
             break;
+        }
+    }
 
-    beginInsertRows(index(identityRow, 0), i, i);
-    contacts[identityRow].insert(i, user);
-    endInsertRows();
+    if (groupRow < 0)
+    {
+        ContactGroup g;
+        g.title = ContactUser::statusString((ContactUser::Status)status);
+        g.status = status;
+        g.contacts.append(user);
 
-    saveContactPositions(identityRow);
+        QList<ContactGroup>::Iterator gp = qLowerBound(items.begin(), items.end(), g, groupSort);
+        groupRow = gp - items.begin();
 
-    connect(user, SIGNAL(connected()), this, SLOT(updateUser()));
-    connect(user, SIGNAL(disconnected()), this, SLOT(updateUser()));
-    connect(user, SIGNAL(statusLineChanged()), this, SLOT(updateUser()));
-    connect(user, SIGNAL(contactDeleted(ContactUser*)), this, SLOT(contactRemoved(ContactUser*)));
+        beginInsertRows(QModelIndex(), groupRow, groupRow);
+        items.insert(gp, g);
+        endInsertRows();
+    }
+    else
+    {
+        QList<ContactUser*> &list = items[groupRow].contacts;
+        QList<ContactUser*>::Iterator lp = qLowerBound(list.begin(), list.end(), user, contactSort);
+        int row = lp - list.begin();
+
+        beginInsertRows(index(groupRow, 0), row, row);
+        list.insert(lp, user);
+        endInsertRows();
+    }
 }
 
 void ContactsModel::contactRemoved(ContactUser *user)
@@ -187,134 +256,56 @@ void ContactsModel::contactRemoved(ContactUser *user)
 
     QModelIndex idx = indexOfContact(user);
     QModelIndex parent = idx.parent();
-
     Q_ASSERT(parent.isValid());
+    int groupRow = parent.row();
 
-    beginRemoveRows(parent, idx.row(), idx.row());
-    contacts[parent.row()].removeAt(idx.row());
-    endRemoveRows();
-
-    saveContactPositions(parent.row());
-
-    disconnect(user, 0, this, 0);
-}
-
-void ContactsModel::updateIdentity(UserIdentity *identity)
-{
-    if (!identity)
+    if (items[groupRow].contacts.size() == 1)
     {
-        identity = qobject_cast<UserIdentity*>(sender());
-        if (!identity)
-            return;
-    }
-
-    QModelIndex idx = indexOfIdentity(identity);
-    if (!idx.isValid())
-    {
-        identity->disconnect(this);
-        return;
-    }
-
-    emit dataChanged(idx, index(idx.row(), columnCount(idx.parent())-1));
-}
-
-void ContactsModel::moveRow(int from, int to, const QModelIndex &parent)
-{
-    if (parent.isValid())
-    {
-        QList<ContactUser*> &c = contacts[parent.row()];
-        if (from < 0 || from >= c.size() || to < 0 || to >= c.size() || from == to)
-            return;
-
-#if QT_VERSION >= 0x040600
-        bool ok = beginMoveRows(parent, from, from, parent, (to > from) ? (to+1) : to);
-        Q_ASSERT(ok);
-
-        c.move(from, to);
-        endMoveRows();
-#else
-        emit layoutAboutToBeChanged();
-        c.move(from, to);
-        emit layoutChanged();
-#endif
-
-        saveContactPositions(parent.row());
+        /* Remove the entire group */
+        beginRemoveRows(QModelIndex(), groupRow, groupRow);
+        items.removeAt(groupRow);
+        endRemoveRows();
     }
     else
     {
-        if (from < 0 || from >= identities.size() || to < 0 || to >= identities.size() || from == to)
-            return;
-
-#if QT_VERSION >= 0x040600
-        bool ok = beginMoveRows(parent, from, from, parent, (to > from) ? (to+1) : to);
-        Q_ASSERT(ok);
-
-        identities.move(from, to);
-        endMoveRows();
-#else
-        emit layoutAboutToBeChanged();
-        identities.move(from, to);
-        emit layoutChanged();
-#endif
-
-        saveIdentityPositions();
+        beginRemoveRows(parent, idx.row(), idx.row());
+        items[groupRow].contacts.removeAt(idx.row());
+        endRemoveRows();
     }
-}
 
-void ContactsModel::saveContactPositions(int identityRow)
-{
-    /* Update the stored positions */
-    int i = 0;
-    for (QList<ContactUser*>::Iterator it = contacts[identityRow].begin(), end = contacts[identityRow].end();
-         it != end; ++it, ++i)
-    {
-        if ((*it)->readSetting("listPosition", -1).toInt() != i)
-            (*it)->writeSetting("listPosition", i);
-    }
-}
-
-void ContactsModel::saveIdentityPositions()
-{
-    for (int i = 0; i < identities.size(); ++i)
-    {
-        if (identities[i]->readSetting("listPosition", -1).toInt() != i)
-            identities[i]->writeSetting("listPosition", i);
-    }
+    disconnect(user, 0, this, 0);
 }
 
 int ContactsModel::rowCount(const QModelIndex &parent) const
 {
     if (parent.isValid())
     {
-        if (parent.row() < 0 || parent.row() >= identities.size() || parent.internalPointer())
+        if (parent.internalPointer())
             return 0;
-        return contacts[parent.row()].size();
+        return items[parent.row()].contacts.size();
     }
     else
-        return identities.size();
+        return items.size();
 }
 
 int ContactsModel::columnCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
-    return 3;
+    return 1;
 }
 
 QModelIndex ContactsModel::index(int row, int column, const QModelIndex &parent) const
 {
     if (parent.isValid())
     {
-        if (parent.row() < 0 || parent.row() >= identities.size() || row < 0 || row >= contacts[parent.row()].size()
-            || column < 0 || column >= columnCount(parent))
+        if (parent.internalPointer() || row >= items[parent.row()].contacts.size())
             return QModelIndex();
-
-        return createIndex(row, column, contacts[parent.row()][row]);
+        return createIndex(row, column, items[parent.row()].contacts[row]);
     }
     else
     {
-        if (row < 0 || row >= identities.size() || column < 0 || column >= columnCount())
+        if (row >= items.size())
             return QModelIndex();
-
         return createIndex(row, column);
     }
 }
@@ -325,25 +316,21 @@ QModelIndex ContactsModel::parent(const QModelIndex &child) const
     if (!user)
         return QModelIndex();
 
-    // return the real identity..
-    return index(0, 0);
-}
+    for (int i = 0; i < items.size(); ++i)
+    {
+        if (items[i].contacts.contains(user))
+            return index(i, 0);
+    }
 
-Qt::DropActions ContactsModel::supportedDropActions() const
-{
-    return Qt::MoveAction;
+    return QModelIndex();
 }
 
 Qt::ItemFlags ContactsModel::flags(const QModelIndex &index) const
 {
-    Qt::ItemFlags re = 0;
+    Qt::ItemFlags re = Qt::ItemIsEnabled;
 
-    if (index.isValid())
-    {
-        re |= Qt::ItemIsSelectable | Qt::ItemIsEnabled;
-        if (index.column() == 0)
-            re |= Qt::ItemIsEditable;
-    }
+    if (index.internalPointer())
+        re |= Qt::ItemIsSelectable | Qt::ItemIsEditable;
 
     return re;
 }
@@ -357,64 +344,31 @@ QVariant ContactsModel::data(const QModelIndex &index, int role) const
 
     if (!user)
     {
-        /* Identity */
-        UserIdentity *identity = identities[index.row()];
+        /* Group */
+        const ContactGroup &group = items[index.row()];
 
-        if (role == PointerRole)
-            return QVariant::fromValue(identity);
-        else if (role == StatusIndicator)
+        switch (role)
         {
-            if (identity->isServiceOnline())
-                return QPixmap(QLatin1String(":/icons/status-online.png"));
-            else
-                return QPixmap(QLatin1String(":/icons/status-offline.png"));
-        }
-
-        switch (index.column())
-        {
-        case 0:
-            if (role == Qt::DisplayRole || role == Qt::EditRole)
-                return identity->nickname();
-            else if (role == Qt::DecorationRole)
-                return identity->avatar(TinyAvatar);
-            break;
+        case Qt::DisplayRole:
+        case Qt::EditRole:
+            return group.title;
+        case StatusRole:
+            return group.status;
         }
     }
     else
     {
-        if (role == PointerRole)
+        switch (role)
+        {
+        case Qt::DisplayRole:
+        case Qt::EditRole:
+            return user->nickname();
+        case Qt::DecorationRole:
+            return user->avatar(TinyAvatar);
+        case PointerRole:
             return QVariant::fromValue(user);
-        else if (role == StatusIndicator)
-        {
-            if (user->isConnected())
-                return QPixmap(QLatin1String(":/icons/status-online.png"));
-            else
-                return QPixmap(QLatin1String(":/icons/status-offline.png"));
-        }
-        else if (role == AlertRole)
-        {
-            ChatWidget *chat = ChatWidget::widgetForUser(user, false);
-            return (chat && chat->unreadMessages());
-        }
-
-        switch (index.column())
-        {
-        case 0:
-            if (role == Qt::DisplayRole || role == Qt::EditRole)
-                return user->nickname();
-            else if (role == Qt::DecorationRole)
-                return user->avatar(TinyAvatar);
-            break;
-        case 1:
-            if (role == Qt::DisplayRole)
-                return user->uniqueID;
-            break;
-        case 2:
-            if (role == Qt::DisplayRole)
-                return user->statusLine();
-            else if (role == Qt::ForegroundRole)
-                return user->statusIsError() ? QColor(199, 22, 22) : QColor(Qt::gray);
-            break;
+        case StatusRole:
+            return user->status();
         }
     }
 
@@ -430,28 +384,14 @@ bool ContactsModel::setData(const QModelIndex &index, const QVariant &value, int
     NicknameValidator validator;
 
     ContactUser *user = reinterpret_cast<ContactUser*>(index.internalPointer());
-    if (user)
-    {
-        validator.setValidateUnique(user->identity, user);
-        int pos;
-        if (validator.validate(nickname, pos) != QValidator::Acceptable)
-            return false;
+    if (!user)
+        return false;
 
-        user->setNickname(nickname);
-    }
-    else
-    {
-        if (index.row() < 0 || index.row() >= identities.size())
-            return false;
+    validator.setValidateUnique(user->identity, user);
+    int pos;
+    if (validator.validate(nickname, pos) != QValidator::Acceptable)
+        return false;
 
-        UserIdentity *identity = identities[index.row()];
-
-        int pos;
-        if (validator.validate(nickname, pos) != QValidator::Acceptable)
-            return false;
-
-        identity->setNickname(nickname);
-    }
-
+    user->setNickname(nickname);
     return true;
 }

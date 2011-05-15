@@ -55,29 +55,32 @@ ContactUser::ContactUser(UserIdentity *ident, int id, QObject *parent)
     /* Connection */
     QString host = readSetting("hostname").toString();
     quint16 port = (quint16)readSetting("port", 80).toUInt();
-    pConn = new ProtocolManager(this, host, port);
+    m_conn = new ProtocolManager(this, host, port);
 
     QByteArray remoteSecret = readSetting("remoteSecret").toByteArray();
     if (!remoteSecret.isNull())
-        pConn->setSecret(remoteSecret);
+        m_conn->setSecret(remoteSecret);
 
-    connect(pConn, SIGNAL(primaryConnected()), this, SLOT(onConnected()));
-    connect(pConn, SIGNAL(primaryDisconnected()), this, SLOT(onDisconnected()));
+    connect(m_conn, SIGNAL(primaryConnected()), this, SLOT(onConnected()));
+    connect(m_conn, SIGNAL(primaryDisconnected()), this, SLOT(onDisconnected()));
 
     /* Outgoing request */
-    if (isContactRequest())
+    if (!readSetting("request/status").isNull())
     {
+        m_status = RequestPending;
         OutgoingContactRequest *request = OutgoingContactRequest::requestForUser(this);
         Q_ASSERT(request);
-        connect(request, SIGNAL(statusChanged(int,int)), this, SLOT(updateStatusLine()));
+        Q_UNUSED(request);
     }
+    else
+        m_status = m_conn->isPrimaryConnected() ? Online : Offline;
 }
 
 void ContactUser::loadSettings()
 {
     config->beginGroup(QLatin1String("contacts/") + QString::number(uniqueID));
 
-    pNickname = config->value("nickname", uniqueID).toString();
+    m_nickname = config->value("nickname", uniqueID).toString();
 
     config->endGroup();
 }
@@ -108,68 +111,8 @@ ContactUser *ContactUser::addNewContact(UserIdentity *identity, int id)
     return user;
 }
 
-QString ContactUser::statusLine() const
-{
-    if (isConnected())
-    {
-        ChatWidget *chat = ChatWidget::widgetForUser(const_cast<ContactUser*>(this), false);
-        if (chat && chat->unreadMessages())
-            return tr("%n new message(s)", 0, chat->unreadMessages());
-        return tr("Online");
-    }
-    else if (isContactRequest())
-    {
-        OutgoingContactRequest *request = OutgoingContactRequest::requestForUser(const_cast<ContactUser*>(this));
-        switch (request->status())
-        {
-        case OutgoingContactRequest::Pending:
-        case OutgoingContactRequest::Acknowledged:
-        case OutgoingContactRequest::Accepted:
-            return tr("Contact request pending");
-        case OutgoingContactRequest::Error:
-            return tr("Contact request error");
-        case OutgoingContactRequest::Rejected:
-            return tr("Contact request rejected");
-        }
-    }
-    else
-    {
-        QDateTime lastConnected = readSetting("lastConnected").toDateTime();
-        if (lastConnected.isNull())
-            return tr("Never connected");
-        return timeDifferenceString(lastConnected, QDateTime::currentDateTime());
-    }
-
-    return QString();
-}
-
-bool ContactUser::statusIsError() const
-{
-    if (isContactRequest())
-    {
-        OutgoingContactRequest *request = OutgoingContactRequest::requestForUser(const_cast<ContactUser*>(this));
-        switch (request->status())
-        {
-        case OutgoingContactRequest::Error:
-        case OutgoingContactRequest::Rejected:
-            return true;
-        default:
-            break;
-        }
-    }
-
-    return false;
-}
-
-void ContactUser::updateStatusLine()
-{
-    emit statusLineChanged();
-}
-
 void ContactUser::onConnected()
 {
-    emit connected();
-
     writeSetting("lastConnected", QDateTime::currentDateTime());
 
     if (isContactRequest())
@@ -188,27 +131,33 @@ void ContactUser::onConnected()
         GetSecretCommand *command = new GetSecretCommand(this);
         command->send(conn());
     }
+
+    m_status = Online;
+    emit statusChanged();
+    emit connected();
 }
 
 void ContactUser::onDisconnected()
 {
-    emit disconnected();
-
     writeSetting("lastConnected", QDateTime::currentDateTime());
+
+    m_status = Offline;
+    emit statusChanged();
+    emit disconnected();
 }
 
 void ContactUser::setNickname(const QString &nickname)
 {
-    if (pNickname == nickname)
+    if (m_nickname == nickname)
         return;
 
     /* non-critical, just a safety net for UI checks */
     Q_ASSERT(!identity->contacts.lookupNickname(nickname));
 
-    pNickname = nickname;
+    m_nickname = nickname;
 
     writeSetting("nickname", nickname);
-    emit statusLineChanged();
+    emit nicknameChanged();
 }
 
 QString ContactUser::hostname() const
@@ -293,21 +242,6 @@ void ContactUser::setAvatar(QImage image)
     }
 }
 
-QString ContactUser::notesText() const
-{
-    return readSetting("notes").toString();
-}
-
-void ContactUser::setNotesText(const QString &text)
-{
-    QString key = QString::fromLatin1("contacts/%1/notes").arg(uniqueID);
-
-    if (text.isEmpty())
-        config->remove(key);
-    else
-        config->setValue(key, text);
-}
-
 void ContactUser::deleteContact()
 {
     /* Anything that uses ContactUser is required to either respond to the contactDeleted signal
@@ -328,11 +262,22 @@ void ContactUser::deleteContact()
 
     emit contactDeleted(this);
 
-    pConn->disconnectAll();
-    delete pConn;
-    pConn = 0;
+    m_conn->disconnectAll();
+    delete m_conn;
+    m_conn = 0;
 
     config->remove(QLatin1String("contacts/") + QString::number(uniqueID));
 
     deleteLater();
+}
+
+QString ContactUser::statusString(Status status)
+{
+    switch (status)
+    {
+    case Online: return tr("Online");
+    case Offline: return tr("Offline");
+    case RequestPending: return tr("Pending Requests");
+    default: return QString();
+    }
 }

@@ -67,7 +67,6 @@ ChatWidget *ChatWidget::widgetForUser(ContactUser *u, bool create)
     {
         widget = new ChatWidget(u);
         userMap.insert(u, widget);
-        uiMain->addChatWidget(widget);
     }
 
     return widget;

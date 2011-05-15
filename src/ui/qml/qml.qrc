@@ -1,0 +1,17 @@
+<RCC>
+    <qresource prefix="/ui">
+        <file>main.qml</file>
+        <file>Avatar.qml</file>
+        <file>ChatArea.qml</file>
+        <file>ContactGroupView.qml</file>
+        <file>ContactList.qml</file>
+        <file>ContactListGroup.qml</file>
+        <file>ContactListItem.qml</file>
+        <file>ContactPage.qml</file>
+        <file>PageSwitcher.qml</file>
+        <file>PopoutClickArea.qml</file>
+        <file>PopoutItem.qml</file>
+        <file>switcher.js</file>
+        <file>TorsionToolBar.qml</file>
+    </qresource>
+</RCC>

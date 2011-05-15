@@ -30,36 +30,64 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef CONTACTITEMDELEGATE_H
-#define CONTACTITEMDELEGATE_H
+#ifndef POPOUTMANAGER_H
+#define POPOUTMANAGER_H
 
-#include "ContactsView.h"
-#include <QStyledItemDelegate>
+#include <QObject>
+#include <QGraphicsView>
 
-class ContactsViewDelegate;
-
-class ContactItemDelegate : public QStyledItemDelegate
+class PopoutManager : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit ContactItemDelegate(ContactsViewDelegate *parent);
+    QGraphicsView * const mainWindow;
 
-    bool pageHitTest(const QSize &size, const QPoint &point, ContactsView::Page &hitPage) const;
+    explicit PopoutManager(QGraphicsView *mainWindow);
 
-    virtual QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const;
-    virtual void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+public slots:
+    QObject *createWindow(const QRectF &rect);
 
-    virtual QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const;
-    virtual void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const;
-    virtual void setEditorData(QWidget *editor, const QModelIndex &index) const;
-    virtual void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const;
+private:
+    qreal wPos;
 
-private slots:
-    void editingFinished();
-
-protected:
-    ContactsViewDelegate *parentDelegate;
+    QPoint scenePosToGlobal(const QPointF &scenePos);
 };
 
-#endif // CONTACTITEMDELEGATE_H
+/* We can probably avoid PopoutManager entirely by making this constructable.. */
+class PopoutWindow : public QGraphicsView
+{
+    Q_OBJECT
+
+    Q_PROPERTY(int width READ width WRITE setWidth NOTIFY widthChanged)
+    Q_PROPERTY(int height READ height WRITE setHeight NOTIFY heightChanged)
+    Q_PROPERTY(qreal sceneX READ sceneX)
+    Q_PROPERTY(qreal sceneY READ sceneY)
+
+public:
+    PopoutWindow(QWidget *parent = 0);
+
+    qreal sceneX() const { return sceneRect().x(); }
+    qreal sceneY() const { return sceneRect().y(); }
+
+    Q_INVOKABLE void moveOffset(int dx, int dy)
+    {
+        move(x() + dx, y() + dy);
+    }
+
+public slots:
+    void setWidth(int w) { resize(w, height()); }
+    void setHeight(int h) { resize(width(), h); }
+    bool close() { return QGraphicsView::close(); }
+
+signals:
+    void widthChanged(int width);
+    void heightChanged(int height);
+    void closed();
+
+protected:
+    virtual void resizeEvent(QResizeEvent *event);
+    virtual void closeEvent(QCloseEvent *event);
+};
+
+#endif // POPOUTMANAGER_H

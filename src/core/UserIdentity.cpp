@@ -123,6 +123,7 @@ void UserIdentity::setNickname(const QString &nick)
 
     m_nickname = nick;
     writeSetting("nickname", nick);
+    emit nicknameChanged();
 }
 
 QString UserIdentity::avatarCacheKey(AvatarSize size)
@@ -189,7 +190,10 @@ void UserIdentity::setAvatar(QImage image)
 void UserIdentity::onStatusChanged(int newStatus, int oldStatus)
 {
     if (oldStatus == Tor::HiddenService::NotCreated && newStatus > oldStatus)
+    {
         removeSetting("createNewService");
+        emit contactIDChanged();
+    }
     emit statusChanged();
 }
 

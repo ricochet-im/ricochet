@@ -22,4 +22,8 @@
         <file>avatar-placeholder.png</file>
         <file>vidalia-tray.png</file>
     </qresource>
+    <qresource prefix="/ui">
+        <file>avatar-border.png</file>
+        <file>popout.png</file>
+    </qresource>
 </RCC>

@@ -56,6 +56,9 @@ class UserIdentity : public QObject
 
     friend class IdentityManager;
 
+    Q_PROPERTY(QString nickname READ nickname WRITE setNickname NOTIFY nicknameChanged)
+    Q_PROPERTY(QString contactID READ contactID NOTIFY contactIDChanged)
+
 public:
     const int uniqueID;
     ContactsManager contacts;
@@ -97,6 +100,8 @@ public:
 
 signals:
     void statusChanged();
+    void contactIDChanged(); // only possible during creation
+    void nicknameChanged();
     void settingsChanged(const QString &key);
 
 private slots:

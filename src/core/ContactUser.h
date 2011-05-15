@@ -54,33 +54,43 @@ class ContactUser : public QObject
 {
     Q_OBJECT
     Q_DISABLE_COPY(ContactUser)
+    Q_ENUMS(Status)
 
-    Q_PROPERTY(QString nickname READ nickname WRITE setNickname STORED true)
+    Q_PROPERTY(QString nickname READ nickname WRITE setNickname NOTIFY nicknameChanged)
+    Q_PROPERTY(QString contactID READ contactID CONSTANT)
+    Q_PROPERTY(Status status READ status NOTIFY statusChanged)
 
     friend class ContactsManager;
 
 public:
+    enum Status
+    {
+        Online,
+        Offline,
+        RequestPending
+    };
+
     UserIdentity * const identity;
     const int uniqueID;
 
     explicit ContactUser(UserIdentity *identity, int uniqueID, QObject *parent = 0);
 
-    ProtocolManager *conn() const { return pConn; }
-    bool isConnected() const { return pConn->isPrimaryConnected(); }
-    bool isConnectable() const { return pConn->isConnectable(); }
+    ProtocolManager *conn() const { return m_conn; }
+    bool isConnected() const { return status() == Online; }
+    bool isConnectable() const { return m_conn->isConnectable(); }
 
-    bool isContactRequest() const { return !readSetting(QLatin1String("request/status")).isNull(); }
+    bool isContactRequest() const { return status() == RequestPending; }
 
-    const QString &nickname() const { return pNickname; }
+    const QString &nickname() const { return m_nickname; }
     /* Hostname is in the onion hostname format, i.e. it ends with .onion */
     QString hostname() const;
     /* Contact ID in the @Torsion format */
     QString contactID() const;
-    QString notesText() const;
     QPixmap avatar(AvatarSize size);
 
-    QString statusLine() const;
-    bool statusIsError() const;
+    Status status() const { return m_status; }
+    QString statusString() const { return statusString(m_status); }
+    static QString statusString(Status status);
 
     QVariant readSetting(const QString &key, const QVariant &defaultValue = QVariant()) const;
     QVariant readSetting(const char *key, const QVariant &defaultValue = QVariant()) const
@@ -106,14 +116,13 @@ public slots:
     void setNickname(const QString &nickname);
     void setHostname(const QString &hostname);
     void setAvatar(QImage image);
-    void setNotesText(const QString &notesText);
-
-    void updateStatusLine();
 
 signals:
+    void statusChanged();
     void connected();
     void disconnected();
-    void statusLineChanged();
+
+    void nicknameChanged();
     void contactDeleted(ContactUser *user);
 
 private slots:
@@ -121,8 +130,9 @@ private slots:
     void onDisconnected();
 
 private:
-    ProtocolManager *pConn;
-    QString pNickname;
+    ProtocolManager *m_conn;
+    QString m_nickname;
+    Status m_status;
 
     /* See ContactsManager::addContact */
     static ContactUser *addNewContact(UserIdentity *identity, int id);

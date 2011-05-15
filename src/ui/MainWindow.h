@@ -33,19 +33,16 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QMainWindow>
+#include <QDeclarativeView>
 #include <QWeakPointer>
 #include <QPointer>
 
 class ContactUser;
 class UserIdentity;
-class ChatWidget;
-class NotificationWidget;
 class IncomingContactRequest;
 class OutgoingContactRequest;
-class QAction;
 
-class MainWindow : public QMainWindow
+class MainWindow : public QDeclarativeView
 {
     Q_OBJECT
     Q_DISABLE_COPY(MainWindow)
@@ -53,13 +50,10 @@ class MainWindow : public QMainWindow
     friend class ChatWidget;
 
 public:
-    QAction *actOptions;
-
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-    NotificationWidget *showNotification(const QString &message, QObject *receiver = 0, const char *slot = 0);
-    QList<NotificationWidget*> notifications() const { return m_notifications; }
+    void showNotification(const QString &message, QObject *receiver = 0, const char *slot = 0);
 
 public slots:
     void openAddContactDialog(UserIdentity *identity);
@@ -71,10 +65,6 @@ protected:
     virtual void closeEvent(QCloseEvent *);
 
 private slots:
-    void contactPageChanged(int page, QObject *userObject);
-
-    void notificationRemoved(QObject *object);
-
     /* Incoming contact request notifications */
     void updateContactRequests();
     void showContactRequest();
@@ -82,31 +72,12 @@ private slots:
     /* Outgoing contact request notifications */
     void outgoingRequestAdded(OutgoingContactRequest *request);
     void updateOutgoingRequest(OutgoingContactRequest *request = 0);
-    void showRequestInfo();
-    void clearRequestNotification(ContactUser *user);
 
     /* Tor status notifications */
     void updateTorStatus();
-    void enableTorNotification();
 
 private:
-    class ContactsView *contactsView;
-    class QStackedWidget *chatArea;
-
-    QList<NotificationWidget*> m_notifications;
-#if QT_VERSION >= 0x040600
-    QWeakPointer<NotificationWidget> contactReqNotification;
-    QWeakPointer<NotificationWidget> torNotification;
-#else
-    QPointer<NotificationWidget> contactReqNotification;
-    QPointer<NotificationWidget> torNotification;
-#endif
-    bool torNotificationEnabled;
-
-    void createActions();
-    void createContactsView();
-    void createChatArea();
-    void addChatWidget(ChatWidget *widget);
+    void createContactsModel();
 };
 
 extern MainWindow *uiMain;

@@ -333,7 +333,6 @@ void ContactInfoPage::createNotes(QBoxLayout *layout)
     /* Edit */
     notesEdit = new QTextEdit;
     notesEdit->setAcceptRichText(false);
-    notesEdit->insertPlainText(user->notesText());
     QFont notesFont;
     notesFont.setStyleHint(QFont::SansSerif);
     notesFont.setPixelSize(12);
@@ -346,7 +345,6 @@ void ContactInfoPage::saveNotes()
     if (!notesEdit->document()->isModified())
         return;
 
-    user->setNotesText(notesEdit->document()->toPlainText());
     notesEdit->document()->setModified(false);
 }
 

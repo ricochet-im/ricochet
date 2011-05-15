@@ -29,11 +29,9 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-QT += core \
-    gui \
-    network
 TARGET = Torsion
 TEMPLATE = app
+QT += core gui network declarative
 
 CONFIG(release,debug|release):DEFINES += QT_NO_DEBUG_OUTPUT QT_NO_WARNING_OUTPUT
 
@@ -90,7 +88,6 @@ SOURCES += src/main.cpp \
     src/ui/MainWindow.cpp \
     src/ui/ChatWidget.cpp \
     src/ContactsModel.cpp \
-    src/ui/ContactItemDelegate.cpp \
     src/tor/TorControlManager.cpp \
     src/tor/TorControlSocket.cpp \
     src/tor/TorControlCommand.cpp \
@@ -104,7 +101,6 @@ SOURCES += src/main.cpp \
     src/protocol/ProtocolManager.cpp \
     src/protocol/PingCommand.cpp \
     src/ui/ContactInfoPage.cpp \
-    src/ui/ContactsView.cpp \
     src/protocol/IncomingSocket.cpp \
     src/protocol/ChatMessageCommand.cpp \
     src/protocol/CommandHandler.cpp \
@@ -139,22 +135,21 @@ SOURCES += src/main.cpp \
     src/ui/torconfig/VidaliaExitWidget.cpp \
     src/ui/torconfig/VidaliaStartWidget.cpp \
     src/ui/torconfig/VidaliaTestWidget.cpp \
-    src/ui/IdentityItemDelegate.cpp \
     src/core/UserIdentity.cpp \
     src/core/IdentityManager.cpp \
-    src/ui/ContactsViewDelegate.cpp \
     src/ui/IdentityInfoPage.cpp \
     src/tor/autoconfig/BundledTorManager.cpp \
     src/utils/OSUtil.cpp \
     src/ui/ChatTextWidget.cpp \
     src/utils/AppSettings.cpp \
     src/ui/ExpandingTextEdit.cpp \
-    src/ui/ChatTextInput.cpp
+    src/ui/ChatTextInput.cpp \
+    src/ui/PopoutManager.cpp \
+    src/ui/UIHelper.cpp
 
 HEADERS += src/ui/MainWindow.h \
     src/ui/ChatWidget.h \
     src/ContactsModel.h \
-    src/ui/ContactItemDelegate.h \
     src/tor/TorControlManager.h \
     src/tor/TorControlSocket.h \
     src/tor/TorControlCommand.h \
@@ -168,7 +163,6 @@ HEADERS += src/ui/MainWindow.h \
     src/protocol/ProtocolManager.h \
     src/protocol/PingCommand.h \
     src/ui/ContactInfoPage.h \
-    src/ui/ContactsView.h \
     src/protocol/IncomingSocket.h \
     src/main.h \
     src/protocol/ChatMessageCommand.h \
@@ -204,19 +198,36 @@ HEADERS += src/ui/MainWindow.h \
     src/ui/torconfig/VidaliaExitWidget.h \
     src/ui/torconfig/VidaliaStartWidget.h \
     src/ui/torconfig/VidaliaTestWidget.h \
-    src/ui/IdentityItemDelegate.h \
     src/core/UserIdentity.h \
     src/core/IdentityManager.h \
-    src/ui/ContactsViewDelegate.h \
     src/ui/IdentityInfoPage.h \
     src/tor/autoconfig/BundledTorManager.h \
     src/utils/OSUtil.h \
     src/ui/ChatTextWidget.h \
     src/utils/AppSettings.h \
     src/ui/ExpandingTextEdit.h \
-    src/ui/ChatTextInput.h
+    src/ui/ChatTextInput.h \
+    src/ui/PopoutManager.h \
+    src/ui/PageSwitcherBase.h \
+    src/ui/UIHelper.h
 
 RESOURCES += res/resources.qrc \
-    translation/embedded.qrc
+    translation/embedded.qrc \
+    src/ui/qml/qml.qrc
 
 TRANSLATIONS = translation/torsion.ts
+
+OTHER_FILES += \
+    src/ui/qml/main.qml \
+    src/ui/qml/TorsionToolBar.qml \
+    src/ui/qml/switcher.js \
+    src/ui/qml/PopoutItem.qml \
+    src/ui/qml/PopoutClickArea.qml \
+    src/ui/qml/PageSwitcher.qml \
+    src/ui/qml/ContactPage.qml \
+    src/ui/qml/ContactListItem.qml \
+    src/ui/qml/ContactListGroup.qml \
+    src/ui/qml/ContactList.qml \
+    src/ui/qml/ContactGroupView.qml \
+    src/ui/qml/ChatArea.qml \
+    src/ui/qml/Avatar.qml

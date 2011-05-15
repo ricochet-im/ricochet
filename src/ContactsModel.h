@@ -48,18 +48,15 @@ public:
     enum
     {
         PointerRole = Qt::UserRole,
-        StatusIndicator,
+        StatusRole,
         AlertRole /* bool */
     };
 
-    explicit ContactsModel(QObject *parent = 0);
+    UserIdentity * const identity;
 
-    bool indexIsContact(const QModelIndex &index) const;
+    explicit ContactsModel(UserIdentity *identity, QObject *parent = 0);
 
     QModelIndex indexOfContact(ContactUser *user) const;
-    QModelIndex indexOfIdentity(UserIdentity *user) const;
-
-    void moveRow(int from, int to, const QModelIndex &parent = QModelIndex());
 
     virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
     virtual int columnCount(const QModelIndex &parent = QModelIndex()) const;
@@ -67,7 +64,6 @@ public:
     virtual QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;
     virtual QModelIndex parent(const QModelIndex &child) const;
 
-    virtual Qt::DropActions supportedDropActions() const;
     virtual Qt::ItemFlags flags(const QModelIndex &index) const;
 
     virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
@@ -78,15 +74,18 @@ private slots:
     void contactAdded(ContactUser *user);
     void contactRemoved(ContactUser *user);
 
-    void updateIdentity(UserIdentity *identity = 0);
-
 private:
-    QList<UserIdentity*> identities;
-    QList<QList<ContactUser*> > contacts;
+    struct ContactGroup
+    {
+        QString title;
+        int status;
+        QList<ContactUser*> contacts;
+    };
+
+    QList<ContactGroup> items;
 
     void populate();
-    void saveIdentityPositions();
-    void saveContactPositions(int identityRow);
+    static bool groupSort(const ContactGroup &g1, const ContactGroup &g2);
 };
 
 #endif // CONTACTSMODEL_H

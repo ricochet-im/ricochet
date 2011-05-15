@@ -152,8 +152,8 @@ QLayout *IdentityInfoPage::createButtons()
 
     layout->setColumnStretch(column++, 1);
 
-    QAction *actions[] = { actAddContact, actChangeAvatar, actRename, uiMain->actOptions };
-    for (int i = 0; i < 4; ++i)
+    QAction *actions[] = { actAddContact, actChangeAvatar, actRename };
+    for (int i = 0; i < 3; ++i)
     {
         QToolButton *btn = new QToolButton;
         btn->setFixedHeight(23);
