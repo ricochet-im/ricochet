@@ -44,6 +44,7 @@
 #include "protocol/ProtocolManager.h"
 
 class UserIdentity;
+struct ChatMessageData;
 
 /* Represents a user on the contact list.
  * All persistent uses of a ContactUser instance must either connect to the
@@ -61,6 +62,7 @@ class ContactUser : public QObject
     Q_PROPERTY(Status status READ status NOTIFY statusChanged)
 
     friend class ContactsManager;
+    friend class ChatMessageCommand;
 
 public:
     enum Status
@@ -112,6 +114,8 @@ public:
 
     void deleteContact();
 
+    Q_INVOKABLE void sendChatMessage(const QString &text);
+
 public slots:
     void setNickname(const QString &nickname);
     void setHostname(const QString &hostname);
@@ -125,6 +129,9 @@ signals:
     void nicknameChanged();
     void contactDeleted(ContactUser *user);
 
+    void incomingChatMessage(const ChatMessageData &message);
+    void outgoingChatMessage(const ChatMessageData &message, ChatMessageCommand *command);
+
 private slots:
     void onConnected();
     void onDisconnected();
@@ -133,6 +140,7 @@ private:
     ProtocolManager *m_conn;
     QString m_nickname;
     Status m_status;
+    quint16 m_lastReceivedChatID;
 
     /* See ContactsManager::addContact */
     static ContactUser *addNewContact(UserIdentity *identity, int id);

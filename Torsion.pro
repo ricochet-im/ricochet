@@ -86,7 +86,6 @@ DEFINES += QT_NO_CAST_FROM_ASCII QT_NO_CAST_TO_ASCII
 
 SOURCES += src/main.cpp \
     src/ui/MainWindow.cpp \
-    src/ui/ChatWidget.cpp \
     src/ContactsModel.cpp \
     src/tor/TorControlManager.cpp \
     src/tor/TorControlSocket.cpp \
@@ -144,7 +143,6 @@ SOURCES += src/main.cpp \
     src/ui/UIHelper.cpp
 
 HEADERS += src/ui/MainWindow.h \
-    src/ui/ChatWidget.h \
     src/ContactsModel.h \
     src/tor/TorControlManager.h \
     src/tor/TorControlSocket.h \
@@ -222,4 +220,5 @@ OTHER_FILES += \
     src/ui/qml/ContactList.qml \
     src/ui/qml/ContactGroupView.qml \
     src/ui/qml/ChatArea.qml \
-    src/ui/qml/Avatar.qml
+    src/ui/qml/Avatar.qml \
+    src/ui/qml/ChatInput.qml

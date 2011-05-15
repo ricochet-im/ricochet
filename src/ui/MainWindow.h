@@ -47,8 +47,6 @@ class MainWindow : public QDeclarativeView
     Q_OBJECT
     Q_DISABLE_COPY(MainWindow)
 
-    friend class ChatWidget;
-
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();

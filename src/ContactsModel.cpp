@@ -34,7 +34,6 @@
 #include "core/IdentityManager.h"
 #include "core/ContactsManager.h"
 #include "core/NicknameValidator.h"
-#include "ui/ChatWidget.h"
 #include <QImage>
 #include <QColor>
 

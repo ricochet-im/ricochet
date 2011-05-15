@@ -62,4 +62,12 @@ private:
     quint8 m_finalReplyState;
 };
 
+struct ChatMessageData
+{
+    QDateTime when;
+    QString text;
+    quint16 messageID;
+    quint64 priorMessageID;
+};
+
 #endif // CHATMESSAGECOMMAND_H

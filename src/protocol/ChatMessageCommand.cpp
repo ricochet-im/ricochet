@@ -32,12 +32,13 @@
 
 #include "ChatMessageCommand.h"
 #include "CommandDataParser.h"
-#include "ui/ChatWidget.h"
 #include <QDateTime>
 #include <QBuffer>
 #include <QDebug>
 
 REGISTER_COMMAND_HANDLER(0x10, ChatMessageCommand)
+
+static const int maxMessageChars = 4000;
 
 ChatMessageCommand::ChatMessageCommand(QObject *parent)
     : ProtocolCommand(parent), m_finalReplyState(0)
@@ -57,6 +58,12 @@ void ChatMessageCommand::send(ProtocolManager *to, const QDateTime &timestamp, c
 
     m_messageText = text;
     m_messageTime = timestamp;
+
+    ChatMessageData message = {
+        timestamp, text, identifier(), lastReceived
+    };
+
+    to->user->outgoingChatMessage(message, this);
 }
 
 void ChatMessageCommand::process(CommandHandler &command)
@@ -73,11 +80,17 @@ void ChatMessageCommand::process(CommandHandler &command)
         return;
     }
 
-    qDebug().nospace() << "Received chat message (time delta " << timestamp << ", prior message "
-            << priorMessageID << "): " << text;
+    text.truncate(maxMessageChars);
 
-    ChatWidget *chat = ChatWidget::widgetForUser(command.user);
-    chat->receiveMessage(QDateTime::currentDateTime().addSecs(-(int)timestamp), text, command.identifier, priorMessageID);
+    ChatMessageData message = {
+        QDateTime::currentDateTime().addSecs(-qint64(timestamp)),
+        text,
+        command.identifier,
+        priorMessageID
+    };
+
+    command.user->m_lastReceivedChatID = command.identifier;
+    command.user->incomingChatMessage(message);
 
     command.sendReply(replyState(true, true, 0x00));
 }

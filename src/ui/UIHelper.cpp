@@ -1,4 +1,5 @@
 #include "UIHelper.h"
+#include "ui/ChatTextWidget.h"
 #include <QTextEdit>
 #include <QDeclarativeItem>
 
@@ -7,13 +8,13 @@ UIHelper::UIHelper(QObject *parent)
 {
 }
 
-QTextEdit *UIHelper::createTextEdit(QDeclarativeItem *proxyItem)
+ChatTextWidget *UIHelper::createChatArea(ContactUser *user, QDeclarativeItem *proxyItem)
 {
-    QTextEdit *textEdit = new QTextEdit;
-    textEdit->setFrameStyle(QFrame::NoFrame);
+    ChatTextWidget *text = new ChatTextWidget(user);
+    text->setFrameStyle(QFrame::NoFrame);
 
-    DeclarativeProxiedProxyWidget *w = new DeclarativeProxiedProxyWidget(proxyItem, textEdit);
+    DeclarativeProxiedProxyWidget *w = new DeclarativeProxiedProxyWidget(proxyItem, text);
     Q_UNUSED(w);
 
-    return textEdit;
+    return text;
 }

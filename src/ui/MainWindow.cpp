@@ -32,7 +32,6 @@
 
 #include "main.h"
 #include "MainWindow.h"
-#include "ChatWidget.h"
 #include "ContactRequestDialog.h"
 #include "ContactAddDialog.h"
 #include "core/UserIdentity.h"

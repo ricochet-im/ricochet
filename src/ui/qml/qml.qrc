@@ -13,5 +13,6 @@
         <file>PopoutItem.qml</file>
         <file>switcher.js</file>
         <file>TorsionToolBar.qml</file>
+        <file>ChatInput.qml</file>
     </qresource>
 </RCC>

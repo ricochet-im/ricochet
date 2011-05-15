@@ -8,10 +8,11 @@ Item {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: textInputArea.top
+    }
 
-        Component.onCompleted: {
-            helper.createTextEdit(textArea)
-        }
+    Connections {
+        target: contactPage
+        onContactChanged: helper.createChatArea(contact, textArea)
     }
 
     Rectangle {
@@ -35,7 +36,7 @@ Item {
             color: "#f2f2f2"
         }
 
-        TextInput {
+        ChatInput {
             id: textInput
             anchors.verticalCenter: parent.verticalCenter
             anchors.verticalCenterOffset: 1
@@ -44,6 +45,10 @@ Item {
             anchors.right: parent.right
             anchors.rightMargin: 4
             z: 1
+
+            onMessageSubmitted: {
+                contact.sendChatMessage(text)
+            }
         }
 
         MouseArea {

@@ -34,10 +34,10 @@
 #include "ContactUser.h"
 #include "UserIdentity.h"
 #include "ContactsManager.h"
-#include "ui/ChatWidget.h"
 #include "utils/DateUtil.h"
 #include "utils/SecureRNG.h"
 #include "protocol/GetSecretCommand.h"
+#include "protocol/ChatMessageCommand.h"
 #include "core/ContactIDValidator.h"
 #include "core/OutgoingContactRequest.h"
 #include <QPixmapCache>
@@ -46,7 +46,7 @@
 #include <QDateTime>
 
 ContactUser::ContactUser(UserIdentity *ident, int id, QObject *parent)
-    : QObject(parent), identity(ident), uniqueID(id)
+    : QObject(parent), identity(ident), uniqueID(id), m_lastReceivedChatID(0)
 {
     Q_ASSERT(uniqueID >= 0);
 
@@ -280,4 +280,23 @@ QString ContactUser::statusString(Status status)
     case RequestPending: return tr("Pending Requests");
     default: return QString();
     }
+}
+
+void ContactUser::sendChatMessage(const QString &text)
+{
+    QDateTime when = QDateTime::currentDateTime();
+
+    if (isConnected())
+    {
+        ChatMessageCommand *command = new ChatMessageCommand;
+        command->send(conn(), when, text, m_lastReceivedChatID);
+    }
+    else
+        qCritical("XXX-UI sendChatMessage offline messaging is not implemented");
+    /*else
+    {
+        int n = addOfflineMessage(when, text);
+        addChatMessage(NULL, (quint16)-1, when, text);
+        changeBlockIdentifier(makeBlockIdentifier(LocalUserMessage, (quint16)-1), makeBlockIdentifier(OfflineMessage, n));
+    }*/
 }

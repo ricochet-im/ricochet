@@ -5,8 +5,8 @@
 #include <QGraphicsProxyWidget>
 #include <QDeclarativeItem>
 
-class QTextEdit;
-class QDeclarativeItem;
+class ChatTextWidget;
+class ContactUser;
 
 class UIHelper : public QObject
 {
@@ -15,7 +15,7 @@ class UIHelper : public QObject
 public:
     explicit UIHelper(QObject *parent = 0);
 
-    Q_INVOKABLE QTextEdit *createTextEdit(QDeclarativeItem *proxyItem);
+    Q_INVOKABLE ChatTextWidget *createChatArea(ContactUser *user, QDeclarativeItem *proxyItem);
 };
 
 class DeclarativeProxiedProxyWidget : public QGraphicsProxyWidget

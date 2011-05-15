@@ -34,16 +34,25 @@
 #define CHATTEXTWIDGET_H
 
 #include <QTextEdit>
+#include <QDateTime>
+#include "core/ContactUser.h"
+
+/* TODO: Refactor irrelevant logic out of here and into core methods;
+ * notably, we shouldn't be managing offline messaging */
+
+struct ChatMessageData;
 
 class ChatTextWidget : public QTextEdit
 {
     Q_OBJECT
     Q_DISABLE_COPY(ChatTextWidget)
 
-    Q_PROPERTY(QFont font READ font WRITE setFont NOTIFY fontChanged STORED true)
+    Q_PROPERTY(QFont font READ font WRITE setFont NOTIFY fontChanged)
 
 public:
-    explicit ChatTextWidget(QWidget *parent = 0);
+    ContactUser * const user;
+
+    explicit ChatTextWidget(ContactUser *user, QWidget *parent = 0);
 
 public slots:
     void scrollToBottom();
@@ -52,9 +61,46 @@ public slots:
 signals:
     void fontChanged(const QFont &font);
 
+private slots:
+    void receiveMessage(const ChatMessageData &message);
+    void outgoingMessage(const ChatMessageData &message, ChatMessageCommand *command);
+    void outgoingMessageReply();
+    void sendOfflineMessages();
+
 protected:
     virtual void contextMenuEvent(QContextMenuEvent *e);
     virtual bool event(QEvent *e);
+
+private:
+    typedef QVector<QPair<QDateTime,QString> > OfflineMessageList;
+    OfflineMessageList offlineMessages;
+    QDate lastMessageDate;
+    bool useMessageOrdering;
+
+    void addChatMessage(ContactUser *user, quint16 messageID, const QDateTime &when, const QString &text,
+                        quint16 priorMessage = 0);
+
+    /* The upper 16 bits of a text block identifier hold the message type; the lower 16 are a type-specific identifier */
+    enum MessageType
+    {
+        LocalUserMessage = 1,
+        RemoteUserMessage,
+        OfflineMessage
+    };
+
+    int makeBlockIdentifier(MessageType type, quint16 messageid) const
+    {
+        return int((unsigned(type) << 16) | unsigned(messageid));
+    }
+    MessageType blockIdentifierType(int identifier) const
+    {
+        return static_cast<MessageType>(unsigned(identifier) >> 16);
+    }
+
+    bool findBlockIdentifier(int identifier, class QTextBlock &block);
+    bool changeBlockIdentifier(int oldIdentifier, int newIdentifier);
+
+    int addOfflineMessage(const QDateTime &when, const QString &message);
 };
 
 #endif // CHATTEXTWIDGET_H
