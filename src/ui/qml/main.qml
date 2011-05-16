@@ -37,7 +37,6 @@ Rectangle {
     id: window
     width: 360
     height: 360
-    focus: true
 
     TorsionToolBar {
         id: toolBar
@@ -70,15 +69,6 @@ Rectangle {
             anchors.right: window.right
             anchors.bottom: window.bottom
             visible: PageSwitcherBase.isCurrentItem || state == "windowed"
-        }
-
-    }
-
-    Keys.onPressed: {
-        if (event.key == Qt.Key_O)
-        {
-            contactList.currentContact.status = Number(!contactList.currentContact.status)
-            event.accepted = true
         }
     }
 }

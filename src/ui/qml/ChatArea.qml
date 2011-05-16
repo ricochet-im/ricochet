@@ -77,6 +77,7 @@ Item {
             anchors.right: parent.right
             anchors.rightMargin: 4
             z: 1
+            focus: true
 
             onMessageSubmitted: {
                 contact.sendChatMessage(text)

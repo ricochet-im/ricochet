@@ -138,7 +138,6 @@ SOURCES += src/main.cpp \
     src/ui/ChatTextWidget.cpp \
     src/utils/AppSettings.cpp \
     src/ui/ExpandingTextEdit.cpp \
-    src/ui/ChatTextInput.cpp \
     src/ui/PopoutManager.cpp \
     src/ui/UIHelper.cpp \
     src/ui/AvatarImageProvider.cpp
@@ -197,7 +196,6 @@ HEADERS += src/ui/MainWindow.h \
     src/ui/ChatTextWidget.h \
     src/utils/AppSettings.h \
     src/ui/ExpandingTextEdit.h \
-    src/ui/ChatTextInput.h \
     src/ui/PopoutManager.h \
     src/ui/PageSwitcherBase.h \
     src/ui/UIHelper.h \

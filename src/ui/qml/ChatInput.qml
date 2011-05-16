@@ -33,6 +33,8 @@
 import Qt 4.7
 
 TextEdit {
+    textFormat: TextEdit.PlainText
+
     signal messageSubmitted(string text)
 
     function submitMessage() {
