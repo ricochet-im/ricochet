@@ -139,6 +139,13 @@ int FileLock::acquire()
     if (isLocked())
         return 1;
 
+    QDir parentDir = QFileInfo(lockFile()).dir();
+    if (!parentDir.exists())
+    {
+        if (!parentDir.mkpath(parentDir.absolutePath()))
+            qWarning("Error when creating directory for lock file");
+    }
+
     handle = CreateFile(reinterpret_cast<LPCWSTR>(lockFile().utf16()), GENERIC_READ | GENERIC_WRITE,
                         FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, 0, OPEN_ALWAYS,
                         FILE_ATTRIBUTE_HIDDEN | FILE_FLAG_DELETE_ON_CLOSE, 0);
@@ -174,6 +181,13 @@ int FileLock::acquire()
 {
     if (isLocked())
         return 1;
+
+    QDir parentDir = QFileInfo(lockFile()).dir();
+    if (!parentDir.exists())
+    {
+        if (!parentDir.mkpath(parentDir.absolutePath()))
+            qWarning("Error when creating directory for lock file");
+    }
 
     fd = open(lockFile().toLocal8Bit().constData(), O_RDWR | O_CREAT | O_TRUNC, 0600);
     if (fd < 0)
