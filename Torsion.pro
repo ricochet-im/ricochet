@@ -140,7 +140,8 @@ SOURCES += src/main.cpp \
     src/ui/ExpandingTextEdit.cpp \
     src/ui/PopoutManager.cpp \
     src/ui/UIHelper.cpp \
-    src/ui/AvatarImageProvider.cpp
+    src/ui/AvatarImageProvider.cpp \
+    src/ui/TopLevelWindow.cpp
 
 HEADERS += src/ui/MainWindow.h \
     src/ContactsModel.h \
@@ -199,7 +200,8 @@ HEADERS += src/ui/MainWindow.h \
     src/ui/PopoutManager.h \
     src/ui/PageSwitcherBase.h \
     src/ui/UIHelper.h \
-    src/ui/AvatarImageProvider.h
+    src/ui/AvatarImageProvider.h \
+    src/ui/TopLevelWindow.h
 
 RESOURCES += res/resources.qrc \
     translation/embedded.qrc \

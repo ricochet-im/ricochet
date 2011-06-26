@@ -45,6 +45,7 @@
 #include "ui/PageSwitcherBase.h"
 #include "ui/UIHelper.h"
 #include "ui/AvatarImageProvider.h"
+#include "ui/TopLevelWindow.h"
 #include "ContactsModel.h"
 #include <QToolBar>
 #include <QBoxLayout>
@@ -68,6 +69,7 @@ MainWindow::MainWindow(QWidget *parent)
     qmlRegisterUncreatableType<ContactUser>("org.torsionim.torsion", 1, 0, "ContactUser", QString());
     qmlRegisterUncreatableType<UserIdentity>("org.torsionim.torsion", 1, 0, "UserIdentity", QString());
     qmlRegisterUncreatableType<PopoutManager>("org.torsionim.torsion", 1, 0, "PopoutManager", QString());
+    qmlRegisterType<TopLevelWindow>("org.torsionim.torsion", 1, 0, "TopLevelWindow");
     qmlRegisterUncreatableType<UIHelper>("org.torsionim.torsion", 1, 0, "UIHelper", QString());
     qmlRegisterType<PageSwitcherBase>("org.torsionim.torsion", 1, 0, "PageSwitcherBase");
 
