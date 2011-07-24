@@ -65,26 +65,6 @@ QObject *PopoutManager::createWindow(const QRectF &rect)
     return w;
 }
 
-QPoint PopoutManager::scenePosToGlobal(const QPointF &scenePos)
-{
-    /* Try the active window first */
-    QGraphicsView *v = qobject_cast<QGraphicsView*>(QApplication::activeWindow());
-    if (v && v->scene() == mainWindow->scene() && v->sceneRect().contains(scenePos))
-        return v->viewport()->mapToGlobal(v->mapFromScene(scenePos));
-
-    /* Try all other views of this scene */
-    foreach (v, mainWindow->scene()->views())
-    {
-        /* Assuming that only one view is visualizing any part of the scene
-         * at a time; if this doesn't hold true and the activeWindow test fails,
-         * this may position against the incorrect window. */
-        if (v->sceneRect().contains(scenePos))
-            return v->viewport()->mapToGlobal(v->mapFromScene(scenePos));
-    }
-
-    return QPoint();
-}
-
 PopoutWindow::PopoutWindow(QWidget *parent)
     : QGraphicsView(parent)
 {

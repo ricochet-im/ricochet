@@ -34,6 +34,7 @@
 #include "ChatTextWidget.h"
 #include "core/UserIdentity.h"
 #include "protocol/ChatMessageCommand.h"
+#include "UIHelper.h"
 #include <QScrollBar>
 #include <QContextMenuEvent>
 #include <QMenu>
@@ -88,12 +89,28 @@ void ChatTextWidget::scrollToBottom()
 void ChatTextWidget::contextMenuEvent(QContextMenuEvent *e)
 {
     QMenu *menu = createStandardContextMenu(e->pos());
+    QPoint pos = e->globalPos();
+
+#ifdef Q_OS_MAC
+    /* QTBUG-10683 workaround; avoid QGraphicsProxyWidget by creating another menu */
+    QMenu *menu2 = new QMenu;
+    menu2->addActions(menu->actions());
+    qSwap(menu, menu2);
+    DeclarativeProxiedProxyWidget *proxy = (DeclarativeProxiedProxyWidget*)property("declarativeProxyWidget").value<QObject*>();
+    if (proxy)
+        pos = proxy->mapToScreen(e->pos());
+#endif
+
     menu->addAction(tr("Clear"), this, SLOT(clear()), QKeySequence(Qt::Key_F10));
     menu->addSeparator();
     menu->addAction(tr("Change Font"), this, SLOT(showFontDialog()));
 
-    menu->exec(e->globalPos());
+    menu->exec(pos);
     delete menu;
+
+#ifdef Q_OS_MAC
+    delete menu2;
+#endif
 }
 
 bool ChatTextWidget::event(QEvent *e)

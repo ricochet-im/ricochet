@@ -34,6 +34,8 @@
 #include "ui/ChatTextWidget.h"
 #include <QTextEdit>
 #include <QDeclarativeItem>
+#include <QGraphicsView>
+#include <QApplication>
 
 UIHelper::UIHelper(QObject *parent)
     : QObject(parent)
@@ -49,4 +51,24 @@ ChatTextWidget *UIHelper::createChatArea(ContactUser *user, QDeclarativeItem *pr
     Q_UNUSED(w);
 
     return text;
+}
+
+QPoint UIHelper::scenePosToGlobal(const QGraphicsScene *scene, const QPointF &scenePos)
+{
+    /* Try the active window first */
+    QGraphicsView *v = qobject_cast<QGraphicsView*>(QApplication::activeWindow());
+    if (v && v->scene() == scene && v->sceneRect().contains(scenePos))
+        return v->viewport()->mapToGlobal(v->mapFromScene(scenePos));
+
+    /* Try all other views of this scene */
+    foreach (v, scene->views())
+    {
+        /* Assuming that only one view is visualizing any part of the scene
+         * at a time; if this doesn't hold true and the activeWindow test fails,
+         * this may position against the incorrect window. */
+        if (v->sceneRect().contains(scenePos))
+            return v->viewport()->mapToGlobal(v->mapFromScene(scenePos));
+    }
+
+    return QPoint();
 }

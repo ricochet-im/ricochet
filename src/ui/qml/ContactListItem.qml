@@ -62,7 +62,7 @@ Item {
 
     MouseArea {
         anchors.fill: parent
-        onClicked: { ListView.view.currentIndex = index; setCurrentContact(contact, contactListItem) }
+        onClicked: { contactListItem.ListView.view.currentIndex = index; setCurrentContact(contact, contactListItem) }
     }
 
     Component.onCompleted: {

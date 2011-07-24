@@ -48,6 +48,8 @@ public:
     explicit UIHelper(QObject *parent = 0);
 
     Q_INVOKABLE ChatTextWidget *createChatArea(ContactUser *user, QDeclarativeItem *proxyItem);
+
+    static QPoint scenePosToGlobal(const QGraphicsScene *scene, const QPointF &scenePos);
 };
 
 class DeclarativeProxiedProxyWidget : public QGraphicsProxyWidget
@@ -58,11 +60,17 @@ public:
     DeclarativeProxiedProxyWidget(QDeclarativeItem *proxyItem, QWidget *widget)
         : QGraphicsProxyWidget(proxyItem), proxyItem(proxyItem)
     {
+        widget->setProperty("declarativeProxyWidget", QVariant::fromValue((QObject*)this));
         setWidget(widget);
         updateWidgetGeometry();
 
         connect(proxyItem, SIGNAL(widthChanged()), SLOT(updateWidgetGeometry()));
         connect(proxyItem, SIGNAL(heightChanged()), SLOT(updateWidgetGeometry()));
+    }
+
+    QPoint mapToScreen(const QPoint &pos)
+    {
+        return UIHelper::scenePosToGlobal(scene(), mapToScene(pos));
     }
 
 public slots:

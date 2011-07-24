@@ -35,6 +35,7 @@
 
 #include <QObject>
 #include <QGraphicsView>
+#include "UIHelper.h"
 
 class PopoutManager : public QObject
 {
@@ -51,7 +52,10 @@ public slots:
 private:
     qreal wPos;
 
-    QPoint scenePosToGlobal(const QPointF &scenePos);
+    QPoint scenePosToGlobal(const QPointF &scenePos)
+    {
+        return UIHelper::scenePosToGlobal(mainWindow->scene(), scenePos);
+    }
 };
 
 /* We can probably avoid PopoutManager entirely by making this constructable.. */
