@@ -44,6 +44,7 @@ Item {
         x: 17
         anchors.verticalCenter: parent.verticalCenter
         sourceSize: Qt.size(32, 32)
+        opacity: (status == ContactUser.Online) ? 1 : 0.7
 
         sourceContact: contact
     }
@@ -88,6 +89,11 @@ Item {
             color: "white"
             style: Text.Raised
             styleColor: "#777777"
+        }
+
+        PropertyChanges {
+            target: avatar
+            opacity: 1
         }
     }
 }
