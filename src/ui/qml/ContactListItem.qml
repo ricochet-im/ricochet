@@ -72,9 +72,15 @@ Item {
         }
     }
 
+    function intersectsHighlight() {
+        var i1 = contactListItem.mapToItem(null, 0, 0).y, i2 = i1+contactListItem.height
+        var h1 = contactsView.highlightItem.mapToItem(null, 0, 0).y, h2 = h1+contactsView.highlightItem.height
+        return (i2 >= h1 && h2 >= i1)
+    }
+
     states: State {
         name: "current"
-        when: contactListItem == currentContactItem
+        when: contactListItem == currentContactItem && contactsView.highlightItem.y && intersectsHighlight()
 
         PropertyChanges {
             target: nickText
