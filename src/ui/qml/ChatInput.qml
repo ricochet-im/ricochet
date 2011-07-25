@@ -31,9 +31,10 @@
  */
 
 import Qt 4.7
+import QtDesktop 0.1
 
-TextEdit {
-    textFormat: TextEdit.PlainText
+TextField {
+    //textFormat: TextEdit.PlainText
 
     signal messageSubmitted(string text)
 

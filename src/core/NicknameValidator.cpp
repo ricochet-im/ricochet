@@ -52,6 +52,11 @@ void NicknameValidator::setValidateUnique(UserIdentity *identity, ContactUser *e
     m_uniqueException = exception;
 }
 
+void NicknameValidator::fixup(QString &text) const
+{
+    text = text.trimmed();
+}
+
 QValidator::State NicknameValidator::validate(QString &text, int &pos) const
 {
     Q_UNUSED(pos);

@@ -14,5 +14,6 @@
         <file>switcher.js</file>
         <file>TorsionToolBar.qml</file>
         <file>ChatInput.qml</file>
+        <file>ContactAddDialog.qml</file>
     </qresource>
 </RCC>

@@ -56,7 +56,7 @@ public:
 
     explicit ContactsModel(UserIdentity *identity, QObject *parent = 0);
 
-    QModelIndex indexOfContact(ContactUser *user) const;
+    Q_INVOKABLE QModelIndex indexOfContact(ContactUser *user) const;
 
     virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
     virtual int columnCount(const QModelIndex &parent = QModelIndex()) const;

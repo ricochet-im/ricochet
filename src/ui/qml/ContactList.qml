@@ -48,6 +48,11 @@ Rectangle {
         currentContact = contact
     }
 
+    function realSetCurrentContact(contact) {
+        var index = contactsView.model.indexOfContact(contact)
+        console.log("realSetCurrentContact: contact", contact, "index", index)
+    }
+
     Rectangle {
         anchors.right: parent.right
         anchors.top: parent.top
@@ -65,9 +70,45 @@ Rectangle {
 
         model: contactsModel
         delegate: Qt.createComponent("ContactListGroup.qml")
+        footer: Item {
+            id: addContactViewPlaceholder
+            height: addContactBtn.height + 3
+
+            Component.onCompleted: addContactBtn.viewPlaceholder = addContactViewPlaceholder
+        }
 
         highlight: highlightDelegate
         highlightFollowsCurrentItem: false
+    }
+
+    Image {
+        id: addContactBtn
+        source: "qrc:/icons/plus-subtle.png"
+        anchors.left: contactList.left
+        anchors.margins: 2
+        y: contactsView.contentY, Math.max(contactList.height - height - 2,
+                                           parent.mapFromItem(contactsView, 0,
+                                                              viewPlaceholder.y - contactsView.contentY)
+                                           .y);
+        opacity: mouseArea.containsMouse ? 1 : 0.5
+
+        property Item viewPlaceholder
+
+        Behavior on opacity { NumberAnimation { duration: 150 } }
+
+        MouseArea {
+            id: mouseArea
+            anchors.fill: addContactBtn
+            anchors.margins: -4
+            hoverEnabled: true
+
+            onClicked: {
+                var component = Qt.createComponent("ContactAddDialog.qml")
+                var dialog = component.createObject(window)
+                dialog.closed.connect(function() { dialog.destroy() })
+                dialog.show()
+            }
+        }
     }
 
     Component {

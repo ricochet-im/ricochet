@@ -34,7 +34,7 @@
 #include <QRegExp>
 
 ContactIDValidator::ContactIDValidator(QObject *parent)
-    : QValidator(parent)
+    : QValidator(parent), m_uniqueIdentity(0)
 {
 }
 
@@ -46,6 +46,8 @@ QValidator::State ContactIDValidator::validate(QString &text, int &pos) const
     for (int i = 0; i < qMin(text.size(), 16); ++i)
     {
         char c = text[i].toLatin1();
+        if (c >= 'A' && c <= 'Z')
+            text[i] = c = ::tolower(c);
         if (!((c >= 'a' && c <= 'z') || (c >= '2' && c <= '7')))
             return QValidator::Invalid;
     }
@@ -61,10 +63,24 @@ QValidator::State ContactIDValidator::validate(QString &text, int &pos) const
     if (QString::compare(text.mid(16), suffix, Qt::CaseInsensitive) != 0)
         return QValidator::Invalid;
 
+    text.replace(16, suffix.length(), suffix);
+
     if (suffix.size() != 8)
         return QValidator::Intermediate;
 
+    ContactUser *u;
+    if (m_uniqueIdentity && (u = m_uniqueIdentity->contacts.lookupHostname(text)))
+    {
+        emit contactExists(u);
+        return QValidator::Intermediate;
+    }
+
     return QValidator::Acceptable;
+}
+
+void ContactIDValidator::fixup(QString &text) const
+{
+    text = text.trimmed().toLower();
 }
 
 bool ContactIDValidator::isValidID(const QString &text)

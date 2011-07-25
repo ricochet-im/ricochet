@@ -61,6 +61,12 @@ public:
     ContactUser *lookupNickname(const QString &nickname) const;
     ContactUser *lookupUniqueID(int uniqueID) const;
 
+    /* Create a new user and a contact request for that user. Use this instead of addContact.
+     * Note that contactID should be an @Torsion ID. */
+    Q_INVOKABLE ContactUser *createContactRequest(const QString &contactID, const QString &nickname,
+                                                  const QString &myNickname, const QString &message);
+
+    /* addContact will add the contact, but does not create a request. Use createContactRequest */
     ContactUser *addContact(const QString &nickname);
 
     static QString hostnameFromID(const QString &ID);

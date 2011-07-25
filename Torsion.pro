@@ -118,7 +118,6 @@ SOURCES += src/main.cpp \
     src/protocol/ContactRequestClient.cpp \
     src/protocol/ContactRequestServer.cpp \
     src/core/OutgoingContactRequest.cpp \
-    src/ui/ContactAddDialog.cpp \
     src/ui/FancyTextEdit.cpp \
     src/core/IncomingRequestManager.cpp \
     src/core/ContactIDValidator.cpp \
@@ -177,7 +176,6 @@ HEADERS += src/ui/MainWindow.h \
     src/protocol/ContactRequestClient.h \
     src/protocol/ContactRequestServer.h \
     src/core/OutgoingContactRequest.h \
-    src/ui/ContactAddDialog.h \
     src/ui/FancyTextEdit.h \
     src/core/IncomingRequestManager.h \
     src/core/ContactIDValidator.h \
@@ -223,4 +221,5 @@ OTHER_FILES += \
     src/ui/qml/ContactGroupView.qml \
     src/ui/qml/ChatArea.qml \
     src/ui/qml/Avatar.qml \
-    src/ui/qml/ChatInput.qml
+    src/ui/qml/ChatInput.qml \
+    src/ui/qml/ContactAddDialog.qml

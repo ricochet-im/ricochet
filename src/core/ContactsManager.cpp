@@ -90,6 +90,24 @@ ContactUser *ContactsManager::addContact(const QString &nickname)
     return user;
 }
 
+ContactUser *ContactsManager::createContactRequest(const QString &contactid, const QString &nickname,
+                                                   const QString &myNickname, const QString &message)
+{
+    if (!ContactIDValidator::isValidID(contactid) || lookupHostname(contactid) ||
+        lookupNickname(nickname) || message.isEmpty())
+    {
+        return 0;
+    }
+
+    ContactUser *user = addContact(nickname);
+    if (!user)
+        return user;
+    user->setHostname(ContactIDValidator::hostnameFromID(contactid));
+
+    OutgoingContactRequest::createNewRequest(user, myNickname, message);
+    return user;
+}
+
 void ContactsManager::contactDeleted(ContactUser *user)
 {
     pContacts.removeOne(user);

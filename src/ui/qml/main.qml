@@ -32,6 +32,7 @@
 
 import org.torsionim.torsion 1.0
 import Qt 4.7
+import QtDesktop 0.1
 
 Rectangle {
     id: window

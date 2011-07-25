@@ -36,10 +36,12 @@
 #include <QDeclarativeItem>
 #include <QGraphicsView>
 #include <QApplication>
+#include <QClipboard>
 
 UIHelper::UIHelper(QObject *parent)
     : QObject(parent)
 {
+    connect(qApp->clipboard(), SIGNAL(changed(QClipboard::Mode)), SIGNAL(clipboardTextChanged()));
 }
 
 ChatTextWidget *UIHelper::createChatArea(ContactUser *user, QDeclarativeItem *proxyItem)
@@ -51,6 +53,16 @@ ChatTextWidget *UIHelper::createChatArea(ContactUser *user, QDeclarativeItem *pr
     Q_UNUSED(w);
 
     return text;
+}
+
+QString UIHelper::clipboardText() const
+{
+    return qApp->clipboard()->text();
+}
+
+void UIHelper::setClipboardText(const QString &text)
+{
+    qApp->clipboard()->setText(text);
 }
 
 QPoint UIHelper::scenePosToGlobal(const QGraphicsScene *scene, const QPointF &scenePos)

@@ -44,12 +44,17 @@ class NicknameValidator : public QValidator
     Q_OBJECT
     Q_DISABLE_COPY(NicknameValidator)
 
+    Q_PROPERTY(UserIdentity* uniqueToIdentity READ uniqueToIdentity WRITE setValidateUnique)
+
 public:
     explicit NicknameValidator(QObject *parent = 0);
+
+    UserIdentity *uniqueToIdentity() const { return m_uniqueIdentity; }
 
     void setWidget(QWidget *widget);
     void setValidateUnique(UserIdentity *identity, ContactUser *exception = 0);
 
+    virtual void fixup(QString &) const;
     virtual State validate(QString &text, int &pos) const;
 
 private:

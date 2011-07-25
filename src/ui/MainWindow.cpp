@@ -33,7 +33,6 @@
 #include "main.h"
 #include "MainWindow.h"
 #include "ContactRequestDialog.h"
-#include "ContactAddDialog.h"
 #include "core/UserIdentity.h"
 #include "core/IncomingRequestManager.h"
 #include "core/OutgoingContactRequest.h"
@@ -47,6 +46,8 @@
 #include "ui/AvatarImageProvider.h"
 #include "ui/TopLevelWindow.h"
 #include "ContactsModel.h"
+#include "core/NicknameValidator.h"
+#include "core/ContactIDValidator.h"
 #include <QToolBar>
 #include <QBoxLayout>
 #include <QStackedWidget>
@@ -68,10 +69,13 @@ MainWindow::MainWindow(QWidget *parent)
 
     qmlRegisterUncreatableType<ContactUser>("org.torsionim.torsion", 1, 0, "ContactUser", QString());
     qmlRegisterUncreatableType<UserIdentity>("org.torsionim.torsion", 1, 0, "UserIdentity", QString());
+    qmlRegisterUncreatableType<ContactsManager>("org.torsionim.torsion", 1, 0, "ContactsManager", QString());
     qmlRegisterUncreatableType<PopoutManager>("org.torsionim.torsion", 1, 0, "PopoutManager", QString());
     qmlRegisterType<TopLevelWindow>("org.torsionim.torsion", 1, 0, "TopLevelWindow");
     qmlRegisterUncreatableType<UIHelper>("org.torsionim.torsion", 1, 0, "UIHelper", QString());
     qmlRegisterType<PageSwitcherBase>("org.torsionim.torsion", 1, 0, "PageSwitcherBase");
+    qmlRegisterType<NicknameValidator>("org.torsionim.torsion", 1, 0, "NicknameValidator");
+    qmlRegisterType<ContactIDValidator>("org.torsionim.torsion", 1, 0, "ContactIDValidator");
 
     PopoutManager *pm = new PopoutManager(this);
     rootContext()->setContextProperty(QLatin1String("popoutManager"), pm);
@@ -140,14 +144,6 @@ void MainWindow::createContactsModel()
 void MainWindow::showNotification(const QString &message, QObject *receiver, const char *slot)
 {
     qCritical("XXX-UI showNotification is not implemented");
-}
-
-void MainWindow::openAddContactDialog(UserIdentity *identity)
-{
-    Q_UNUSED(identity);
-    ContactAddDialog dialog(this);
-    dialog.setIdentity(identity);
-    dialog.exec();
 }
 
 void MainWindow::openTorConfig()

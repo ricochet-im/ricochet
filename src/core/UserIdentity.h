@@ -59,6 +59,8 @@ class UserIdentity : public QObject
     Q_PROPERTY(int uniqueID READ getUniqueID CONSTANT)
     Q_PROPERTY(QString nickname READ nickname WRITE setNickname NOTIFY nicknameChanged)
     Q_PROPERTY(QString contactID READ contactID NOTIFY contactIDChanged)
+    Q_PROPERTY(bool isOnline READ isServiceOnline NOTIFY statusChanged)
+    Q_PROPERTY(ContactsManager* contacts READ getContacts CONSTANT)
 
 public:
     const int uniqueID;
@@ -72,6 +74,8 @@ public:
     /* Hostname is .onion format, like ContactUser */
     QString hostname() const;
     QString contactID() const;
+
+    ContactsManager *getContacts() { return &contacts; }
 
     void setNickname(const QString &nickname);
     void setAvatar(QImage image);

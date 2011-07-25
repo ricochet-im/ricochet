@@ -44,12 +44,20 @@ class UIHelper : public QObject
 {
     Q_OBJECT
 
+    Q_PROPERTY(QString clipboardText READ clipboardText WRITE setClipboardText NOTIFY clipboardTextChanged)
+
 public:
     explicit UIHelper(QObject *parent = 0);
 
+    static QPoint scenePosToGlobal(const QGraphicsScene *scene, const QPointF &scenePos);
+
+    QString clipboardText() const;
+    void setClipboardText(const QString &text);
+
     Q_INVOKABLE ChatTextWidget *createChatArea(ContactUser *user, QDeclarativeItem *proxyItem);
 
-    static QPoint scenePosToGlobal(const QGraphicsScene *scene, const QPointF &scenePos);
+signals:
+    void clipboardTextChanged();
 };
 
 class DeclarativeProxiedProxyWidget : public QGraphicsProxyWidget

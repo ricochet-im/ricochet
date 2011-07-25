@@ -1,10 +1,12 @@
 #include "TopLevelWindow.h"
+#include "MainWindow.h"
 
 TopLevelWindow::TopLevelWindow(QDeclarativeItem *parent)
     : QDeclarativeItem(parent),
       m_window(0),
       m_rootItem(0),
-      m_isResizing(false)
+      m_isResizing(false),
+      m_winFlags(0)
 {
     static qreal sceneOffset = 0;
 
@@ -25,8 +27,9 @@ void TopLevelWindow::setOpen(bool open)
             return;
         }
 
-        m_window = new PopoutWindow;
+        m_window = new PopoutWindow(uiMain);
         m_window->setScene(scene());
+        m_window->setWindowFlags(m_window->windowFlags() | m_winFlags);
         QSize itemSize;
         if (m_rootItem)
             itemSize = QSize(m_rootItem->width(), m_rootItem->height());
@@ -47,6 +50,27 @@ void TopLevelWindow::setOpen(bool open)
 
     Q_ASSERT(isOpen() == open);
     emit openChanged();
+    if (open)
+        emit opened();
+    else
+        emit closed();
+}
+
+void TopLevelWindow::setSheet(bool sheet)
+{
+    if (sheet == isSheet())
+        return;
+
+    if (sheet)
+        m_winFlags |= Qt::Sheet;
+    else
+        m_winFlags &= ~Qt::Sheet;
+
+    if (m_window)
+    {
+        m_window->setWindowFlags(m_winFlags);
+        m_window->show();
+    }
 }
 
 void TopLevelWindow::setRootItem(QDeclarativeItem *item)
@@ -74,8 +98,9 @@ void TopLevelWindow::windowSizeChanged()
 
 void TopLevelWindow::itemSizeChanged()
 {
-    if (m_isResizing) return;
+    if (m_isResizing || !m_window) return;
     m_isResizing = true;
+    Q_ASSERT(m_rootItem);
     m_window->resize(m_rootItem->width(), m_rootItem->height());
     m_isResizing = false;
 }
