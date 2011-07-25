@@ -32,6 +32,7 @@
 
 import org.torsionim.torsion 1.0
 import Qt 4.7
+import "ContactList.js" as Data
 
 Rectangle {
     id: contactList
@@ -43,14 +44,10 @@ Rectangle {
     property QtObject currentContact
     property Item currentContactItem
 
-    function setCurrentContact(contact, contactItem) {
-        currentContactItem = contactItem
+    function setCurrentContact(contact) {
+        Data.groups[contact.status].currentIndex = contactsView.model.rowOfContact(contact)
         currentContact = contact
-    }
-
-    function realSetCurrentContact(contact) {
-        var index = contactsView.model.indexOfContact(contact)
-        console.log("realSetCurrentContact: contact", contact, "index", index)
+        currentContactItem = Data.groups[contact.status].currentItem
     }
 
     Rectangle {
@@ -146,5 +143,11 @@ Rectangle {
                 }
             }
         }
+    }
+
+    /* Internal API */
+    function _registerGroup(index, item) {
+        Data.groups[index] = item
+        item.Component.destruction.connect(function() { Data.groups[index] = undefined })
     }
 }

@@ -99,4 +99,6 @@ ListView {
                 contactsGroupView.currentIndex = -1
         }
     }
+
+    Component.onCompleted: contactList._registerGroup(status, contactsGroupView)
 }

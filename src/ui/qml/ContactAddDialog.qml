@@ -217,7 +217,7 @@ TopLevelWindow {
                         return
                     }
 
-                    contactList.realSetCurrentContact(contact)
+                    contactList.setCurrentContact(contact)
                     dialog.parent.close()
                 }
             }

@@ -63,14 +63,12 @@ Item {
 
     MouseArea {
         anchors.fill: parent
-        onClicked: { contactListItem.ListView.view.currentIndex = index; setCurrentContact(contact, contactListItem) }
+        onClicked: setCurrentContact(contact)
     }
 
     Component.onCompleted: {
-        if (currentContact == contact) {
-            ListView.view.currentIndex = index
-            setCurrentContact(contact, contactListItem)
-        }
+        if (currentContact == contact)
+            setCurrentContact(contact)
     }
 
     function intersectsHighlight() {

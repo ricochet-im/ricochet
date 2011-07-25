@@ -15,5 +15,6 @@
         <file>TorsionToolBar.qml</file>
         <file>ChatInput.qml</file>
         <file>ContactAddDialog.qml</file>
+        <file>ContactList.js</file>
     </qresource>
 </RCC>
