@@ -99,12 +99,18 @@ ContactUser *ContactsManager::createContactRequest(const QString &contactid, con
         return 0;
     }
 
+    bool b = blockSignals(true);
     ContactUser *user = addContact(nickname);
+    blockSignals(b);
     if (!user)
         return user;
     user->setHostname(ContactIDValidator::hostnameFromID(contactid));
 
     OutgoingContactRequest::createNewRequest(user, myNickname, message);
+
+    /* Signal deferred from addContact to avoid changing the status immediately */
+    Q_ASSERT(user->status() == ContactUser::RequestPending);
+    emit contactAdded(user);
     return user;
 }
 

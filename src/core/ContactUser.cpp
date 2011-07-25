@@ -64,16 +64,16 @@ ContactUser::ContactUser(UserIdentity *ident, int id, QObject *parent)
     connect(m_conn, SIGNAL(primaryConnected()), this, SLOT(onConnected()));
     connect(m_conn, SIGNAL(primaryDisconnected()), this, SLOT(onDisconnected()));
 
+    updateStatus();
+
     /* Outgoing request */
     if (!readSetting("request/status").isNull())
     {
-        m_status = RequestPending;
+        /* Used to initialize the request on startup for existing requests */
         OutgoingContactRequest *request = OutgoingContactRequest::requestForUser(this);
         Q_ASSERT(request);
         Q_UNUSED(request);
     }
-    else
-        m_status = m_conn->isPrimaryConnected() ? Online : Offline;
 }
 
 void ContactUser::loadSettings()
@@ -111,6 +111,21 @@ ContactUser *ContactUser::addNewContact(UserIdentity *identity, int id)
     return user;
 }
 
+void ContactUser::updateStatus()
+{
+    Status newStatus;
+    if (!readSetting("request/status").isNull())
+        newStatus = RequestPending;
+    else
+        newStatus = m_conn->isPrimaryConnected() ? Online : Offline;
+
+    if (newStatus != m_status)
+    {
+        m_status = newStatus;
+        emit statusChanged();
+    }
+}
+
 void ContactUser::onConnected()
 {
     writeSetting("lastConnected", QDateTime::currentDateTime());
@@ -132,8 +147,7 @@ void ContactUser::onConnected()
         command->send(conn());
     }
 
-    m_status = Online;
-    emit statusChanged();
+    updateStatus();
     emit connected();
 }
 
@@ -141,8 +155,7 @@ void ContactUser::onDisconnected()
 {
     writeSetting("lastConnected", QDateTime::currentDateTime());
 
-    m_status = Offline;
-    emit statusChanged();
+    updateStatus();
     emit disconnected();
 }
 

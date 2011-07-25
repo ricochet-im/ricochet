@@ -64,6 +64,7 @@ OutgoingContactRequest *OutgoingContactRequest::createNewRequest(ContactUser *us
     user->writeSetting(QLatin1String("request/myNickname"), myNickname);
     user->writeSetting(QLatin1String("request/message"), message);
 
+    user->updateStatus();
     return requestForUser(user);
 }
 

@@ -126,6 +126,8 @@ public slots:
     void setHostname(const QString &hostname);
     void setAvatar(QImage image);
 
+    void updateStatus();
+
 signals:
     void statusChanged();
     void connected();
