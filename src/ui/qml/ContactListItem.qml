@@ -80,7 +80,8 @@ Item {
 
     states: State {
         name: "current"
-        when: contactListItem == currentContactItem && contactsView.highlightItem.y && intersectsHighlight()
+        when: contactListItem == currentContactItem && (contactsView.highlightItem.y || true)
+              && (contactListItem.y || true) && intersectsHighlight()
 
         PropertyChanges {
             target: nickText
