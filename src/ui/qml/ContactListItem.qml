@@ -44,7 +44,7 @@ Item {
         x: 17
         anchors.verticalCenter: parent.verticalCenter
         sourceSize: Qt.size(32, 32)
-        opacity: (status == ContactUser.Online) ? 1 : 0.7
+        opacity: (contactStatus == ContactUser.Online) ? 1 : 0.7
 
         sourceContact: contact
     }
@@ -56,9 +56,9 @@ Item {
         anchors.verticalCenter: avatar.verticalCenter
         text: nickname
 
-        color: (status == ContactUser.Online) ? "black" : "#aeaeae"
-        style: (status == ContactUser.Online) ? Text.Normal : Text.Raised
-        styleColor: "#f2f2f2"
+        color: (contactStatus == ContactUser.Online) ? "black" : "#9b9b9b"
+        style: (contactStatus == ContactUser.Online) ? Text.Normal : Text.Raised
+        styleColor: "#e6e6e6"
     }
 
     MouseArea {

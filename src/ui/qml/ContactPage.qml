@@ -75,11 +75,9 @@ PopoutItem {
                     text: contact.nickname
                 }
 
-                Text {
-                    color: "#a5a5a5"
+                ContactIdText {
+                    color: "#858585"
                     text: contact.contactID
-                    font.family: "Courier New"
-                    font.pixelSize: 10
                 }
             }
 

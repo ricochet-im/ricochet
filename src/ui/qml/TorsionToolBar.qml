@@ -75,14 +75,10 @@ Rectangle {
                 text: userIdentity.nickname
             }
 
-            Text {
+            ContactIdText {
                 id: contactId
-                font.pixelSize: 10
-                font.family: "Courier New"
-                color: "#737373"
                 text: userIdentity.contactID
-                style: Text.Raised
-                styleColor: "#a6a6a6"
+                color: "#666666"
             }
         }
     }

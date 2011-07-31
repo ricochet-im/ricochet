@@ -223,4 +223,5 @@ OTHER_FILES += \
     src/ui/qml/Avatar.qml \
     src/ui/qml/ChatInput.qml \
     src/ui/qml/ContactAddDialog.qml \
-    src/ui/qml/ContactList.js
+    src/ui/qml/ContactList.js \
+    src/ui/qml/ContactIdText.qml

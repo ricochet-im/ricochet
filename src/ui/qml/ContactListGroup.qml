@@ -100,5 +100,5 @@ ListView {
         }
     }
 
-    Component.onCompleted: contactList._registerGroup(status, contactsGroupView)
+    Component.onCompleted: contactList._registerGroup(contactStatus, contactsGroupView)
 }

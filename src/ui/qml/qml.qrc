@@ -16,5 +16,6 @@
         <file>ChatInput.qml</file>
         <file>ContactAddDialog.qml</file>
         <file>ContactList.js</file>
+        <file>ContactIdText.qml</file>
     </qresource>
 </RCC>

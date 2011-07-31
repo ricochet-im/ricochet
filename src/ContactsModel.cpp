@@ -54,7 +54,7 @@ ContactsModel::ContactsModel(UserIdentity *i, QObject *parent)
     QHash<int,QByteArray> roles;
     roles[Qt::DisplayRole] = "nickname";
     roles[PointerRole] = "contact";
-    roles[StatusRole] = "status";
+    roles[StatusRole] = "contactStatus";
     setRoleNames(roles);
 
     connect(&identity->contacts, SIGNAL(contactAdded(ContactUser*)), SLOT(contactAdded(ContactUser*)));
