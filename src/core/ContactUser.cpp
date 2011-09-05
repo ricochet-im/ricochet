@@ -72,7 +72,7 @@ ContactUser::ContactUser(UserIdentity *ident, int id, QObject *parent)
         /* Used to initialize the request on startup for existing requests */
         OutgoingContactRequest *request = OutgoingContactRequest::requestForUser(this);
         Q_ASSERT(request);
-        Q_UNUSED(request);
+        connect(request, SIGNAL(statusChanged(int,int)), SLOT(updateStatus()));
     }
 }
 
@@ -137,6 +137,7 @@ void ContactUser::onConnected()
         OutgoingContactRequest *request = OutgoingContactRequest::requestForUser(this);
         Q_ASSERT(request);
         request->accept();
+        updateStatus();
         Q_ASSERT(!isContactRequest());
     }
 
