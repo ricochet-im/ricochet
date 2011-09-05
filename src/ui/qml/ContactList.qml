@@ -114,11 +114,12 @@ Rectangle {
         Rectangle {
             id: highlight
             width: contactsView.width - 8
-            x: currentContactItem.x + 7
+            x: currentContactItem === null ? 0 : currentContactItem.x + 7
             /* Strange usage of the comma operator used to create a binding on the y property */
-            y: currentContactItem.y, currentContactItem.ListView.view.y,
-               currentContactItem.mapToItem(parent, 0, 0).y
-            height: currentContactItem.height
+            y: currentContactItem === null ? 0 : (currentContactItem.y,
+                                                  currentContactItem.ListView.view.y,
+                                                  currentContactItem.mapToItem(parent, 0, 0).y)
+            height: currentContactItem === null ? 0 : currentContactItem.height
 
             Behavior on y {
                 SmoothedAnimation {

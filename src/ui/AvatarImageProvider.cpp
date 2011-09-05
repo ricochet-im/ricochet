@@ -41,6 +41,12 @@ QPixmap AvatarImageProvider::requestPixmap(const QString &id, QSize *size, const
         if (requestedSize.isValid())
             re = re.scaled(requestedSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
     }
+    else
+    {
+        re = QPixmap(requestedSize);
+        re.fill(Qt::transparent);
+        *size = requestedSize;
+    }
 
     return re;
 }

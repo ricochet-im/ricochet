@@ -46,7 +46,7 @@ Image {
         else if (sourceIdentity !== null)
             return "image://avatar/" + sourceIdentity.uniqueID + "/identity"
         else
-            return undefined
+            return ""
     }
 
     BorderImage {

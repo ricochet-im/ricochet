@@ -46,7 +46,7 @@ Item {
         sourceSize: Qt.size(32, 32)
         opacity: (contactStatus == ContactUser.Online) ? 1 : 0.7
 
-        sourceContact: contact
+        sourceContact: (contact !== undefined) ? contact : null
     }
 
     Text {
@@ -67,7 +67,7 @@ Item {
     }
 
     Component.onCompleted: {
-        if (currentContact == contact)
+        if (contact !== null && contact !== undefined && currentContact == contact)
             setCurrentContact(contact)
     }
 

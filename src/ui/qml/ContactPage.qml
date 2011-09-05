@@ -72,12 +72,12 @@ PopoutItem {
                 Text {
                     font.bold: true
                     font.pixelSize: 13
-                    text: contact.nickname
+                    text: contact === null ? "" : contact.nickname
                 }
 
                 ContactIdText {
                     color: "#858585"
-                    text: contact.contactID
+                    text: contact === null ? "" : contact.contactID
                 }
             }
 
