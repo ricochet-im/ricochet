@@ -33,13 +33,13 @@
 #ifndef CONTACTSMODEL_H
 #define CONTACTSMODEL_H
 
-#include <QAbstractItemModel>
+#include <QAbstractListModel>
 #include <QList>
 
 class UserIdentity;
 class ContactUser;
 
-class ContactsModel : public QAbstractItemModel
+class ContactsModel : public QAbstractListModel
 {
     Q_OBJECT
     Q_DISABLE_COPY(ContactsModel)
@@ -60,12 +60,8 @@ public:
     Q_INVOKABLE int rowOfContact(ContactUser *user) const { return indexOfContact(user).row(); }
 
     virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
-    virtual int columnCount(const QModelIndex &parent = QModelIndex()) const;
 
-    virtual QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;
-    virtual QModelIndex parent(const QModelIndex &child) const;
-
-    virtual Qt::ItemFlags flags(const QModelIndex &index) const;
+    virtual QHash<int,QByteArray> roleNames() const { return roles; }
 
     virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
     virtual bool setData(const QModelIndex &index, const QVariant &value, int role);
@@ -76,17 +72,11 @@ private slots:
     void contactRemoved(ContactUser *user);
 
 private:
-    struct ContactGroup
-    {
-        QString title;
-        int status;
-        QList<ContactUser*> contacts;
-    };
-
-    QList<ContactGroup> items;
+    QHash<int,QByteArray> roles;
+    QList<ContactUser*> contacts;
 
     void populate();
-    static bool groupSort(const ContactGroup &g1, const ContactGroup &g2);
+    void connectSignals(ContactUser *user);
 };
 
 #endif // CONTACTSMODEL_H

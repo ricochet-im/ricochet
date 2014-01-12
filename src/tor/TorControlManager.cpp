@@ -108,22 +108,9 @@ void TorControlManager::setError(const QString &message)
     QTimer::singleShot(15000, this, SLOT(reconnect()));
 }
 
-QString TorControlManager::statusText() const
+QString TorControlManager::errorMessage() const
 {
-    switch (pStatus)
-    {
-    case Error:
-        return pErrorMessage.isEmpty() ? tr("An unknown error occurred") : pErrorMessage;
-    case NotConnected:
-        return tr("Not connected to Tor");
-    case Connecting:
-    case Authenticating:
-        return tr("Connecting to Tor");
-    case Connected:
-        return tr("Connected to Tor");
-    default:
-        return QString();
-    }
+    return pErrorMessage;
 }
 
 void TorControlManager::setAuthPassword(const QByteArray &password)

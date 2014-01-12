@@ -1,9 +1,9 @@
 #ifndef AVATARIMAGEPROVIDER_H
 #define AVATARIMAGEPROVIDER_H
 
-#include <QDeclarativeImageProvider>
+#include <QQuickImageProvider>
 
-class AvatarImageProvider : public QDeclarativeImageProvider
+class AvatarImageProvider : public QQuickImageProvider
 {
 public:
     AvatarImageProvider();

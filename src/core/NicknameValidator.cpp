@@ -96,7 +96,7 @@ QValidator::State NicknameValidator::validate(QString &text, int &pos) const
         if (((u = m_uniqueIdentity->contacts.lookupNickname(text)) && u != m_uniqueException)
             || QString::compare(text, m_uniqueIdentity->nickname(), Qt::CaseInsensitive) == 0)
         {
-            showMessage(tr("You already have a contact named <b>%1</b>").arg(Qt::escape(text)));
+            showMessage(tr("You already have a contact named <b>%1</b>").arg(text.toHtmlEscaped()));
             return Intermediate;
         }
     }

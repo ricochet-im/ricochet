@@ -32,7 +32,6 @@
 
 #include "main.h"
 #include "MainWindow.h"
-#include "ContactRequestDialog.h"
 #include "core/UserIdentity.h"
 #include "core/IncomingRequestManager.h"
 #include "core/OutgoingContactRequest.h"
@@ -40,68 +39,51 @@
 #include "tor/TorControlManager.h"
 #include "tor/autoconfig/VidaliaConfigManager.h"
 #include "ui/torconfig/TorConfigWizard.h"
-#include "ui/PopoutManager.h"
-#include "ui/PageSwitcherBase.h"
-#include "ui/UIHelper.h"
 #include "ui/AvatarImageProvider.h"
-#include "ui/TopLevelWindow.h"
 #include "ContactsModel.h"
-#include "core/NicknameValidator.h"
-#include "core/ContactIDValidator.h"
-#include <QToolBar>
-#include <QBoxLayout>
-#include <QStackedWidget>
-#include <QFrame>
-#include <QTextDocument>
-#include <QAction>
-#include <QTimer>
+#include "ui/ConversationModel.h"
+#include <QtQml>
+#include <QQmlApplicationEngine>
+#include <QQmlContext>
 #include <QMessageBox>
 #include <QPushButton>
-#include <QtDeclarative>
 
 MainWindow *uiMain = 0;
 
-MainWindow::MainWindow(QWidget *parent)
-    : QDeclarativeView(parent)
+MainWindow::MainWindow(QObject *parent)
+    : QObject(parent)
 {
     Q_ASSERT(!uiMain);
     uiMain = this;
 
+    qml = new QQmlApplicationEngine(this);
+
     qmlRegisterUncreatableType<ContactUser>("org.torsionim.torsion", 1, 0, "ContactUser", QString());
     qmlRegisterUncreatableType<UserIdentity>("org.torsionim.torsion", 1, 0, "UserIdentity", QString());
     qmlRegisterUncreatableType<ContactsManager>("org.torsionim.torsion", 1, 0, "ContactsManager", QString());
-    qmlRegisterUncreatableType<PopoutManager>("org.torsionim.torsion", 1, 0, "PopoutManager", QString());
-    qmlRegisterType<TopLevelWindow>("org.torsionim.torsion", 1, 0, "TopLevelWindow");
-    qmlRegisterUncreatableType<UIHelper>("org.torsionim.torsion", 1, 0, "UIHelper", QString());
-    qmlRegisterType<PageSwitcherBase>("org.torsionim.torsion", 1, 0, "PageSwitcherBase");
-    qmlRegisterType<NicknameValidator>("org.torsionim.torsion", 1, 0, "NicknameValidator");
-    qmlRegisterType<ContactIDValidator>("org.torsionim.torsion", 1, 0, "ContactIDValidator");
-
-    PopoutManager *pm = new PopoutManager(this);
-    rootContext()->setContextProperty(QLatin1String("popoutManager"), pm);
-
-    UIHelper *helper = new UIHelper(this);
-    rootContext()->setContextProperty(QLatin1String("helper"), helper);
+    qmlRegisterUncreatableType<IncomingRequestManager>("org.torsionim.torsion", 1, 0, "IncomingRequestManager", QString());
+    qmlRegisterUncreatableType<IncomingContactRequest>("org.torsionim.torsion", 1, 0, "IncomingContactRequest", QString());
+    qmlRegisterUncreatableType<Tor::TorControlManager>("org.torsionim.torsion", 1, 0, "TorControlManager", QString());
+    qmlRegisterType<ConversationModel>("org.torsionim.torsion", 1, 0, "ConversationModel");
 
     Q_ASSERT(!identityManager->identities().isEmpty());
-    rootContext()->setContextProperty(QLatin1String("userIdentity"), identityManager->identities()[0]);
+    qml->rootContext()->setContextProperty(QLatin1String("userIdentity"), identityManager->identities()[0]);
+    qml->rootContext()->setContextProperty(QLatin1String("torManager"), torManager);
 
-    engine()->addImageProvider(QLatin1String("avatar"), new AvatarImageProvider);
+    qml->addImageProvider(QLatin1String("avatar"), new AvatarImageProvider);
 
     createContactsModel();
 
-    setResizeMode(SizeRootObjectToView);
-    setSource(QUrl(QLatin1String("qrc:/ui/main.qml")));
+    qml->load(QUrl(QLatin1String("qrc:/ui/main.qml")));
 
-    setWindowTitle(QLatin1String("Torsion"));
-    resize(QSize(730, 400));
-
+#if 0
     /* Saved geometry */
     restoreGeometry(config->value("ui/main/windowGeometry").toByteArray());
 
     /* Old config values */
     config->remove("ui/main/windowSize");
     config->remove("ui/main/windowPosition");
+#endif
 
     /* Other things */
     connect(identityManager, SIGNAL(incomingRequestAdded(IncomingContactRequest*,UserIdentity*)), SLOT(updateContactRequests()));
@@ -128,17 +110,19 @@ MainWindow::~MainWindow()
 {
 }
 
+#if 0
 void MainWindow::closeEvent(QCloseEvent *ev)
 {
     config->setValue("ui/main/windowGeometry", saveGeometry());
     QWidget::closeEvent(ev);
 }
+#endif
 
 void MainWindow::createContactsModel()
 {
     UserIdentity *identity = identityManager->identities()[0];
     ContactsModel *model = new ContactsModel(identity, this);
-    rootContext()->setContextProperty(QLatin1String("contactsModel"), model);
+    qml->rootContext()->setContextProperty(QLatin1String("contactsModel"), model);
 }
 
 void MainWindow::showNotification(const QString &message, QObject *receiver, const char *slot)
@@ -148,7 +132,7 @@ void MainWindow::showNotification(const QString &message, QObject *receiver, con
 
 void MainWindow::openTorConfig()
 {
-    TorConfigWizard wizard(this);
+    TorConfigWizard wizard;
     wizard.exec();
 }
 
@@ -182,10 +166,11 @@ void MainWindow::showContactRequest()
         if (!request)
             break;
 
-        ContactRequestDialog *dialog = new ContactRequestDialog(request, this);
+        qCritical("XXX-UI Would show contact request dialog here");
+        //ContactRequestDialog *dialog = new ContactRequestDialog(request, this);
 
         /* Allow the user a way out of a loop of requests by cancelling */
-        if (dialog->exec() == ContactRequestDialog::Cancelled)
+        //if (dialog->exec() == ContactRequestDialog::Cancelled)
             break;
 
         /* Accept or reject would remove the request from the list, so it will not come up again. */
@@ -215,9 +200,9 @@ void MainWindow::updateTorStatus()
 
 void MainWindow::uiRemoveContact(ContactUser *user)
 {
-    QMessageBox msg(this);
+    QMessageBox msg;
     msg.setWindowTitle(tr("Remove Contact"));
-    msg.setText(tr("Are you sure you want to permanently remove <b>%1</b> from your contacts?").arg(Qt::escape(user->nickname())));
+    msg.setText(tr("Are you sure you want to permanently remove <b>%1</b> from your contacts?").arg(user->nickname().toHtmlEscaped()));
     msg.setIcon(QMessageBox::Question);
     QAbstractButton *deleteBtn = msg.addButton(tr("Remove"), QMessageBox::DestructiveRole);
     msg.addButton(QMessageBox::Cancel);

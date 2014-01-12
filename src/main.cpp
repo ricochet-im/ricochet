@@ -45,9 +45,14 @@
 #include <QDir>
 #include <QTranslator>
 #include <QMessageBox>
-#include <QDesktopServices>
 #include <QLocale>
 #include <openssl/crypto.h>
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+#include <QDesktopServices>
+#else
+#include <QStandardPaths>
+#endif
 
 AppSettings *config = 0;
 static FileLock configLock;
@@ -87,7 +92,6 @@ int main(int argc, char *argv[])
 
     /* Window */
     MainWindow w;
-    w.show();
 
     int r = a.exec();
     configLock.release();
@@ -96,12 +100,16 @@ int main(int argc, char *argv[])
 
 static QString userConfigPath()
 {
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #ifdef Q_OS_LINUX
     QString re = QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
     re += QLatin1String("/.config/Torsion/");
     return re;
 #else
     return QDesktopServices::storageLocation(QDesktopServices::DataLocation);
+#endif
+#else
+    return QStandardPaths::writableLocation(QStandardPaths::DataLocation);
 #endif
 }
 

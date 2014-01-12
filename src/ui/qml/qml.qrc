@@ -1,21 +1,22 @@
 <RCC>
     <qresource prefix="/ui">
         <file>main.qml</file>
-        <file>Avatar.qml</file>
-        <file>ChatArea.qml</file>
-        <file>ContactGroupView.qml</file>
+        <file>AddContactDialog.qml</file>
+        <file>ChatMessageArea.qml</file>
+        <file>ChatWindow.qml</file>
+        <file>ContactActions.qml</file>
         <file>ContactList.qml</file>
-        <file>ContactListGroup.qml</file>
-        <file>ContactListItem.qml</file>
-        <file>ContactPage.qml</file>
-        <file>PageSwitcher.qml</file>
-        <file>PopoutClickArea.qml</file>
-        <file>PopoutItem.qml</file>
-        <file>switcher.js</file>
-        <file>TorsionToolBar.qml</file>
-        <file>ChatInput.qml</file>
-        <file>ContactAddDialog.qml</file>
-        <file>ContactList.js</file>
-        <file>ContactIdText.qml</file>
+        <file>ContactListDelegate.qml</file>
+        <file>MessageDelegate.qml</file>
+        <file>PreferencesDialog.qml</file>
+        <file>PresenceIcon.qml</file>
+        <file>ContactRequestDialog.qml</file>
+        <file>ContactRequestFields.qml</file>
+        <file>TorStateWidget.qml</file>
+        <file>ContactWindow.js</file>
+    </qresource>
+    <qresource prefix="/ui/icons">
+        <file>plus.png</file>
+        <file>gear.png</file>
     </qresource>
 </RCC>

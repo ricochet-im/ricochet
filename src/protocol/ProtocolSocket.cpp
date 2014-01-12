@@ -63,8 +63,10 @@ ProtocolSocket::ProtocolSocket(ProtocolManager *m)
 void ProtocolSocket::setupSocket()
 {
     connect(socket, SIGNAL(readyRead()), this, SLOT(read()));
-    connect(socket, SIGNAL(disconnected()), this, SLOT(socketDisconnected()));
-    connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(socketDisconnected()));
+    // QueuedConnection used to make sure socket states are updated first
+    connect(socket, SIGNAL(disconnected()), this, SLOT(socketDisconnected()), Qt::QueuedConnection);
+    qRegisterMetaType<QAbstractSocket::SocketError>();
+    connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(socketDisconnected()), Qt::QueuedConnection);
 }
 
 bool ProtocolSocket::isConnected() const

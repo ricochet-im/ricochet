@@ -46,6 +46,14 @@ class HiddenService;
 class TorControlManager : public QObject
 {
     Q_OBJECT
+    Q_ENUMS(Status TorStatus)
+
+    Q_PROPERTY(Status status READ status NOTIFY statusChanged)
+    Q_PROPERTY(TorStatus torStatus READ torStatus NOTIFY torStatusChanged)
+    Q_PROPERTY(bool isSocksReady READ isSocksReady NOTIFY socksReady)
+    Q_PROPERTY(QString torVersion READ torVersion NOTIFY connected)
+    Q_PROPERTY(QString errorMessage READ errorMessage NOTIFY statusChanged)
+
     friend class ProtocolInfoCommand;
 
 public:
@@ -72,7 +80,7 @@ public:
     Status status() const { return pStatus; }
     TorStatus torStatus() const { return (pStatus == Connected) ? pTorStatus : TorOffline; }
     QString torVersion() const { return pTorVersion; }
-    QString statusText() const;
+    QString errorMessage() const;
 
     bool isSocksReady() const { return !pSocksAddress.isNull(); }
     QHostAddress socksAddress() const { return pSocksAddress; }

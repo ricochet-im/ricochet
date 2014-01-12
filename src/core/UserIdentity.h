@@ -60,6 +60,7 @@ class UserIdentity : public QObject
     Q_PROPERTY(QString nickname READ nickname WRITE setNickname NOTIFY nicknameChanged)
     Q_PROPERTY(QString contactID READ contactID NOTIFY contactIDChanged)
     Q_PROPERTY(bool isOnline READ isServiceOnline NOTIFY statusChanged)
+    Q_PROPERTY(bool isPublished READ isServicePublished NOTIFY statusChanged)
     Q_PROPERTY(ContactsManager* contacts READ getContacts CONSTANT)
 
 public:

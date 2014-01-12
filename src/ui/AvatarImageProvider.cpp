@@ -2,7 +2,7 @@
 #include "core/IdentityManager.h"
 
 AvatarImageProvider::AvatarImageProvider()
-    : QDeclarativeImageProvider(Pixmap)
+    : QQuickImageProvider(Pixmap)
 {
 }
 

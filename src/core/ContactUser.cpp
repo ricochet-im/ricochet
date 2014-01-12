@@ -243,32 +243,3 @@ void ContactUser::deleteContact()
     deleteLater();
 }
 
-QString ContactUser::statusString(Status status)
-{
-    switch (status)
-    {
-    case Online: return tr("Online");
-    case Offline: return tr("Offline");
-    case RequestPending: return tr("Pending Requests");
-    default: return QString();
-    }
-}
-
-void ContactUser::sendChatMessage(const QString &text)
-{
-    QDateTime when = QDateTime::currentDateTime();
-
-    if (isConnected())
-    {
-        ChatMessageCommand *command = new ChatMessageCommand;
-        command->send(conn(), when, text, m_lastReceivedChatID);
-    }
-    else
-        qCritical("XXX-UI sendChatMessage offline messaging is not implemented");
-    /*else
-    {
-        int n = addOfflineMessage(when, text);
-        addChatMessage(NULL, (quint16)-1, when, text);
-        changeBlockIdentifier(makeBlockIdentifier(LocalUserMessage, (quint16)-1), makeBlockIdentifier(OfflineMessage, n));
-    }*/
-}

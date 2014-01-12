@@ -1,75 +1,125 @@
-/* Torsion - http://torsionim.org/
- * Copyright (C) 2010, John Brooks <john.brooks@dereferenced.net>
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- *    * Redistributions of source code must retain the above copyright
- *      notice, this list of conditions and the following disclaimer.
- *
- *    * Redistributions in binary form must reproduce the above
- *      copyright notice, this list of conditions and the following disclaimer
- *      in the documentation and/or other materials provided with the
- *      distribution.
- *
- *    * Neither the names of the copyright owners nor the names of its
- *      contributors may be used to endorse or promote products derived from
- *      this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+import QtQuick 2.0
+import QtQuick.Window 2.0
+import QtQuick.Controls 1.0
+import QtQuick.Layouts 1.0
+import "ContactWindow.js" as ContactWindow
 
-import org.torsionim.torsion 1.0
-import Qt 4.7
-import QtDesktop 0.1
-
-Rectangle {
+ApplicationWindow {
     id: window
-    width: 360
-    height: 360
+    width: 250
+    height: 400
+    maximumWidth: width
+    maximumHeight: height
+    minimumWidth: width
+    minimumHeight: height
+    title: qsTr("Torsion")
+    visibility: Window.AutomaticVisibility
+    visible: true
 
-    TorsionToolBar {
-        id: toolBar
-        anchors.top: window.top
-        anchors.left: window.left
-        anchors.right: window.right
+    menuBar: MenuBar {
+        Menu { title: "File"; MenuItem { text: "???" } }
     }
 
-    ContactList {
-        id: contactList
-        anchors.top: toolBar.bottom
-        anchors.left: window.left
-        anchors.bottom: window.bottom
+    Action {
+        id: addContactAction
+        // CC-BY, Plus by Andre from The Noun Project
+        iconSource: "qrc:/ui/icons/plus.png"
+        text: "Add Contact"
+        onTriggered: {
+            var object = createDialog("AddContactDialog.qml")
+            object.visible = true
+        }
+    }
 
-        onCurrentContactChanged: {
-            if (currentContact !== null)
-            {
-                pageArea.setCurrentPage(currentContact)
-                pageArea.currentItem.contact = currentContact
+    Action {
+        id: preferencesAction
+        iconSource: "qrc:/ui/icons/gear.png"
+        text: "Preferences"
+        onTriggered: {
+            var object = createDialog("PreferencesDialog.qml")
+            object.visible = true
+        }
+    }
+
+    toolBar: ToolBar {
+        RowLayout {
+            width: parent.width
+
+            TorStateWidget { }
+
+            Item {
+                Layout.fillWidth: true
+                height: 1
+            }
+
+            ToolButton {
+                action: addContactAction
+                implicitHeight: 24
+                implicitWidth: 24
+            }
+
+            ToolButton {
+                action: preferencesAction
+                implicitHeight: 24
+                implicitWidth: 24
             }
         }
     }
 
-    PageSwitcher {
-        id: pageArea
+    function createDialog(component, properties) {
+        if (typeof(component) === "string")
+            component = Qt.createComponent(component)
+        if (component.status !== Component.Ready)
+            console.log("openDialog:", component.errorString())
+        var object = component.createObject(window, (properties !== undefined) ? properties : { })
+        if (!object)
+            console.log("openDialog:", component.errorString())
+        object.visibleChanged.connect(function() { if (!object.visible) object.destroy() })
+        return object
+    }
 
-        delegate: ContactPage {
-            anchors.left: contactList.right
-            anchors.top: toolBar.bottom
-            anchors.right: window.right
-            anchors.bottom: window.bottom
-            visible: PageSwitcherBase.isCurrentItem || state == "windowed"
+    SystemPalette {
+        id: palette
+    }
+
+    Connections {
+        target: userIdentity.contacts.incomingRequests
+        onRequestAdded: {
+            var object = createDialog("ContactRequestDialog.qml", { 'request': request })
+            object.visible = true
         }
+    }
+
+    Connections {
+        target: userIdentity.contacts
+        onPrepareInteractiveHandler: {
+            ContactWindow.getWindow(user)
+        }
+    }
+
+    Component.onCompleted: {
+        ContactWindow.createWindow = function(user) {
+            var re = createDialog("ChatWindow.qml", { 'contact': user })
+            re.visible = true
+            return re
+        }
+    }
+
+    Timer {
+        interval: 2000
+        running: true
+        repeat: false
+        onTriggered: {
+            var pendingRequests = userIdentity.contacts.incomingRequests.requests
+            for (var i = 0; i < pendingRequests.length; i++) {
+                var object = createDialog("ContactRequestDialog.qml", { 'request': pendingRequests[i] })
+                object.visible = true
+            }
+        }
+    }
+
+    ContactList {
+        id: contactList
+        anchors.fill: parent
     }
 }

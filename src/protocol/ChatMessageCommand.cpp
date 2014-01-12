@@ -90,6 +90,7 @@ void ChatMessageCommand::process(CommandHandler &command)
     };
 
     command.user->m_lastReceivedChatID = command.identifier;
+    command.user->prepareInteractiveHandler();
     command.user->incomingChatMessage(message);
 
     command.sendReply(replyState(true, true, 0x00));

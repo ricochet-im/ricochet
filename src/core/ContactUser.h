@@ -96,8 +96,6 @@ public:
     QString contactID() const;
 
     Status status() const { return m_status; }
-    QString statusString() const { return statusString(m_status); }
-    static QString statusString(Status status);
 
     QVariant readSetting(const QString &key, const QVariant &defaultValue = QVariant()) const;
     QVariant readSetting(const char *key, const QVariant &defaultValue = QVariant()) const
@@ -117,9 +115,7 @@ public:
         removeSetting(QLatin1String(key));
     }
 
-    void deleteContact();
-
-    Q_INVOKABLE void sendChatMessage(const QString &text);
+    Q_INVOKABLE void deleteContact();
 
 public slots:
     void setNickname(const QString &nickname);
@@ -136,6 +132,9 @@ signals:
     void nicknameChanged();
     void contactDeleted(ContactUser *user);
 
+    /* Hack to allow creating models/windows/etc to handle other signals before they're
+     * emitted; primarily, to allow UI to create models to handle incomingChatMessage */
+    void prepareInteractiveHandler();
     void incomingChatMessage(const ChatMessageData &message);
     void outgoingChatMessage(const ChatMessageData &message, ChatMessageCommand *command);
 

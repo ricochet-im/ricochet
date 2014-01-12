@@ -105,7 +105,7 @@ bool AppSettings::addTrackingProperty(const QString &key, QObject *object, const
         /* Cheap conversion from a single-digit number to ASCII */
         slot[14] = (char)propsForObject + 48;
 
-        QByteArray notify(property.notifySignal().signature());
+        QByteArray notify(property.notifySignal().methodSignature());
         notify.prepend('2');
         bool ok = connect(object, notify.constData(), this, slot);
         if (!ok)

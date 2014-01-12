@@ -41,6 +41,8 @@
 IncomingRequestManager::IncomingRequestManager(ContactsManager *c)
     : QObject(c), contacts(c)
 {
+    connect(this, SIGNAL(requestAdded(IncomingContactRequest*)), this, SIGNAL(requestsChanged()));
+    connect(this, SIGNAL(requestRemoved(IncomingContactRequest*)), this, SIGNAL(requestsChanged()));
 }
 
 void IncomingRequestManager::loadRequests()
@@ -65,7 +67,7 @@ IncomingContactRequest *IncomingRequestManager::requestFromHostname(const QByteA
     Q_ASSERT(hostname == hostname.toLower());
 
     for (QList<IncomingContactRequest*>::ConstIterator it = m_requests.begin(); it != m_requests.end(); ++it)
-        if ((*it)->hostname == hostname)
+        if ((*it)->hostname() == hostname)
             return *it;
 
     return 0;
@@ -167,17 +169,17 @@ QStringList IncomingRequestManager::rejectedHosts() const
 
 IncomingContactRequest::IncomingContactRequest(IncomingRequestManager *m, const QByteArray &h,
                                                     ContactRequestServer *c)
-    : QObject(m), manager(m), hostname(h), connection(c)
+    : QObject(m), manager(m), connection(c), m_hostname(h)
 {
     Q_ASSERT(manager);
-    Q_ASSERT(hostname.size() == 16);
+    Q_ASSERT(m_hostname.size() == 16);
 
-    qDebug() << "Created contact request from" << hostname << (connection ? "with" : "without") << "connection";
+    qDebug() << "Created contact request from" << m_hostname << (connection ? "with" : "without") << "connection";
 }
 
 void IncomingContactRequest::load()
 {
-    config->beginGroup(QLatin1String("contactRequests/") + QString::fromLatin1(hostname));
+    config->beginGroup(QLatin1String("contactRequests/") + QString::fromLatin1(m_hostname));
 
     setRemoteSecret(config->value(QLatin1String("remoteSecret")).toByteArray());
     setNickname(config->value(QLatin1String("nickname")).toString());
@@ -191,7 +193,7 @@ void IncomingContactRequest::load()
 
 void IncomingContactRequest::save()
 {
-    config->beginGroup(QLatin1String("contactRequests/") + QString::fromLatin1(hostname));
+    config->beginGroup(QLatin1String("contactRequests/") + QString::fromLatin1(m_hostname));
 
     config->setValue(QLatin1String("remoteSecret"), remoteSecret());
     config->setValue(QLatin1String("nickname"), nickname());
@@ -214,7 +216,7 @@ void IncomingContactRequest::renew()
 void IncomingContactRequest::removeRequest()
 {
     /* Remove from config */
-    config->beginGroup(QLatin1String("contactRequests/") + QString::fromLatin1(hostname));
+    config->beginGroup(QLatin1String("contactRequests/") + QString::fromLatin1(m_hostname));
     config->remove("");
     config->endGroup();
 }
@@ -233,6 +235,7 @@ void IncomingContactRequest::setMessage(const QString &message)
 void IncomingContactRequest::setNickname(const QString &nickname)
 {
     m_nickname = nickname;
+    emit nicknameChanged();
 }
 
 void IncomingContactRequest::setConnection(ContactRequestServer *c)
@@ -244,20 +247,21 @@ void IncomingContactRequest::setConnection(ContactRequestServer *c)
         connection.data()->close();
     }
 
-    qDebug() << "Setting new connection for an existing contact request from" << hostname;
+    qDebug() << "Setting new connection for an existing contact request from" << m_hostname;
     connection = c;
+    emit hasActiveConnectionChanged();
 }
 
 void IncomingContactRequest::accept(ContactUser *user)
 {
-    qDebug() << "Accepting contact request from" << hostname;
+    qDebug() << "Accepting contact request from" << m_hostname;
 
     /* Create the contact */
     if (!user)
     {
         Q_ASSERT(!nickname().isEmpty());
         user = manager->contacts->addContact(nickname());
-        user->setHostname(QString::fromLatin1(hostname));
+        user->setHostname(QString::fromLatin1(m_hostname));
     }
 
     user->writeSetting("remoteSecret", remoteSecret());
@@ -282,7 +286,7 @@ void IncomingContactRequest::accept(ContactUser *user)
 
 void IncomingContactRequest::reject()
 {
-    qDebug() << "Rejecting contact request from" << hostname;
+    qDebug() << "Rejecting contact request from" << m_hostname;
 
     /* Send a rejection if there is an active connection */
     if (connection)
@@ -290,7 +294,7 @@ void IncomingContactRequest::reject()
     /* Remove the request from the config */
     removeRequest();
     /* Blacklist the host to prevent repeat requests */
-    manager->addRejectedHost(hostname);
+    manager->addRejectedHost(m_hostname);
     /* Remove the request from the manager */
     manager->removeRequest(this);
 

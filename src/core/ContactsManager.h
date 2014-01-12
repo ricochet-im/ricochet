@@ -47,6 +47,8 @@ class ContactsManager : public QObject
     Q_OBJECT
     Q_DISABLE_COPY(ContactsManager)
 
+    Q_PROPERTY(IncomingRequestManager* incomingRequests READ incomingRequestManager CONSTANT)
+
     friend class OutgoingContactRequest;
 
 public:
@@ -54,6 +56,8 @@ public:
     IncomingRequestManager incomingRequests;
 
     explicit ContactsManager(UserIdentity *identity);
+
+    IncomingRequestManager *incomingRequestManager() { return &incomingRequests; }
 
     const QList<ContactUser*> &contacts() const { return pContacts; }
     ContactUser *lookupSecret(const QByteArray &secret) const;
@@ -77,6 +81,9 @@ public slots:
 signals:
     void contactAdded(ContactUser *user);
     void outgoingRequestAdded(OutgoingContactRequest *request);
+    /* Hack to allow creating models/windows/etc to handle other signals before they're
+     * emitted; primarily, to allow UI to create models to handle incomingChatMessage */
+    void prepareInteractiveHandler(ContactUser *user);
 
 private slots:
     void contactDeleted(ContactUser *user);
@@ -85,6 +92,7 @@ private:
     QList<ContactUser*> pContacts;
     int highestID;
 
+    void connectSignals(ContactUser *user);
     void loadFromSettings();
 };
 

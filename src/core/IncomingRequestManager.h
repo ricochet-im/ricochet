@@ -34,7 +34,6 @@
 #define INCOMINGREQUESTMANAGER_H
 
 #include <QObject>
-#include <QWeakPointer>
 #include <QPointer>
 #include <QDateTime>
 #include "protocol/ContactRequestServer.h"
@@ -47,12 +46,20 @@ class IncomingContactRequest : public QObject
     Q_OBJECT
     Q_DISABLE_COPY(IncomingContactRequest)
 
+    Q_PROPERTY(QByteArray hostname READ hostname CONSTANT)
+    Q_PROPERTY(QString message READ message CONSTANT)
+    Q_PROPERTY(QString nickname READ nickname WRITE setNickname NOTIFY nicknameChanged)
+    Q_PROPERTY(bool hasActiveConnection READ hasActiveConnection NOTIFY hasActiveConnectionChanged)
+    Q_PROPERTY(QDateTime requestDate READ requestDate CONSTANT)
+    Q_PROPERTY(QDateTime lastRequestDate READ lastRequestDate CONSTANT)
+
 public:
     IncomingRequestManager * const manager;
-    const QByteArray hostname;
 
     IncomingContactRequest(IncomingRequestManager *manager, const QByteArray &hostname,
                            ContactRequestServer *connection = 0);
+
+    QByteArray hostname() const { return m_hostname; }
 
     QByteArray remoteSecret() const { return m_remoteSecret; }
     void setRemoteSecret(const QByteArray &remoteSecret);
@@ -61,6 +68,7 @@ public:
     void setMessage(const QString &message);
 
     QString nickname() const { return m_nickname; }
+    void setNickname(const QString &nickname);
 
     bool hasActiveConnection() const { return connection != 0; }
     void setConnection(ContactRequestServer *connection);
@@ -74,17 +82,16 @@ public:
     void save();
 
 public slots:
-    void setNickname(const QString &nickname);
-
     void accept(ContactUser *user = 0);
     void reject();
 
+signals:
+    void nicknameChanged();
+    void hasActiveConnectionChanged();
+
 private:
-#if QT_VERSION >= 0x040600
-    QWeakPointer<ContactRequestServer> connection;
-#else
     QPointer<ContactRequestServer> connection;
-#endif
+    QByteArray m_hostname;
     QByteArray m_remoteSecret;
     QString m_message, m_nickname;
     QDateTime m_requestDate, m_lastRequestDate;
@@ -97,6 +104,8 @@ class IncomingRequestManager : public QObject
     Q_OBJECT
     Q_DISABLE_COPY(IncomingRequestManager)
 
+    Q_PROPERTY(QList<QObject*> requests READ requestObjects NOTIFY requestsChanged)
+
     friend class IncomingContactRequest;
 
 public:
@@ -104,6 +113,7 @@ public:
 
     explicit IncomingRequestManager(ContactsManager *contactsManager);
 
+    QList<QObject*> requestObjects() const { return *reinterpret_cast<const QList<QObject*>*>(&m_requests); }
     QList<IncomingContactRequest*> requests() const { return m_requests; }
     IncomingContactRequest *requestFromHostname(const QByteArray &hostname);
 
@@ -122,6 +132,7 @@ public:
 signals:
     void requestAdded(IncomingContactRequest *request);
     void requestRemoved(IncomingContactRequest *request);
+    void requestsChanged();
 
 private:
     QList<IncomingContactRequest*> m_requests;

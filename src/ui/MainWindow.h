@@ -33,22 +33,21 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QDeclarativeView>
-#include <QWeakPointer>
-#include <QPointer>
+#include <QObject>
 
 class ContactUser;
 class UserIdentity;
 class IncomingContactRequest;
 class OutgoingContactRequest;
+class QQmlApplicationEngine;
 
-class MainWindow : public QDeclarativeView
+class MainWindow : public QObject
 {
     Q_OBJECT
     Q_DISABLE_COPY(MainWindow)
 
 public:
-    explicit MainWindow(QWidget *parent = 0);
+    explicit MainWindow(QObject *parent = 0);
     ~MainWindow();
 
     void showNotification(const QString &message, QObject *receiver = 0, const char *slot = 0);
@@ -57,9 +56,6 @@ public slots:
     void openTorConfig();
 
     void uiRemoveContact(ContactUser *user);
-
-protected:
-    virtual void closeEvent(QCloseEvent *);
 
 private slots:
     /* Incoming contact request notifications */
@@ -75,6 +71,8 @@ private slots:
 
 private:
     void createContactsModel();
+
+    QQmlApplicationEngine *qml;
 };
 
 extern MainWindow *uiMain;

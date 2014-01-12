@@ -31,7 +31,8 @@
 
 TARGET = Torsion
 TEMPLATE = app
-QT += core gui network declarative
+QT += core gui network quick widgets
+CONFIG += c++11
 
 CONFIG(release,debug|release):DEFINES += QT_NO_DEBUG_OUTPUT QT_NO_WARNING_OUTPUT
 
@@ -118,13 +119,10 @@ SOURCES += src/main.cpp \
     src/protocol/ContactRequestClient.cpp \
     src/protocol/ContactRequestServer.cpp \
     src/core/OutgoingContactRequest.cpp \
-    src/ui/FancyTextEdit.cpp \
     src/core/IncomingRequestManager.cpp \
     src/core/ContactIDValidator.cpp \
     src/core/NicknameValidator.cpp \
-    src/ui/ContactRequestDialog.cpp \
     src/protocol/GetSecretCommand.cpp \
-    src/ui/EditableLabel.cpp \
     src/tor/autoconfig/VidaliaConfigManager.cpp \
     src/ui/torconfig/VidaliaConfigPage.cpp \
     src/ui/torconfig/VidaliaExitWidget.cpp \
@@ -134,13 +132,9 @@ SOURCES += src/main.cpp \
     src/core/IdentityManager.cpp \
     src/tor/autoconfig/BundledTorManager.cpp \
     src/utils/OSUtil.cpp \
-    src/ui/ChatTextWidget.cpp \
     src/utils/AppSettings.cpp \
-    src/ui/ExpandingTextEdit.cpp \
-    src/ui/PopoutManager.cpp \
-    src/ui/UIHelper.cpp \
     src/ui/AvatarImageProvider.cpp \
-    src/ui/TopLevelWindow.cpp
+    src/ui/ConversationModel.cpp
 
 HEADERS += src/ui/MainWindow.h \
     src/ContactsModel.h \
@@ -176,13 +170,10 @@ HEADERS += src/ui/MainWindow.h \
     src/protocol/ContactRequestClient.h \
     src/protocol/ContactRequestServer.h \
     src/core/OutgoingContactRequest.h \
-    src/ui/FancyTextEdit.h \
     src/core/IncomingRequestManager.h \
     src/core/ContactIDValidator.h \
     src/core/NicknameValidator.h \
-    src/ui/ContactRequestDialog.h \
     src/protocol/GetSecretCommand.h \
-    src/ui/EditableLabel.h \
     src/tor/autoconfig/VidaliaConfigManager.h \
     src/ui/torconfig/VidaliaConfigPage.h \
     src/ui/torconfig/VidaliaExitWidget.h \
@@ -192,36 +183,11 @@ HEADERS += src/ui/MainWindow.h \
     src/core/IdentityManager.h \
     src/tor/autoconfig/BundledTorManager.h \
     src/utils/OSUtil.h \
-    src/ui/ChatTextWidget.h \
     src/utils/AppSettings.h \
-    src/ui/ExpandingTextEdit.h \
-    src/ui/PopoutManager.h \
-    src/ui/PageSwitcherBase.h \
-    src/ui/UIHelper.h \
     src/ui/AvatarImageProvider.h \
-    src/ui/TopLevelWindow.h
+    src/ui/ConversationModel.h
 
-RESOURCES += res/resources.qrc \
-    translation/embedded.qrc \
+RESOURCES += translation/embedded.qrc \
     src/ui/qml/qml.qrc
 
 TRANSLATIONS = translation/torsion.ts
-
-OTHER_FILES += \
-    src/ui/qml/main.qml \
-    src/ui/qml/TorsionToolBar.qml \
-    src/ui/qml/switcher.js \
-    src/ui/qml/PopoutItem.qml \
-    src/ui/qml/PopoutClickArea.qml \
-    src/ui/qml/PageSwitcher.qml \
-    src/ui/qml/ContactPage.qml \
-    src/ui/qml/ContactListItem.qml \
-    src/ui/qml/ContactListGroup.qml \
-    src/ui/qml/ContactList.qml \
-    src/ui/qml/ContactGroupView.qml \
-    src/ui/qml/ChatArea.qml \
-    src/ui/qml/Avatar.qml \
-    src/ui/qml/ChatInput.qml \
-    src/ui/qml/ContactAddDialog.qml \
-    src/ui/qml/ContactList.js \
-    src/ui/qml/ContactIdText.qml

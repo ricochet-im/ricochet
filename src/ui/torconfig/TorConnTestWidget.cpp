@@ -99,7 +99,7 @@ void TorConnTestWidget::doTestSuccess()
 
 void TorConnTestWidget::doTestFail()
 {
-    infoLabel->setText(testManager->statusText());
+    infoLabel->setText(testManager->errorMessage());
     testManager->deleteLater();
     testManager = 0;
 

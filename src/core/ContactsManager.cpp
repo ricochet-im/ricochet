@@ -37,6 +37,7 @@
 #include "ContactIDValidator.h"
 #include <QStringList>
 #include <QDebug>
+#include <functional>
 
 ContactsManager *contactsManager = 0;
 
@@ -66,7 +67,7 @@ void ContactsManager::loadFromSettings()
         }
 
     	ContactUser *user = new ContactUser(identity, id, this);
-        connect(user, SIGNAL(contactDeleted(ContactUser*)), SLOT(contactDeleted(ContactUser*)));
+        connectSignals(user);
     	pContacts.append(user);
         highestID = qMax(id, highestID);
     }
@@ -80,7 +81,7 @@ ContactUser *ContactsManager::addContact(const QString &nickname)
     ContactUser *user = ContactUser::addNewContact(identity, highestID);
     user->setParent(this);
     user->setNickname(nickname);
-    connect(user, SIGNAL(contactDeleted(ContactUser*)), SLOT(contactDeleted(ContactUser*)));
+    connectSignals(user);
 
     qDebug() << "Added new contact" << nickname << "with ID" << user->uniqueID;
 
@@ -90,11 +91,18 @@ ContactUser *ContactsManager::addContact(const QString &nickname)
     return user;
 }
 
+void ContactsManager::connectSignals(ContactUser *user)
+{
+    connect(user, SIGNAL(contactDeleted(ContactUser*)), SLOT(contactDeleted(ContactUser*)));
+    connect(user, &ContactUser::prepareInteractiveHandler, std::bind(&ContactsManager::prepareInteractiveHandler,
+                this, user));
+}
+
 ContactUser *ContactsManager::createContactRequest(const QString &contactid, const QString &nickname,
                                                    const QString &myNickname, const QString &message)
 {
     if (!ContactIDValidator::isValidID(contactid) || lookupHostname(contactid) ||
-        lookupNickname(nickname) || message.isEmpty())
+        lookupNickname(nickname))
     {
         return 0;
     }
