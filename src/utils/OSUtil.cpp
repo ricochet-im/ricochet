@@ -39,6 +39,7 @@
 #include <Windows.h>
 #else
 #include <errno.h>
+#include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <signal.h>
