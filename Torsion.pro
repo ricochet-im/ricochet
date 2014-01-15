@@ -87,7 +87,7 @@ DEFINES += QT_NO_CAST_FROM_ASCII QT_NO_CAST_TO_ASCII
 
 SOURCES += src/main.cpp \
     src/ui/MainWindow.cpp \
-    src/ContactsModel.cpp \
+    src/ui/ContactsModel.cpp \
     src/tor/TorControlManager.cpp \
     src/tor/TorControlSocket.cpp \
     src/tor/TorControlCommand.cpp \
@@ -137,7 +137,7 @@ SOURCES += src/main.cpp \
     src/ui/ConversationModel.cpp
 
 HEADERS += src/ui/MainWindow.h \
-    src/ContactsModel.h \
+    src/ui/ContactsModel.h \
     src/tor/TorControlManager.h \
     src/tor/TorControlSocket.h \
     src/tor/TorControlCommand.h \
