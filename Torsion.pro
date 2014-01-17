@@ -108,11 +108,7 @@ SOURCES += src/main.cpp \
     src/utils/DateUtil.cpp \
     src/tor/TorServiceTest.cpp \
     src/tor/HiddenService.cpp \
-    src/ui/torconfig/TorConfigWizard.cpp \
-    src/ui/torconfig/IntroPage.cpp \
-    src/ui/torconfig/ManualConfigPage.cpp \
     src/protocol/ProtocolSocket.cpp \
-    src/ui/torconfig/TorConnTestWidget.cpp \
     src/utils/PaintUtil.cpp \
     src/utils/CryptoKey.cpp \
     src/utils/SecureRNG.cpp \
@@ -124,10 +120,6 @@ SOURCES += src/main.cpp \
     src/core/NicknameValidator.cpp \
     src/protocol/GetSecretCommand.cpp \
     src/tor/autoconfig/VidaliaConfigManager.cpp \
-    src/ui/torconfig/VidaliaConfigPage.cpp \
-    src/ui/torconfig/VidaliaExitWidget.cpp \
-    src/ui/torconfig/VidaliaStartWidget.cpp \
-    src/ui/torconfig/VidaliaTestWidget.cpp \
     src/core/UserIdentity.cpp \
     src/core/IdentityManager.cpp \
     src/tor/autoconfig/BundledTorManager.cpp \
@@ -160,11 +152,7 @@ HEADERS += src/ui/MainWindow.h \
     src/utils/DateUtil.h \
     src/tor/TorServiceTest.h \
     src/tor/HiddenService.h \
-    src/ui/torconfig/TorConfigWizard.h \
-    src/ui/torconfig/IntroPage.h \
-    src/ui/torconfig/ManualConfigPage.h \
     src/protocol/ProtocolSocket.h \
-    src/ui/torconfig/TorConnTestWidget.h \
     src/utils/PaintUtil.h \
     src/utils/CryptoKey.h \
     src/utils/SecureRNG.h \
@@ -176,10 +164,6 @@ HEADERS += src/ui/MainWindow.h \
     src/core/NicknameValidator.h \
     src/protocol/GetSecretCommand.h \
     src/tor/autoconfig/VidaliaConfigManager.h \
-    src/ui/torconfig/VidaliaConfigPage.h \
-    src/ui/torconfig/VidaliaExitWidget.h \
-    src/ui/torconfig/VidaliaStartWidget.h \
-    src/ui/torconfig/VidaliaTestWidget.h \
     src/core/UserIdentity.h \
     src/core/IdentityManager.h \
     src/tor/autoconfig/BundledTorManager.h \

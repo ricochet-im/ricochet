@@ -53,8 +53,6 @@ public:
     void showNotification(const QString &message, QObject *receiver = 0, const char *slot = 0);
 
 public slots:
-    void openTorConfig();
-
     void uiRemoveContact(ContactUser *user);
 
 private slots:

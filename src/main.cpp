@@ -34,7 +34,6 @@
 #include "ui/MainWindow.h"
 #include "core/IdentityManager.h"
 #include "tor/TorControlManager.h"
-#include "ui/torconfig/TorConfigWizard.h"
 #include "tor/autoconfig/BundledTorManager.h"
 #include "utils/CryptoKey.h"
 #include "utils/SecureRNG.h"
@@ -83,7 +82,7 @@ int main(int argc, char *argv[])
     if (!SecureRNG::seed())
         qFatal("Failed to initialize RNG");
 
-    /* Tor control manager; this may enter into the TorConfigWizard. */
+    /* Tor control manager */
     if (!connectTorControl())
         return 0;
 
@@ -230,26 +229,7 @@ static void initTranslation()
 
 static bool connectTorControl()
 {
-    QString method = config->value("tor/configMethod").toString();
-
-    if (method.isNull())
-    {
-        TorConfigWizard wizard;
-        int re = wizard.exec();
-        if (re != QDialog::Accepted)
-            return false;
-
-        method = config->value("tor/configMethod").toString();
-        if (method.isNull())
-        {
-            QMessageBox::critical(0, wizard.tr("Torsion - Error"),
-                wizard.tr("The Tor configuration wizard did not complete successfully. Please restart the "
-                "application and try again."));
-            return false;
-        }
-    }
-
-    if (method == QLatin1String("bundle"))
+    if (config->value("tor/controlPort").isNull())
     {
         torManager = new Tor::TorControlManager;
         BundledTorManager::instance()->setTorManager(torManager);

@@ -37,7 +37,6 @@
 #include "core/OutgoingContactRequest.h"
 #include "core/IdentityManager.h"
 #include "tor/TorControlManager.h"
-#include "ui/torconfig/TorConfigWizard.h"
 #include "ui/AvatarImageProvider.h"
 #include "ContactsModel.h"
 #include "ui/ConversationModel.h"
@@ -127,12 +126,6 @@ void MainWindow::createContactsModel()
 void MainWindow::showNotification(const QString &message, QObject *receiver, const char *slot)
 {
     qCritical("XXX-UI showNotification is not implemented");
-}
-
-void MainWindow::openTorConfig()
-{
-    TorConfigWizard wizard;
-    wizard.exec();
 }
 
 void MainWindow::updateContactRequests()
