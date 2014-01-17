@@ -1,5 +1,5 @@
 /* Torsion - http://torsionim.org/
- * Copyright (C) 2010, John Brooks <john.brooks@dereferenced.net>
+ * Copyright (C) 2014, John Brooks <john.brooks@dereferenced.net>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -30,22 +30,49 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef SECURERNG_H
-#define SECURERNG_H
+#ifndef TORPROCESS_P_H
+#define TORPROCESS_P_H
 
-#include <QByteArray>
+#include "TorProcess.h"
+#include <QProcess>
+#include <QTimer>
 
-class SecureRNG
+namespace Tor {
+
+class TorProcessPrivate : public QObject
 {
+    Q_OBJECT
+
 public:
-    static bool seed();
+    TorProcess *q;
+    QProcess process;
+    QString executable;
+    QString dataDir;
+    QString defaultTorrc;
+    QStringList extraSettings;
+    TorProcess::State state;
+    QString errorMessage;
+    QHostAddress controlHost;
+    quint16 controlPort;
+    QByteArray controlPassword;
 
-    static bool random(char *buf, int size);
-    static QByteArray random(int size);
+    QTimer controlPortTimer;
+    int controlPortAttempts;
 
-    static QByteArray randomPrintable(int length);
-    static unsigned randomInt(unsigned max);
-    static quint64 randomInt64(quint64 max);
+    TorProcessPrivate(TorProcess *q);
+
+    QString torrcPath() const;
+    QString controlPortFilePath() const;
+    bool ensureFilesExist();
+
+public slots:
+    void processStarted();
+    void processFinished();
+    void processReadable();
+    void tryReadControlPort();
 };
 
-#endif // SECURERNG_H
+}
+
+#endif
+

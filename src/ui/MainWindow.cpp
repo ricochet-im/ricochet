@@ -37,7 +37,6 @@
 #include "core/OutgoingContactRequest.h"
 #include "core/IdentityManager.h"
 #include "tor/TorControlManager.h"
-#include "tor/autoconfig/VidaliaConfigManager.h"
 #include "ui/torconfig/TorConfigWizard.h"
 #include "ui/AvatarImageProvider.h"
 #include "ContactsModel.h"

@@ -116,6 +116,14 @@ QByteArray SecureRNG::random(int size)
     return re;
 }
 
+QByteArray SecureRNG::randomPrintable(int length)
+{
+    QByteArray re = random(length);
+    for (int i = 0; i < re.size(); i++)
+        re[i] = (quint8(re[i]) % 95) + 32;
+    return re;
+}
+
 unsigned SecureRNG::randomInt(unsigned max)
 {
     unsigned cutoff = UINT_MAX - (UINT_MAX % max);

@@ -1,5 +1,5 @@
 /* Torsion - http://torsionim.org/
- * Copyright (C) 2010, John Brooks <john.brooks@dereferenced.net>
+ * Copyright (C) 2014, John Brooks <john.brooks@dereferenced.net>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -30,22 +30,67 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef SECURERNG_H
-#define SECURERNG_H
+#ifndef TORPROCESS_H
+#define TORPROCESS_H
 
-#include <QByteArray>
+#include <QObject>
+#include <QHostAddress>
 
-class SecureRNG
+namespace Tor
 {
+
+class TorProcessPrivate;
+
+/* Launches and controls a Tor instance with behavior suitable for bundling
+ * an instance with the application. */
+class TorProcess : public QObject
+{
+    Q_OBJECT
+
 public:
-    static bool seed();
+    enum State {
+        Failed = -1,
+        NotStarted,
+        Starting,
+        Connecting,
+        Ready
+    };
 
-    static bool random(char *buf, int size);
-    static QByteArray random(int size);
+    explicit TorProcess(QObject *parent = 0);
+    virtual ~TorProcess();
 
-    static QByteArray randomPrintable(int length);
-    static unsigned randomInt(unsigned max);
-    static quint64 randomInt64(quint64 max);
+    QString executable() const;
+    void setExecutable(const QString &path);
+
+    QString dataDir() const;
+    void setDataDir(const QString &path);
+
+    QString defaultTorrc() const;
+    void setDefaultTorrc(const QString &path);
+
+    QStringList extraSettings() const;
+    void setExtraSettings(const QStringList &settings);
+
+    State state() const;
+    QString errorMessage() const;
+    QHostAddress controlHost();
+    quint16 controlPort();
+    QByteArray controlPassword();
+
+public slots:
+    void start();
+    void stop();
+
+signals:
+    void stateChanged(int newState);
+    void errorMessageChanged(const QString &errorMessage);
+    void logMessage(const QString &message);
+
+private:
+    TorProcessPrivate *d;
 };
 
-#endif // SECURERNG_H
+}
+
+#endif
+
