@@ -119,10 +119,8 @@ SOURCES += src/main.cpp \
     src/core/ContactIDValidator.cpp \
     src/core/NicknameValidator.cpp \
     src/protocol/GetSecretCommand.cpp \
-    src/tor/autoconfig/VidaliaConfigManager.cpp \
     src/core/UserIdentity.cpp \
     src/core/IdentityManager.cpp \
-    src/tor/autoconfig/BundledTorManager.cpp \
     src/utils/OSUtil.cpp \
     src/utils/AppSettings.cpp \
     src/ui/AvatarImageProvider.cpp \
@@ -164,10 +162,8 @@ HEADERS += src/ui/MainWindow.h \
     src/core/ContactIDValidator.h \
     src/core/NicknameValidator.h \
     src/protocol/GetSecretCommand.h \
-    src/tor/autoconfig/VidaliaConfigManager.h \
     src/core/UserIdentity.h \
     src/core/IdentityManager.h \
-    src/tor/autoconfig/BundledTorManager.h \
     src/utils/OSUtil.h \
     src/utils/AppSettings.h \
     src/ui/AvatarImageProvider.h \

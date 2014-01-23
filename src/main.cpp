@@ -35,7 +35,6 @@
 #include "core/IdentityManager.h"
 #include "tor/TorManager.h"
 #include "tor/TorControlManager.h"
-#include "tor/autoconfig/BundledTorManager.h"
 #include "utils/CryptoKey.h"
 #include "utils/SecureRNG.h"
 #include "utils/OSUtil.h"
