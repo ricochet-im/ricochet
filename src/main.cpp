@@ -33,6 +33,7 @@
 #include "main.h"
 #include "ui/MainWindow.h"
 #include "core/IdentityManager.h"
+#include "tor/TorManager.h"
 #include "tor/TorControlManager.h"
 #include "tor/autoconfig/BundledTorManager.h"
 #include "utils/CryptoKey.h"
@@ -229,21 +230,8 @@ static void initTranslation()
 
 static bool connectTorControl()
 {
-    if (config->value("tor/controlPort").isNull())
-    {
-        torManager = new Tor::TorControlManager;
-        BundledTorManager::instance()->setTorManager(torManager);
-        BundledTorManager::instance()->start();
-        return true;
-    }
-    else
-    {
-        QHostAddress address(config->value("tor/controlIp", QLatin1String("127.0.0.1")).toString());
-        quint16 port = (quint16)config->value("tor/controlPort", 9051).toUInt();
-
-        torManager = new Tor::TorControlManager;
-        torManager->setAuthPassword(config->value("tor/authPassword").toByteArray());
-        torManager->connect(address, port);
-        return true;
-    }
+    Tor::TorManager *tor = new Tor::TorManager;
+    torManager = tor->control();
+    tor->start();
+    return true;
 }
