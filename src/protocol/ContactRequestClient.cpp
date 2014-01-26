@@ -35,7 +35,7 @@
 #include "ProtocolManager.h"
 #include "IncomingSocket.h"
 #include "CommandDataParser.h"
-#include "tor/TorControlManager.h"
+#include "tor/TorControl.h"
 #include "tor/HiddenService.h"
 #include "utils/CryptoKey.h"
 #include <QNetworkProxy>

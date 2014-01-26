@@ -37,7 +37,7 @@
 #include "UserIdentity.h"
 #include "IncomingRequestManager.h"
 #include "protocol/ContactRequestClient.h"
-#include "tor/TorControlManager.h"
+#include "tor/TorControl.h"
 #include <QDebug>
 
 OutgoingContactRequest *OutgoingContactRequest::requestForUser(ContactUser *user)

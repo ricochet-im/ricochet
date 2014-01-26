@@ -35,7 +35,7 @@
 #include "ProtocolCommand.h"
 #include "CommandHandler.h"
 #include "IncomingSocket.h"
-#include "tor/TorControlManager.h"
+#include "tor/TorControl.h"
 #include <QNetworkProxy>
 #include <QtEndian>
 #include <QDebug>

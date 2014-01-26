@@ -7,16 +7,16 @@ Label {
     font.pointSize: 12
     font.bold: true
     text: {
-        if (torManager.status === TorControlManager.Error)
+        if (torManager.status === TorControl.Error)
             return "Configuration error"
-        if (torManager.status < TorControlManager.Connected)
+        if (torManager.status < TorControl.Connected)
             return "Starting up..."
-        if (torManager.torStatus === TorControlManager.TorUnknown ||
-            torManager.torStatus === TorControlManager.TorOffline)
+        if (torManager.torStatus === TorControl.TorUnknown ||
+            torManager.torStatus === TorControl.TorOffline)
             return "Offline"
-        if (torManager.torStatus === TorControlManager.TorBootstrapping)
+        if (torManager.torStatus === TorControl.TorBootstrapping)
             return "Connecting..."
-        if (torManager.torStatus === TorControlManager.TorReady) {
+        if (torManager.torStatus === TorControl.TorReady) {
             if (userIdentity.isOnline)
                 return "Online"
             else if (userIdentity.isPublished)

@@ -32,7 +32,7 @@
 
 #include "ProtocolManager.h"
 #include "ProtocolCommand.h"
-#include "tor/TorControlManager.h"
+#include "tor/TorControl.h"
 #include <QTimer>
 #include <QDebug>
 

@@ -31,7 +31,7 @@
  */
 
 #include "main.h"
-#include "TorControlManager.h"
+#include "TorControl.h"
 #include "TorControlSocket.h"
 #include "HiddenService.h"
 #include "ProtocolInfoCommand.h"
@@ -45,11 +45,11 @@
 #include <QTimer>
 #include <QDebug>
 
-Tor::TorControlManager *torManager = 0;
+Tor::TorControl *torManager = 0;
 
 using namespace Tor;
 
-TorControlManager::TorControlManager(QObject *parent)
+TorControl::TorControl(QObject *parent)
     : QObject(parent), pControlPort(0), pSocksPort(0), pStatus(NotConnected), pTorStatus(TorOffline)
 {
     socket = new TorControlSocket;
@@ -61,12 +61,12 @@ TorControlManager::TorControlManager(QObject *parent)
     QObject::connect(socket, SIGNAL(controlError(QString)), this, SLOT(setError(QString)));
 }
 
-QNetworkProxy TorControlManager::connectionProxy()
+QNetworkProxy TorControl::connectionProxy()
 {
     return QNetworkProxy(QNetworkProxy::Socks5Proxy, pSocksAddress.toString(), pSocksPort);
 }
 
-void TorControlManager::setStatus(Status n)
+void TorControl::setStatus(Status n)
 {
     if (n == pStatus)
         return;
@@ -85,7 +85,7 @@ void TorControlManager::setStatus(Status n)
         emit disconnected();
 }
 
-void TorControlManager::setTorStatus(TorStatus n)
+void TorControl::setTorStatus(TorStatus n)
 {
     if (n == pTorStatus)
         return;
@@ -96,7 +96,7 @@ void TorControlManager::setTorStatus(TorStatus n)
     emit torStatusChanged(pTorStatus, old);
 }
 
-void TorControlManager::setError(const QString &message)
+void TorControl::setError(const QString &message)
 {
     pErrorMessage = message;
     setStatus(Error);
@@ -108,21 +108,21 @@ void TorControlManager::setError(const QString &message)
     QTimer::singleShot(15000, this, SLOT(reconnect()));
 }
 
-QString TorControlManager::errorMessage() const
+QString TorControl::errorMessage() const
 {
     return pErrorMessage;
 }
 
-void TorControlManager::setAuthPassword(const QByteArray &password)
+void TorControl::setAuthPassword(const QByteArray &password)
 {
     pAuthPassword = password;
 }
 
-void TorControlManager::connect(const QHostAddress &address, quint16 port)
+void TorControl::connect(const QHostAddress &address, quint16 port)
 {
     if (status() > Connecting)
     {
-        qDebug() << "Ignoring TorControlManager::connect due to existing connection";
+        qDebug() << "Ignoring TorControl::connect due to existing connection";
         return;
     }
 
@@ -138,7 +138,7 @@ void TorControlManager::connect(const QHostAddress &address, quint16 port)
     socket->connectToHost(address, port);
 }
 
-void TorControlManager::reconnect()
+void TorControl::reconnect()
 {
     Q_ASSERT(!pTorAddress.isNull() && pControlPort);
     if (pTorAddress.isNull() || !pControlPort || status() >= Connecting)
@@ -148,7 +148,7 @@ void TorControlManager::reconnect()
     socket->connectToHost(pTorAddress, pControlPort);
 }
 
-void TorControlManager::commandFinished(TorControlCommand *command)
+void TorControl::commandFinished(TorControlCommand *command)
 {
     QLatin1String keyword(command->keyword);
 
@@ -178,7 +178,7 @@ void TorControlManager::commandFinished(TorControlCommand *command)
     }
 }
 
-void TorControlManager::socketConnected()
+void TorControl::socketConnected()
 {
     Q_ASSERT(status() == Connecting);
 
@@ -186,11 +186,11 @@ void TorControlManager::socketConnected()
     setStatus(Authenticating);
 
     ProtocolInfoCommand *command = new ProtocolInfoCommand(this);
-    QObject::connect(command, SIGNAL(replyFinished()), SLOT(protocolInfoReply()));
+    QObject::connect(command, SIGNAL(finished()), SLOT(protocolInfoReply()));
     socket->sendCommand(command, command->build());
 }
 
-void TorControlManager::socketDisconnected()
+void TorControl::socketDisconnected()
 {
     /* Clear some internal state */
     pTorVersion.clear();
@@ -202,12 +202,12 @@ void TorControlManager::socketDisconnected()
     setStatus(NotConnected);
 }
 
-void TorControlManager::socketError()
+void TorControl::socketError()
 {
     setError(tr("Connection failed: %1").arg(socket->errorString()));
 }
 
-void TorControlManager::protocolInfoReply()
+void TorControl::protocolInfoReply()
 {
     ProtocolInfoCommand *info = qobject_cast<ProtocolInfoCommand*>(sender());
     if (!info)
@@ -285,12 +285,12 @@ void TorControlManager::protocolInfoReply()
     }
 }
 
-void TorControlManager::getTorStatus()
+void TorControl::getTorStatus()
 {
     Q_ASSERT(isConnected());
 
     GetConfCommand *command = new GetConfCommand("GETINFO");
-    QObject::connect(command, SIGNAL(replyFinished()), this, SLOT(getTorStatusReply()));
+    QObject::connect(command, SIGNAL(finished()), this, SLOT(getTorStatusReply()));
 
     QList<QByteArray> keys;
     keys << QByteArray("status/circuit-established") << QByteArray("status/bootstrap-phase");
@@ -298,7 +298,7 @@ void TorControlManager::getTorStatus()
     socket->sendCommand(command, command->build(keys));
 }
 
-void TorControlManager::getTorStatusReply()
+void TorControl::getTorStatusReply()
 {
     GetConfCommand *command = qobject_cast<GetConfCommand*>(sender());
     if (!command || !isConnected())
@@ -321,7 +321,7 @@ void TorControlManager::getTorStatusReply()
     setTorStatus(TorOffline);
 }
 
-void TorControlManager::getSocksInfo()
+void TorControl::getSocksInfo()
 {
     Q_ASSERT(isConnected());
 
@@ -341,7 +341,7 @@ void TorControlManager::getSocksInfo()
     qDebug() << "torctrl: Querying for SOCKS connection settings";
 
     GetConfCommand *command = new GetConfCommand;
-    QObject::connect(command, SIGNAL(replyFinished()), this, SLOT(getSocksInfoReply()));
+    QObject::connect(command, SIGNAL(finished()), this, SLOT(getSocksInfoReply()));
 
     QList<QByteArray> options;
     options << QByteArray("SocksPort") << QByteArray("SocksListenAddress");
@@ -349,7 +349,7 @@ void TorControlManager::getSocksInfo()
     socket->sendCommand(command, command->build(options));
 }
 
-void TorControlManager::getSocksInfoReply()
+void TorControl::getSocksInfoReply()
 {
     GetConfCommand *command = qobject_cast<GetConfCommand*>(sender());
     if (!command || !isConnected())
@@ -413,7 +413,7 @@ void TorControlManager::getSocksInfoReply()
     emit socksReady();
 }
 
-void TorControlManager::addHiddenService(HiddenService *service)
+void TorControl::addHiddenService(HiddenService *service)
 {
     if (pServices.contains(service))
         return;
@@ -421,7 +421,7 @@ void TorControlManager::addHiddenService(HiddenService *service)
     pServices.append(service);
 }
 
-void TorControlManager::publishServices()
+void TorControl::publishServices()
 {
     Q_ASSERT(isConnected());
     if (pServices.isEmpty())
@@ -465,12 +465,12 @@ void TorControlManager::publishServices()
     socket->sendCommand(command, command->build(settings));
 }
 
-void TorControlManager::shutdown()
+void TorControl::shutdown()
 {
     socket->sendCommand("SIGNAL SHUTDOWN\r\n");
 }
 
-void TorControlManager::shutdownSync()
+void TorControl::shutdownSync()
 {
     shutdown();
     while (socket->bytesToWrite())

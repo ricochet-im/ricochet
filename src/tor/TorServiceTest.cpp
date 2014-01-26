@@ -31,13 +31,13 @@
  */
 
 #include "TorServiceTest.h"
-#include "TorControlManager.h"
+#include "TorControl.h"
 #include <QNetworkProxy>
 #include <QDebug>
 
 using namespace Tor;
 
-TorServiceTest::TorServiceTest(TorControlManager *m)
+TorServiceTest::TorServiceTest(TorControl *m)
     : QObject(m), manager(m), socket(new QTcpSocket(this)), state(-1)
 {
     connect(manager, SIGNAL(socksReady()), this, SLOT(socksReady()));

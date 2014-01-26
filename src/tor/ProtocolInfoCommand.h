@@ -39,7 +39,7 @@
 namespace Tor
 {
 
-class TorControlManager;
+class TorControl;
 
 class ProtocolInfoCommand : public TorControlCommand
 {
@@ -56,7 +56,7 @@ public:
     };
     Q_DECLARE_FLAGS(AuthMethods, AuthMethod)
 
-    ProtocolInfoCommand(TorControlManager *manager);
+    ProtocolInfoCommand(TorControl *manager);
     QByteArray build();
 
     AuthMethods authMethods() const { return m_authMethods; }
@@ -67,7 +67,7 @@ protected:
     virtual void handleReply(int code, QByteArray &data, bool end);
 
 private:
-    TorControlManager *manager;
+    TorControl *manager;
     AuthMethods m_authMethods;
     QString m_torVersion;
     QString m_cookieFile;

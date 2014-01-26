@@ -39,7 +39,7 @@ namespace Tor
 {
 
 class TorProcess;
-class TorControlManager;
+class TorControl;
 class TorManagerPrivate;
 
 /* Run/connect to an instance of Tor according to configuration, and manage
@@ -52,7 +52,7 @@ public:
     explicit TorManager(QObject *parent = 0);
 
     TorProcess *process();
-    TorControlManager *control();
+    TorControl *control();
 
 public slots:
     void start();

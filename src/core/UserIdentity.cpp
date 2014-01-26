@@ -32,7 +32,7 @@
 
 #include "main.h"
 #include "UserIdentity.h"
-#include "tor/TorControlManager.h"
+#include "tor/TorControl.h"
 #include "tor/HiddenService.h"
 #include "protocol/IncomingSocket.h"
 #include "core/ContactIDValidator.h"

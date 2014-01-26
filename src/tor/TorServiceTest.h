@@ -39,7 +39,7 @@
 namespace Tor
 {
 
-class TorControlManager;
+class TorControl;
 
 class TorServiceTest : public QObject
 {
@@ -47,9 +47,9 @@ class TorServiceTest : public QObject
     Q_DISABLE_COPY(TorServiceTest)
 
 public:
-    TorControlManager * const manager;
+    TorControl * const manager;
 
-    explicit TorServiceTest(TorControlManager *manager);
+    explicit TorServiceTest(TorControl *manager);
 
     void connectToHost(const QString &host, quint16 port);
 

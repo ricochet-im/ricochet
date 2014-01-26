@@ -30,8 +30,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef TORCONTROLMANAGER_H
-#define TORCONTROLMANAGER_H
+#ifndef TORCONTROL_H
+#define TORCONTROL_H
 
 #include <QObject>
 #include <QHostAddress>
@@ -43,7 +43,7 @@ namespace Tor
 
 class HiddenService;
 
-class TorControlManager : public QObject
+class TorControl : public QObject
 {
     Q_OBJECT
     Q_ENUMS(Status TorStatus)
@@ -74,7 +74,7 @@ public:
         TorReady,
     };
 
-    explicit TorControlManager(QObject *parent = 0);
+    explicit TorControl(QObject *parent = 0);
 
     /* Information */
     Status status() const { return pStatus; }
@@ -148,6 +148,6 @@ private:
 
 }
 
-extern Tor::TorControlManager *torManager;
+extern Tor::TorControl *torManager;
 
 #endif // TORCONTROLMANAGER_H

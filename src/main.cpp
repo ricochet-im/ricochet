@@ -34,7 +34,7 @@
 #include "ui/MainWindow.h"
 #include "core/IdentityManager.h"
 #include "tor/TorManager.h"
-#include "tor/TorControlManager.h"
+#include "tor/TorControl.h"
 #include "utils/CryptoKey.h"
 #include "utils/SecureRNG.h"
 #include "utils/OSUtil.h"

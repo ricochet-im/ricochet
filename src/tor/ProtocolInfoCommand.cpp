@@ -31,13 +31,13 @@
  */
 
 #include "ProtocolInfoCommand.h"
-#include "TorControlManager.h"
+#include "TorControl.h"
 #include "utils/StringUtil.h"
 #include <QList>
 
 using namespace Tor;
 
-ProtocolInfoCommand::ProtocolInfoCommand(TorControlManager *m)
+ProtocolInfoCommand::ProtocolInfoCommand(TorControl *m)
     : TorControlCommand("PROTOCOLINFO"), manager(m)
 {
 }

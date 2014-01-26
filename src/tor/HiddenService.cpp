@@ -31,7 +31,7 @@
  */
 
 #include "HiddenService.h"
-#include "TorControlManager.h"
+#include "TorControl.h"
 #include "TorServiceTest.h"
 #include "utils/CryptoKey.h"
 #include <QDir>

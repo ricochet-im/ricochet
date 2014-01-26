@@ -36,7 +36,7 @@
 #include "core/IncomingRequestManager.h"
 #include "core/OutgoingContactRequest.h"
 #include "core/IdentityManager.h"
-#include "tor/TorControlManager.h"
+#include "tor/TorControl.h"
 #include "ui/AvatarImageProvider.h"
 #include "ContactsModel.h"
 #include "ui/ConversationModel.h"
@@ -61,7 +61,7 @@ MainWindow::MainWindow(QObject *parent)
     qmlRegisterUncreatableType<ContactsManager>("org.torsionim.torsion", 1, 0, "ContactsManager", QString());
     qmlRegisterUncreatableType<IncomingRequestManager>("org.torsionim.torsion", 1, 0, "IncomingRequestManager", QString());
     qmlRegisterUncreatableType<IncomingContactRequest>("org.torsionim.torsion", 1, 0, "IncomingContactRequest", QString());
-    qmlRegisterUncreatableType<Tor::TorControlManager>("org.torsionim.torsion", 1, 0, "TorControlManager", QString());
+    qmlRegisterUncreatableType<Tor::TorControl>("org.torsionim.torsion", 1, 0, "TorControl", QString());
     qmlRegisterType<ConversationModel>("org.torsionim.torsion", 1, 0, "ConversationModel");
 
     Q_ASSERT(!identityManager->identities().isEmpty());

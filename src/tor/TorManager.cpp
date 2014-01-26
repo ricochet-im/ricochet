@@ -32,7 +32,7 @@
 
 #include "TorManager.h"
 #include "TorProcess.h"
-#include "TorControlManager.h"
+#include "TorControl.h"
 #include "utils/AppSettings.h"
 #include <QFile>
 #include <QCoreApplication>
@@ -49,7 +49,7 @@ class TorManagerPrivate : public QObject
 public:
     TorManager *q;
     TorProcess *process;
-    TorControlManager *control;
+    TorControl *control;
 
     explicit TorManagerPrivate(TorManager *parent = 0);
 
@@ -72,11 +72,11 @@ TorManagerPrivate::TorManagerPrivate(TorManager *parent)
     : QObject(parent)
     , q(parent)
     , process(0)
-    , control(new TorControlManager(this))
+    , control(new TorControl(this))
 {
 }
 
-TorControlManager *TorManager::control()
+TorControl *TorManager::control()
 {
     return d->control;
 }
