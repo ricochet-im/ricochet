@@ -54,12 +54,15 @@ public:
     int statusCode() const { return pStatusCode; }
 
 signals:
-    void replyFinished();
+    void replyLine(int code, const QByteArray &data, bool lastLine);
+    void reply(int code, const QByteArray &data);
+    void finished();
 
 protected:
-    virtual void handleReply(int code, QByteArray &data, bool end) = 0;
+    virtual void handleReply(int code, QByteArray &data, bool end);
 
 private:
+    QByteArray pData;
     int pStatusCode;
 
     void inputReply(int code, QByteArray &data, bool end);

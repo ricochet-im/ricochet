@@ -47,7 +47,7 @@ class HiddenService : public QObject
     Q_OBJECT
     Q_DISABLE_COPY(HiddenService)
 
-    friend class TorControl;
+    friend class TorControlPrivate;
 
 public:
     struct Target

@@ -39,11 +39,25 @@ TorControlCommand::TorControlCommand(const char *kw)
 {
 }
 
+void TorControlCommand::handleReply(int code, QByteArray &data, bool end)
+{
+    Q_UNUSED(code);
+    Q_UNUSED(data);
+    Q_UNUSED(end);
+}
+
 void TorControlCommand::inputReply(int code, QByteArray &data, bool end)
 {
     pStatusCode = code;
+    pData += data;
+    pData += "\r\n";
+    emit replyLine(code, data, end);
+    if (end)
+        emit reply(code, pData);
+
     handleReply(code, data, end);
 
     if (end)
-        emit replyFinished();
+        emit finished();
 }
+

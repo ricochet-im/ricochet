@@ -42,6 +42,7 @@ namespace Tor
 {
 
 class HiddenService;
+class TorControlPrivate;
 
 class TorControl : public QObject
 {
@@ -53,8 +54,6 @@ class TorControl : public QObject
     Q_PROPERTY(bool isSocksReady READ isSocksReady NOTIFY socksReady)
     Q_PROPERTY(QString torVersion READ torVersion NOTIFY connected)
     Q_PROPERTY(QString errorMessage READ errorMessage NOTIFY statusChanged)
-
-    friend class ProtocolInfoCommand;
 
 public:
     enum Status
@@ -77,14 +76,14 @@ public:
     explicit TorControl(QObject *parent = 0);
 
     /* Information */
-    Status status() const { return pStatus; }
-    TorStatus torStatus() const { return (pStatus == Connected) ? pTorStatus : TorOffline; }
-    QString torVersion() const { return pTorVersion; }
+    Status status() const;
+    TorStatus torStatus() const;
+    QString torVersion() const;
     QString errorMessage() const;
 
-    bool isSocksReady() const { return !pSocksAddress.isNull(); }
-    QHostAddress socksAddress() const { return pSocksAddress; }
-    quint16 socksPort() const { return pSocksPort; }
+    bool isSocksReady() const;
+    QHostAddress socksAddress() const;
+    quint16 socksPort() const;
     QNetworkProxy connectionProxy();
 
     /* Authentication */
@@ -95,7 +94,7 @@ public:
     void connect(const QHostAddress &address, quint16 port);
 
     /* Hidden Services */
-    const QList<HiddenService*> &hiddenServices() const { return pServices; }
+    QList<HiddenService*> hiddenServices() const;
     void addHiddenService(HiddenService *service);
 
 signals:
@@ -113,37 +112,8 @@ public slots:
 
     void reconnect();
 
-private slots:
-    void socketConnected();
-    void socketDisconnected();
-    void socketError();
-
-    void commandFinished(class TorControlCommand *command);
-
-    void protocolInfoReply();
-    void getTorStatusReply();
-    void getSocksInfoReply();
-
-    void setError(const QString &message);
-
 private:
-    class TorControlSocket *socket;
-    QHostAddress pTorAddress;
-    QString pErrorMessage;
-    QString pTorVersion;
-    QByteArray pAuthPassword;
-    QHostAddress pSocksAddress;
-    QList<HiddenService*> pServices;
-    quint16 pControlPort, pSocksPort;
-    Status pStatus;
-    TorStatus pTorStatus;
-
-    void setStatus(Status status);
-    void setTorStatus(TorStatus status);
-
-    void getTorStatus();
-    void getSocksInfo();
-    void publishServices();
+    TorControlPrivate *d;
 };
 
 }
