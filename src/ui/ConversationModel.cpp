@@ -2,7 +2,7 @@
 #include "protocol/ChatMessageCommand.h"
 
 ConversationModel::ConversationModel(QObject *parent)
-    : QAbstractListModel(parent), m_contact(0)
+    : QAbstractListModel(parent), m_contact(0), lastReceivedId(0)
 {
 }
 
@@ -33,8 +33,7 @@ void ConversationModel::sendMessage(const QString &text)
 
     ChatMessageCommand *command = new ChatMessageCommand;
     connect(command, SIGNAL(commandFinished()), this, SLOT(messageReply()));
-    // XXX lastReceivedId
-    command->send(m_contact->conn(), QDateTime::currentDateTime(), text, 0);
+    command->send(m_contact->conn(), QDateTime::currentDateTime(), text, lastReceivedId);
 
     beginInsertRows(QModelIndex(), messages.size(), messages.size());
     MessageData message = { text, QDateTime::currentDateTime(), command->identifier(), Sending };
@@ -44,9 +43,26 @@ void ConversationModel::sendMessage(const QString &text)
 
 void ConversationModel::receiveMessage(const ChatMessageData &data)
 {
-    beginInsertRows(QModelIndex(), messages.size(), messages.size());
+    // If priorMessageID is non-zero, it represents the identifier of the last message
+    // the peer had received when this message was sent. To help keep the flow of a
+    // conversation despite latency, attempt to insert this message where the peer sees it.
+    int row = messages.size();
+    if (data.priorMessageID) {
+        for (row--; row >= 0; row--) {
+            if (messages[row].status == Received ||
+                messages[row].identifier == data.priorMessageID ||
+                messages.size() - row >= 5)
+            {
+                break;
+            }
+        }
+        row++;
+    }
+
+    beginInsertRows(QModelIndex(), row, row);
     MessageData message = { data.text.trimmed(), data.when, data.messageID, Received };
-    messages.append(message);
+    lastReceivedId = data.messageID;
+    messages.insert(row, message);
     endInsertRows();
 }
 

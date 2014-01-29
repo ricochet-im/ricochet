@@ -55,6 +55,7 @@ private:
 
     ContactUser *m_contact;
     QList<MessageData> messages;
+    quint16 lastReceivedId;
 
     int indexOfIdentifier(quint16 identifier, bool isOutgoing) const;
 };
