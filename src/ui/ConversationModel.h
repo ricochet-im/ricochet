@@ -8,13 +8,22 @@
 class ConversationModel : public QAbstractListModel
 {
     Q_OBJECT
+    Q_ENUMS(MessageStatus)
 
     Q_PROPERTY(ContactUser* contact READ contact WRITE setContact NOTIFY contactChanged)
 
 public:
     enum {
         TimestampRole = Qt::UserRole,
-        IsOutgoingRole
+        IsOutgoingRole,
+        StatusRole
+    };
+
+    enum MessageStatus {
+        Received,
+        Sending,
+        Delivered,
+        Error
     };
 
     ConversationModel(QObject *parent = 0);
@@ -34,17 +43,20 @@ signals:
 
 private slots:
     void receiveMessage(const ChatMessageData &message);
+    void messageReply();
 
 private:
     struct MessageData {
         QString text;
         QDateTime time;
-        bool isOutgoing;
+        quint16 identifier;
+        MessageStatus status;
     };
 
     ContactUser *m_contact;
-    QHash<int,QByteArray> roles;
     QList<MessageData> messages;
+
+    int indexOfIdentifier(quint16 identifier, bool isOutgoing) const;
 };
 
 #endif
