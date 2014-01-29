@@ -17,6 +17,17 @@ ApplicationWindow {
             closed()
     }
 
+    property bool inactive: true
+    onActiveFocusItemChanged: {
+        // Focus text input when window regains focus
+        if (activeFocusItem !== null && inactive) {
+            inactive = false
+            textInput.forceActiveFocus()
+        } else if (activeFocusItem === null) {
+            inactive = true
+        }
+    }
+
     ConversationModel {
         id: conversationModel
         contact: chatWindow.contact
@@ -88,13 +99,13 @@ ApplicationWindow {
             y: 2
 
             TextField {
-                id: input
+                id: textInput
                 Layout.fillWidth: true
                 y: 2
 
                 onAccepted: {
-                    conversationModel.sendMessage(input.text)
-                    input.text = ""
+                    conversationModel.sendMessage(textInput.text)
+                    textInput.text = ""
                 }
             }
         }
