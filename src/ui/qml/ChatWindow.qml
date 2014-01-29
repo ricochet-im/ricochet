@@ -22,19 +22,74 @@ ApplicationWindow {
         contact: chatWindow.contact
     }
 
+    RowLayout {
+        id: infoBar
+        anchors {
+            top: parent.top
+            left: parent.left
+            leftMargin: 4
+            right: parent.right
+            rightMargin: 4
+        }
+        height: implicitHeight + 8
+        spacing: 8
+
+        PresenceIcon {
+            status: contact.status
+        }
+
+        Label {
+            text: contact.nickname
+        }
+
+        Item {
+            Layout.fillWidth: true
+            height: 1
+        }
+    }
+
+    Rectangle {
+        anchors {
+            left: parent.left
+            right: parent.right
+            top: infoBar.top
+            bottom: infoBar.bottom
+        }
+        color: palette.base
+        z: -1
+
+        Column {
+            anchors {
+                top: parent.bottom
+                left: parent.left
+                right: parent.right
+            }
+            Rectangle { width: parent.width; height: 1; color: palette.midlight; }
+            Rectangle { width: parent.width; height: 1; color: palette.window; }
+        }
+    }
+
     ChatMessageArea {
-        anchors.fill: parent
+        anchors {
+            top: infoBar.bottom
+            topMargin: 2
+            left: parent.left
+            right: parent.right
+            bottom: parent.bottom
+        }
         model: conversationModel
     }
 
     statusBar: StatusBar {
-        Item {
-            width: parent.width
-            height: input.height + 4
+        height: statusLayout.height + 8
+        RowLayout {
+            id: statusLayout
+            width: statusBar.width - 8
+            y: 2
 
             TextField {
                 id: input
-                width: parent.width
+                Layout.fillWidth: true
                 y: 2
 
                 onAccepted: {

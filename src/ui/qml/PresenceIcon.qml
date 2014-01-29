@@ -7,7 +7,7 @@ Rectangle {
     height: 4
     radius: 40
 
-    property int status
+    property int status: -1
 
     onStatusChanged: {
         if (status === ContactUser.Online)

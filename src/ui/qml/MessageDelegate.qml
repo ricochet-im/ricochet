@@ -1,9 +1,10 @@
 import QtQuick 2.0
+import org.torsionim.torsion 1.0
 
 MouseArea {
     id: messageDelegate
     width: parent.width
-    height: background.height
+    height: background.height + 4
 
     Rectangle {
         id: background
@@ -13,15 +14,26 @@ MouseArea {
 
         property int __maxWidth: parent.width * 0.8
 
-        color: "#0099ff"
+        color: (model.status === ConversationModel.Error) ? "#ffdcc4" : "#c4e7ff"
+        Behavior on color { ColorAnimation { } }
 
         Rectangle {
-            transform: Rotation { angle: 45 }
-            width: 14
-            height: 14
+            rotation: 45
+            width: 10
+            height: 10
+            x: model.isOutgoing ? parent.width - 20 : 10
+            y: model.isOutgoing ? parent.height - 5 : -5
             color: parent.color
-            x: model.isOutgoing ? parent.width - width : width
-            y: model.isOutgoing ? parent.height - height : -(height / 2)
+        }
+
+        Rectangle {
+            anchors.fill: parent
+            anchors.margins: 1
+            opacity: (model.status === ConversationModel.Sending || model.status === ConversationModel.Error) ? 1 : 0
+            visible: opacity > 0
+            color: Qt.lighter(parent.color, 1.15)
+
+            Behavior on opacity { NumberAnimation { } }
         }
 
         Item {
@@ -33,7 +45,6 @@ MouseArea {
             TextEdit {
                 id: textField
                 wrapMode: Text.Wrap
-                color: "white"
                 width: Math.min(implicitWidth, background.__maxWidth)
                 height: paintedHeight
                 readOnly: true
