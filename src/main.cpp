@@ -78,8 +78,9 @@ int main(int argc, char *argv[])
     qsrand(SecureRNG::randomInt(UINT_MAX));
 
     /* Tor control manager */
-    if (!connectTorControl())
-        return 0;
+    Tor::TorManager *tor = new Tor::TorManager;
+    torManager = tor->control();
+    tor->start();
 
     /* Identities */
     identityManager = new IdentityManager;
@@ -222,10 +223,3 @@ static void initTranslation()
         qApp->installTranslator(translator);
 }
 
-static bool connectTorControl()
-{
-    Tor::TorManager *tor = new Tor::TorManager;
-    torManager = tor->control();
-    tor->start();
-    return true;
-}
