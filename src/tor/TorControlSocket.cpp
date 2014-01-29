@@ -36,10 +36,16 @@
 
 using namespace Tor;
 
-TorControlSocket::TorControlSocket(QObject *parent) :
-    QTcpSocket(parent)
+TorControlSocket::TorControlSocket(QObject *parent)
+    : QTcpSocket(parent), activeEventCommand(0)
 {
     connect(this, SIGNAL(readyRead()), this, SLOT(process()));
+    connect(this, SIGNAL(disconnected()), this, SLOT(clearCommands()));
+}
+
+TorControlSocket::~TorControlSocket()
+{
+    clearCommands();
 }
 
 void TorControlSocket::sendCommand(TorControlCommand *command, const QByteArray &data)
@@ -49,26 +55,43 @@ void TorControlSocket::sendCommand(TorControlCommand *command, const QByteArray 
     Q_ASSERT(data.endsWith("\r\n"));
     write(data);
 
-    qDebug() << "torctrl: Sent" << data;
+    qDebug() << "torctrl: Sent" << data.trimmed();
+}
+
+void TorControlSocket::registerEvent(const QByteArray &action, TorControlCommand *command)
+{
+    eventCommands.insert(action, command);
+
+    QByteArray data("SETEVENTS");
+    for (auto it = eventCommands.begin(); it != eventCommands.end(); it++)
+        data += " " + it.key();
+    data += "\r\n";
+
+    sendCommand(data);
+}
+
+void TorControlSocket::clearCommands()
+{
+    qDeleteAll(commandQueue);
+    commandQueue.clear();
+    qDeleteAll(eventCommands);
+    eventCommands.clear();
 }
 
 void TorControlSocket::process()
 {
-    for (;;)
-    {
+    for (;;) {
         if (!canReadLine())
             return;
 
         QByteArray line = readLine(5120);
 
-        if (line.size() < 4 || !line.endsWith("\r\n"))
-        {
+        if (line.size() < 4 || !line.endsWith("\r\n")) {
             controlError(tr("Invalid control message syntax (may not be a Tor control port)"));
             return;
         }
 
-        if (line[3] == '+')
-        {
+        if (line[3] == '+') {
             controlError(tr("BUG: Data replies are not supported"));
             return;
         }
@@ -76,16 +99,32 @@ void TorControlSocket::process()
         int code = line.left(3).toInt();
         bool end = (line[3] == ' ');
 
-        if (!end && line[3] != '-')
-        {
+        if (!end && line[3] != '-') {
             controlError(tr("Invalid or unrecognized syntax (may not be a Tor control port)"));
             return;
         }
 
-        if (commandQueue.isEmpty())
-        {
+        if (code >= 600 && code < 700) {
+            // 6xx replies are asynchronous responses
+            if (!activeEventCommand) {
+                int space = line.indexOf(' ', 4);
+                QByteArray word = line.mid(4, space - 4);
+                if (!(activeEventCommand = eventCommands.value(word))) {
+                    qWarning("torctrl: Ignoring unknown event");
+                    continue;
+                }
+            }
+
+            QByteArray data = line.mid(4, line.size() - 6);
+            activeEventCommand->inputReply(code, data, end);
+            if (end)
+                activeEventCommand = 0;
+            continue;
+        }
+
+        if (commandQueue.isEmpty()) {
             qWarning("torctrl: Received unexpected data");
-            return;
+            continue;
         }
 
         TorControlCommand *command = commandQueue.first();
@@ -93,18 +132,17 @@ void TorControlSocket::process()
         qDebug() << "torctrl: Received" << (end ? "final" : "intermediate") << "reply for"
                 << (command ? command->keyword : "???") << "-" << code << line.mid(4, line.size() - 6);
 
-        if (command)
-        {
-            QByteArray data = line.mid(4, line.size() - 6);
-            command->inputReply(code, data, end);
-        }
-
         if (end)
-        {
             commandQueue.takeFirst();
 
-            emit commandFinished(command);
-            command->deleteLater();
+        if (command) {
+            QByteArray data = line.mid(4, line.size() - 6);
+            command->inputReply(code, data, end);
+
+            if (end) {
+                emit commandFinished(command);
+                command->deleteLater();
+            }
         }
     }
 }

@@ -46,6 +46,9 @@ class TorControlSocket : public QTcpSocket
 Q_OBJECT
 public:
     explicit TorControlSocket(QObject *parent = 0);
+    virtual ~TorControlSocket();
+
+    void registerEvent(const QByteArray &action, TorControlCommand *handler);
 
     void sendCommand(const QByteArray &data) { sendCommand(0, data); }
     void sendCommand(TorControlCommand *command, const QByteArray &data);
@@ -56,9 +59,12 @@ signals:
 
 private slots:
     void process();
+    void clearCommands();
 
 private:
     QQueue<TorControlCommand*> commandQueue;
+    QHash<QByteArray,TorControlCommand*> eventCommands;
+    TorControlCommand *activeEventCommand;
 };
 
 }
