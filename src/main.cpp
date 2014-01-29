@@ -69,18 +69,13 @@ int main(int argc, char *argv[])
     initSettings();
     initTranslation();
 
-    /* Seed RNG */
-    {
-        QTime now = QTime::currentTime();
-        qsrand(unsigned(now.second()) * now.msec() * unsigned(a.applicationPid()));
-    }
-
     /* Initialize OpenSSL's allocator */
     CRYPTO_malloc_init();
 
     /* Seed the OpenSSL RNG */
     if (!SecureRNG::seed())
         qFatal("Failed to initialize RNG");
+    qsrand(SecureRNG::randomInt(UINT_MAX));
 
     /* Tor control manager */
     if (!connectTorControl())

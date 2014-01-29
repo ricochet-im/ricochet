@@ -131,7 +131,7 @@ unsigned SecureRNG::randomInt(unsigned max)
 
     for (;;)
     {
-        random(reinterpret_cast<char*>(value), sizeof(value));
+        random(reinterpret_cast<char*>(&value), sizeof(value));
         if (value < cutoff)
             return value % max;
     }
