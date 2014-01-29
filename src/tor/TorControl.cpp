@@ -89,6 +89,8 @@ public slots:
     void getTorStatusReply();
     void getSocksInfoReply();
     void setError(const QString &message);
+
+    void statusEvent(int code, const QByteArray &data);
 };
 
 }
@@ -100,7 +102,7 @@ TorControl::TorControl(QObject *parent)
 
 TorControlPrivate::TorControlPrivate(TorControl *parent)
     : QObject(parent), q(parent), controlPort(0), socksPort(0),
-      status(TorControl::NotConnected), torStatus(TorControl::TorOffline)
+      status(TorControl::NotConnected), torStatus(TorControl::TorUnknown)
 {
     socket = new TorControlSocket;
     QObject::connect(socket, SIGNAL(commandFinished(TorControlCommand*)), this,
@@ -281,7 +283,7 @@ void TorControlPrivate::socketDisconnected()
     torVersion.clear();
     socksAddress.clear();
     socksPort = 0;
-    setTorStatus(TorControl::TorOffline);
+    setTorStatus(TorControl::TorUnknown);
 
     /* This emits the disconnected() signal as well */
     setStatus(TorControl::NotConnected);
@@ -373,6 +375,10 @@ void TorControlPrivate::protocolInfoReply()
 void TorControlPrivate::getTorStatus()
 {
     Q_ASSERT(q->isConnected());
+
+    TorControlCommand *clientEvents = new TorControlCommand("STATUS_CLIENT");
+    connect(clientEvents, SIGNAL(replyLine(int,QByteArray,bool)), this, SLOT(statusEvent(int,QByteArray)));
+    socket->registerEvent("STATUS_CLIENT", clientEvents);
 
     GetConfCommand *command = new GetConfCommand("GETINFO");
     QObject::connect(command, SIGNAL(finished()), this, SLOT(getTorStatusReply()));
@@ -562,6 +568,21 @@ void TorControl::shutdownSync()
     {
         if (!d->socket->waitForBytesWritten(5000))
             return;
+    }
+}
+
+void TorControlPrivate::statusEvent(int code, const QByteArray &data)
+{
+    QList<QByteArray> tokens = splitQuotedStrings(data.trimmed(), ' ');
+    if (tokens.size() < 3)
+        return;
+
+    qDebug() << "torctrl: status event:" << data.trimmed();
+
+    if (tokens[2] == "CIRCUIT_ESTABLISHED") {
+        setTorStatus(TorControl::TorReady);
+    } else if (tokens[2] == "CIRCUIT_NOT_ESTABLISHED") {
+        setTorStatus(TorControl::TorOffline);
     }
 }
 
