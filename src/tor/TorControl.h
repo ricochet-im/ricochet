@@ -54,6 +54,7 @@ class TorControl : public QObject
     Q_PROPERTY(bool isSocksReady READ isSocksReady NOTIFY socksReady)
     Q_PROPERTY(QString torVersion READ torVersion NOTIFY connected)
     Q_PROPERTY(QString errorMessage READ errorMessage NOTIFY statusChanged)
+    Q_PROPERTY(QVariantMap bootstrapStatus READ bootstrapStatus NOTIFY bootstrapStatusChanged)
 
 public:
     enum Status
@@ -97,6 +98,7 @@ public:
     QList<HiddenService*> hiddenServices() const;
     void addHiddenService(HiddenService *service);
 
+    QVariantMap bootstrapStatus() const;
     Q_INVOKABLE QObject *setConfiguration(const QVariantMap &options);
 
 signals:
@@ -105,6 +107,7 @@ signals:
     void connected();
     void disconnected();
     void socksReady();
+    void bootstrapStatusChanged();
 
 public slots:
     /* Instruct Tor to shutdown */

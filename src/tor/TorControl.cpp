@@ -69,6 +69,7 @@ public:
     quint16 controlPort, socksPort;
     TorControl::Status status;
     TorControl::TorStatus torStatus;
+    QVariantMap bootstrapStatus;
 
     TorControlPrivate(TorControl *parent);
 
@@ -92,6 +93,7 @@ public slots:
     void setError(const QString &message);
 
     void statusEvent(int code, const QByteArray &data);
+    void updateBootstrap(const QList<QByteArray> &data);
 };
 
 }
@@ -199,6 +201,11 @@ quint16 TorControl::socksPort() const
 QList<HiddenService*> TorControl::hiddenServices() const
 {
     return d->services;
+}
+
+QVariantMap TorControl::bootstrapStatus() const
+{
+    return d->bootstrapStatus;
 }
 
 void TorControl::setAuthPassword(const QByteArray &password)
@@ -399,18 +406,16 @@ void TorControlPrivate::getTorStatusReply()
     Q_ASSERT(QLatin1String(command->keyword) == QLatin1String("GETINFO"));
 
     QByteArray re;
-    if (command->get(QByteArray("status/circuit-established"), re) && re.toInt() == 1)
-    {
+    if (command->get(QByteArray("status/circuit-established"), re) && re.toInt() == 1) {
         qDebug() << "torctrl: Tor indicates that circuits have been established; state is TorReady";
         setTorStatus(TorControl::TorReady);
-        return;
+    } else {
+        setTorStatus(TorControl::TorOffline);
     }
 
-    /* Not handled yet */
-    if (command->get(QByteArray("status/bootstrap-phase"), re))
-        qDebug() << "torctrl: bootstrap-phase:" << re;
-
-    setTorStatus(TorControl::TorOffline);
+    if (command->get(QByteArray("status/bootstrap-phase"), re)) {
+        updateBootstrap(splitQuotedStrings(re, ' '));
+    }
 }
 
 void TorControlPrivate::getSocksInfo()
@@ -574,6 +579,8 @@ void TorControl::shutdownSync()
 
 void TorControlPrivate::statusEvent(int code, const QByteArray &data)
 {
+    Q_UNUSED(code);
+
     QList<QByteArray> tokens = splitQuotedStrings(data.trimmed(), ' ');
     if (tokens.size() < 3)
         return;
@@ -584,7 +591,28 @@ void TorControlPrivate::statusEvent(int code, const QByteArray &data)
         setTorStatus(TorControl::TorReady);
     } else if (tokens[2] == "CIRCUIT_NOT_ESTABLISHED") {
         setTorStatus(TorControl::TorOffline);
+    } else if (tokens[2] == "BOOTSTRAP") {
+        tokens.takeFirst();
+        updateBootstrap(tokens);
     }
+}
+
+void TorControlPrivate::updateBootstrap(const QList<QByteArray> &data)
+{
+    bootstrapStatus.clear();
+    // WARN or NOTICE
+    bootstrapStatus[QStringLiteral("severity")] = data.value(0);
+    for (int i = 1; i < data.size(); i++) {
+        int equals = data[i].indexOf('=');
+        QString key = QString::fromLatin1(data[i].mid(0, equals));
+        QString value;
+        if (equals >= 0)
+            value = QString::fromLatin1(unquotedString(data[i].mid(equals + 1)));
+        bootstrapStatus[key.toLower()] = value;
+    }
+
+    qDebug() << bootstrapStatus;
+    emit q->bootstrapStatusChanged();
 }
 
 QObject *TorControl::setConfiguration(const QVariantMap &options)

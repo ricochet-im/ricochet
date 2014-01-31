@@ -6,6 +6,8 @@ Column {
     id: page
     spacing: 8
 
+    property var bootstrap: torManager.bootstrapStatus
+
     Label {
         text: "Connecting to the Tor network..."
         font.bold: true
@@ -13,11 +15,13 @@ Column {
 
     ProgressBar {
         width: parent.width
-        indeterminate: true
+        maximumValue: 100
+        indeterminate: bootstrap.progress === undefined
+        value: bootstrap.progress === undefined ? 0 : bootstrap.progress
     }
 
     Label {
-        text: "Establishing a Tor circuit."
+        text: bootstrap.summary
     }
 
     RowLayout {

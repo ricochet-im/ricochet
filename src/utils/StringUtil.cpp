@@ -106,7 +106,7 @@ QList<QByteArray> splitQuotedStrings(const QByteArray &input, char separator)
 
         if (!inquote && input[i] == separator)
         {
-            out.append(input.mid(start, i));
+            out.append(input.mid(start, i - start));
             start = i+1;
         }
     }
