@@ -14,6 +14,9 @@
         <file>ContactRequestFields.qml</file>
         <file>TorStateWidget.qml</file>
         <file>ContactWindow.js</file>
+        <file>NetworkSetupWizard.qml</file>
+        <file>TorConfigurationPage.qml</file>
+        <file>TorBootstrapStatus.qml</file>
     </qresource>
     <qresource prefix="/ui/icons">
         <file>plus.png</file>
