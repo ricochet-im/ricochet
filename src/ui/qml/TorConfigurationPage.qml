@@ -3,8 +3,67 @@ import QtQuick.Controls 1.0
 import QtQuick.Layouts 1.0
 
 Column {
-    id: page
+    id: setup
     spacing: 8
+
+    property alias proxyType: proxyTypeField.selectedType
+    property alias proxyAddress: proxyAddressField.text
+    property alias proxyPort: proxyPortField.text
+    property alias proxyUsername: proxyUsernameField.text
+    property alias proxyPassword: proxyPasswordField.text
+    property alias allowedPorts: allowedPortsField.text
+    property alias bridges: bridgesField.text
+
+    function reset() {
+        proxyTypeField.currentIndex = 0
+        proxyAddress = ''
+        proxyPort = ''
+        proxyUsername = ''
+        proxyPassword = ''
+        allowedPorts = ''
+        bridges = ''
+    }
+
+    function save() {
+        // null value is reset
+        var conf = {
+            'Socks4Proxy': null, 'Socks5Proxy': null, 'Socks5ProxyUsername': null,
+            'Socks5ProxyPassword': null, 'HTTPProxy': null, 'HTTPProxyAuthenticator': null,
+            'FirewallPorts': null, 'FascistFirewall': null, 'Bridge': null, 'UseBridges': null
+        }
+
+        if (proxyType === "socks4") {
+            conf['Socks4Proxy'] = proxyAddress + ":" + proxyPort
+        } else if (proxyType === "socks5") {
+            conf['Socks5Proxy'] = proxyAddress + ":" + proxyPort
+            if (proxyUsername.length > 0)
+                conf['Socks5ProxyUsername'] = proxyUsername
+            if (proxyPassword.length > 0)
+                conf['Socks5ProxyPassword'] = proxyPassword
+        } else if (proxyType === "http") {
+            conf['HTTPProxy'] = proxyAddress + ":" + proxyPort
+            if (proxyUsername.length > 0 || proxyPassword.length > 0)
+                conf['HTTPProxyAuthenticator'] = proxyUsername + ":" + proxyPassword
+        }
+
+        if (allowedPorts.length > 0) {
+            conf['FirewallPorts'] = allowedPorts
+            conf['FascistFirewall'] = "1"
+        }
+
+        if (bridges.length > 0) {
+            conf['Bridge'] = bridges.split('\n')
+            conf['UseBridges'] = "1"
+        }
+
+        var command = torManager.setConfiguration(conf)
+        command.finished.connect(function() {
+            if (command.successful)
+                window.openBootstrap()
+            else
+                console.log("SETCONF error:", command.errorMessage)
+        })
+    }
 
     Label {
         width: parent.width
@@ -13,7 +72,7 @@ Column {
     }
 
     GroupBox {
-        width: page.width
+        width: setup.width
 
         GridLayout {
             anchors.fill: parent
@@ -24,18 +83,19 @@ Column {
                 color: proxyPalette.text
             }
             ComboBox {
-                id: proxyType
+                id: proxyTypeField
                 model: ListModel {
                     ListElement { text: "None"; type: "" }
                     ListElement { text: "SOCKS 4"; type: "socks4" }
                     ListElement { text: "SOCKS 5"; type: "socks5" }
-                    ListElement { text: "HTTP / HTTPS"; type: "http" }
+                    ListElement { text: "HTTP"; type: "http" }
                 }
                 textRole: "text"
                 property string selectedType: currentIndex >= 0 ? model.get(currentIndex).type : ""
+
                 SystemPalette {
                     id: proxyPalette
-                    colorGroup: proxyType.selectedType == "" ? SystemPalette.Disabled : SystemPalette.Active
+                    colorGroup: setup.proxyType == "" ? SystemPalette.Disabled : SystemPalette.Active
                 }
             }
 
@@ -46,8 +106,9 @@ Column {
             RowLayout {
                 Layout.fillWidth: true
                 TextField {
+                    id: proxyAddressField
                     Layout.fillWidth: true
-                    enabled: proxyType.selectedType
+                    enabled: setup.proxyType
                     placeholderText: "IP address or hostname"
                 }
                 Label {
@@ -55,8 +116,9 @@ Column {
                     color: proxyPalette.text
                 }
                 TextField {
+                    id: proxyPortField
                     Layout.preferredWidth: 50
-                    enabled: proxyType.selectedType
+                    enabled: setup.proxyType
                 }
             }
 
@@ -68,8 +130,9 @@ Column {
                 Layout.fillWidth: true
 
                 TextField {
+                    id: proxyUsernameField
                     Layout.fillWidth: true
-                    enabled: proxyType.selectedType
+                    enabled: setup.proxyType
                     placeholderText: "Optional"
                 }
                 Label {
@@ -77,8 +140,9 @@ Column {
                     color: proxyPalette.text
                 }
                 TextField {
+                    id: proxyPasswordField
                     Layout.fillWidth: true
-                    enabled: proxyType.selectedType
+                    enabled: setup.proxyType
                     placeholderText: "Optional"
                 }
             }
@@ -104,7 +168,7 @@ Column {
                 text: "Allowed ports:"
             }
             TextField {
-                id: allowedPorts
+                id: allowedPortsField
                 Layout.fillWidth: true
             }
             Label {
@@ -132,8 +196,9 @@ Column {
                 text: "Enter one or more bridge relays (one per line):"
             }
             TextArea {
+                id: bridgesField
                 Layout.fillWidth: true
-                Layout.preferredHeight: allowedPorts.height * 2
+                Layout.preferredHeight: allowedPortsField.height * 2
                 tabChangesFocus: true
             }
         }
@@ -152,7 +217,9 @@ Column {
         Button {
             text: "Connect"
             isDefault: true
-            onClicked: window.openBootstrap()
+            onClicked: {
+                setup.save()
+            }
         }
     }
 }

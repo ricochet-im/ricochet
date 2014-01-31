@@ -36,27 +36,52 @@
 using namespace Tor;
 
 SetConfCommand::SetConfCommand()
-    : TorControlCommand("SETCONF")
+    : TorControlCommand("SETCONF"), m_resetMode(false)
 {
+}
+
+void SetConfCommand::setResetMode(bool enabled)
+{
+    m_resetMode = enabled;
+}
+
+bool SetConfCommand::isSuccessful() const
+{
+    return statusCode() == 250;
 }
 
 QByteArray SetConfCommand::build(const QByteArray &key, const QByteArray &value)
 {
-    return QByteArray("SETCONF ") + key + "=" + quotedString(value) + "\r\n";
+    return build(QList<QPair<QByteArray, QByteArray> >() << qMakePair(key, value));
+}
+
+QByteArray SetConfCommand::build(const QVariantMap &data)
+{
+    QList<QPair<QByteArray, QByteArray> > out;
+
+    for (QVariantMap::ConstIterator it = data.begin(); it != data.end(); it++) {
+        QByteArray key = it.key().toLatin1();
+
+        if (static_cast<QMetaType::Type>(it.value().type()) == QMetaType::QVariantList) {
+            QVariantList values = it.value().value<QVariantList>();
+            foreach (const QVariant &value, values)
+                out.append(qMakePair(key, value.toString().toLatin1()));
+        } else {
+            out.append(qMakePair(key, it.value().toString().toLatin1()));
+        }
+    }
+
+    return build(out);
 }
 
 QByteArray SetConfCommand::build(const QList<QPair<QByteArray, QByteArray> > &data)
 {
-    if (data.isEmpty())
-        return QByteArray();
+    QByteArray out(m_resetMode ? "RESETCONF" : "SETCONF");
 
-    QByteArray out("SETCONF");
-    for (int i = 0; i < data.size(); ++i)
-    {
-        out.append(' ');
-        out.append(data[i].first);
-        out.append('=');
-        out.append(quotedString(data[i].second));
+    for (int i = 0; i < data.size(); i++) {
+        out += " " + data[i].first;
+        if (!data[i].second.isEmpty())
+            out += "=" + quotedString(data[i].second);
     }
 
     out.append("\r\n");
@@ -69,11 +94,12 @@ void SetConfCommand::handleReply(int code, QByteArray &data, bool end)
 
     if (end)
     {
-        statusMessage = data;
-
-        if (code == 250)
+        if (isSuccessful()) {
             emit setConfSucceeded();
-        else
+        } else {
+            m_errorMessage = QString::fromLatin1(data);
             emit setConfFailed(code);
+        }
     }
 }
+

@@ -42,6 +42,7 @@
 #include <QHostAddress>
 #include <QDir>
 #include <QNetworkProxy>
+#include <QQmlEngine>
 #include <QTimer>
 #include <QDebug>
 
@@ -584,6 +585,16 @@ void TorControlPrivate::statusEvent(int code, const QByteArray &data)
     } else if (tokens[2] == "CIRCUIT_NOT_ESTABLISHED") {
         setTorStatus(TorControl::TorOffline);
     }
+}
+
+QObject *TorControl::setConfiguration(const QVariantMap &options)
+{
+    SetConfCommand *command = new SetConfCommand;
+    command->setResetMode(true);
+    d->socket->sendCommand(command, command->build(options));
+
+    QQmlEngine::setObjectOwnership(command, QQmlEngine::CppOwnership);
+    return command;
 }
 
 #include "TorControl.moc"

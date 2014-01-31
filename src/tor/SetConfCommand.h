@@ -36,6 +36,7 @@
 #include "TorControlCommand.h"
 #include <QList>
 #include <QPair>
+#include <QVariant>
 
 namespace Tor
 {
@@ -45,19 +46,29 @@ class SetConfCommand : public TorControlCommand
     Q_OBJECT
     Q_DISABLE_COPY(SetConfCommand)
 
-public:
-    QByteArray statusMessage;
+    Q_PROPERTY(QString errorMessage READ errorMessage CONSTANT)
+    Q_PROPERTY(bool successful READ isSuccessful CONSTANT)
 
+public:
     SetConfCommand();
 
+    void setResetMode(bool resetMode);
+
     QByteArray build(const QByteArray &key, const QByteArray &value);
-    QByteArray build(const QList<QPair<QByteArray,QByteArray> > &data);
+    QByteArray build(const QVariantMap &data);
+    QByteArray build(const QList<QPair<QByteArray, QByteArray> > &data);
+
+    QString errorMessage() const { return m_errorMessage; }
+    bool isSuccessful() const;
 
 signals:
     void setConfSucceeded();
     void setConfFailed(int code);
 
 protected:
+    QString m_errorMessage;
+    bool m_resetMode;
+
     virtual void handleReply(int code, QByteArray &data, bool end);
 };
 

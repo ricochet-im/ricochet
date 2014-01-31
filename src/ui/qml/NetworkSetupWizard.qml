@@ -12,32 +12,31 @@ ApplicationWindow {
     maximumHeight: minimumHeight
     title: qsTr("Torsion")
 
-    property Item visibleItem: (configLoader.visible && configLoader.active) ? configLoader.item : pageLoader.item
+    property Item visibleItem: configPage.visible ? configPage : pageLoader.item
 
     function back() {
-        if (pageLoader.visible && configLoader.active) {
+        if (pageLoader.visible) {
             pageLoader.visible = false
-            configLoader.visible = true
+            configPage.visible = true
         } else {
             openBeginning()
         }
     }
 
     function openBeginning() {
-        configLoader.visible = false
-        configLoader.active = false
+        configPage.visible = false
+        configPage.reset()
         pageLoader.sourceComponent = firstPage
         pageLoader.visible = true
     }
 
     function openConfig() {
-        configLoader.active = true
         pageLoader.visible = false
-        configLoader.visible = true
+        configPage.visible = true
     }
 
     function openBootstrap() {
-        configLoader.visible = false
+        configPage.visible = false
         pageLoader.source = Qt.resolvedUrl("TorBootstrapStatus.qml")
         pageLoader.visible = true
     }
@@ -53,16 +52,15 @@ ApplicationWindow {
         sourceComponent: firstPage
     }
 
-    Loader {
-        id: configLoader
+    TorConfigurationPage {
+        id: configPage
         anchors {
             top: parent.top
             left: parent.left
             right: parent.right
             margins: 8
         }
-        source: Qt.resolvedUrl("TorConfigurationPage.qml")
-        active: false
+        visible: false
     }
 
     Component {
@@ -83,7 +81,11 @@ ApplicationWindow {
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: "Connect"
                 isDefault: true
-                onClicked: window.openBootstrap()
+                onClicked: {
+                    // Reset to defaults and proceed to bootstrap page
+                    configPage.reset()
+                    configPage.save()
+                }
             }
 
             Rectangle {

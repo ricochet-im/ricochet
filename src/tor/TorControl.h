@@ -97,6 +97,8 @@ public:
     QList<HiddenService*> hiddenServices() const;
     void addHiddenService(HiddenService *service);
 
+    Q_INVOKABLE QObject *setConfiguration(const QVariantMap &options);
+
 signals:
     void statusChanged(int newStatus, int oldStatus);
     void torStatusChanged(int newStatus, int oldStatus);
