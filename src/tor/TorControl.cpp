@@ -625,5 +625,14 @@ QObject *TorControl::setConfiguration(const QVariantMap &options)
     return command;
 }
 
+QObject *TorControl::saveConfiguration()
+{
+    TorControlCommand *command = new TorControlCommand("SAVECONF");
+    d->socket->sendCommand(command, "SAVECONF\r\n");
+
+    QQmlEngine::setObjectOwnership(command, QQmlEngine::CppOwnership);
+    return command;
+}
+
 #include "TorControl.moc"
 

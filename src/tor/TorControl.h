@@ -100,6 +100,7 @@ public:
 
     QVariantMap bootstrapStatus() const;
     Q_INVOKABLE QObject *setConfiguration(const QVariantMap &options);
+    Q_INVOKABLE QObject *saveConfiguration();
 
 signals:
     void statusChanged(int newStatus, int oldStatus);

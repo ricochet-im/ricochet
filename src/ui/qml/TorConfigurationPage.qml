@@ -58,9 +58,10 @@ Column {
 
         var command = torManager.setConfiguration(conf)
         command.finished.connect(function() {
-            if (command.successful)
+            if (command.successful) {
+                torManager.saveConfiguration()
                 window.openBootstrap()
-            else
+            } else
                 console.log("SETCONF error:", command.errorMessage)
         })
     }
