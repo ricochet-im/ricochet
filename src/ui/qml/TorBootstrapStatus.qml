@@ -6,7 +6,7 @@ Column {
     id: page
     spacing: 8
 
-    property var bootstrap: torManager.bootstrapStatus
+    property var bootstrap: torControl.bootstrapStatus
 
     Label {
         text: "Connecting to the Tor network..."

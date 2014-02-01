@@ -46,7 +46,7 @@
 #include <QTimer>
 #include <QDebug>
 
-Tor::TorControl *torManager = 0;
+Tor::TorControl *torControl = 0;
 
 using namespace Tor;
 

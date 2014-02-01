@@ -66,7 +66,7 @@ MainWindow::MainWindow(QObject *parent)
 
     Q_ASSERT(!identityManager->identities().isEmpty());
     qml->rootContext()->setContextProperty(QLatin1String("userIdentity"), identityManager->identities()[0]);
-    qml->rootContext()->setContextProperty(QLatin1String("torManager"), torManager);
+    qml->rootContext()->setContextProperty(QLatin1String("torControl"), torControl);
 
     qml->addImageProvider(QLatin1String("avatar"), new AvatarImageProvider);
 
@@ -100,7 +100,7 @@ MainWindow::MainWindow(QObject *parent)
 
     updateContactRequests();
 
-    connect(torManager, SIGNAL(statusChanged(int,int)), this, SLOT(updateTorStatus()));
+    connect(torControl, SIGNAL(statusChanged(int,int)), this, SLOT(updateTorStatus()));
     updateTorStatus();
 }
 

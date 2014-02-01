@@ -70,10 +70,10 @@ UserIdentity::UserIdentity(int id, QObject *parent)
         }
 
         hiddenService->addTarget(80, incomingSocket->serverAddress(), incomingSocket->serverPort());
-        torManager->addHiddenService(hiddenService);
+        torControl->addHiddenService(hiddenService);
     }
 
-    connect(torManager, SIGNAL(socksReady()), &contacts,  SLOT(connectToAll()));
+    connect(torControl, SIGNAL(socksReady()), &contacts,  SLOT(connectToAll()));
 }
 
 UserIdentity *UserIdentity::createIdentity(int uniqueID, const QString &dataDirectory)

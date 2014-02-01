@@ -88,7 +88,7 @@ void ProtocolSocket::connectToHost(const QString &host, quint16 port)
     socket->abort();
     active = true;
 
-    if (!torManager->isSocksReady())
+    if (!torControl->isSocksReady())
     {
         /* Can't make any connection; behave as if the connection attempt failed.
          * Many things should handle this situation prior to this function anyway. */
@@ -96,7 +96,7 @@ void ProtocolSocket::connectToHost(const QString &host, quint16 port)
         return;
     }
 
-    socket->setProxy(torManager->connectionProxy());
+    socket->setProxy(torControl->connectionProxy());
     socket->connectToHost(host, port);
 }
 

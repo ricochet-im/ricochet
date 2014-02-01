@@ -124,6 +124,6 @@ private:
 
 }
 
-extern Tor::TorControl *torManager;
+extern Tor::TorControl *torControl;
 
 #endif // TORCONTROLMANAGER_H

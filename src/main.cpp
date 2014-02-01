@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
 
     /* Tor control manager */
     Tor::TorManager *tor = new Tor::TorManager;
-    torManager = tor->control();
+    torControl = tor->control();
     tor->start();
 
     /* Identities */

@@ -76,7 +76,7 @@ void ContactRequestClient::sendRequest()
     close();
     state = WaitConnect;
 
-    if (!torManager->isSocksReady())
+    if (!torControl->isSocksReady())
     {
         /* Impossible to send now, requests are triggered when socks becomes ready */
         return;
@@ -88,7 +88,7 @@ void ContactRequestClient::sendRequest()
     connect(socket, SIGNAL(disconnected()), this, SLOT(spawnReconnect()));
     connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(spawnReconnect()));
 
-    socket->setProxy(torManager->connectionProxy());
+    socket->setProxy(torControl->connectionProxy());
     socket->connectToHost(user->conn()->host(), user->conn()->port());
 }
 
@@ -178,7 +178,7 @@ bool ContactRequestClient::buildRequestData(QByteArray cookie)
     CommandDataParser request(&requestData);
 
     /* Hostname */
-    Tor::HiddenService *service = torManager->hiddenServices().value(0);
+    Tor::HiddenService *service = torControl->hiddenServices().value(0);
 
     QString hostname = service ? service->hostname() : QString();
     hostname.truncate(hostname.lastIndexOf(QLatin1Char('.')));

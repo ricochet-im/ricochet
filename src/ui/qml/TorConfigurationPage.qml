@@ -56,10 +56,10 @@ Column {
             conf['UseBridges'] = "1"
         }
 
-        var command = torManager.setConfiguration(conf)
+        var command = torControl.setConfiguration(conf)
         command.finished.connect(function() {
             if (command.successful) {
-                torManager.saveConfiguration()
+                torControl.saveConfiguration()
                 window.openBootstrap()
             } else
                 console.log("SETCONF error:", command.errorMessage)

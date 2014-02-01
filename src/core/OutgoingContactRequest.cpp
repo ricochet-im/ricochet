@@ -79,8 +79,8 @@ OutgoingContactRequest::OutgoingContactRequest(ContactUser *u)
 
     if (status() < FirstResult)
     {
-        connect(torManager, SIGNAL(socksReady()), SLOT(startConnection()));
-        if (torManager->isSocksReady())
+        connect(torControl, SIGNAL(socksReady()), SLOT(startConnection()));
+        if (torControl->isSocksReady())
             startConnection();
     }
 }

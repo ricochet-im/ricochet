@@ -139,7 +139,7 @@ void HiddenService::startSelfTest()
 
     if (!selfTest)
     {
-        selfTest = new TorServiceTest(torManager);
+        selfTest = new TorServiceTest(torControl);
         connect(selfTest, SIGNAL(success()), this, SLOT(selfTestSucceeded()));
         connect(selfTest, SIGNAL(failure()), this, SLOT(selfTestFailed()));
     }
