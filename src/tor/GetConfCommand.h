@@ -35,7 +35,7 @@
 
 #include "TorControlCommand.h"
 #include <QList>
-#include <QMultiHash>
+#include <QVariantMap>
 
 namespace Tor
 {
@@ -45,21 +45,22 @@ class GetConfCommand : public TorControlCommand
     Q_OBJECT
     Q_DISABLE_COPY(GetConfCommand)
 
+    Q_PROPERTY(QVariantMap results READ results CONSTANT)
+
 public:
     GetConfCommand(const char *type = "GETCONF");
 
     QByteArray build(const QByteArray &key);
     QByteArray build(const QList<QByteArray> &keys);
 
-    const QMultiHash<QByteArray,QByteArray> &results() const { return pResults; }
-    bool get(const QByteArray &key, QByteArray &value) const;
-    QList<QByteArray> getList(const QByteArray &key) const;
+    const QVariantMap &results() const { return m_results; }
+    QVariant get(const QByteArray &key) const;
 
 protected:
     virtual void handleReply(int code, QByteArray &data, bool end);
 
 private:
-    QMultiHash<QByteArray,QByteArray> pResults;
+    QVariantMap m_results;
 };
 
 }

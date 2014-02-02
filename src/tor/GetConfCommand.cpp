@@ -67,33 +67,26 @@ void GetConfCommand::handleReply(int code, QByteArray &data, bool end)
         return;
 
     int kep = data.indexOf('=');
-    pResults.insertMulti(data.mid(0, kep), (kep >= 0) ? data.mid(kep+1) : QByteArray());
-}
+    QString key = QString::fromLatin1(data.mid(0, kep));
+    QVariant value;
+    if (kep >= 0)
+        value = QString::fromLatin1(unquotedString(data.mid(kep + 1)));
 
-bool GetConfCommand::get(const QByteArray &key, QByteArray &value) const
-{
-    QMultiHash<QByteArray,QByteArray>::ConstIterator it = pResults.find(key);
-    if (it == pResults.end())
-        return false;
-
-    value = *it;
-    return true;
-}
-
-QList<QByteArray> GetConfCommand::getList(const QByteArray &key) const
-{
-    /* QHash returns values from the most recent to the least recent, but Tor sends its values
-     * from first to last, and order may be relevant. So, reverse the list */
-
-    QList<QByteArray> values = pResults.values(key);
-    QList<QByteArray> out;
-
-    QList<QByteArray>::Iterator it = values.end();
-    while (it != values.begin())
-    {
-        --it;
-        out.append(*it);
+    QVariantMap::iterator it = m_results.find(key);
+    if (it != m_results.end()) {
+        // Make a list of values
+        QVariantList results = it->toList();
+        if (results.isEmpty())
+            results.append(*it);
+        results.append(value);
+        *it = QVariant(results);
+    } else {
+        m_results.insert(key, value);
     }
-
-    return out;
 }
+
+QVariant GetConfCommand::get(const QByteArray &key) const
+{
+    return m_results.value(QString::fromLatin1(key));
+}
+

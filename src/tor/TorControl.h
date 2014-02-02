@@ -71,7 +71,7 @@ public:
         TorUnknown,
         TorOffline,
         TorBootstrapping,
-        TorReady,
+        TorReady
     };
 
     explicit TorControl(QObject *parent = 0);
@@ -99,6 +99,7 @@ public:
     void addHiddenService(HiddenService *service);
 
     QVariantMap bootstrapStatus() const;
+    Q_INVOKABLE QObject *getConfiguration(const QString &options);
     Q_INVOKABLE QObject *setConfiguration(const QVariantMap &options);
     Q_INVOKABLE QObject *saveConfiguration();
 

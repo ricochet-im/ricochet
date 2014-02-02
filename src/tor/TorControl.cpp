@@ -145,8 +145,12 @@ void TorControlPrivate::setTorStatus(TorControl::TorStatus n)
 
     TorControl::TorStatus old = torStatus;
     torStatus = n;
-
     emit q->torStatusChanged(torStatus, old);
+
+    if (torStatus == TorControl::TorReady && socksAddress.isNull()) {
+        // Request info again to read the SOCKS port
+        getTorInfo();
+    }
 }
 
 void TorControlPrivate::setError(const QString &message)
@@ -265,6 +269,10 @@ void TorControlPrivate::commandFinished(TorControlCommand *command)
 
         setTorStatus(TorControl::TorUnknown);
 
+        TorControlCommand *clientEvents = new TorControlCommand("STATUS_CLIENT");
+        connect(clientEvents, SIGNAL(replyLine(int,QByteArray,bool)), this, SLOT(statusEvent(int,QByteArray)));
+        socket->registerEvent("STATUS_CLIENT", clientEvents);
+
         getTorInfo();
         publishServices();
     }
@@ -381,10 +389,6 @@ void TorControlPrivate::getTorInfo()
 {
     Q_ASSERT(q->isConnected());
 
-    TorControlCommand *clientEvents = new TorControlCommand("STATUS_CLIENT");
-    connect(clientEvents, SIGNAL(replyLine(int,QByteArray,bool)), this, SLOT(statusEvent(int,QByteArray)));
-    socket->registerEvent("STATUS_CLIENT", clientEvents);
-
     GetConfCommand *command = new GetConfCommand("GETINFO");
     QObject::connect(command, SIGNAL(finished()), this, SLOT(getTorInfoReply()));
 
@@ -414,45 +418,42 @@ void TorControlPrivate::getTorInfoReply()
 
     Q_ASSERT(QLatin1String(command->keyword) == QLatin1String("GETINFO"));
 
-    QByteArray re;
-    if (command->get(QByteArray("status/circuit-established"), re) && re.toInt() == 1) {
+    QList<QByteArray> listenAddresses = splitQuotedStrings(command->get(QByteArray("net/listeners/socks")).toString().toLatin1(), ' ');
+    for (QList<QByteArray>::Iterator it = listenAddresses.begin(); it != listenAddresses.end(); ++it) {
+        QByteArray value = unquotedString(*it);
+        int sepp = value.indexOf(':');
+        QHostAddress address(QString::fromLatin1(value.mid(0, sepp)));
+        quint16 port = (quint16)value.mid(sepp+1).toUInt();
+
+        /* Use the first address that matches the one used for this control connection. If none do,
+         * just use the first address and rely on the user to reconfigure if necessary (not a problem;
+         * their setup is already very customized) */
+        if (socksAddress.isNull() || address == socket->peerAddress()) {
+            socksAddress = address;
+            socksPort = port;
+            if (address == socket->peerAddress())
+                break;
+        }
+    }
+
+    /* It is not immediately an error to have no SOCKS address; when DisableNetwork is set there won't be a
+     * listener yet. To handle that situation, we'll try to read the socks address again when TorReady state
+     * is reached. */
+    if (!socksAddress.isNull()) {
+        qDebug().nospace() << "torctrl: SOCKS address is " << socksAddress.toString() << ":" << socksPort;
+        emit q->socksReady();
+    }
+
+    if (command->get(QByteArray("status/circuit-established")).toInt() == 1) {
         qDebug() << "torctrl: Tor indicates that circuits have been established; state is TorReady";
         setTorStatus(TorControl::TorReady);
     } else {
         setTorStatus(TorControl::TorOffline);
     }
 
-    if (command->get(QByteArray("status/bootstrap-phase"), re)) {
-        updateBootstrap(splitQuotedStrings(re, ' '));
-    }
-
-    if (command->get(QByteArray("net/listeners/socks"), re)) {
-        QList<QByteArray> listenAddresses = splitQuotedStrings(re, ' ');
-
-        for (QList<QByteArray>::Iterator it = listenAddresses.begin(); it != listenAddresses.end(); ++it) {
-            QByteArray value = unquotedString(*it);
-            int sepp = value.indexOf(':');
-            QHostAddress address(QString::fromLatin1(value.mid(0, sepp)));
-            quint16 port = (quint16)value.mid(sepp+1).toUInt();
-
-            /* Use the first address that matches the one used for this control connection. If none do,
-             * just use the first address and rely on the user to reconfigure if necessary (not a problem;
-             * their setup is already very customized) */
-            if (socksAddress.isNull() || address == socket->peerAddress()) {
-                socksAddress = address;
-                socksPort = port;
-                if (address == socket->peerAddress())
-                    break;
-            }
-        }
-
-        if (socksAddress.isNull()) {
-            setError(tr("Tor has no SocksPort configured, so it can't be used. You must configure a SocksPort."));
-        } else {
-            qDebug().nospace() << "torctrl: SOCKS address is " << socksAddress.toString() << ":" << socksPort;
-            emit q->socksReady();
-        }
-    }
+    QByteArray bootstrap = command->get(QByteArray("status/bootstrap-phase")).toString().toLatin1();
+    if (!bootstrap.isEmpty())
+        updateBootstrap(splitQuotedStrings(bootstrap, ' '));
 }
 
 void TorControl::addHiddenService(HiddenService *service)
@@ -558,6 +559,15 @@ void TorControlPrivate::updateBootstrap(const QList<QByteArray> &data)
 
     qDebug() << bootstrapStatus;
     emit q->bootstrapStatusChanged();
+}
+
+QObject *TorControl::getConfiguration(const QString &options)
+{
+    GetConfCommand *command = new GetConfCommand;
+    d->socket->sendCommand(command, command->build(options.toLatin1()));
+
+    QQmlEngine::setObjectOwnership(command, QQmlEngine::CppOwnership);
+    return command;
 }
 
 QObject *TorControl::setConfiguration(const QVariantMap &options)

@@ -33,6 +33,7 @@
 #include "TorManager.h"
 #include "TorProcess.h"
 #include "TorControl.h"
+#include "GetConfCommand.h"
 #include "utils/AppSettings.h"
 #include <QFile>
 #include <QDir>
@@ -63,6 +64,8 @@ public slots:
     void processStateChanged(int state);
     void processErrorChanged(const QString &errorMessage);
     void processLogMessage(const QString &message);
+    void controlStatusChanged(int status);
+    void getConfFinished();
 };
 
 }
@@ -79,6 +82,7 @@ TorManagerPrivate::TorManagerPrivate(TorManager *parent)
     , control(new TorControl(this))
     , configNeeded(false)
 {
+    connect(control, SIGNAL(statusChanged(int,int)), SLOT(controlStatusChanged(int)));
 }
 
 TorManager *TorManager::instance()
@@ -169,6 +173,29 @@ void TorManagerPrivate::processErrorChanged(const QString &errorMessage)
 void TorManagerPrivate::processLogMessage(const QString &message)
 {
     qDebug() << "tor:" << message;
+}
+
+void TorManagerPrivate::controlStatusChanged(int status)
+{
+    if (status == TorControl::Connected) {
+        if (!configNeeded) {
+            // If DisableNetwork is 1, trigger configurationNeeded
+            connect(control->getConfiguration(QStringLiteral("DisableNetwork")),
+                    SIGNAL(finished()), SLOT(getConfFinished()));
+        }
+    }
+}
+
+void TorManagerPrivate::getConfFinished()
+{
+    GetConfCommand *command = qobject_cast<GetConfCommand*>(sender());
+    if (!command)
+        return;
+
+    if (command->get("DisableNetwork").toInt() == 1 && !configNeeded) {
+        configNeeded = true;
+        emit q->configurationNeededChanged();
+    }
 }
 
 QString TorManagerPrivate::torExecutablePath() const

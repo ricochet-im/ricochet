@@ -96,6 +96,17 @@ ApplicationWindow {
         }
     }
 
+    Connections {
+        target: torInstance
+        onConfigurationNeededChanged: {
+            if (torInstance.configurationNeeded) {
+                var object = createDialog("NetworkSetupWizard.qml", { 'modality': Qt.ApplicationModal })
+                object.networkReady.connect(function() { object.visible = false })
+                object.visible = true
+            }
+        }
+    }
+
     Component.onCompleted: {
         ContactWindow.createWindow = function(user) {
             var re = createDialog("ChatWindow.qml", { 'contact': user })
