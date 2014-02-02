@@ -37,6 +37,7 @@
 #include "core/OutgoingContactRequest.h"
 #include "core/IdentityManager.h"
 #include "tor/TorControl.h"
+#include "tor/TorManager.h"
 #include "ui/AvatarImageProvider.h"
 #include "ContactsModel.h"
 #include "ui/ConversationModel.h"
@@ -67,6 +68,7 @@ MainWindow::MainWindow(QObject *parent)
     Q_ASSERT(!identityManager->identities().isEmpty());
     qml->rootContext()->setContextProperty(QLatin1String("userIdentity"), identityManager->identities()[0]);
     qml->rootContext()->setContextProperty(QLatin1String("torControl"), torControl);
+    qml->rootContext()->setContextProperty(QLatin1String("torInstance"), Tor::TorManager::instance());
 
     qml->addImageProvider(QLatin1String("avatar"), new AvatarImageProvider);
 

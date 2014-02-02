@@ -50,6 +50,7 @@ class TorManager : public QObject
 
 public:
     explicit TorManager(QObject *parent = 0);
+    static TorManager *instance();
 
     TorProcess *process();
     TorControl *control();

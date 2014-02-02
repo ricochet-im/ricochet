@@ -73,7 +73,16 @@ TorManagerPrivate::TorManagerPrivate(TorManager *parent)
     , q(parent)
     , process(0)
     , control(new TorControl(this))
+    , configNeeded(false)
 {
+}
+
+TorManager *TorManager::instance()
+{
+    static TorManager *p = 0;
+    if (!p)
+        p = new TorManager(qApp);
+    return p;
 }
 
 TorControl *TorManager::control()

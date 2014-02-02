@@ -78,9 +78,8 @@ int main(int argc, char *argv[])
     qsrand(SecureRNG::randomInt(UINT_MAX));
 
     /* Tor control manager */
-    Tor::TorManager *tor = new Tor::TorManager;
-    torControl = tor->control();
-    tor->start();
+    torControl = Tor::TorManager::instance()->control();
+    Tor::TorManager::instance()->start();
 
     /* Identities */
     identityManager = new IdentityManager;
