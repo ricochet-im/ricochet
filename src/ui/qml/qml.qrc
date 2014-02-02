@@ -18,6 +18,7 @@
         <file>TorConfigurationPage.qml</file>
         <file>TorBootstrapStatus.qml</file>
         <file>TorLogDisplay.qml</file>
+        <file>TorPreferences.qml</file>
     </qresource>
     <qresource prefix="/ui/icons">
         <file>plus.png</file>

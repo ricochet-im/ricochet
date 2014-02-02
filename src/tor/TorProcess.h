@@ -46,6 +46,10 @@ class TorProcessPrivate;
 class TorProcess : public QObject
 {
     Q_OBJECT
+    Q_ENUMS(State)
+
+    Q_PROPERTY(State state READ state NOTIFY stateChanged)
+    Q_PROPERTY(QString errorMessage READ errorMessage NOTIFY errorMessageChanged)
 
 public:
     enum State {
