@@ -35,6 +35,7 @@
 #include "TorControl.h"
 #include "utils/AppSettings.h"
 #include <QFile>
+#include <QDir>
 #include <QCoreApplication>
 
 using namespace Tor;
@@ -50,10 +51,13 @@ public:
     TorManager *q;
     TorProcess *process;
     TorControl *control;
+    bool configNeeded;
 
     explicit TorManagerPrivate(TorManager *parent = 0);
 
     QString torExecutablePath() const;
+    bool createDataDir(const QString &path);
+    bool createDefaultTorrc(const QString &path);
 
 public slots:
     void processStateChanged(int state);
@@ -95,6 +99,11 @@ TorProcess *TorManager::process()
     return d->process;
 }
 
+bool TorManager::configurationNeeded() const
+{
+    return d->configNeeded;
+}
+
 void TorManager::start()
 {
     if (config->value("tor/controlPort").isNull()) {
@@ -113,8 +122,26 @@ void TorManager::start()
             connect(d->process, SIGNAL(logMessage(QString)), d, SLOT(processLogMessage(QString)));
         }
 
+        QString dataDir = config->configLocation() + QStringLiteral("tor/");
+        if (!QFile::exists(dataDir) && !d->createDataDir(dataDir)) {
+            // XXX another error
+            qFatal("Implement all of your error conditions");
+        }
+
+        QString defaultTorrc = dataDir + QStringLiteral("default_torrc");
+        if (!QFile::exists(defaultTorrc) && !d->createDefaultTorrc(defaultTorrc)) {
+            // XXX error
+            qFatal("Implement all of your error conditions");
+        }
+
+        if (!QFile::exists(dataDir + QStringLiteral("torrc"))) {
+            d->configNeeded = true;
+            emit configurationNeededChanged();
+        }
+
         d->process->setExecutable(executable);
-        d->process->setDataDir(config->configLocation() + QStringLiteral("tor/"));
+        d->process->setDataDir(dataDir);
+        d->process->setDefaultTorrc(defaultTorrc);
         d->process->start();
     } else {
         QHostAddress address(config->value("tor/controlIp", QStringLiteral("127.0.0.1")).toString());
@@ -167,6 +194,27 @@ QString TorManagerPrivate::torExecutablePath() const
 #endif
 
     return QString();
+}
+
+bool TorManagerPrivate::createDataDir(const QString &path)
+{
+    QDir dir(path);
+    return dir.mkpath(QStringLiteral("."));
+}
+
+bool TorManagerPrivate::createDefaultTorrc(const QString &path)
+{
+    static const char defaultTorrcContent[] =
+        "SocksPort auto\n"
+        "AvoidDiskWrites 1\n"
+        "DisableNetwork 1\n";
+
+    QFile file(path);
+    if (!file.open(QIODevice::WriteOnly))
+        return false;
+    if (file.write(defaultTorrcContent) < 0)
+        return false;
+    return true;
 }
 
 #include "TorManager.moc"

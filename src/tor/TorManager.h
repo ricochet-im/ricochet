@@ -48,6 +48,10 @@ class TorManager : public QObject
 {
     Q_OBJECT
 
+    Q_PROPERTY(bool configurationNeeded READ configurationNeeded NOTIFY configurationNeededChanged)
+    Q_PROPERTY(TorProcess* process READ process CONSTANT)
+    Q_PROPERTY(TorControl* control READ control CONSTANT)
+
 public:
     explicit TorManager(QObject *parent = 0);
     static TorManager *instance();
@@ -55,8 +59,14 @@ public:
     TorProcess *process();
     TorControl *control();
 
+    // True on first run or when the Tor configuration wizard needs to be shown
+    bool configurationNeeded() const;
+
 public slots:
     void start();
+
+signals:
+    void configurationNeededChanged();
 
 private:
     TorManagerPrivate *d;
