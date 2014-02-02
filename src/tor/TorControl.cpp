@@ -589,5 +589,16 @@ QObject *TorControl::saveConfiguration()
     return command;
 }
 
+void TorControl::takeOwnership()
+{
+    TorControlCommand *command = new TorControlCommand("TAKEOWNERSHIP");
+    d->socket->sendCommand(command, "TAKEOWNERSHIP\r\n");
+
+    // Reset PID-based polling
+    QVariantMap options;
+    options[QStringLiteral("__OwningControllerProcess")] = QVariant();
+    setConfiguration(options);
+}
+
 #include "TorControl.moc"
 

@@ -93,6 +93,7 @@ public:
     /* Connection */
     bool isConnected() const { return status() == Connected; }
     void connect(const QHostAddress &address, quint16 port);
+    void takeOwnership();
 
     /* Hidden Services */
     QList<HiddenService*> hiddenServices() const;

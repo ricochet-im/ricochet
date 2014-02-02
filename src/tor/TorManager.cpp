@@ -183,6 +183,11 @@ void TorManagerPrivate::controlStatusChanged(int status)
             connect(control->getConfiguration(QStringLiteral("DisableNetwork")),
                     SIGNAL(finished()), SLOT(getConfFinished()));
         }
+
+        if (process) {
+            // Take ownership via this control socket
+            control->takeOwnership();
+        }
     }
 }
 
@@ -234,7 +239,8 @@ bool TorManagerPrivate::createDefaultTorrc(const QString &path)
     static const char defaultTorrcContent[] =
         "SocksPort auto\n"
         "AvoidDiskWrites 1\n"
-        "DisableNetwork 1\n";
+        "DisableNetwork 1\n"
+        "__ReloadTorrcOnSIGHUP 0\n";
 
     QFile file(path);
     if (!file.open(QIODevice::WriteOnly))
