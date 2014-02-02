@@ -29,7 +29,8 @@ Column {
         var conf = {
             'Socks4Proxy': null, 'Socks5Proxy': null, 'Socks5ProxyUsername': null,
             'Socks5ProxyPassword': null, 'HTTPProxy': null, 'HTTPProxyAuthenticator': null,
-            'FirewallPorts': null, 'FascistFirewall': null, 'Bridge': null, 'UseBridges': null
+            'FirewallPorts': null, 'FascistFirewall': null, 'Bridge': null, 'UseBridges': null,
+            'DisableNetwork': '0'
         }
 
         if (proxyType === "socks4") {

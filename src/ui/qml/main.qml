@@ -14,7 +14,6 @@ ApplicationWindow {
     minimumHeight: height
     title: qsTr("Torsion")
     visibility: Window.AutomaticVisibility
-    visible: true
 
     menuBar: MenuBar {
         Menu { title: "File"; MenuItem { text: "???" } }
@@ -102,6 +101,17 @@ ApplicationWindow {
             var re = createDialog("ChatWindow.qml", { 'contact': user })
             re.visible = true
             return re
+        }
+
+        if (torInstance.configurationNeeded) {
+            var object = createDialog("NetworkSetupWizard.qml")
+            object.networkReady.connect(function() {
+                window.visible = true
+                object.visible = false
+            })
+            object.visible = true
+        } else {
+            window.visible = true
         }
     }
 

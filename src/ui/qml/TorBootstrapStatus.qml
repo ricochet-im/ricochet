@@ -7,6 +7,10 @@ Column {
     spacing: 8
 
     property var bootstrap: torControl.bootstrapStatus
+    onBootstrapChanged: {
+        if (bootstrap['tag'] === "done")
+            window.networkReady()
+    }
 
     Label {
         text: "Connecting to the Tor network..."

@@ -12,6 +12,8 @@ ApplicationWindow {
     maximumHeight: minimumHeight
     title: qsTr("Torsion")
 
+    signal networkReady
+
     property Item visibleItem: configPage.visible ? configPage : pageLoader.item
 
     function back() {
