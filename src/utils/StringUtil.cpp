@@ -61,7 +61,7 @@ QByteArray quotedString(const QByteArray &string)
 
 QByteArray unquotedString(const QByteArray &string)
 {
-    if (string[0] != '"')
+    if (string.size() < 2 || string[0] != '"')
         return string;
 
     QByteArray out;
