@@ -52,6 +52,7 @@ public:
     TorManager *q;
     TorProcess *process;
     TorControl *control;
+    QStringList logMessages;
     bool configNeeded;
 
     explicit TorManagerPrivate(TorManager *parent = 0);
@@ -106,6 +107,11 @@ TorProcess *TorManager::process()
 bool TorManager::configurationNeeded() const
 {
     return d->configNeeded;
+}
+
+QStringList TorManager::logMessages() const
+{
+    return d->logMessages;
 }
 
 void TorManager::start()
@@ -173,6 +179,9 @@ void TorManagerPrivate::processErrorChanged(const QString &errorMessage)
 void TorManagerPrivate::processLogMessage(const QString &message)
 {
     qDebug() << "tor:" << message;
+    if (logMessages.size() >= 50)
+        logMessages.takeFirst();
+    logMessages.append(message);
 }
 
 void TorManagerPrivate::controlStatusChanged(int status)

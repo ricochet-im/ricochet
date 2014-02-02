@@ -25,7 +25,21 @@ Column {
     }
 
     Label {
-        text: bootstrap.summary
+        text: (bootstrap['warning'] !== undefined ) ? bootstrap['warning'] : bootstrap['summary']
+    }
+
+    TorLogDisplay {
+        id: logDisplay
+        width: parent.width
+        height: 0
+        visible: height > 0
+
+        Behavior on height {
+            SmoothedAnimation {
+                easing.type: Easing.InOutQuad
+                velocity: 1500
+            }
+        }
     }
 
     RowLayout {
@@ -39,7 +53,22 @@ Column {
         Item { height: 1; Layout.fillWidth: true }
 
         Button {
-            text: "More info"
+            text: logDisplay.height ? "Hide details" : "Show details"
+            onClicked: {
+                if (logDisplay.height)
+                    logDisplay.height = 0
+                else
+                    logDisplay.height = 300
+            }
+        }
+
+        Item { height: 1; Layout.fillWidth: true }
+
+        Button {
+            text: "Done"
+            isDefault: true
+            enabled: bootstrap.tag === "done"
+            onClicked: window.visible = false
         }
     }
 }

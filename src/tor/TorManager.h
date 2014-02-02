@@ -34,6 +34,7 @@
 #define TORMANAGER_H
 
 #include <QObject>
+#include <QStringList>
 
 namespace Tor
 {
@@ -49,8 +50,9 @@ class TorManager : public QObject
     Q_OBJECT
 
     Q_PROPERTY(bool configurationNeeded READ configurationNeeded NOTIFY configurationNeededChanged)
-    Q_PROPERTY(TorProcess* process READ process CONSTANT)
-    Q_PROPERTY(TorControl* control READ control CONSTANT)
+    Q_PROPERTY(QStringList logMessages READ logMessages CONSTANT)
+    Q_PROPERTY(Tor::TorProcess* process READ process CONSTANT)
+    Q_PROPERTY(Tor::TorControl* control READ control CONSTANT)
 
 public:
     explicit TorManager(QObject *parent = 0);
@@ -61,6 +63,8 @@ public:
 
     // True on first run or when the Tor configuration wizard needs to be shown
     bool configurationNeeded() const;
+
+    QStringList logMessages() const;
 
 public slots:
     void start();
@@ -75,3 +79,4 @@ private:
 }
 
 #endif
+#

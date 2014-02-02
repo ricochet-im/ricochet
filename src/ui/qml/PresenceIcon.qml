@@ -15,5 +15,9 @@ Rectangle {
         else
             color = "darkGray"
     }
+
+    Behavior on color {
+        ColorAnimation { }
+    }
 }
 

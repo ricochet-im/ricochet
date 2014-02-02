@@ -112,8 +112,7 @@ ApplicationWindow {
         }
     }
 
-    Behavior on minimumHeight {
-        enabled: pageLoader.status === Loader.Ready
+    Behavior on height {
         SmoothedAnimation {
             easing.type: Easing.InOutQuad
             velocity: 1500
