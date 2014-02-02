@@ -70,7 +70,6 @@ public:
     {
         TorUnknown,
         TorOffline,
-        TorBootstrapping,
         TorReady
     };
 

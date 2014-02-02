@@ -8,21 +8,28 @@ Label {
     font.bold: true
     text: {
         if (torControl.status === TorControl.Error)
-            return "Configuration error"
+            return "Error"
         if (torControl.status < TorControl.Connected)
-            return "Starting up..."
+            return "Connecting..."
+
         if (torControl.torStatus === TorControl.TorUnknown ||
             torControl.torStatus === TorControl.TorOffline)
-            return "Offline"
-        if (torControl.torStatus === TorControl.TorBootstrapping)
-            return "Connecting..."
+        {
+            var bootstrap = torControl.bootstrapStatus
+            if (bootstrap['recommendation'] === 'warn')
+                return "Connection failed"
+            else if (bootstrap['progress'] === undefined)
+                return "Connecting..."
+            else
+                return "Connecting... (" + bootstrap['progress'] + "%)"
+        }
+
         if (torControl.torStatus === TorControl.TorReady) {
+            // Indicates whether we've verified that the hidden services is connectable
             if (userIdentity.isOnline)
                 return "Online"
-            else if (userIdentity.isPublished)
-                return "Verifying..."
             else
-                return "Publishing..."
+                return "Connected"
         }
     }
 }
