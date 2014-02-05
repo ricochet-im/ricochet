@@ -15,7 +15,7 @@ ScrollView {
 
     ListView {
         id: messageView
-        spacing: 8
+        spacing: 12
 
         header: Item { width: 1; height: messageView.spacing }
         footer: Item { width: 1; height: messageView.spacing }
