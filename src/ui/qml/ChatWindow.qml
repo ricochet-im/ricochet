@@ -104,12 +104,46 @@ ApplicationWindow {
             width: statusBar.width - 8
             y: 2
 
-            TextField {
+            TextArea {
                 id: textInput
                 Layout.fillWidth: true
                 y: 2
+                Layout.preferredHeight: Math.max(textHeight.height + 6, edit.contentHeight) + edit.textMargin
+                Layout.maximumHeight: (textHeight.height * 4) + 6 + edit.textMargin
+                textMargin: 3
+                wrapMode: TextEdit.Wrap
 
-                onAccepted: {
+                property TextEdit edit
+
+                Label { id: textHeight; visible: false }
+
+                Component.onCompleted: {
+                    var objects = contentItem.contentItem.children
+                    for (var i = 0; i < objects.length; i++) {
+                        if (objects[i].hasOwnProperty('textDocument')) {
+                            edit = objects[i]
+                            break
+                        }
+                    }
+
+                    edit.Keys.pressed.connect(keyHandler)
+                }
+
+                function keyHandler(event) {
+                    switch (event.key) {
+                        case Qt.Key_Enter:
+                        case Qt.Key_Return:
+                            if (!(event.modifiers & Qt.ShiftModifier)) {
+                                send()
+                                event.accepted = true
+                                break
+                            }
+                        default:
+                            event.accepted = false
+                    }
+                }
+
+                function send() {
                     conversationModel.sendMessage(textInput.text)
                     textInput.text = ""
                 }
