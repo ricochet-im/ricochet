@@ -8,6 +8,10 @@ Rectangle {
     height: nameLabel.height + 8
 
     property bool highlighted: ListView.isCurrentItem
+    onHighlightedChanged: {
+        if (renameMode)
+            renameMode = false
+    }
 
     PresenceIcon {
         id: presenceIcon
