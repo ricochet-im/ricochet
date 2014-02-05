@@ -22,10 +22,16 @@ ApplicationWindow {
         // Focus text input when window regains focus
         if (activeFocusItem !== null && inactive) {
             inactive = false
-            textInput.forceActiveFocus()
+            retakeFocus.start()
         } else if (activeFocusItem === null) {
             inactive = true
         }
+    }
+
+    Timer {
+        id: retakeFocus
+        onTriggered: textInput.forceActiveFocus()
+        interval: 1
     }
 
     ConversationModel {
