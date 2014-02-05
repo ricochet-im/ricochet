@@ -35,9 +35,9 @@ void ConversationModel::sendMessage(const QString &text)
     connect(command, SIGNAL(commandFinished()), this, SLOT(messageReply()));
     command->send(m_contact->conn(), QDateTime::currentDateTime(), text, lastReceivedId);
 
-    beginInsertRows(QModelIndex(), messages.size(), messages.size());
+    beginInsertRows(QModelIndex(), 0, 0);
     MessageData message = { text, QDateTime::currentDateTime(), command->identifier(), Sending };
-    messages.append(message);
+    messages.prepend(message);
     endInsertRows();
 }
 
@@ -46,17 +46,16 @@ void ConversationModel::receiveMessage(const ChatMessageData &data)
     // If priorMessageID is non-zero, it represents the identifier of the last message
     // the peer had received when this message was sent. To help keep the flow of a
     // conversation despite latency, attempt to insert this message where the peer sees it.
-    int row = messages.size();
+    int row = 0;
     if (data.priorMessageID) {
-        for (row--; row >= 0; row--) {
-            if (messages[row].status == Received ||
-                messages[row].identifier == data.priorMessageID ||
-                messages.size() - row >= 5)
+        for (int i = 0; i < messages.size() && i < 5; i++) {
+            if (messages[i].status == Received ||
+                messages[i].identifier == data.priorMessageID)
             {
+                row = i;
                 break;
             }
         }
-        row++;
     }
 
     beginInsertRows(QModelIndex(), row, row);
@@ -117,7 +116,7 @@ QVariant ConversationModel::data(const QModelIndex &index, int role) const
 
 int ConversationModel::indexOfIdentifier(quint16 identifier, bool isOutgoing) const
 {
-    for (int i = messages.size() - 1; i >= 0; i--) {
+    for (int i = 0; i < messages.size(); i++) {
         if (messages[i].identifier == identifier && (messages[i].status != Received) == isOutgoing)
             return i;
     }

@@ -21,9 +21,7 @@ ScrollView {
         footer: Item { width: 1; height: messageView.spacing }
         delegate: MessageDelegate { }
 
-        onContentHeightChanged: {
-            messageView.positionViewAtEnd()
-        }
+        verticalLayoutDirection: ListView.BottomToTop
     }
 }
 
