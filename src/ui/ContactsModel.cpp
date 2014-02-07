@@ -33,7 +33,6 @@
 #include "ContactsModel.h"
 #include "core/IdentityManager.h"
 #include "core/ContactsManager.h"
-#include "core/NicknameValidator.h"
 #include <QDebug>
 
 inline bool contactSort(const ContactUser *c1, const ContactUser *c2)

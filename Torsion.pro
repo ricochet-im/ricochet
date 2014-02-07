@@ -105,11 +105,9 @@ SOURCES += src/main.cpp \
     src/protocol/CommandHandler.cpp \
     src/protocol/CommandDataParser.cpp \
     src/tor/GetConfCommand.cpp \
-    src/utils/DateUtil.cpp \
     src/tor/TorServiceTest.cpp \
     src/tor/HiddenService.cpp \
     src/protocol/ProtocolSocket.cpp \
-    src/utils/PaintUtil.cpp \
     src/utils/CryptoKey.cpp \
     src/utils/SecureRNG.cpp \
     src/protocol/ContactRequestClient.cpp \
@@ -117,11 +115,9 @@ SOURCES += src/main.cpp \
     src/core/OutgoingContactRequest.cpp \
     src/core/IncomingRequestManager.cpp \
     src/core/ContactIDValidator.cpp \
-    src/core/NicknameValidator.cpp \
     src/protocol/GetSecretCommand.cpp \
     src/core/UserIdentity.cpp \
     src/core/IdentityManager.cpp \
-    src/utils/OSUtil.cpp \
     src/utils/AppSettings.cpp \
     src/ui/AvatarImageProvider.cpp \
     src/ui/ConversationModel.cpp \
@@ -148,11 +144,9 @@ HEADERS += src/ui/MainWindow.h \
     src/protocol/CommandHandler.h \
     src/protocol/CommandDataParser.h \
     src/tor/GetConfCommand.h \
-    src/utils/DateUtil.h \
     src/tor/TorServiceTest.h \
     src/tor/HiddenService.h \
     src/protocol/ProtocolSocket.h \
-    src/utils/PaintUtil.h \
     src/utils/CryptoKey.h \
     src/utils/SecureRNG.h \
     src/protocol/ContactRequestClient.h \
@@ -160,11 +154,9 @@ HEADERS += src/ui/MainWindow.h \
     src/core/OutgoingContactRequest.h \
     src/core/IncomingRequestManager.h \
     src/core/ContactIDValidator.h \
-    src/core/NicknameValidator.h \
     src/protocol/GetSecretCommand.h \
     src/core/UserIdentity.h \
     src/core/IdentityManager.h \
-    src/utils/OSUtil.h \
     src/utils/AppSettings.h \
     src/ui/AvatarImageProvider.h \
     src/ui/ConversationModel.h \

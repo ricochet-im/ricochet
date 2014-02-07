@@ -34,7 +34,6 @@
 #include "ContactUser.h"
 #include "UserIdentity.h"
 #include "ContactsManager.h"
-#include "utils/DateUtil.h"
 #include "utils/SecureRNG.h"
 #include "protocol/GetSecretCommand.h"
 #include "protocol/ChatMessageCommand.h"
