@@ -50,26 +50,7 @@ public:
     explicit MainWindow(QObject *parent = 0);
     ~MainWindow();
 
-    void showNotification(const QString &message, QObject *receiver = 0, const char *slot = 0);
-
-public slots:
-    void uiRemoveContact(ContactUser *user);
-
-private slots:
-    /* Incoming contact request notifications */
-    void updateContactRequests();
-    void showContactRequest();
-
-    /* Outgoing contact request notifications */
-    void outgoingRequestAdded(OutgoingContactRequest *request);
-    void updateOutgoingRequest(OutgoingContactRequest *request = 0);
-
-    /* Tor status notifications */
-    void updateTorStatus();
-
 private:
-    void createContactsModel();
-
     QQmlApplicationEngine *qml;
 };
 

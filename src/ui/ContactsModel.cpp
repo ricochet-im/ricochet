@@ -43,32 +43,41 @@ inline bool contactSort(const ContactUser *c1, const ContactUser *c2)
     return c1->nickname().localeAwareCompare(c2->nickname()) < 0;
 }
 
-ContactsModel::ContactsModel(UserIdentity *i, QObject *parent)
-    : QAbstractListModel(parent), identity(i)
+ContactsModel::ContactsModel(QObject *parent)
+    : QAbstractListModel(parent), m_identity(0)
 {
-    roles[Qt::DisplayRole] = "name";
-    roles[PointerRole] = "contact";
-    roles[StatusRole] = "status";
-
-    connect(&identity->contacts, SIGNAL(contactAdded(ContactUser*)), SLOT(contactAdded(ContactUser*)));
-
-    populate();
 }
 
-void ContactsModel::populate()
+void ContactsModel::setIdentity(UserIdentity *identity)
 {
+    if (identity == m_identity)
+        return;
+
     beginResetModel();
 
     foreach (ContactUser *user, contacts)
         user->disconnect(this);
+    contacts.clear();
 
-    contacts = identity->contacts.contacts();
-    std::sort(contacts.begin(), contacts.end(), contactSort);
+    if (m_identity) {
+        disconnect(m_identity, 0, this, 0);
+        disconnect(&m_identity->contacts, 0, this, 0);
+    }
 
-    foreach (ContactUser *user, contacts)
-        connectSignals(user);
+    m_identity = identity;
+
+    if (m_identity) {
+        connect(&identity->contacts, SIGNAL(contactAdded(ContactUser*)), SLOT(contactAdded(ContactUser*)));
+
+        contacts = identity->contacts.contacts();
+        std::sort(contacts.begin(), contacts.end(), contactSort);
+
+        foreach (ContactUser *user, contacts)
+            connectSignals(user);
+    }
 
     endResetModel();
+    emit identityChanged();
 }
 
 QModelIndex ContactsModel::indexOfContact(ContactUser *user) const
@@ -142,6 +151,15 @@ void ContactsModel::contactRemoved(ContactUser *user)
     disconnect(user, 0, this, 0);
 }
 
+QHash<int,QByteArray> ContactsModel::roleNames() const
+{
+    QHash<int, QByteArray> roles;
+    roles[Qt::DisplayRole] = "name";
+    roles[PointerRole] = "contact";
+    roles[StatusRole] = "status";
+    return roles;
+}
+
 int ContactsModel::rowCount(const QModelIndex &parent) const
 {
     if (parent.isValid())
@@ -168,26 +186,5 @@ QVariant ContactsModel::data(const QModelIndex &index, int role) const
     }
 
     return QVariant();
-}
-
-bool ContactsModel::setData(const QModelIndex &index, const QVariant &value, int role)
-{
-    if (!index.isValid() || index.row() >= contacts.size() || index.column() != 0 || role != Qt::EditRole)
-        return false;
-
-    QString nickname = value.toString();
-    NicknameValidator validator;
-
-    ContactUser *user = contacts[index.row()];
-    if (!user)
-        return false;
-
-    validator.setValidateUnique(user->identity, user);
-    int pos;
-    if (validator.validate(nickname, pos) != QValidator::Acceptable)
-        return false;
-
-    user->setNickname(nickname);
-    return true;
 }
 

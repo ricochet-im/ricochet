@@ -44,6 +44,8 @@ class ContactsModel : public QAbstractListModel
     Q_OBJECT
     Q_DISABLE_COPY(ContactsModel)
 
+    Q_PROPERTY(UserIdentity* identity READ identity WRITE setIdentity NOTIFY identityChanged)
+
 public:
     enum
     {
@@ -52,19 +54,20 @@ public:
         AlertRole /* bool */
     };
 
-    UserIdentity * const identity;
+    explicit ContactsModel(QObject *parent = 0);
 
-    explicit ContactsModel(UserIdentity *identity, QObject *parent = 0);
+    UserIdentity *identity() const { return m_identity; }
+    void setIdentity(UserIdentity *identity);
 
     Q_INVOKABLE QModelIndex indexOfContact(ContactUser *user) const;
     Q_INVOKABLE int rowOfContact(ContactUser *user) const { return indexOfContact(user).row(); }
 
     virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
-
-    virtual QHash<int,QByteArray> roleNames() const { return roles; }
-
+    virtual QHash<int,QByteArray> roleNames() const;
     virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
-    virtual bool setData(const QModelIndex &index, const QVariant &value, int role);
+
+signals:
+    void identityChanged();
 
 private slots:
     void updateUser(ContactUser *user = 0);
@@ -72,10 +75,9 @@ private slots:
     void contactRemoved(ContactUser *user);
 
 private:
-    QHash<int,QByteArray> roles;
+    UserIdentity *m_identity;
     QList<ContactUser*> contacts;
 
-    void populate();
     void connectSignals(ContactUser *user);
 };
 

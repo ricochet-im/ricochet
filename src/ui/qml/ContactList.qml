@@ -15,7 +15,9 @@ ScrollView {
     ListView {
         id: contactListView
 
-        model: contactsModel
+        model: ContactsModel {
+            identity: userIdentity
+        }
 
         section.property: "status"
         section.delegate: Label {

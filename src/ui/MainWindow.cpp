@@ -67,6 +67,7 @@ MainWindow::MainWindow(QObject *parent)
     qmlRegisterUncreatableType<Tor::TorControl>("org.torsionim.torsion", 1, 0, "TorControl", QString());
     qmlRegisterUncreatableType<Tor::TorProcess>("org.torsionim.torsion", 1, 0, "TorProcess", QString());
     qmlRegisterType<ConversationModel>("org.torsionim.torsion", 1, 0, "ConversationModel");
+    qmlRegisterType<ContactsModel>("org.torsionim.torsion", 1, 0, "ContactsModel");
     qmlRegisterType<ContactIDValidator>("org.torsionim.torsion", 1, 0, "ContactIDValidator");
 
     Q_ASSERT(!identityManager->identities().isEmpty());
@@ -75,140 +76,9 @@ MainWindow::MainWindow(QObject *parent)
     qml->rootContext()->setContextProperty(QLatin1String("torInstance"), Tor::TorManager::instance());
 
     qml->addImageProvider(QLatin1String("avatar"), new AvatarImageProvider);
-
-    createContactsModel();
-
     qml->load(QUrl(QLatin1String("qrc:/ui/main.qml")));
-
-#if 0
-    /* Saved geometry */
-    restoreGeometry(config->value("ui/main/windowGeometry").toByteArray());
-
-    /* Old config values */
-    config->remove("ui/main/windowSize");
-    config->remove("ui/main/windowPosition");
-#endif
-
-    /* Other things */
-    connect(identityManager, SIGNAL(incomingRequestAdded(IncomingContactRequest*,UserIdentity*)), SLOT(updateContactRequests()));
-    connect(identityManager, SIGNAL(incomingRequestRemoved(IncomingContactRequest*,UserIdentity*)), SLOT(updateContactRequests()));
-    connect(identityManager, SIGNAL(outgoingRequestAdded(OutgoingContactRequest*,UserIdentity*)),
-            SLOT(outgoingRequestAdded(OutgoingContactRequest*)));
-
-    foreach (UserIdentity *identity, identityManager->identities())
-    {
-        foreach (ContactUser *user, identity->contacts.contacts())
-        {
-            if (user->isContactRequest())
-                outgoingRequestAdded(OutgoingContactRequest::requestForUser(user));
-        }
-    }
-
-    updateContactRequests();
-
-    connect(torControl, SIGNAL(statusChanged(int,int)), this, SLOT(updateTorStatus()));
-    updateTorStatus();
 }
 
 MainWindow::~MainWindow()
 {
-}
-
-#if 0
-void MainWindow::closeEvent(QCloseEvent *ev)
-{
-    config->setValue("ui/main/windowGeometry", saveGeometry());
-    QWidget::closeEvent(ev);
-}
-#endif
-
-void MainWindow::createContactsModel()
-{
-    UserIdentity *identity = identityManager->identities()[0];
-    ContactsModel *model = new ContactsModel(identity, this);
-    qml->rootContext()->setContextProperty(QLatin1String("contactsModel"), model);
-}
-
-void MainWindow::showNotification(const QString &message, QObject *receiver, const char *slot)
-{
-    qCritical("XXX-UI showNotification is not implemented");
-}
-
-void MainWindow::updateContactRequests()
-{
-    /* This will likely be redesigned to emphasize the identity tied to the request when real
-     * support for multiple identities is done. */
-    int numRequests = 0;
-    foreach (UserIdentity *identity, identityManager->identities())
-        numRequests += identity->contacts.incomingRequests.requests().size();
-
-    qCritical("XXX-UI updateContactRequests is not implemented");
-}
-
-void MainWindow::showContactRequest()
-{
-    /* This cannot iterate a list because it is technically possible for that list to change during the loop */
-    for (;;)
-    {
-        IncomingContactRequest *request = 0;
-        foreach (UserIdentity *identity, identityManager->identities())
-        {
-            const QList<IncomingContactRequest*> &reqs = identity->contacts.incomingRequests.requests();
-            if (!reqs.isEmpty())
-            {
-                request = reqs.first();
-                break;
-            }
-        }
-
-        if (!request)
-            break;
-
-        qCritical("XXX-UI Would show contact request dialog here");
-        //ContactRequestDialog *dialog = new ContactRequestDialog(request, this);
-
-        /* Allow the user a way out of a loop of requests by cancelling */
-        //if (dialog->exec() == ContactRequestDialog::Cancelled)
-            break;
-
-        /* Accept or reject would remove the request from the list, so it will not come up again. */
-    }
-
-    updateContactRequests();
-}
-
-void MainWindow::outgoingRequestAdded(OutgoingContactRequest *request)
-{
-    connect(request, SIGNAL(statusChanged(int,int)), SLOT(updateOutgoingRequest()));
-    updateOutgoingRequest(request);
-}
-
-void MainWindow::updateOutgoingRequest(OutgoingContactRequest *request)
-{
-    if (!request && !(request = qobject_cast<OutgoingContactRequest*>(sender())))
-        return;
-
-    qCritical("XXX-UI updateOutgoingRequest is not implemented");
-}
-
-void MainWindow::updateTorStatus()
-{
-    qCritical("XXX-UI updateTorStatus is not implemented");
-}
-
-void MainWindow::uiRemoveContact(ContactUser *user)
-{
-    QMessageBox msg;
-    msg.setWindowTitle(tr("Remove Contact"));
-    msg.setText(tr("Are you sure you want to permanently remove <b>%1</b> from your contacts?").arg(user->nickname().toHtmlEscaped()));
-    msg.setIcon(QMessageBox::Question);
-    QAbstractButton *deleteBtn = msg.addButton(tr("Remove"), QMessageBox::DestructiveRole);
-    msg.addButton(QMessageBox::Cancel);
-    msg.setDefaultButton(QMessageBox::Cancel);
-
-    msg.exec();
-    if (msg.clickedButton() != deleteBtn)
-        return;
-
-    user->deleteContact();
 }
