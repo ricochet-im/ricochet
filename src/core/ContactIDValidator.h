@@ -33,10 +33,10 @@
 #ifndef CONTACTIDVALIDATOR_H
 #define CONTACTIDVALIDATOR_H
 
-#include <QValidator>
+#include <QRegularExpressionValidator>
 #include "UserIdentity.h"
 
-class ContactIDValidator : public QValidator
+class ContactIDValidator : public QRegularExpressionValidator
 {
     Q_OBJECT
     Q_DISABLE_COPY(ContactIDValidator)

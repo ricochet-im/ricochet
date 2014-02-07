@@ -1,6 +1,7 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.0
 import QtQuick.Layouts 1.0
+import org.torsionim.torsion 1.0
 
 GridLayout {
     id: contactFields
@@ -21,8 +22,10 @@ GridLayout {
         id: contactIdField
         Layout.fillWidth: true
         font.family: "Courier"
-        validator: RegExpValidator { regExp: /[a-z2-7]{16}@Torsion/i }
         readOnly: contactFields.readOnly
+        validator: ContactIDValidator {
+            notContactOfIdentity: userIdentity
+        }
     }
 
     Label {

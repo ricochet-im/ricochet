@@ -36,6 +36,7 @@
 #include "core/IncomingRequestManager.h"
 #include "core/OutgoingContactRequest.h"
 #include "core/IdentityManager.h"
+#include "core/ContactIDValidator.h"
 #include "tor/TorControl.h"
 #include "tor/TorManager.h"
 #include "tor/TorProcess.h"
@@ -66,6 +67,7 @@ MainWindow::MainWindow(QObject *parent)
     qmlRegisterUncreatableType<Tor::TorControl>("org.torsionim.torsion", 1, 0, "TorControl", QString());
     qmlRegisterUncreatableType<Tor::TorProcess>("org.torsionim.torsion", 1, 0, "TorProcess", QString());
     qmlRegisterType<ConversationModel>("org.torsionim.torsion", 1, 0, "ConversationModel");
+    qmlRegisterType<ContactIDValidator>("org.torsionim.torsion", 1, 0, "ContactIDValidator");
 
     Q_ASSERT(!identityManager->identities().isEmpty());
     qml->rootContext()->setContextProperty(QLatin1String("userIdentity"), identityManager->identities()[0]);

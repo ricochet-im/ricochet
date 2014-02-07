@@ -31,42 +31,25 @@
  */
 
 #include "ContactIDValidator.h"
-#include <QRegExp>
+
+static QRegularExpression regex(QStringLiteral("torsion:[a-z2-7]{16}"));
 
 ContactIDValidator::ContactIDValidator(QObject *parent)
-    : QValidator(parent), m_uniqueIdentity(0)
+    : QRegularExpressionValidator(parent), m_uniqueIdentity(0)
 {
+    setRegularExpression(regex);
 }
 
 QValidator::State ContactIDValidator::validate(QString &text, int &pos) const
 {
     Q_UNUSED(pos);
-
-    /* [a-z2-7]{16}@Torsion */
-    for (int i = 0; i < qMin(text.size(), 16); ++i)
-    {
-        char c = text[i].toLatin1();
-        if (c >= 'A' && c <= 'Z')
-            text[i] = c = ::tolower(c);
-        if (!((c >= 'a' && c <= 'z') || (c >= '2' && c <= '7')))
-            return QValidator::Invalid;
-    }
-
-    if (text.size() < 16)
+    fixup(text);
+    if (text.isEmpty())
         return QValidator::Intermediate;
-    else if (text.size() > 24)
-        return QValidator::Invalid;
 
-    QString suffix = QLatin1String("@Torsion");
-    suffix.truncate(text.size() - 16);
-
-    if (QString::compare(text.mid(16), suffix, Qt::CaseInsensitive) != 0)
-        return QValidator::Invalid;
-
-    text.replace(16, suffix.length(), suffix);
-
-    if (suffix.size() != 8)
-        return QValidator::Intermediate;
+    QValidator::State re = QRegularExpressionValidator::validate(text, pos);
+    if (re != QValidator::Acceptable)
+        return re;
 
     ContactUser *u;
     if (m_uniqueIdentity && (u = m_uniqueIdentity->contacts.lookupHostname(text)))
@@ -75,7 +58,7 @@ QValidator::State ContactIDValidator::validate(QString &text, int &pos) const
         return QValidator::Intermediate;
     }
 
-    return QValidator::Acceptable;
+    return re;
 }
 
 void ContactIDValidator::fixup(QString &text) const
@@ -85,8 +68,7 @@ void ContactIDValidator::fixup(QString &text) const
 
 bool ContactIDValidator::isValidID(const QString &text)
 {
-    QRegExp regex(QLatin1String("^[a-z2-7]{16}@Torsion$"), Qt::CaseInsensitive);
-    return regex.exactMatch(text);
+    return regex.match(text).hasMatch();
 }
 
 QString ContactIDValidator::hostnameFromID(const QString &ID)
@@ -94,7 +76,7 @@ QString ContactIDValidator::hostnameFromID(const QString &ID)
     if (!isValidID(ID))
         return QString();
 
-    return ID.mid(0, 16) + QLatin1String(".onion");
+    return ID.mid(8) + QStringLiteral(".onion");
 }
 
 QString ContactIDValidator::idFromHostname(const QString &hostname)
@@ -103,15 +85,16 @@ QString ContactIDValidator::idFromHostname(const QString &hostname)
 
     if (re.size() != 16)
     {
-        if (re.size() == 22 && re.endsWith(QLatin1String(".onion")))
+        if (re.size() == 22 && re.toLower().endsWith(QLatin1String(".onion")))
             re.chop(6);
         else
             return QString();
     }
 
-    re += QLatin1String("@Torsion");
+    re.prepend(QStringLiteral("torsion:"));
 
     if (!isValidID(re))
         return QString();
     return re;
 }
+

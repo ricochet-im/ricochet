@@ -11,12 +11,12 @@ To design an implement an instant messaging system, which:
     - Provides the user privacy in who they contact, what they say, and
       their usage of the software as whole
     - Is accessible and easily usable by everyone, regardless of skill level,
-      language, and familiarity with anonymity software 
+      language, and familiarity with anonymity software
     - Is developed openly and transparently, with public review and discussion
 
 Recommended reading
 ===================
-The reader should be familiar with Tor (https://www.torproject.org) and 
+The reader should be familiar with Tor (https://www.torproject.org) and
 Tor hidden services (https://www.torproject.org/hidden-services.html).
 
 For details on the implementation of Tor and hidden services, see the
@@ -30,11 +30,11 @@ is a unique, individual identifier that is the basis for all communication in
 Torsion, much like an email address or IM username. The identity is further
 represented by its contact ID, which includes the onion hostname - the sole
 piece of information necessary to make bidirectionally anonymous contact
-through Tor. A contact ID looks like "qjj5g7bxwcvs3d7i@Torsion".
+through Tor. A contact ID looks like "torsion:qjj5g7bxwcvs3d7i".
 
 The communication between these identities forms the basis of Torsion. Each
 identity maintains a list of other identities that it knows and will
-communicate with; its contact list. This works like any instant messenger - 
+communicate with; its contact list. This works like any instant messenger -
 only your contacts can send you messages, and anybody can ask to become your
 contact.
 
@@ -50,7 +50,7 @@ rendezvous, and the resulting chain is used to exchange data.
 
 A contact is considered online when there is an open connection with that
 contact. As a result, identities periodically make attempts to connect to their
-contacts, especially when first starting up. 
+contacts, especially when first starting up.
 
 Contact requests
 ================

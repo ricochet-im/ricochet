@@ -92,7 +92,7 @@ public:
     const QString &nickname() const { return m_nickname; }
     /* Hostname is in the onion hostname format, i.e. it ends with .onion */
     QString hostname() const;
-    /* Contact ID in the @Torsion format */
+    /* Contact ID in the torsion: format */
     QString contactID() const;
 
     Status status() const { return m_status; }

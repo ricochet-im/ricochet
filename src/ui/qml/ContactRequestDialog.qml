@@ -78,7 +78,7 @@ ApplicationWindow {
         readOnly: true
 
         Component.onCompleted: {
-            contactId.text = request.hostname + "@Torsion"
+            contactId.text = "torsion:" + request.hostname
             name.text = request.nickname
             name.readOnly = false
             name.focus = true

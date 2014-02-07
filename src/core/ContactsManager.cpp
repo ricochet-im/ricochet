@@ -101,8 +101,8 @@ void ContactsManager::connectSignals(ContactUser *user)
 ContactUser *ContactsManager::createContactRequest(const QString &contactid, const QString &nickname,
                                                    const QString &myNickname, const QString &message)
 {
-    if (!ContactIDValidator::isValidID(contactid) || lookupHostname(contactid) ||
-        lookupNickname(nickname))
+    QString hostname = ContactIDValidator::hostnameFromID(contactid);
+    if (hostname.isEmpty() || lookupHostname(contactid) || lookupNickname(nickname))
     {
         return 0;
     }
