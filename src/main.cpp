@@ -37,7 +37,6 @@
 #include "tor/TorControl.h"
 #include "utils/CryptoKey.h"
 #include "utils/SecureRNG.h"
-#include "utils/OSUtil.h"
 #include <QApplication>
 #include <QSettings>
 #include <QTime>
@@ -45,16 +44,12 @@
 #include <QTranslator>
 #include <QMessageBox>
 #include <QLocale>
+#include <QLockFile>
+#include <QStandardPaths>
 #include <openssl/crypto.h>
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-#include <QDesktopServices>
-#else
-#include <QStandardPaths>
-#endif
-
 AppSettings *config = 0;
-static FileLock configLock;
+static QLockFile *configLock = 0;
 
 static void initSettings();
 static void initTranslation();
@@ -88,23 +83,13 @@ int main(int argc, char *argv[])
     MainWindow w;
 
     int r = a.exec();
-    configLock.release();
+    delete configLock;
     return r;
 }
 
 static QString userConfigPath()
 {
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-#ifdef Q_OS_LINUX
-    QString re = QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
-    re += QLatin1String("/.config/Torsion/");
-    return re;
-#else
-    return QDesktopServices::storageLocation(QDesktopServices::DataLocation);
-#endif
-#else
     return QStandardPaths::writableLocation(QStandardPaths::DataLocation);
-#endif
 }
 
 #ifdef Q_OS_MAC
@@ -167,18 +152,19 @@ static void initSettings()
 #endif
     }
 
-    configLock.setPath(configFile);
-    int r = configLock.acquire();
-    if (!r)
-    {
-        /* File is locked */
-        QMessageBox::information(0, QApplication::tr("Torsion"),
-                                 QApplication::tr("Torsion is already running."),
-                                 QMessageBox::Ok);
-        exit(0);
+    configLock = new QLockFile(configFile + QStringLiteral(".lock"));
+    configLock->setStaleLockTime(0);
+    if (!configLock->tryLock()) {
+        if (configLock->error() == QLockFile::LockFailedError) {
+            /* File is locked */
+            QMessageBox::information(0, QApplication::tr("Torsion"),
+                                     QApplication::tr("Torsion is already running."),
+                                     QMessageBox::Ok);
+            exit(0);
+        } else {
+            qWarning("Failed to acquire a lock on the configuration file");
+        }
     }
-    else if (r < 0)
-        qWarning("Failed to acquire a lock on the configuration file");
 
     config = new AppSettings(configFile, QSettings::IniFormat);
     if (!config->isWritable())
