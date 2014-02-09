@@ -15,10 +15,6 @@ ApplicationWindow {
     title: qsTr("Torsion")
     visibility: Window.AutomaticVisibility
 
-    menuBar: MenuBar {
-        Menu { title: "File"; MenuItem { text: "???" } }
-    }
-
     Action {
         id: addContactAction
         // CC-BY, Plus by Andre from The Noun Project
