@@ -1,5 +1,5 @@
 /* Torsion - http://torsionim.org/
- * Copyright (C) 2010, John Brooks <john.brooks@dereferenced.net>
+ * Copyright (C) 2014, John Brooks <john.brooks@dereferenced.net>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -34,11 +34,13 @@
 #define CONTACTREQUESTSERVER_H
 
 #include <QObject>
+#include <QTimer>
 
 class QTcpSocket;
 class ContactUser;
 class UserIdentity;
 
+/* Incoming connection with a purpose of 0x80 (contact request) */
 class ContactRequestServer : public QObject
 {
     Q_OBJECT
@@ -49,9 +51,9 @@ public:
 
     explicit ContactRequestServer(UserIdentity *identity, QTcpSocket *socket);
 
+public slots:
     void sendAccept(ContactUser *user);
     void sendRejection();
-
     void close();
 
 private slots:
@@ -60,6 +62,7 @@ private slots:
 
 private:
     QTcpSocket * const socket;
+    QTimer *timeout;
     QByteArray cookie;
 
     enum

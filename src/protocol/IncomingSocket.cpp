@@ -37,7 +37,7 @@
 #include "ContactRequestServer.h"
 #include <QTcpServer>
 #include <QTcpSocket>
-#include <QDateTime>
+#include <QElapsedTimer>
 #include <QtDebug>
 
 IncomingSocket::IncomingSocket(UserIdentity *id, QObject *parent)
@@ -74,15 +74,17 @@ void IncomingSocket::incomingConnection()
     while (server->hasPendingConnections())
     {
         QTcpSocket *conn = server->nextPendingConnection();
+        conn->setParent(this);
         connect(conn, SIGNAL(readyRead()), this, SLOT(readSocket()));
         connect(conn, SIGNAL(disconnected()), this, SLOT(removeSocket()));
 
-        conn->setParent(this);
-        conn->setProperty("startTime", QDateTime::currentDateTime());
+        QElapsedTimer time;
+        time.start();
+        conn->setProperty("startTime", time.msecsSinceReference());
         pendingSockets.append(conn);
 
         if (!expireTimer.isActive())
-            expireTimer.start(10000, this);
+            expireTimer.start(11000, this);
     }
 }
 
@@ -106,12 +108,13 @@ void IncomingSocket::removeSocket(QTcpSocket *socket)
 
 void IncomingSocket::timerEvent(QTimerEvent *)
 {
-    QDateTime now = QDateTime::currentDateTime();
+    QElapsedTimer now;
+    now.start();
 
     for (int i = 0; i < pendingSockets.size(); ++i)
     {
-        QDateTime started = pendingSockets[i]->property("startTime").toDateTime();
-        if (started.secsTo(now) >= 30)
+        qint64 started = pendingSockets[i]->property("startTime").toLongLong();
+        if (now.msecsSinceReference() - started >= 10000)
         {
             /* time is up. */
             removeSocket(pendingSockets[i]);

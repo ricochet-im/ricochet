@@ -133,8 +133,7 @@ void ContactRequestClient::socketReadable()
 
             if (version != protocolVersion)
             {
-                /* TODO better handling of this */
-                qWarning() << "Contact request for" << user->uniqueID << "version negotiation failed";
+                emit rejected(0x90);
                 socket->close();
                 return;
             }

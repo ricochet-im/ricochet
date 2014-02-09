@@ -1,5 +1,5 @@
 /* Torsion - http://torsionim.org/
- * Copyright (C) 2010, John Brooks <john.brooks@dereferenced.net>
+ * Copyright (C) 2014, John Brooks <john.brooks@dereferenced.net>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -37,6 +37,7 @@
 #include "core/UserIdentity.h"
 #include "core/ContactsManager.h"
 #include "core/IncomingRequestManager.h"
+#include <QElapsedTimer>
 #include <QTcpSocket>
 #include <QtEndian>
 #include <QDebug>
@@ -45,12 +46,23 @@ ContactRequestServer::ContactRequestServer(UserIdentity *id, QTcpSocket *s)
     : identity(id), socket(s), state(WaitRequest)
 {
     socket->setParent(this);
-
     connect(socket, SIGNAL(readyRead()), this, SLOT(socketReadable()));
     connect(socket, SIGNAL(disconnected()), this, SLOT(socketDisconnected()));
 
-    qDebug() << "Contact request connection created; sending cookie";
+    QElapsedTimer now;
+    now.start();
+    qint64 elapsed = socket->property("startTime").toLongLong();
+    if (!elapsed)
+        elapsed = 0;
+    else
+        elapsed = now.msecsSinceReference() - elapsed;
 
+    timeout = new QTimer(this);
+    timeout->setSingleShot(true);
+    timeout->start(15000 - elapsed);
+    connect(timeout, SIGNAL(timeout()), SLOT(close()));
+
+    qDebug() << "Contact request connection created; sending cookie";
     sendCookie();
 }
 
@@ -68,7 +80,10 @@ void ContactRequestServer::socketDisconnected()
 void ContactRequestServer::sendCookie()
 {
     cookie = SecureRNG::random(16);
-    Q_ASSERT(cookie.size() == 16);
+    if (cookie.size() != 16) {
+        close();
+        return;
+    }
 
     qint64 re = socket->write(cookie);
     Q_ASSERT(re == cookie.size());
@@ -100,10 +115,10 @@ bool ContactRequestServer::sendResponse(uchar response)
 void ContactRequestServer::sendAccept(ContactUser *user)
 {
     /* Send the accepted response; immediately after this, both ends will treat the connection
-     * as their newly established primary. */
+     * as their newly established command connection. */
     sendResponse(0x01);
 
-    qDebug() << "Contact request accepted with an active connection; sending accept and morphing to primary";
+    qDebug() << "Contact request accepted with an active connection; sending accept and morphing to command";
 
     socket->disconnect(this);
     user->conn()->addSocket(socket, ProtocolSocket::PurposePrimary);
@@ -121,8 +136,9 @@ void ContactRequestServer::socketReadable()
 {
     if (state != WaitRequest)
     {
-        /* After the request has arrived, all data from the client is ignored. */
-        socket->readAll();
+        /* After the request has arrived, any data from the client is an error.
+         * Drop the connection to prevent bandwidth consumption. */
+        socket->close();
         return;
     }
 
@@ -136,13 +152,24 @@ void ContactRequestServer::socketReadable()
         return;
 
     QByteArray request = socket->read(length);
-    Q_ASSERT(request.size() == length);
+    if (request.size() < length) {
+        // Shouldn't happen because of bytesAvailable; just panic and close.
+        socket->close();
+        return;
+    }
 
     handleRequest(request);
 }
 
 void ContactRequestServer::handleRequest(const QByteArray &data)
 {
+    if (data.size() < 58) {
+        // Impossibly small request
+        qDebug() << "Incoming contact request is an impossibly small " << data.size() << "bytes; rejecting";
+        sendResponse(0x80);
+        return;
+    }
+
     /* [2*length][16*hostname][16*serverCookie][16*connSecret][data:pubkey][str:nick][str:message][data:signature] */
     CommandDataParser request(&data);
     request.setPos(2);
@@ -158,41 +185,37 @@ void ContactRequestServer::handleRequest(const QByteArray &data)
     int signaturePos = request.pos();
     request.readVariableData(&signature);
 
-    if (request.hasError())
-    {
-        qWarning("Incoming contact request has a syntax error; rejecting");
+    if (request.hasError()) {
+        qDebug() << "Incoming contact request syntax error; rejecting";
         sendResponse(0x80);
         return;
     }
 
     /* Verify serverHostname and serverCookie */
-    if (hostname != identity->hostname().mid(0, 16).toLatin1() || receivedCookie != cookie)
-    {
-        qWarning("Incoming contact request has invalid hostname/cookie; rejecting");
+    if (hostname != identity->hostname().mid(0, 16).toLatin1() || receivedCookie != cookie) {
+        qDebug() << "Incoming contact request has invalid hostname/cookie; rejecting";
         sendResponse(0x81);
+        return;
     }
 
     /* Load the public key */
     CryptoKey key;
-    if (!key.loadFromData(encodedPublicKey))
-    {
-        qWarning("Incoming contact request has an unparsable public key; rejecting");
+    if (!key.loadFromData(encodedPublicKey)) {
+        qDebug() << "Incoming contact request has an unparsable public key; rejecting";
         sendResponse(0x81);
         return;
     }
 
     /* Verify the signature */
-    if (!key.verifySignature(data.mid(2, signaturePos - 2), signature))
-    {
-        qWarning("Incoming contact request has an invalid signature; rejecting");
+    if (!key.verifySignature(data.mid(2, signaturePos - 2), signature)) {
+        qDebug() << "Incoming contact request has an invalid signature; rejecting";
         sendResponse(0x81);
         return;
     }
 
     /* Either a nickname or a message must be sent */
-    if (nickname.isEmpty() && message.isEmpty())
-    {
-        qWarning("Incoming contact request has neither a nickname nor a message; rejecting");
+    if (nickname.isEmpty() && message.isEmpty()) {
+        qDebug() << "Incoming contact request has no information; rejecting";
         sendResponse(0x82);
         return;
     }
@@ -216,6 +239,8 @@ void ContactRequestServer::handleRequest(const QByteArray &data)
     sendResponse(0x00);
 
     /* We are now waiting for acceptance from the user; connection is held open. */
+    timeout->stop();
     state = WaitResponse;
     return;
 }
+
