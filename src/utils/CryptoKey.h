@@ -60,7 +60,7 @@ public:
 
     /* Raw signatures; no digest */
     QByteArray signData(const QByteArray &data) const;
-    bool verifySignature(const QByteArray &data, const QByteArray &signature) const;
+    bool verifySignature(const QByteArray &data, QByteArray signature) const;
 
 private:
     struct Data : public QSharedData

@@ -32,6 +32,7 @@
 
 #include "ContactRequestClient.h"
 #include "core/ContactUser.h"
+#include "core/UserIdentity.h"
 #include "ProtocolManager.h"
 #include "IncomingSocket.h"
 #include "CommandDataParser.h"
@@ -173,14 +174,12 @@ void ContactRequestClient::socketReadable()
 
 bool ContactRequestClient::buildRequestData(QByteArray cookie)
 {
-    /* [2*length][16*hostname][16*connSecret][data:pubkey][data:signedcookie][str:nick][str:message] */
+    /* [2*length][16*hostname][16*serverCookie][16*connSecret][data:pubkey][str:nick][str:message][data:signature] */
     QByteArray requestData;
     CommandDataParser request(&requestData);
 
     /* Hostname */
-    Tor::HiddenService *service = torControl->hiddenServices().value(0);
-
-    QString hostname = service ? service->hostname() : QString();
+    QString hostname = user->conn()->host();
     hostname.truncate(hostname.lastIndexOf(QLatin1Char('.')));
     if (hostname.size() != 16)
     {
@@ -197,8 +196,9 @@ bool ContactRequestClient::buildRequestData(QByteArray cookie)
     }
 
     /* Public service key */
-    CryptoKey serviceKey = service->cryptoKey();
-    if (!serviceKey.isLoaded())
+    Tor::HiddenService *service = user->identity->hiddenService();
+    CryptoKey serviceKey;
+    if (!service || !(serviceKey = service->cryptoKey()).isLoaded())
     {
         qWarning() << "Cannot send contact request: failed to load service key";
         return false;
@@ -211,22 +211,29 @@ bool ContactRequestClient::buildRequestData(QByteArray cookie)
         return false;
     }
 
-    /* Signed cookie */
-    QByteArray signature = serviceKey.signData(cookie);
-    if (signature.isNull())
-    {
-        qWarning() << "Cannot send contact request: failed to sign cookie";
-        return false;
-    }
-
     /* Build request */
     request << (quint16)0; /* placeholder for length */
     request.writeFixedData(hostname.toLatin1());
+    request.writeFixedData(cookie);
     request.writeFixedData(connSecret);
     request.writeVariableData(publicKeyData);
-    request.writeVariableData(signature);
     request << myNickname() << message();
 
+    if (request.hasError())
+    {
+        qWarning() << "Cannot send contact request: command building failed";
+        return false;
+    }
+
+    /* Sign request, excluding the length field */
+    QByteArray signature = serviceKey.signData(requestData.mid(2));
+    if (signature.isNull())
+    {
+        qWarning() << "Cannot send contact request: failed to sign request";
+        return false;
+    }
+
+    request.writeVariableData(signature);
     if (request.hasError())
     {
         qWarning() << "Cannot send contact request: command building failed";

@@ -84,6 +84,7 @@ public:
     /* State */
     bool isServiceOnline() const;
     bool isServicePublished() const;
+    Tor::HiddenService *hiddenService() const { return m_hiddenService; }
 
     /* Settings API */
     QVariant readSetting(const QString &key, const QVariant &defaultValue = QVariant()) const;
@@ -115,8 +116,7 @@ private slots:
 
 private:
     QString m_nickname;
-
-    Tor::HiddenService *hiddenService;
+    Tor::HiddenService *m_hiddenService;
     IncomingSocket *incomingSocket;
 
     static UserIdentity *createIdentity(int uniqueID, const QString &dataDirectory = QString());

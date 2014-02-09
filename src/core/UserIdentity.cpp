@@ -48,17 +48,17 @@ UserIdentity::UserIdentity(int id, QObject *parent)
     m_nickname = readSetting("nickname", tr("Me")).toString();
 
     QString dir = readSetting("dataDirectory", QLatin1String("data-") + QString::number(uniqueID)).toString();
-    hiddenService = new Tor::HiddenService(dir, this);
-    connect(hiddenService, SIGNAL(statusChanged(int,int)), SLOT(onStatusChanged(int,int)));
+    m_hiddenService = new Tor::HiddenService(dir, this);
+    connect(m_hiddenService, SIGNAL(statusChanged(int,int)), SLOT(onStatusChanged(int,int)));
 
     QHostAddress address(config->value("core/listenIp", QLatin1String("127.0.0.1")).toString());
     quint16 port = (quint16)config->value("core/listenPort", 0).toUInt();
 
-    if (hiddenService->status() == Tor::HiddenService::NotCreated && !readSetting("createNewService", false).toBool())
+    if (m_hiddenService->status() == Tor::HiddenService::NotCreated && !readSetting("createNewService", false).toBool())
     {
         qWarning("Hidden service data for identity %d in %s does not exist", uniqueID, qPrintable(dir));
-        delete hiddenService;
-        hiddenService = 0;
+        delete m_hiddenService;
+        m_hiddenService = 0;
     }
     else
     {
@@ -69,8 +69,8 @@ UserIdentity::UserIdentity(int id, QObject *parent)
             return;
         }
 
-        hiddenService->addTarget(80, incomingSocket->serverAddress(), incomingSocket->serverPort());
-        torControl->addHiddenService(hiddenService);
+        m_hiddenService->addTarget(80, incomingSocket->serverAddress(), incomingSocket->serverPort());
+        torControl->addHiddenService(m_hiddenService);
     }
 
     connect(torControl, SIGNAL(socksReady()), &contacts,  SLOT(connectToAll()));
@@ -108,7 +108,7 @@ void UserIdentity::removeSetting(const QString &key)
 
 QString UserIdentity::hostname() const
 {
-    return hiddenService ? hiddenService->hostname() : QString();
+    return m_hiddenService ? m_hiddenService->hostname() : QString();
 }
 
 QString UserIdentity::contactID() const
@@ -157,10 +157,11 @@ void UserIdentity::onStatusChanged(int newStatus, int oldStatus)
 
 bool UserIdentity::isServiceOnline() const
 {
-    return hiddenService && hiddenService->status() == Tor::HiddenService::Online;
+    return m_hiddenService && m_hiddenService->status() == Tor::HiddenService::Online;
 }
 
 bool UserIdentity::isServicePublished() const
 {
-    return hiddenService && hiddenService->status() >= Tor::HiddenService::Published;
+    return m_hiddenService && m_hiddenService->status() >= Tor::HiddenService::Published;
 }
+

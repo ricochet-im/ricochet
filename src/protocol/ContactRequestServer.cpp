@@ -143,24 +143,33 @@ void ContactRequestServer::socketReadable()
 
 void ContactRequestServer::handleRequest(const QByteArray &data)
 {
-    /* [2*length][16*hostname][16*connSecret][data:pubkey][data:signedcookie][str:nick][str:message] */
+    /* [2*length][16*hostname][16*serverCookie][16*connSecret][data:pubkey][str:nick][str:message][data:signature] */
     CommandDataParser request(&data);
     request.setPos(2);
 
-    QByteArray hostname, connSecret, encodedPublicKey, signedCookie;
+    QByteArray hostname, receivedCookie, connSecret, encodedPublicKey, signature;
     QString nickname, message;
 
     request.readFixedData(&hostname, 16);
+    request.readFixedData(&receivedCookie, 16);
     request.readFixedData(&connSecret, 16);
     request.readVariableData(&encodedPublicKey);
-    request.readVariableData(&signedCookie);
     request >> nickname >> message;
+    int signaturePos = request.pos();
+    request.readVariableData(&signature);
 
     if (request.hasError())
     {
         qWarning("Incoming contact request has a syntax error; rejecting");
         sendResponse(0x80);
         return;
+    }
+
+    /* Verify serverHostname and serverCookie */
+    if (hostname != identity->hostname().mid(0, 16).toLatin1() || receivedCookie != cookie)
+    {
+        qWarning("Incoming contact request has invalid hostname/cookie; rejecting");
+        sendResponse(0x81);
     }
 
     /* Load the public key */
@@ -172,17 +181,8 @@ void ContactRequestServer::handleRequest(const QByteArray &data)
         return;
     }
 
-    /* Verify that the public key corrosponds to the hidden service hostname */
-    if (key.torServiceID().toLatin1() != hostname)
-    {
-        qWarning("Incoming contact request hostname does not match the provided public key; rejecting");
-        sendResponse(0x81);
-        return;
-    }
-
-    /* Verify the cookie signature */
-    Q_ASSERT(!cookie.isNull());
-    if (!key.verifySignature(cookie, signedCookie))
+    /* Verify the signature */
+    if (!key.verifySignature(data.mid(2, signaturePos - 2), signature))
     {
         qWarning("Incoming contact request has an invalid signature; rejecting");
         sendResponse(0x81);
@@ -197,15 +197,16 @@ void ContactRequestServer::handleRequest(const QByteArray &data)
         return;
     }
 
-    /* Request is valid; the hidden service identity is cryptographically proven. */
+    /* Request is valid */
+    QByteArray remoteHostname = key.torServiceID().toLatin1();
     qDebug() << "Received contact request:";
-    qDebug() << "  Hostname:" << hostname;
+    qDebug() << "  Hostname:" << remoteHostname;
     qDebug() << "  Connection Secret:" << connSecret.toHex();
     qDebug() << "  Nickname:" << nickname;
     qDebug() << "  Message:" << message;
     qDebug() << "  Cookie:" << cookie.toHex();
 
-    identity->contacts.incomingRequests.addRequest(hostname, connSecret, this, nickname, message);
+    identity->contacts.incomingRequests.addRequest(remoteHostname, connSecret, this, nickname, message);
 
     /* addRequest() can automatically accept or reject in certain situations; account for that */
     if (state == SentResponse)

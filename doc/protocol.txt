@@ -317,24 +317,20 @@ Table of contents:
     16-octet randomly generated cookie.
 
     Once the cookie is received, the client (i.e. the peer that is sending a
-    request) must send the following:
+    request) must send the following structure:
 
         length                  16-bit big-endian unsigned integer; length in
                                 octets of the entire request message, inclusive
                                 of itself.
-        hostname                16 octets, base32-encoded sha1 fingerprint of
-                                the public key. Identical to the peer's onion
-                                hostname.
+        serverHostname          16 octets, base32-encoded onion hostname of the
+                                intended recipient of the request.
+        serverCookie            16 octets, the cookie provided by the server
         connSecret              16 octets, random data that the recipient can
                                 use to authenticate for a contact connection.
         pubKeyLength            16-bit big-endian unsigned integer; length in
                                 octets of the pubKey field
-        pubKey                  PEM-encoded RSA public key of pubKeyLength
-                                octets
-        signedCookieLength      16-bit big-endian unsigned integer; length in
-                                octets of the signedCookie field
-        signedCookie            RSA signature of the cookie provided by the
-                                server, with pubKey. signedCookieLength octets
+        pubKey                  PEM-encoded hidden service public key of
+                                pubKeyLength octets
         nicknameLength          16-bit big-endian unsigned integer; length in
                                 octets of the nickname field
         nickname                UTF-8 encoded string of nicknameLength octets;
@@ -343,19 +339,25 @@ Table of contents:
                                 octets of the message field
         message                 UTF-8 encoded string of messageLength octets;
                                 freeform message to be shown with the request
+        signatureLength         16-bit big-endian unsigned integer; length in
+                                octets of the signature field
+        signature               RSA signature of the SHA256 digest of the fields
+                                from serverHostname to message inclusive.
 
-    The key step to a contact request is allowing the recipient (server) to
-    verify the sender's (client's) contact ID - which is their onion service
-    hostname, or the first 10 bytes of the SHA1 hash of their onion service's
-    public key.
+    Upon receiving the request, the server must verify that it is correct:
 
-    To do so, the sender is required to sign a server-provided cookie with the
-    public key, and send that signature along with the public key itself. This
-    allows the recipient to verify that the sender has the public key for that
-    contact ID; i.e., it proves that they can publish the hidden service.
+        - length must be greater than 58
+        - serverHostname must equal the onion hostname that received this request
+        - serverCookie must equal the random cookie sent by the server
+        - pubKey must be a parseable and valid RSA public key
+        - at least one of nickname or message must be non-empty
+        - signature must be a valid signature by pubKey of the previous fields,
+          excluding the length.
 
-    The direct use of the hidden service key here may be problematic from a
-    security point of view. This needs to be reviewed.
+    Verifying serverHostname and serverCookie prevents replay and forwarding
+    attacks on the request. The signature authenticates that the origin of the
+    request is able to publish the hidden service represented by pubKey. The
+    requesting service's hostname can be calculated from pubKey.
 
     After the request, the server will respond with a response code. All
     responses with the exception of 0x00 (acknowledge) and 0x01 (accept) are
@@ -365,7 +367,7 @@ Table of contents:
         0x01        Accepted (see below)
         0x40        Rejected by user
         0x80        Syntax error
-        0x81        Public key / signature verification error
+        0x81        Verification error
         0x82        Request requires either a nickname or a message
 
     All of the error responses (that is, any with a value greater than 0x01)

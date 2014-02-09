@@ -189,42 +189,53 @@ QByteArray CryptoKey::signData(const QByteArray &data) const
     if (!isPrivate())
         return QByteArray();
 
+    QByteArray digest;
+    digest.resize(32);
+    bool ok = SHA256(reinterpret_cast<const unsigned char*>(data.constData()), data.size(),
+                   reinterpret_cast<unsigned char*>(digest.data())) != NULL;
+    if (!ok)
+    {
+        qWarning() << "Digest for RSA signature failed";
+        return QByteArray();
+    }
+
     QByteArray re;
     re.resize(RSA_size(d->key));
 
-    int r = RSA_private_encrypt(data.size(), reinterpret_cast<const unsigned char*>(data.constData()),
-                                reinterpret_cast<unsigned char*>(re.data()), d->key, RSA_PKCS1_PADDING);
+    unsigned sigsize = 0;
+    int r = RSA_sign(NID_sha256, reinterpret_cast<const unsigned char*>(digest.constData()), digest.size(),
+                     reinterpret_cast<unsigned char*>(re.data()), &sigsize, d->key);
 
-    if (r < 0)
+    if (r != 1)
     {
         qWarning() << "RSA encryption failed when generating signature";
         return QByteArray();
     }
 
-    re.resize(r);
+    re.truncate(sigsize);
     return re;
 }
 
-bool CryptoKey::verifySignature(const QByteArray &data, const QByteArray &signature) const
+bool CryptoKey::verifySignature(const QByteArray &data, QByteArray signature) const
 {
     if (!isLoaded())
         return false;
 
-    QByteArray re;
-    re.resize(RSA_size(d->key) - 11);
-
-    int r = RSA_public_decrypt(signature.size(), reinterpret_cast<const unsigned char*>(signature.constData()),
-                               reinterpret_cast<unsigned char*>(re.data()), d->key, RSA_PKCS1_PADDING);
-
-    if (r < 0)
+    QByteArray digest;
+    digest.resize(32);
+    bool ok = SHA256(reinterpret_cast<const unsigned char*>(data.constData()), data.size(),
+                   reinterpret_cast<unsigned char*>(digest.data())) != NULL;
+    if (!ok)
     {
-        qWarning() << "RSA decryption failed when verifying signature";
+        qWarning() << "Digest for RSA verify failed";
         return false;
     }
 
-    re.resize(r);
-
-    return (re == data);
+    int r = RSA_verify(NID_sha256, reinterpret_cast<const uchar*>(digest.constData()), digest.size(),
+                       reinterpret_cast<uchar*>(signature.data()), signature.size(), d->key);
+    if (r != 1)
+        return false;
+    return true;
 }
 
 void CryptoKey::test(const QString &file)
