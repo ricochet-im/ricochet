@@ -8,7 +8,7 @@ GridLayout {
     columns: 2
 
     property bool readOnly
-    property TextField contactId: contactIdField
+    property ContactIDField contactId: contactIdField
     property TextField name: nameField
     property TextArea message: messageField
     property bool hasValidRequest: contactIdField.acceptableInput && nameField.text.length
@@ -18,14 +18,11 @@ GridLayout {
         Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
     }
 
-    TextField {
+    ContactIDField {
         id: contactIdField
         Layout.fillWidth: true
-        font.family: "Courier"
         readOnly: contactFields.readOnly
-        validator: ContactIDValidator {
-            notContactOfIdentity: userIdentity
-        }
+        showCopyButton: false
     }
 
     Label {

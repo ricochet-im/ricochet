@@ -25,7 +25,7 @@ ApplicationWindow {
         close()
     }
 
-    GridLayout {
+    ColumnLayout {
         id: infoArea
         anchors {
             left: parent.left
@@ -35,7 +35,6 @@ ApplicationWindow {
             leftMargin: 16
             rightMargin: 16
         }
-        columns: 2
 
         Label {
             Layout.columnSpan: 2
@@ -46,29 +45,12 @@ ApplicationWindow {
             font.pointSize: 12
         }
 
-        TextField {
+        ContactIDField {
             id: localId
             Layout.fillWidth: true
             readOnly: true
-            font.family: "Courier"
-            horizontalAlignment: Qt.AlignHCenter
             text: userIdentity.contactID
-
-            MouseArea {
-                anchors.fill: parent
-                onClicked: {
-                    localId.selectAll()
-                    localId.copy()
-                }
-            }
-        }
-
-        Button {
-            text: "Copy"
-            onClicked: {
-                localId.selectAll()
-                localId.copy()
-            }
+            horizontalAlignment: Qt.AlignHCenter
         }
 
         Item { height: 1 }
