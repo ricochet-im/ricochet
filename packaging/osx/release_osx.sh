@@ -30,9 +30,11 @@ make
 
 cp "$TOR_BINARY" Torsion.app/Contents/MacOS/
 
-macdeployqt Torsion.app -qmldir=../src/ui/qml/ -dmg
+macdeployqt Torsion.app -qmldir=../src/ui/qml/
 # Workaround macdeployqt bug
 rm -r Torsion.app/Contents/Resources/qml/org
+
+hdiutil create Torsion.dmg -srcfolder Torsion.app -format UDZO -volname Torsion
 
 echo "---------"
 
