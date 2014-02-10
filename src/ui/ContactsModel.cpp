@@ -87,6 +87,11 @@ QModelIndex ContactsModel::indexOfContact(ContactUser *user) const
     return index(row, 0);
 }
 
+ContactUser *ContactsModel::contact(int row) const
+{
+    return contacts.value(row);
+}
+
 void ContactsModel::updateUser(ContactUser *user)
 {
     if (!user)

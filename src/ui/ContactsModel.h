@@ -61,6 +61,7 @@ public:
 
     Q_INVOKABLE QModelIndex indexOfContact(ContactUser *user) const;
     Q_INVOKABLE int rowOfContact(ContactUser *user) const { return indexOfContact(user).row(); }
+    Q_INVOKABLE ContactUser *contact(int row) const;
 
     virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
     virtual QHash<int,QByteArray> roleNames() const;

@@ -97,19 +97,19 @@ public:
 
     Status status() const { return m_status; }
 
-    QVariant readSetting(const QString &key, const QVariant &defaultValue = QVariant()) const;
+    Q_INVOKABLE QVariant readSetting(const QString &key, const QVariant &defaultValue = QVariant()) const;
     QVariant readSetting(const char *key, const QVariant &defaultValue = QVariant()) const
     {
         return readSetting(QLatin1String(key), defaultValue);
     }
 
-    void writeSetting(const QString &key, const QVariant &value);
+    Q_INVOKABLE void writeSetting(const QString &key, const QVariant &value);
     void writeSetting(const char *key, const QVariant &value)
     {
         writeSetting(QLatin1String(key), value);
     }
 
-    void removeSetting(const QString &key);
+    Q_INVOKABLE void removeSetting(const QString &key);
     void removeSetting(const char *key)
     {
         removeSetting(QLatin1String(key));

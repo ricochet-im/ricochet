@@ -42,14 +42,14 @@
 
 OutgoingContactRequest *OutgoingContactRequest::requestForUser(ContactUser *user)
 {
-    OutgoingContactRequest *request = reinterpret_cast<OutgoingContactRequest*>(user->property("contactRequest").value<void*>());
+    OutgoingContactRequest *request = reinterpret_cast<OutgoingContactRequest*>(user->property("contactRequest").value<QObject*>());
     if (!request)
     {
         if (!user->isContactRequest())
             return 0;
 
         request = new OutgoingContactRequest(user);
-        user->setProperty("contactRequest", QVariant::fromValue(reinterpret_cast<void*>(request)));
+        user->setProperty("contactRequest", QVariant::fromValue(request));
     }
 
     return request;
@@ -149,10 +149,16 @@ void OutgoingContactRequest::startConnection()
     connect(m_client, SIGNAL(accepted()), SLOT(accept()));
     connect(m_client, SIGNAL(rejected(int)), SLOT(requestRejected(int)));
     connect(m_client, SIGNAL(acknowledged()), SLOT(requestAcknowledged()));
+    connect(m_client, SIGNAL(responseChanged()), SIGNAL(connectedChanged()));
 
     m_client->setMyNickname(myNickname());
     m_client->setMessage(message());
     m_client->sendRequest();
+}
+
+bool OutgoingContactRequest::isConnected() const
+{
+    return m_client && m_client->response() == ContactRequestClient::Acknowledged;
 }
 
 void OutgoingContactRequest::removeRequest()

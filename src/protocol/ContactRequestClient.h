@@ -70,6 +70,7 @@ public slots:
     void sendRequest();
 
 signals:
+    void responseChanged();
     void acknowledged();
     void accepted();
     /* reason is the raw code sent by the peer, not a Response. */

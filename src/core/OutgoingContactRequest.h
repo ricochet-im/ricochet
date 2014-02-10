@@ -42,6 +42,13 @@ class OutgoingContactRequest : public QObject
 {
     Q_OBJECT
     Q_DISABLE_COPY(OutgoingContactRequest)
+    Q_ENUMS(Status)
+
+    Q_PROPERTY(Status status READ status NOTIFY statusChanged)
+    Q_PROPERTY(QString myNickname READ myNickname CONSTANT)
+    Q_PROPERTY(QString message READ message CONSTANT)
+    Q_PROPERTY(QString rejectMessage READ rejectMessage NOTIFY rejected)
+    Q_PROPERTY(bool isConnected READ isConnected NOTIFY connectedChanged)
 
 public:
     enum Status
@@ -65,6 +72,7 @@ public:
     QString message() const;
     Status status() const;
     QString rejectMessage() const;
+    bool isConnected() const;
 
     ContactRequestClient *client() const { return m_client; }
 
@@ -77,6 +85,7 @@ signals:
     void statusChanged(int newStatus, int oldStatus);
     void accepted();
     void rejected(const QString &reason);
+    void connectedChanged();
 
 private slots:
     void requestRejected(int reason);

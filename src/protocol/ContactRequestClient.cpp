@@ -291,6 +291,8 @@ bool ContactRequestClient::handleResponse()
         break;
     }
 
+    emit responseChanged();
+
     if (m_response >= Rejected)
     {
         emit rejected(response);

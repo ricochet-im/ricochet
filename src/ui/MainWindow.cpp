@@ -64,6 +64,7 @@ MainWindow::MainWindow(QObject *parent)
     qmlRegisterUncreatableType<ContactsManager>("org.torsionim.torsion", 1, 0, "ContactsManager", QString());
     qmlRegisterUncreatableType<IncomingRequestManager>("org.torsionim.torsion", 1, 0, "IncomingRequestManager", QString());
     qmlRegisterUncreatableType<IncomingContactRequest>("org.torsionim.torsion", 1, 0, "IncomingContactRequest", QString());
+    qmlRegisterUncreatableType<OutgoingContactRequest>("org.torsionim.torsion", 1, 0, "OutgoingContactRequest", QString());
     qmlRegisterUncreatableType<Tor::TorControl>("org.torsionim.torsion", 1, 0, "TorControl", QString());
     qmlRegisterUncreatableType<Tor::TorProcess>("org.torsionim.torsion", 1, 0, "TorProcess", QString());
     qmlRegisterType<ConversationModel>("org.torsionim.torsion", 1, 0, "ConversationModel");
