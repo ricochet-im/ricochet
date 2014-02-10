@@ -4,9 +4,8 @@ Makefile.*
 *.user.*
 debug
 release
-installer/*.exe
-installer/Output
-installer/Tor
 *.pdb
-notes
 *.app
+.packagingrc
+.qmake.stash
+.DS_Store
