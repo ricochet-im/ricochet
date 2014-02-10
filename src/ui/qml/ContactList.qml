@@ -6,18 +6,24 @@ import org.torsionim.torsion 1.0
 ScrollView {
     id: scroll
 
-    data: Rectangle {
-        anchors.fill: scroll
-        z: -1
-        color: palette.base
-    }
+    data: [
+        Rectangle {
+            anchors.fill: scroll
+            z: -1
+            color: palette.base
+        },
+        ContactsModel {
+            id: contactsModel
+            identity: userIdentity
+        }
+    ]
+
+    property QtObject selectedContact: contactsModel.contact(contactListView.currentIndex)
 
     ListView {
         id: contactListView
 
-        model: ContactsModel {
-            identity: userIdentity
-        }
+        model: contactsModel
 
         section.property: "status"
         section.delegate: Label {

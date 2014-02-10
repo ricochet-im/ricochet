@@ -14,6 +14,11 @@ ApplicationWindow {
         anchors.margins: 8
 
         Tab {
+            title: "Contacts"
+            source: Qt.resolvedUrl("ContactPreferences.qml")
+        }
+
+        Tab {
             title: "Tor"
             source: Qt.resolvedUrl("TorPreferences.qml")
         }

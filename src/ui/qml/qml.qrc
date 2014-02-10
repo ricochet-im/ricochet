@@ -19,6 +19,7 @@
         <file>TorBootstrapStatus.qml</file>
         <file>TorLogDisplay.qml</file>
         <file>TorPreferences.qml</file>
+        <file>ContactPreferences.qml</file>
         <file>ContactIDField.qml</file>
     </qresource>
     <qresource prefix="/ui/icons">
