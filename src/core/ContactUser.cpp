@@ -45,7 +45,8 @@
 #include <QDateTime>
 
 ContactUser::ContactUser(UserIdentity *ident, int id, QObject *parent)
-    : QObject(parent), identity(ident), uniqueID(id), m_lastReceivedChatID(0)
+    : QObject(parent), identity(ident), uniqueID(id), m_lastReceivedChatID(0),
+      m_contactRequest(0)
 {
     Q_ASSERT(uniqueID >= 0);
 
@@ -63,16 +64,8 @@ ContactUser::ContactUser(UserIdentity *ident, int id, QObject *parent)
     connect(m_conn, SIGNAL(primaryConnected()), this, SLOT(onConnected()));
     connect(m_conn, SIGNAL(primaryDisconnected()), this, SLOT(onDisconnected()));
 
+    loadContactRequest();
     updateStatus();
-
-    /* Outgoing request */
-    if (!readSetting("request/status").isNull())
-    {
-        /* Used to initialize the request on startup for existing requests */
-        OutgoingContactRequest *request = OutgoingContactRequest::requestForUser(this);
-        Q_ASSERT(request);
-        connect(request, SIGNAL(statusChanged(int,int)), SLOT(updateStatus()));
-    }
 }
 
 void ContactUser::loadSettings()
@@ -82,6 +75,19 @@ void ContactUser::loadSettings()
     m_nickname = config->value("nickname", uniqueID).toString();
 
     config->endGroup();
+}
+
+void ContactUser::loadContactRequest()
+{
+    if (m_contactRequest)
+        return;
+
+    if (!readSetting("request/status").isNull()) {
+        m_contactRequest = new OutgoingContactRequest(this);
+        connect(m_contactRequest, SIGNAL(statusChanged(int,int)), SLOT(updateStatus()));
+        connect(m_contactRequest, SIGNAL(removed()), SLOT(requestRemoved()));
+        updateStatus();
+    }
 }
 
 QVariant ContactUser::readSetting(const QString &key, const QVariant &defaultValue) const
@@ -129,15 +135,13 @@ void ContactUser::onConnected()
 {
     writeSetting("lastConnected", QDateTime::currentDateTime());
 
-    if (isContactRequest())
+    if (m_contactRequest)
     {
         qDebug() << "Implicitly accepting outgoing contact request for" << uniqueID << "from primary connection";
 
-        OutgoingContactRequest *request = OutgoingContactRequest::requestForUser(this);
-        Q_ASSERT(request);
-        request->accept();
+        m_contactRequest->accept();
         updateStatus();
-        Q_ASSERT(!isContactRequest());
+        Q_ASSERT(status() != RequestPending);
     }
 
     if (readSetting("remoteSecret").isNull())
@@ -220,15 +224,11 @@ void ContactUser::deleteContact()
 
     qDebug() << "Deleting contact" << uniqueID;
 
-    if (isContactRequest())
+    if (m_contactRequest)
     {
-        OutgoingContactRequest *request = OutgoingContactRequest::requestForUser(this);
-        if (request)
-        {
-            qDebug() << "Cancelling request associated with contact to be deleted";
-            request->cancel();
-            delete request;
-        }
+        qDebug() << "Cancelling request associated with contact to be deleted";
+        m_contactRequest->cancel();
+        m_contactRequest->deleteLater();
     }
 
     emit contactDeleted(this);
@@ -240,5 +240,14 @@ void ContactUser::deleteContact()
     config->remove(QLatin1String("contacts/") + QString::number(uniqueID));
 
     deleteLater();
+}
+
+void ContactUser::requestRemoved()
+{
+    if (m_contactRequest) {
+        m_contactRequest->deleteLater();
+        m_contactRequest = 0;
+        updateStatus();
+    }
 }
 

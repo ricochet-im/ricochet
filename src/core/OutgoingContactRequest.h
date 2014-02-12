@@ -61,12 +61,12 @@ public:
         FirstResult = Accepted
     };
 
-    static OutgoingContactRequest *requestForUser(ContactUser *user);
     static OutgoingContactRequest *createNewRequest(ContactUser *user, const QString &myNickname, const QString &message);
 
     ContactUser * const user;
 
-    ~OutgoingContactRequest();
+    OutgoingContactRequest(ContactUser *user);
+    virtual ~OutgoingContactRequest();
 
     QString myNickname() const;
     QString message() const;
@@ -86,6 +86,7 @@ signals:
     void accepted();
     void rejected(const QString &reason);
     void connectedChanged();
+    void removed();
 
 private slots:
     void requestRejected(int reason);
@@ -95,8 +96,6 @@ private slots:
 
 private:
     ContactRequestClient *m_client;
-
-    OutgoingContactRequest(ContactUser *user);
 
     void setStatus(Status newStatus);
     void removeRequest();

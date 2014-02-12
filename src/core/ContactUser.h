@@ -46,6 +46,7 @@
 class UserIdentity;
 struct ChatMessageData;
 class ChatMessageCommand;
+class OutgoingContactRequest;
 
 /* Represents a user on the contact list.
  * All persistent uses of a ContactUser instance must either connect to the
@@ -63,9 +64,11 @@ class ContactUser : public QObject
     Q_PROPERTY(QString nickname READ nickname WRITE setNickname NOTIFY nicknameChanged)
     Q_PROPERTY(QString contactID READ contactID CONSTANT)
     Q_PROPERTY(Status status READ status NOTIFY statusChanged)
+    Q_PROPERTY(OutgoingContactRequest* contactRequest READ contactRequest NOTIFY statusChanged)
 
     friend class ContactsManager;
     friend class ChatMessageCommand;
+    friend class OutgoingContactRequest;
 
 public:
     enum Status
@@ -84,7 +87,7 @@ public:
     bool isConnected() const { return status() == Online; }
     bool isConnectable() const { return m_conn->isConnectable(); }
 
-    bool isContactRequest() const { return status() == RequestPending; }
+    OutgoingContactRequest *contactRequest() { return m_contactRequest; }
 
     UserIdentity *getIdentity() const { return identity; }
     int getUniqueID() const { return uniqueID; }
@@ -141,17 +144,20 @@ signals:
 private slots:
     void onConnected();
     void onDisconnected();
+    void requestRemoved();
 
 private:
     ProtocolManager *m_conn;
     QString m_nickname;
     Status m_status;
     quint16 m_lastReceivedChatID;
+    OutgoingContactRequest *m_contactRequest;
 
     /* See ContactsManager::addContact */
     static ContactUser *addNewContact(UserIdentity *identity, int id);
 
     void loadSettings();
+    void loadContactRequest();
 };
 
 Q_DECLARE_METATYPE(ContactUser*)

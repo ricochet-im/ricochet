@@ -40,39 +40,23 @@
 #include "tor/TorControl.h"
 #include <QDebug>
 
-OutgoingContactRequest *OutgoingContactRequest::requestForUser(ContactUser *user)
-{
-    OutgoingContactRequest *request = reinterpret_cast<OutgoingContactRequest*>(user->property("contactRequest").value<QObject*>());
-    if (!request)
-    {
-        if (!user->isContactRequest())
-            return 0;
-
-        request = new OutgoingContactRequest(user);
-        user->setProperty("contactRequest", QVariant::fromValue(request));
-    }
-
-    return request;
-}
-
 OutgoingContactRequest *OutgoingContactRequest::createNewRequest(ContactUser *user, const QString &myNickname,
                                                                  const QString &message)
 {
-    Q_ASSERT(!user->isContactRequest());
+    Q_ASSERT(!user->contactRequest());
 
     user->writeSetting(QLatin1String("request/status"), static_cast<int>(Pending));
     user->writeSetting(QLatin1String("request/myNickname"), myNickname);
     user->writeSetting(QLatin1String("request/message"), message);
 
-    user->updateStatus();
-    return requestForUser(user);
+    user->loadContactRequest();
+    Q_ASSERT(user->contactRequest());
+    return user->contactRequest();
 }
 
 OutgoingContactRequest::OutgoingContactRequest(ContactUser *u)
     : QObject(u), user(u), m_client(0)
 {
-    Q_ASSERT(user->isContactRequest());
-
     emit user->identity->contacts.outgoingRequestAdded(this);
 
     attemptAutoAccept();
@@ -177,6 +161,7 @@ void OutgoingContactRequest::removeRequest()
 
     /* Clear the request settings */
     user->removeSetting("request");
+    emit removed();
 }
 
 void OutgoingContactRequest::accept()

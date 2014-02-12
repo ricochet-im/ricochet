@@ -122,12 +122,8 @@ void IncomingRequestManager::addRequest(const QByteArray &hostname, const QByteA
     if (existingUser)
     {
         /* If the existing user is an outgoing contact request, that is considered accepted */
-        if (existingUser->isContactRequest())
-        {
-            OutgoingContactRequest *outRequest = OutgoingContactRequest::requestForUser(existingUser);
-            Q_ASSERT(outRequest);
-            outRequest->accept();
-        }
+        if (existingUser->contactRequest())
+            existingUser->contactRequest()->accept();
 
         /* This request is automatically accepted */
         request->accept(existingUser);
