@@ -46,9 +46,13 @@ class MainWindow : public QObject
     Q_OBJECT
     Q_DISABLE_COPY(MainWindow)
 
+    Q_PROPERTY(QString aboutText READ aboutText CONSTANT)
+
 public:
     explicit MainWindow(QObject *parent = 0);
     ~MainWindow();
+
+    QString aboutText() const;
 
 private:
     QQmlApplicationEngine *qml;

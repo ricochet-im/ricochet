@@ -22,5 +22,10 @@ ApplicationWindow {
             title: "Tor"
             source: Qt.resolvedUrl("TorPreferences.qml")
         }
+
+        Tab {
+            title: "About"
+            source: Qt.resolvedUrl("AboutPreferences.qml")
+        }
     }
 }

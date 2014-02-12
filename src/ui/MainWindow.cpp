@@ -75,6 +75,7 @@ MainWindow::MainWindow(QObject *parent)
     qml->rootContext()->setContextProperty(QLatin1String("userIdentity"), identityManager->identities()[0]);
     qml->rootContext()->setContextProperty(QLatin1String("torControl"), torControl);
     qml->rootContext()->setContextProperty(QLatin1String("torInstance"), Tor::TorManager::instance());
+    qml->rootContext()->setContextProperty(QLatin1String("uiMain"), this);
 
     qml->addImageProvider(QLatin1String("avatar"), new AvatarImageProvider);
     qml->load(QUrl(QLatin1String("qrc:/ui/main.qml")));
@@ -83,3 +84,12 @@ MainWindow::MainWindow(QObject *parent)
 MainWindow::~MainWindow()
 {
 }
+
+QString MainWindow::aboutText() const
+{
+    QFile file(QStringLiteral(":/text/LICENSE"));
+    file.open(QIODevice::ReadOnly);
+    QString text = QString::fromUtf8(file.readAll());
+    return text;
+}
+
