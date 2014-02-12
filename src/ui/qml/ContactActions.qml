@@ -31,9 +31,6 @@ Item {
             onTriggered: openWindow()
         }
         MenuSeparator { }
-        MenuItem { text: "Get Info" }
-        MenuItem { text: "Copy ID to Clipboard" }
-        MenuSeparator { }
         MenuItem {
             text: "Rename"
             onTriggered: renameTriggered()
