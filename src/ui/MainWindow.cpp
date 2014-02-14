@@ -93,3 +93,11 @@ QString MainWindow::aboutText() const
     return text;
 }
 
+/* QMessageBox implementation for Qt <5.2 */
+bool MainWindow::showRemoveContactDialog(ContactUser *user)
+{
+    QMessageBox::StandardButton btn = QMessageBox::question(0,
+        QString::fromLatin1("Remove %1").arg(user->nickname()),
+        QString::fromLatin1("Do you want to permanently remove %1?").arg(user->nickname()));
+    return btn == QMessageBox::Yes;
+}

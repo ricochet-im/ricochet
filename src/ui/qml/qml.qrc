@@ -22,6 +22,7 @@
         <file>ContactPreferences.qml</file>
         <file>ContactIDField.qml</file>
         <file>AboutPreferences.qml</file>
+        <file>MessageDialogWrapper.qml</file>
     </qresource>
     <qresource prefix="/ui/icons">
         <file>plus.png</file>

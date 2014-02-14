@@ -14,7 +14,12 @@ Item {
     }
 
     function removeContact() {
-        removeContactDialog.open()
+        removeContactDialog.active = true
+        if (removeContactDialog.item !== null) {
+            removeContactDialog.item.open()
+        } else if (uiMain.showRemoveContactDialog(contact)) {
+            contact.deleteContact()
+        }
     }
 
     function openContextMenu() {
@@ -41,15 +46,10 @@ Item {
         }
     }
 
-    MessageDialog {
+    Loader {
         id: removeContactDialog
-
-        title: "Remove " + contact.nickname
-        text: "Do you want to permanently remove " + contact.nickname + "?"
-        informativeText: "This contact will no longer be able to message you, and will be notified " +
-                         "about the removal. They may choose to send a new connection request."
-        standardButtons: StandardButton.Yes | StandardButton.No
-        onYes: contact.deleteContact()
+        source: "MessageDialogWrapper.qml"
+        active: false
     }
 }
 

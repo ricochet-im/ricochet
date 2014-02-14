@@ -54,6 +54,8 @@ public:
 
     QString aboutText() const;
 
+    Q_INVOKABLE bool showRemoveContactDialog(ContactUser *user);
+
 private:
     QQmlApplicationEngine *qml;
 };
