@@ -135,11 +135,13 @@ ApplicationWindow {
                     switch (event.key) {
                         case Qt.Key_Enter:
                         case Qt.Key_Return:
-                            if (!(event.modifiers & Qt.ShiftModifier)) {
+                            if (event.modifiers & Qt.ShiftModifier) {
+                                textInput.append("")
+                            } else {
                                 send()
-                                event.accepted = true
-                                break
                             }
+                            event.accepted = true
+                            break
                         default:
                             event.accepted = false
                     }
