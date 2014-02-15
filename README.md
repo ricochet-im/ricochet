@@ -11,7 +11,7 @@ Torsion is a peer-to-peer instant messaging system based on Tor [hidden services
 
 Torsion is not affiliated with or endorsed by The Tor Project.
 
-For more information, you can [read about Tor](https://www.torproject.org/about/overview.html.en) and [learn about Torsion's design](???) or [protocol](https://github.com/special/torsion/blob/master/doc/protocol.txt). Everything is [open-source](https://github.com/special/torsion/blob/master/LICENSE) and open to contribution.
+For more information, you can [read about Tor](https://www.torproject.org/about/overview.html.en) and [learn about Torsion's design](https://github.com/special/torsion/blob/master/doc/design.md) or [protocol](https://github.com/special/torsion/blob/master/doc/protocol.txt). Everything is [open-source](https://github.com/special/torsion/blob/master/LICENSE) and open to contribution.
 
 ### Experimental
 This software is an experiment. It hasn't been audited or formally reviewed by anyone. Security and anonymity are difficult topics, and you should carefully evaluate your risks and exposure with any software. *Do not rely on Torsion for your safety* unless you have more trust in my work than it deserves. That said, I believe it does more to try to protect your privacy than any similar software.
