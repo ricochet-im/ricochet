@@ -213,13 +213,6 @@ void ContactRequestServer::handleRequest(const QByteArray &data)
         return;
     }
 
-    /* Either a nickname or a message must be sent */
-    if (nickname.isEmpty() && message.isEmpty()) {
-        qDebug() << "Incoming contact request has no information; rejecting";
-        sendResponse(0x82);
-        return;
-    }
-
     /* Request is valid */
     QByteArray remoteHostname = key.torServiceID().toLatin1();
     qDebug() << "Received contact request:";
