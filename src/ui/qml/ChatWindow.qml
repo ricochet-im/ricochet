@@ -108,8 +108,10 @@ ApplicationWindow {
                 id: textInput
                 Layout.fillWidth: true
                 y: 2
-                Layout.preferredHeight: Math.max(textHeight.height + 6, edit.contentHeight) + edit.textMargin
-                Layout.maximumHeight: (textHeight.height * 4) + 6 + edit.textMargin
+                // This ridiculous incantation enables an automatically sized TextArea
+                Layout.preferredHeight: mapFromItem(flickableItem, 0, 0).y * 2 +
+                                        Math.max(textHeight.height + 2*edit.textMargin, flickableItem.contentHeight)
+                Layout.maximumHeight: (textHeight.height * 4) + (2 * edit.textMargin)
                 textMargin: 3
                 wrapMode: TextEdit.Wrap
 
