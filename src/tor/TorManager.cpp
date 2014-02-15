@@ -53,6 +53,7 @@ public:
     TorProcess *process;
     TorControl *control;
     QStringList logMessages;
+    QString errorMessage;
     bool configNeeded;
 
     explicit TorManagerPrivate(TorManager *parent = 0);
@@ -60,6 +61,8 @@ public:
     QString torExecutablePath() const;
     bool createDataDir(const QString &path);
     bool createDefaultTorrc(const QString &path);
+
+    void setError(const QString &errorMessage);
 
 public slots:
     void processStateChanged(int state);
@@ -114,14 +117,29 @@ QStringList TorManager::logMessages() const
     return d->logMessages;
 }
 
+bool TorManager::hasError() const
+{
+    return !d->errorMessage.isEmpty();
+}
+
+QString TorManager::errorMessage() const
+{
+    return d->errorMessage;
+}
+
 void TorManager::start()
 {
+    if (!d->errorMessage.isEmpty()) {
+        d->errorMessage.clear();
+        emit errorChanged();
+    }
+
     if (config->value("tor/controlPort").isNull()) {
         // Launch a bundled Tor instance
         QString executable = d->torExecutablePath();
         if (executable.isEmpty()) {
-            // XXX error
-            qFatal("Implement your error conditions.");
+            d->setError(QStringLiteral("Cannot find tor executable"));
+            return;
         }
 
         if (!d->process) {
@@ -134,17 +152,18 @@ void TorManager::start()
 
         QString dataDir = config->configLocation() + QStringLiteral("tor/");
         if (!QFile::exists(dataDir) && !d->createDataDir(dataDir)) {
-            // XXX another error
-            qFatal("Implement all of your error conditions");
+            d->setError(QStringLiteral("Cannot write data location: %1").arg(dataDir));
+            return;
         }
 
         QString defaultTorrc = dataDir + QStringLiteral("default_torrc");
         if (!QFile::exists(defaultTorrc) && !d->createDefaultTorrc(defaultTorrc)) {
-            // XXX error
-            qFatal("Implement all of your error conditions");
+            d->setError(QStringLiteral("Cannot write data files: %1").arg(defaultTorrc));
+            return;
         }
 
-        if (!QFile::exists(dataDir + QStringLiteral("torrc"))) {
+        QFile torrc(dataDir + QStringLiteral("torrc"));
+        if (!torrc.exists() || torrc.size() == 0) {
             d->configNeeded = true;
             emit configurationNeededChanged();
         }
@@ -174,6 +193,7 @@ void TorManagerPrivate::processStateChanged(int state)
 void TorManagerPrivate::processErrorChanged(const QString &errorMessage)
 {
     qDebug() << "tor error:" << errorMessage;
+    setError(errorMessage);
 }
 
 void TorManagerPrivate::processLogMessage(const QString &message)
@@ -234,7 +254,8 @@ QString TorManagerPrivate::torExecutablePath() const
         return path + filename;
 #endif
 
-    return QString();
+    // Try $PATH
+    return filename.mid(1);
 }
 
 bool TorManagerPrivate::createDataDir(const QString &path)
@@ -257,6 +278,12 @@ bool TorManagerPrivate::createDefaultTorrc(const QString &path)
     if (file.write(defaultTorrcContent) < 0)
         return false;
     return true;
+}
+
+void TorManagerPrivate::setError(const QString &message)
+{
+    errorMessage = message;
+    emit q->errorChanged();
 }
 
 #include "TorManager.moc"

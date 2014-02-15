@@ -68,6 +68,7 @@ public:
 public slots:
     void processStarted();
     void processFinished();
+    void processError(QProcess::ProcessError error);
     void processReadable();
     void tryReadControlPort();
 };

@@ -53,6 +53,8 @@ class TorManager : public QObject
     Q_PROPERTY(QStringList logMessages READ logMessages CONSTANT)
     Q_PROPERTY(Tor::TorProcess* process READ process CONSTANT)
     Q_PROPERTY(Tor::TorControl* control READ control CONSTANT)
+    Q_PROPERTY(bool hasError READ hasError NOTIFY errorChanged)
+    Q_PROPERTY(QString errorMessage READ errorMessage NOTIFY errorChanged)
 
 public:
     explicit TorManager(QObject *parent = 0);
@@ -66,11 +68,15 @@ public:
 
     QStringList logMessages() const;
 
+    bool hasError() const;
+    QString errorMessage() const;
+
 public slots:
     void start();
 
 signals:
     void configurationNeededChanged();
+    void errorChanged();
 
 private:
     TorManagerPrivate *d;

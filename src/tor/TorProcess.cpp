@@ -56,6 +56,8 @@ TorProcessPrivate::TorProcessPrivate(TorProcess *q)
     connect(&process, &QProcess::started, this, &TorProcessPrivate::processStarted);
     connect(&process, (void (QProcess::*)(int, QProcess::ExitStatus))&QProcess::finished,
             this, &TorProcessPrivate::processFinished);
+    connect(&process, (void (QProcess::*)(QProcess::ProcessError))&QProcess::error,
+            this, &TorProcessPrivate::processError);
     connect(&process, &QProcess::readyRead, this, &TorProcessPrivate::processReadable);
 
     controlPortTimer.setInterval(500);
@@ -257,6 +259,12 @@ void TorProcessPrivate::processFinished()
     state = TorProcess::Failed;
     emit q->errorMessageChanged(errorMessage);
     emit q->stateChanged(state);
+}
+
+void TorProcessPrivate::processError(QProcess::ProcessError error)
+{
+    if (error == QProcess::FailedToStart || error == QProcess::Crashed)
+        processFinished();
 }
 
 void TorProcessPrivate::processReadable()

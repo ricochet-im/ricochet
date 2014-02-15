@@ -59,8 +59,8 @@ Item {
             visible: errorMessage != ""
 
             property string errorMessage: {
-                if (torInstance.process !== null && torInstance.process.errorMessage != "")
-                    return torInstance.process.errorMessage
+                if (torInstance.hasError)
+                    return torInstance.errorMessage
                 else if (torInstance.control.errorMessage != "")
                     return torInstance.control.errorMessage
                 else if (bootstrap.warning !== undefined)

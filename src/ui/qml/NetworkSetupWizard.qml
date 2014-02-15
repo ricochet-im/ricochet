@@ -65,6 +65,25 @@ ApplicationWindow {
         visible: false
     }
 
+    StartupStatusPage {
+        id: statusPage
+        anchors {
+            top: parent.top
+            left: parent.left
+            right: parent.right
+            margins: 8
+        }
+        visible: false
+
+        onHasErrorChanged: {
+            if (hasError) {
+                visibleItem.visible = false
+                statusPage.visible = true
+                visibleItem = statusPage
+            }
+        }
+    }
+
     Component {
         id: firstPage
 
