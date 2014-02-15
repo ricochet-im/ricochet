@@ -3,36 +3,32 @@ import QtQuick.Controls 1.0
 import QtQuick.Layouts 1.0
 import org.torsionim.torsion 1.0
 
-Item {
-    anchors.fill: parent
+RowLayout {
+    anchors {
+        fill: parent
+        margins: 8
+    }
 
     ContactList {
         id: contacts
-        width: 200
+        Layout.preferredWidth: 200
+        Layout.minimumWidth: 150
+        Layout.fillHeight: true
         frameVisible: true
-        anchors {
-            left: parent.left
-            top: parent.top
-            bottom: parent.bottom
-            margins: 8
-        }
     }
 
-    ContactActions {
-        id: contactActions
-        contact: contacts.selectedContact
-    }
+    data: [
+        ContactActions {
+            id: contactActions
+            contact: contacts.selectedContact
+        }
+    ]
 
     GridLayout {
         id: contactInfo
         columns: 2
-        anchors {
-            left: contacts.right
-            top: parent.top
-            bottom: parent.bottom
-            right: parent.right
-            margins: 8
-        }
+        Layout.fillHeight: true
+        Layout.fillWidth: true
 
         property QtObject contact: contacts.selectedContact
         property QtObject request: (contact !== null) ? contact.contactRequest : null
@@ -47,18 +43,23 @@ Item {
         Label { text: "ID:" }
         ContactIDField {
             Layout.fillWidth: true
+            Layout.minimumWidth: 100
             readOnly: true
             text: contactInfo.contact.contactID
         }
 
         Label { text: "Date added:" }
         Label {
+            Layout.fillWidth: true
+            elide: Text.ElideRight
             text: Qt.formatDate(contactInfo.contact.readSetting("whenCreated"), Qt.DefaultLocaleLongDate)
         }
 
         Label { text: "Last seen:"; visible: lastSeen.visible }
         Label {
             id: lastSeen
+            Layout.fillWidth: true
+            elide: Text.ElideRight
             visible: contactInfo.request === null
             text: Qt.formatDateTime(contactInfo.contact.readSetting("lastConnected"), Qt.DefaultLocaleLongDate)
         }
@@ -87,6 +88,8 @@ Item {
         Label { text: "Response:"; visible: rejectMessage.visible }
         Label {
             id: rejectMessage
+            Layout.fillWidth: true
+            elide: Text.ElideRight
             text: visible ? contactInfo.request.rejectMessage : ""
             visible: (contactInfo.request !== null) && (contactInfo.request.rejectMessage !== "")
         }
