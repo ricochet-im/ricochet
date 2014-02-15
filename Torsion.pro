@@ -34,22 +34,28 @@ TEMPLATE = app
 QT += core gui network quick widgets
 CONFIG += c++11
 
+# Pass DEFINES+=TORSION_NO_PORTABLE for a system-wide installation
+
 CONFIG(release,debug|release):DEFINES += QT_NO_DEBUG_OUTPUT QT_NO_WARNING_OUTPUT
 
-unix:!macx {
-    target.path = /usr/bin
-    shortcut.path = /usr/share/applications
-    shortcut.files = src/Torsion.desktop
-    INSTALLS += target shortcut
+contains(DEFINES, TORSION_NO_PORTABLE) {
+    unix:!macx {
+        target.path = /usr/bin
+        shortcut.path = /usr/share/applications
+        shortcut.files = src/Torsion.desktop
+        INSTALLS += target shortcut
 
-    exists(tor) {
-        message(Adding bundled Tor to installations)
-        bundletor.path = /usr/lib/torsion/tor/
-        bundletor.files = tor/*
-        INSTALLS += bundletor
-        DEFINES += BUNDLED_TOR_PATH=\\\"/usr/lib/torsion/tor/\\\"
+        exists(tor) {
+            message(Adding bundled Tor to installations)
+            bundletor.path = /usr/lib/torsion/tor/
+            bundletor.files = tor/*
+            INSTALLS += bundletor
+            DEFINES += BUNDLED_TOR_PATH=\\\"/usr/lib/torsion/tor/\\\"
+        }
     }
-} else:macx {
+}
+
+macx {
     CONFIG += bundle
 
     exists(tor) {
@@ -59,7 +65,6 @@ unix:!macx {
 }
 
 CONFIG += debug_and_release
-QMAKE_RESOURCE_FLAGS += -no-compress
 
 # Create a pdb for release builds as well, to enable debugging
 win32-msvc2008|win32-msvc2010 {

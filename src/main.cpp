@@ -51,9 +51,8 @@
 AppSettings *config = 0;
 static QLockFile *configLock = 0;
 
-static void initSettings();
+static bool initSettings(QString &errorMessage);
 static void initTranslation();
-static bool connectTorControl();
 
 int main(int argc, char *argv[])
 {
@@ -61,7 +60,14 @@ int main(int argc, char *argv[])
 
     a.setApplicationVersion(QLatin1String("0.2.0-dev"));
 
-    initSettings();
+    {
+        QString error;
+        if (!initSettings(error)) {
+            QMessageBox::critical(0, QStringLiteral("Torsion Error"), error);
+            return 1;
+        }
+    }
+
     initTranslation();
 
     /* Initialize OpenSSL's allocator */
@@ -107,70 +113,72 @@ static QString appBundlePath()
 }
 #endif
 
-static void initSettings()
+static bool initSettings(QString &errorMessage)
 {
-    /* The default QSettings logic is not desirable here. Instead, we do the following:
-     * If the application directory is writable, it is preferred, except on OS X.
+    /* If built in portable mode (default), configuration is stored in the 'config'
+     * directory next to the binary. If not writable, launching fails.
      *
-     * On OS X, if the directory that contains the application bundle contains a directory
-     * named, case-sensitively, 'Torsion.config', that folder will be used.
+     * Portable OS X is an exception. In that case, configuration is stored in a
+     * 'config.torsion' folder next to the application bundle, unless the application
+     * path contains "/Applications", in which case non-portable mode is used.
      *
-     * Otherwise, a platform-specific per-user config location is used, generally matching the
-     * QSettings user locations. To avoid odd behavior when a per-user config already
-     * exists, the application directory is *always* used if possible. The file is always
-     * named Torsion.ini. If a filename is given as a parameter, that will always be used
-     * instead. */
+     * When not in portable mode, a platform-specific per-user config location is used.
+     *
+     * This behavior may be overriden by passing a folder path as the first argument.
+     */
 
-    qApp->setOrganizationName(QLatin1String("Torsion"));
+    qApp->setOrganizationName(QStringLiteral("Torsion"));
 
-    QString configFile;
+    QString configPath;
     QStringList args = qApp->arguments();
-    if (args.size() > 1)
-    {
-        configFile = args[1];
-    }
-    else
-    {
-#ifndef Q_OS_MAC
-        QString appDirFile = qApp->applicationDirPath() + QLatin1String("/Torsion.ini");
-        if (!QFile::exists(appDirFile))
-        {
-            if (QFile(appDirFile).open(QIODevice::ReadWrite))
-                configFile = appDirFile;
-            else
-                configFile = userConfigPath() + QLatin1String("/Torsion.ini");
-        }
-        else
-            configFile = appDirFile;
-#else
-        QString portableLocation = appBundlePath() + QLatin1String("Torsion.config");
-        QFileInfo fi(portableLocation);
-        if (fi.exists() && fi.isDir())
-            configFile = portableLocation + QLatin1String("/Torsion.ini");
-        else
-            configFile = userConfigPath() + QLatin1String("/Torsion.ini");
+    if (args.size() > 1) {
+        configPath = args[1];
+    } else {
+#ifndef TORSION_NO_PORTABLE
+# ifdef Q_OS_MAC
+        if (!qApp->applicationDirPath().contains(QStringLiteral("/Applications")))
+            configPath = appBundlePath() + QStringLiteral("config.torsion");
+# else
+        configPath = qApp->applicationDirPath() + QStringLiteral("/config");
+# endif
 #endif
+        if (configPath.isEmpty())
+            configPath = userConfigPath();
     }
 
-    configLock = new QLockFile(configFile + QStringLiteral(".lock"));
+    QDir dir(configPath);
+    if (!dir.exists() && !dir.mkpath(QStringLiteral("."))) {
+        errorMessage = QStringLiteral("Cannot create configuration directory");
+        return false;
+    }
+
+    QFile dirf(configPath);
+    static QFile::Permissions perm = QFileDevice::ReadUser | QFileDevice::WriteUser | QFileDevice::ExeUser;
+    static QFile::Permissions ignore = QFileDevice::ReadOwner | QFileDevice::WriteOwner | QFileDevice::ExeOwner;
+    if ((dirf.permissions() & ~ignore) != perm) {
+        qWarning() << "Correcting permissions on configuration directory";
+        if (!dirf.setPermissions(perm))
+            qWarning() << "Setting permissions failed";
+    }
+
+    configLock = new QLockFile(dir.filePath(QStringLiteral("lock")));
     configLock->setStaleLockTime(0);
     if (!configLock->tryLock()) {
-        if (configLock->error() == QLockFile::LockFailedError) {
-            /* File is locked */
-            QMessageBox::information(0, QApplication::tr("Torsion"),
-                                     QApplication::tr("Torsion is already running."),
-                                     QMessageBox::Ok);
-            exit(0);
-        } else {
-            qWarning("Failed to acquire a lock on the configuration file");
-        }
+        if (configLock->error() == QLockFile::LockFailedError)
+            errorMessage = QStringLiteral("Torsion is already running");
+        else
+            errorMessage = QStringLiteral("Cannot write configuration files (failed to acquire lock)");
+        return false;
     }
 
-    config = new AppSettings(configFile, QSettings::IniFormat);
-    if (!config->isWritable())
-        qWarning("Configuration file %s is not writable", qPrintable(configFile));
+    config = new AppSettings(dir.filePath(QStringLiteral("Torsion.ini")), QSettings::IniFormat);
+    if (!config->isWritable()) {
+        errorMessage = QStringLiteral("Configuration file is not writable");
+        return false;
+    }
 
-    QDir::setCurrent(QFileInfo(configFile).absoluteDir().path());
+    QDir::setCurrent(dir.absolutePath());
+    return true;
 }
 
 static void initTranslation()
