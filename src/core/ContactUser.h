@@ -47,6 +47,7 @@ class UserIdentity;
 struct ChatMessageData;
 class ChatMessageCommand;
 class OutgoingContactRequest;
+class OutgoingContactSocket;
 
 /* Represents a user on the contact list.
  * All persistent uses of a ContactUser instance must either connect to the
@@ -153,12 +154,14 @@ private:
     Status m_status;
     quint16 m_lastReceivedChatID;
     OutgoingContactRequest *m_contactRequest;
+    OutgoingContactSocket *m_outgoingSocket;
 
     /* See ContactsManager::addContact */
     static ContactUser *addNewContact(UserIdentity *identity, int id);
 
     void loadSettings();
     void loadContactRequest();
+    void setupOutgoingSocket();
 };
 
 Q_DECLARE_METATYPE(ContactUser*)

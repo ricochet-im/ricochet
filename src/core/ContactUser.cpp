@@ -37,6 +37,7 @@
 #include "utils/SecureRNG.h"
 #include "protocol/GetSecretCommand.h"
 #include "protocol/ChatMessageCommand.h"
+#include "protocol/OutgoingContactSocket.h"
 #include "core/ContactIDValidator.h"
 #include "core/OutgoingContactRequest.h"
 #include <QPixmapCache>
@@ -45,19 +46,18 @@
 #include <QDateTime>
 
 ContactUser::ContactUser(UserIdentity *ident, int id, QObject *parent)
-    : QObject(parent), identity(ident), uniqueID(id), m_lastReceivedChatID(0),
-      m_contactRequest(0)
+    : QObject(parent)
+    , identity(ident)
+    , uniqueID(id)
+    , m_lastReceivedChatID(0)
+    , m_contactRequest(0)
+    , m_outgoingSocket(0)
 {
     Q_ASSERT(uniqueID >= 0);
 
     loadSettings();
 
     m_conn = new ProtocolSocket(this);
-
-    QByteArray remoteSecret = readSetting("remoteSecret").toByteArray();
-    //if (!remoteSecret.isNull())
-      //  m_conn->setSecret(remoteSecret);
-
     connect(m_conn, SIGNAL(connected()), this, SLOT(onConnected()));
     connect(m_conn, SIGNAL(disconnected()), this, SLOT(onDisconnected()));
 
@@ -121,14 +121,38 @@ void ContactUser::updateStatus()
     else
         newStatus = m_conn->isConnected() ? Online : Offline;
 
-    if (newStatus != m_status)
-    {
-        m_status = newStatus;
-        emit statusChanged();
+    if (newStatus == m_status)
+        return;
+
+    m_status = newStatus;
+    emit statusChanged();
+
+    if (m_status == Offline)
+        setupOutgoingSocket();
+}
+
+void ContactUser::setupOutgoingSocket()
+{
+    if (m_status != Offline)
+        return;
+
+    QByteArray secret = readSetting("remoteSecret").toByteArray();
+    if (secret.isEmpty() || hostname().isEmpty() || !port())
+        return;
+
+    // Refuse to make outgoing connections to the local hostname
+    if (hostname() == identity->hostname())
+        return;
+
+    if (!m_outgoingSocket) {
+        qDebug() << "Creating outgoing connection socket for contact";
+        m_outgoingSocket = new OutgoingContactSocket(this);
+        // TODO: Need proper UI and handling for authenticationFailed and versionNegotiationFailed
+        connect(m_outgoingSocket, SIGNAL(socketReady(QTcpSocket*)), SLOT(incomingProtocolSocket(QTcpSocket*)));
     }
 
-    // XXX Start connecting if offline and not already trying
-    // important for incoming requests accepted too
+    m_outgoingSocket->setAuthentication(ProtocolSocket::PurposePrimary, secret);
+    m_outgoingSocket->connectToHost(hostname(), port());
 }
 
 void ContactUser::onConnected()
@@ -157,6 +181,7 @@ void ContactUser::onConnected()
 
 void ContactUser::onDisconnected()
 {
+    qDebug() << "Contact" << uniqueID << "disconnected";
     writeSetting("lastConnected", QDateTime::currentDateTime());
 
     updateStatus();
@@ -200,7 +225,7 @@ void ContactUser::setHostname(const QString &hostname)
         fh.append(QLatin1String(".onion"));
 
     writeSetting(QLatin1String("hostname"), fh);
-    //conn()->setHost(fh);
+    setupOutgoingSocket();
 }
 
 void ContactUser::setAvatar(QImage image)
@@ -256,6 +281,11 @@ void ContactUser::requestRemoved()
     }
 }
 
+static bool isOutgoing(QTcpSocket *socket)
+{
+    return socket->inherits("Tor::TorSocket");
+}
+
 void ContactUser::incomingProtocolSocket(QTcpSocket *socket)
 {
     /* Per protocol.txt, to resolve connection races:
@@ -270,7 +300,35 @@ void ContactUser::incomingProtocolSocket(QTcpSocket *socket)
      * - Otherwise, both peers close the connection for which the server's
      *   onion-formatted hostname is considered less by a strcmp function.
      */
-    // XXX implement the above
-    conn()->setSocket(socket);
+
+    if (!isOutgoing(socket) && m_outgoingSocket && !m_outgoingSocket->isAuthenticationPending()) {
+        // Abort connection attempt and use this socket
+        m_outgoingSocket->disconnect();
+        m_outgoingSocket->deleteLater();
+        m_outgoingSocket = 0;
+    }
+
+    if (conn()->isConnected() && isOutgoing(conn()->socket()) != isOutgoing(socket) &&
+        conn()->connectedDuration() < 30)
+    {
+        // Fall back to comparing onion hostnames to decide which connection to keep
+        bool keepOutgoing = QString::compare(hostname(), identity->hostname()) < 0;
+        if (isOutgoing(socket) != keepOutgoing) {
+            qDebug() << "Discarding new protocol connection because existing one is too recent";
+            socket->setParent(this);
+            socket->abort();
+            socket->deleteLater();
+        } else {
+            qDebug() << "Replacing existing (but recent) protocol connection";
+            conn()->setSocket(socket);
+        }
+    } else {
+        conn()->setSocket(socket);
+    }
+
+    if (isOutgoing(socket) && m_outgoingSocket) {
+        m_outgoingSocket->deleteLater();
+        m_outgoingSocket = 0;
+    }
 }
 
