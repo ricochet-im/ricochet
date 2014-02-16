@@ -40,6 +40,8 @@ ProtocolManager::ProtocolManager(ContactUser *u, const QString &host, quint16 po
     : QObject(u), user(u), pPrimary(0), remotePrimary(0), pHost(host), pPort(port), connectAttempts(0)
 {
     setPrimary(new ProtocolSocket(this));
+    connectTimer.setSingleShot(true);
+    connect(&connectTimer, SIGNAL(timeout()), SLOT(connectPrimary()));
 }
 
 void ProtocolManager::setHost(const QString &host)
@@ -131,8 +133,6 @@ void ProtocolManager::spawnReconnect()
         return;
     }
 
-    /* TODO: Outgoing auxiliary connections with no owner can be repurposed as a new primary connection */
-
     if (!torControl->isSocksReady())
     {
         /* See the note above; connectPrimary is triggered when socks becomes ready,
@@ -144,19 +144,18 @@ void ProtocolManager::spawnReconnect()
 
     connectAttempts++;
 
+    /* The contact is also expected to connect here when they come online, so it's
+     * okay to scale the reconnect time fairly fast. */
     int delay = 0;
-
-    /* For the first 6 attempts, scale linearly at a delay of 45 seconds
-     * For each following attempt, add 90 seconds to a maximum of 15 minutes.
-     * These numbers are completely arbitrary. */
-    if (connectAttempts <= 6)
-        delay = connectAttempts * 45;
+    if (connectAttempts <= 4)
+        delay = 30;
+    else if (connectAttempts <= 6)
+        delay = 120;
     else
-        delay = qMin((6 * 45) + ((connectAttempts - 6) * 90), 900);
+        delay = 900;
 
     qDebug() << "Spawning reconnection to" << user->uniqueID << "with a delay of" << delay << "seconds";
-
-    QTimer::singleShot(delay * 1000, this, SLOT(connectPrimary()));
+    connectTimer.start(delay * 1000);
 }
 
 void ProtocolManager::addSocket(QTcpSocket *socket, ProtocolSocket::Purpose purpose)

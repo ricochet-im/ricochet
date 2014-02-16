@@ -38,6 +38,7 @@
 #include <QQueue>
 #include <QHash>
 #include <QAbstractSocket>
+#include <QTimer>
 #include "ProtocolSocket.h"
 
 class ContactUser;
@@ -91,6 +92,7 @@ private:
     QByteArray pSecret;
     quint16 pPort;
 
+    QTimer connectTimer;
     int connectAttempts;
 
     void setPrimary(ProtocolSocket *newPrimary);

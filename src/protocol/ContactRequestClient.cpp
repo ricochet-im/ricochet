@@ -47,6 +47,8 @@
 ContactRequestClient::ContactRequestClient(ContactUser *u)
     : QObject(u), user(u), socket(0), connectAttempts(0), m_response(NoResponse), state(NotConnected)
 {
+    connectTimer.setSingleShot(true);
+    connect(&connectTimer, SIGNAL(timeout()), SLOT(sendRequest()));
 }
 
 void ContactRequestClient::setMessage(const QString &message)
@@ -100,17 +102,18 @@ void ContactRequestClient::spawnReconnect()
 
     connectAttempts++;
 
-    int delay = 300;
-
-    if (connectAttempts > 6)
-        delay *= 4;
-    else if (connectAttempts > 2)
-        delay *= 2;
+    int delay = 0;
+    if (connectAttempts <= 4)
+        delay = 30;
+    else if (connectAttempts <= 6)
+        delay = 120;
+    else
+        delay = 600;
 
     qDebug() << "Spawning reconnection of contact request for" << user->uniqueID << "with a delay of" << delay << "seconds";
 
     state = Reconnecting;
-    QTimer::singleShot(delay * 1000, this, SLOT(sendRequest()));
+    connectTimer.start(delay * 1000);
 }
 
 void ContactRequestClient::socketConnected()

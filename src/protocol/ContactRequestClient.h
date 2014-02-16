@@ -34,6 +34,7 @@
 #define CONTACTREQUESTCLIENT_H
 
 #include <QObject>
+#include <QTimer>
 
 class ContactUser;
 
@@ -85,6 +86,7 @@ private slots:
 private:
     class QTcpSocket *socket;
     QString m_message, m_mynick;
+    QTimer connectTimer;
     int connectAttempts;
     Response m_response;
 
