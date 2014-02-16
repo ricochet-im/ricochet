@@ -116,32 +116,6 @@ void ProtocolSocket::disconnect()
     setSocket(0);
 }
 
-#if 0
-void ProtocolSocket::sendAuth()
-{
-    Q_ASSERT(!authPending && !authFinished);
-
-    QByteArray intro = IncomingSocket::introData(ProtocolSocket::PurposePrimary);
-
-    QByteArray secret = manager->secret();
-    Q_ASSERT(secret.size() == 16);
-
-    if (secret.size() != 16)
-    {
-        int f = secret.size();
-        secret.resize(16);
-        memset(secret.data() + f, 0, 16 - f);
-    }
-
-    intro.append(secret);
-
-    qint64 re = socket->write(intro);
-    Q_ASSERT(re == intro.size());
-
-    authPending = true;
-}
-#endif
-
 void ProtocolSocket::flushCommands()
 {
     if (!m_socket)

@@ -127,7 +127,8 @@ SOURCES += src/main.cpp \
     src/ui/ConversationModel.cpp \
     src/tor/TorProcess.cpp \
     src/tor/TorManager.cpp \
-    src/tor/TorSocket.cpp
+    src/tor/TorSocket.cpp \
+    src/protocol/OutgoingContactSocket.cpp
 
 HEADERS += src/ui/MainWindow.h \
     src/ui/ContactsModel.h \
@@ -167,7 +168,8 @@ HEADERS += src/ui/MainWindow.h \
     src/tor/TorProcess.h \
     src/tor/TorProcess_p.h \
     src/tor/TorManager.h \
-    src/tor/TorSocket.h
+    src/tor/TorSocket.h \
+    src/protocol/OutgoingContactSocket.h
 
 RESOURCES += translation/embedded.qrc \
     src/ui/qml/qml.qrc
