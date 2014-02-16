@@ -54,7 +54,7 @@ ContactUser::ContactUser(UserIdentity *ident, int id, QObject *parent)
 
     /* Connection */
     QString host = readSetting("hostname").toString();
-    quint16 port = (quint16)readSetting("port", 80).toUInt();
+    quint16 port = (quint16)readSetting("port", 9878).toUInt();
     m_conn = new ProtocolManager(this, host, port);
 
     QByteArray remoteSecret = readSetting("remoteSecret").toByteArray();

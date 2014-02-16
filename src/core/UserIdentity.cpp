@@ -69,7 +69,7 @@ UserIdentity::UserIdentity(int id, QObject *parent)
             return;
         }
 
-        m_hiddenService->addTarget(80, incomingSocket->serverAddress(), incomingSocket->serverPort());
+        m_hiddenService->addTarget(9878, incomingSocket->serverAddress(), incomingSocket->serverPort());
         torControl->addHiddenService(m_hiddenService);
     }
 

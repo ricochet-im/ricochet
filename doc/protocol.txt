@@ -38,6 +38,8 @@ Table of contents:
 
 [TBD: describe use of hidden services and the properties they make available]
 
+    Connections are made to port 9878 of the hidden service.
+
 2. Protocol negotiation
 
     Immediately after establishing a connection, the client must send an
