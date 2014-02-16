@@ -37,7 +37,6 @@
 #include "UserIdentity.h"
 #include "IncomingRequestManager.h"
 #include "protocol/ContactRequestClient.h"
-#include "tor/TorControl.h"
 #include <QDebug>
 
 OutgoingContactRequest *OutgoingContactRequest::createNewRequest(ContactUser *user, const QString &myNickname,
@@ -63,9 +62,7 @@ OutgoingContactRequest::OutgoingContactRequest(ContactUser *u)
 
     if (status() < FirstResult)
     {
-        connect(torControl, SIGNAL(socksReady()), SLOT(startConnection()));
-        if (torControl->isSocksReady())
-            startConnection();
+        startConnection();
     }
 }
 

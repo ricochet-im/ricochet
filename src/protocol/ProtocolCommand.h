@@ -35,7 +35,7 @@
 
 #include <QObject>
 #include <QByteArray>
-#include "ProtocolManager.h"
+#include "ProtocolSocket.h"
 #include "CommandHandler.h"
 
 class ProtocolCommand : public QObject
@@ -84,7 +84,7 @@ protected:
 
     /* Returns the index of commandBuffer at which data begins; safe to call more than once */
     int prepareCommand(quint8 state, unsigned reserveSize = 0);
-    void sendCommand(ProtocolManager *to, bool ordered);
+    void sendCommand(ProtocolSocket *to, bool ordered);
 };
 
 inline quint8 commandState(quint8 value)

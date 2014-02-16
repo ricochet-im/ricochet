@@ -1,5 +1,5 @@
 /* Torsion - http://torsionim.org/
- * Copyright (C) 2010, John Brooks <john.brooks@dereferenced.net>
+ * Copyright (C) 2014, John Brooks <john.brooks@dereferenced.net>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -31,7 +31,6 @@
  */
 
 #include "ProtocolSocket.h"
-#include "ProtocolManager.h"
 #include "ProtocolCommand.h"
 #include "CommandHandler.h"
 #include "IncomingSocket.h"
@@ -40,86 +39,84 @@
 #include <QtEndian>
 #include <QDebug>
 
-/* Create with an established, authenticated connection */
-ProtocolSocket::ProtocolSocket(QTcpSocket *s, ProtocolManager *m)
-    : QObject(m), manager(m), socket(s), nextCommandId(0), active(true), authPending(false), authFinished(true)
-{
-    Q_ASSERT(isConnected());
-
-    socket->setParent(this);
-    setupSocket();
-}
-
 /* Create a new outgoing connection */
-ProtocolSocket::ProtocolSocket(ProtocolManager *m)
-    : QObject(m), manager(m), socket(new QTcpSocket(this)), nextCommandId(0), active(false), authPending(false),
-      authFinished(false)
+ProtocolSocket::ProtocolSocket(ContactUser *user)
+    : QObject(user)
+    , user(user)
+    , m_socket(0)
+    , nextCommandId(0)
 {
-    connect(socket, SIGNAL(connected()), this, SLOT(sendAuth()));
-    connect(this, SIGNAL(socketReady()), this, SLOT(flushCommands()));
-    setupSocket();
+    qRegisterMetaType<QAbstractSocket::SocketError>();
 }
 
-void ProtocolSocket::setupSocket()
+void ProtocolSocket::setSocket(QTcpSocket *socket)
 {
-    connect(socket, SIGNAL(readyRead()), this, SLOT(read()));
-    // QueuedConnection used to make sure socket states are updated first
-    connect(socket, SIGNAL(disconnected()), this, SLOT(socketDisconnected()), Qt::QueuedConnection);
-    qRegisterMetaType<QAbstractSocket::SocketError>();
-    connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(socketDisconnected()), Qt::QueuedConnection);
+    if (socket && socket->state() != QAbstractSocket::ConnectedState) {
+        qWarning() << "BUG: ProtocolSocket::setSocket with unconnected socket";
+        socket = 0;
+    }
+
+    if (socket == m_socket)
+        return;
+
+    bool wasConnected = isConnected();
+
+    if (m_socket) {
+        /* The existing socket is replaced, and all pending commands
+         * are considered failed. This could be improved on. */
+        QTcpSocket *oldSocket = m_socket;
+        m_socket = 0;
+
+        oldSocket->disconnect(this);
+        // XXX can this be avoided if none are sent yet?
+        abortCommands();
+        oldSocket->abort();
+        oldSocket->deleteLater();
+    }
+
+    m_socket = socket;
+
+    if (socket) {
+        socket->setParent(this);
+        connect(socket, SIGNAL(readyRead()), this, SLOT(read()));
+        // QueuedConnection used to make sure socket states are updated first
+        connect(socket, SIGNAL(disconnected()), this, SLOT(socketDisconnected()),
+                Qt::QueuedConnection);
+        connect(socket, SIGNAL(error(QAbstractSocket::SocketError)),
+                this, SLOT(socketDisconnected()), Qt::QueuedConnection);
+
+        if (!wasConnected) {
+            m_connectedTime.restart();
+            emit connected();
+        }
+
+        flushCommands();
+        read();
+    } else {
+        emit disconnected();
+    }
+
+    emit socketChanged();
 }
 
 bool ProtocolSocket::isConnected() const
 {
-    return (authFinished && socket->state() == QAbstractSocket::ConnectedState);
+    return m_socket && m_socket->state() == QAbstractSocket::ConnectedState;
 }
 
-bool ProtocolSocket::isConnecting() const
+int ProtocolSocket::connectedDuration() const
 {
-    return (socket->state() != QAbstractSocket::UnconnectedState && socket->state() != QAbstractSocket::ClosingState
-            && !isConnected());
+    if (!isConnected())
+        return 0;
+    return int(m_connectedTime.elapsed() / 1000);
 }
 
-void ProtocolSocket::connectToHost(const QString &host, quint16 port)
+void ProtocolSocket::disconnect()
 {
-    if (isConnected() && socket->peerName() == host && socket->peerPort() == port)
-        return;
-
-    socket->abort();
-    active = true;
-
-    if (!torControl->isSocksReady())
-    {
-        /* Can't make any connection; behave as if the connection attempt failed.
-         * Many things should handle this situation prior to this function anyway. */
-        socketDisconnected();
-        return;
-    }
-
-    socket->setProxy(torControl->connectionProxy());
-    socket->connectToHost(host, port);
+    setSocket(0);
 }
 
-void ProtocolSocket::abort()
-{
-    socket->abort();
-}
-
-void ProtocolSocket::abortConnectionAttempt()
-{
-    if (!isConnecting())
-        return;
-
-    /* We need to ensure that socketDisconnected is called once even if there wasn't technically a
-     * connection yet (as it handles errors too). */
-
-    socket->blockSignals(true);
-    socket->abort();
-    socket->blockSignals(false);
-
-    socketDisconnected();
-}
-
+#if 0
 void ProtocolSocket::sendAuth()
 {
     Q_ASSERT(!authPending && !authFinished);
@@ -143,11 +140,15 @@ void ProtocolSocket::sendAuth()
 
     authPending = true;
 }
+#endif
 
 void ProtocolSocket::flushCommands()
 {
+    if (!m_socket)
+        return;
+
     while (!commandQueue.isEmpty())
-        socket->write(commandQueue.takeFirst()->commandBuffer);
+        m_socket->write(commandQueue.takeFirst()->commandBuffer);
 }
 
 quint16 ProtocolSocket::getIdentifier()
@@ -160,7 +161,8 @@ quint16 ProtocolSocket::getIdentifier()
         nextCommandId = (qrand() % 65535) + 1;
     }
 
-    /* Wraparound on unsigned integer overflow is well-defined, and we rely on it here. 0 is not a valid ID. */
+    /* Wraparound on unsigned integer overflow is well-defined, and we rely
+     * on it here. 0 is not a valid ID. */
 
     while (pendingCommands.contains(nextCommandId) || !nextCommandId)
         ++nextCommandId;
@@ -186,11 +188,8 @@ void ProtocolSocket::sendCommand(ProtocolCommand *command)
         return;
     }
 
-    /* TODO Use the command queue even when connected, enough to allow tracking of sent status
-     * without impacting performance (i.e. still optimal use of the buffer). */
-
     Q_ASSERT(commandQueue.isEmpty());
-    qint64 re = socket->write(command->commandBuffer);
+    qint64 re = m_socket->write(command->commandBuffer);
     Q_ASSERT(re == command->commandBuffer.size());
 
     qDebug() << "Wrote command:" << command->commandBuffer.toHex();
@@ -200,44 +199,11 @@ void ProtocolSocket::read()
 {
     qDebug() << "Socket readable";
 
-    qint64 available = socket->bytesAvailable();
-
-    if (available && authPending && !authFinished)
-    {
-        if (available < 2)
-            return;
-
-        char reply[2];
-        qint64 re = socket->read(reply, 2);
-        Q_ASSERT(re == 2);
-
-        if (reply[0] != protocolVersion)
-        {
-            qDebug() << "Outgoing socket rejected: Version negotiation failure";
-            socket->close();
-            return;
-        }
-
-        if (reply[1] != 0x00)
-        {
-            qDebug() << "Outgoing socket rejected: Authentication failure, code" << hex << (int)reply[1];
-            socket->close();
-            return;
-        }
-
-        authPending = false;
-        authFinished = true;
-
-        /* This will take care of flushing commands as well */
-        emit socketReady();
-
-        available -= 2;
-    }
-
-    while (available >= 6)
+    qint64 available;
+    while ((available = m_socket->bytesAvailable()) >= 6)
     {
         quint16 msgLength;
-        if (socket->peek(reinterpret_cast<char*>(&msgLength), sizeof(msgLength)) < 2)
+        if (m_socket->peek(reinterpret_cast<char*>(&msgLength), sizeof(msgLength)) < 2)
             return;
 
         msgLength = qFromBigEndian(msgLength);
@@ -245,7 +211,7 @@ void ProtocolSocket::read()
         {
             /* Unbuffered replies aren't implemented; the connection cannot continue */
             qWarning() << "Closing connection: Unbuffered protocol replies are not implemented";
-            socket->close();
+            m_socket->close();
             return;
         }
 
@@ -257,7 +223,7 @@ void ProtocolSocket::read()
         QByteArray data;
         data.resize(msgLength + 6);
 
-        qint64 re = socket->read(data.data(), msgLength + 6);
+        qint64 re = m_socket->read(data.data(), msgLength + 6);
         Q_ASSERT(re == msgLength + 6);
 
         if (isReply(data[3]))
@@ -280,29 +246,22 @@ void ProtocolSocket::read()
         }
         else
         {
-            CommandHandler handler(manager->user, socket, reinterpret_cast<const uchar*>(data.constData()),
+            CommandHandler handler(user, m_socket, reinterpret_cast<const uchar*>(data.constData()),
                                    msgLength + 6);
         }
-
-        available -= msgLength + 6;
     }
 }
 
 void ProtocolSocket::socketDisconnected()
 {
-    if (!active)
+    if (!m_socket)
         return;
 
-    active = false;
+    setSocket(0);
+}
 
-    if (authFinished && !isConnecting())
-        emit disconnected();
-    else
-        emit connectFailed();
-
-    nextCommandId = 0;
-    authFinished = authPending = false;
-
+void ProtocolSocket::abortCommands()
+{
     /* Send failure replies for all pending commands */
     for (QHash<quint16,ProtocolCommand*>::Iterator it = pendingCommands.begin(); it != pendingCommands.end(); ++it)
     {

@@ -65,7 +65,7 @@ private slots:
     void socketConnected();
     void socketError(QAbstractSocket::SocketError error);
 
-    void socksReady();
+    void connectivityChanged();
 
 private:
     QTcpSocket *socket;

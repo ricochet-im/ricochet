@@ -40,7 +40,7 @@ using namespace Tor;
 TorServiceTest::TorServiceTest(TorControl *m)
     : QObject(m), manager(m), socket(new QTcpSocket(this)), state(-1)
 {
-    connect(manager, SIGNAL(socksReady()), this, SLOT(socksReady()));
+    connect(manager, SIGNAL(connectivityChanged()), this, SLOT(connectivityChanged()));
 
     connect(socket, SIGNAL(connected()), this, SLOT(socketConnected()));
     connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this,
@@ -56,9 +56,8 @@ void TorServiceTest::connectToHost(const QString &host, quint16 port)
     this->port = port;
     state = -1;
 
-    if (!manager->isSocksReady())
-    {
-        qDebug() << "Tor self-test waiting for SOCKS to be ready";
+    if (!manager->hasConnectivity()) {
+        qDebug() << "Service self-test waiting for Tor to be ready";
         return;
     }
 
@@ -82,10 +81,11 @@ void TorServiceTest::socketError(QAbstractSocket::SocketError)
     emit failure();
 }
 
-void TorServiceTest::socksReady()
+void TorServiceTest::connectivityChanged()
 {
-    if (state >= 0 || host.isEmpty())
+    if (state >= 0 || host.isEmpty() || socket->state() >= QAbstractSocket::UnconnectedState)
         return;
 
-    connectToHost(host, port);
+    if (manager->hasConnectivity())
+        connectToHost(host, port);
 }

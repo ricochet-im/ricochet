@@ -49,7 +49,7 @@ public:
 
     quint8 finalReplyState() const { return m_finalReplyState; }
 
-    void send(ProtocolManager *to, const QDateTime &timestamp, const QString &text, quint16 lastReceivedID = 0);
+    void send(ProtocolSocket *to, const QDateTime &timestamp, const QString &text, quint16 lastReceivedID = 0);
     QString messageText() const { return m_messageText; }
     QDateTime messageTime() const { return m_messageTime; }
 

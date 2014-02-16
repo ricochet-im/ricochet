@@ -45,7 +45,7 @@ public:
 
     virtual quint8 command() const { return 0x01; }
 
-    void send(ProtocolManager *to);
+    void send(ProtocolSocket *to);
 
     static void process(CommandHandler &command);
 

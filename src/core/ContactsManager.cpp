@@ -180,9 +180,3 @@ ContactUser *ContactsManager::lookupUniqueID(int uniqueID) const
     return 0;
 }
 
-void ContactsManager::connectToAll()
-{
-    qDebug() << "Attempting connections to all contacts";
-    for (QList<ContactUser*>::ConstIterator it = pContacts.begin(); it != pContacts.end(); ++it)
-        (*it)->conn()->connectPrimary();
-}

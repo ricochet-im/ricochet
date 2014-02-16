@@ -45,7 +45,7 @@ ChatMessageCommand::ChatMessageCommand(QObject *parent)
 {
 }
 
-void ChatMessageCommand::send(ProtocolManager *to, const QDateTime &timestamp, const QString &text, quint16 lastReceived)
+void ChatMessageCommand::send(ProtocolSocket *to, const QDateTime &timestamp, const QString &text, quint16 lastReceived)
 {
     prepareCommand(0x00, 1024);
     CommandDataParser builder(&commandBuffer);
@@ -62,8 +62,6 @@ void ChatMessageCommand::send(ProtocolManager *to, const QDateTime &timestamp, c
     ChatMessageData message = {
         timestamp, text, identifier(), lastReceived
     };
-
-    to->user->outgoingChatMessage(message, this);
 }
 
 void ChatMessageCommand::process(CommandHandler &command)

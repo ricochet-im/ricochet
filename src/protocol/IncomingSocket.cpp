@@ -32,7 +32,6 @@
 
 #include "IncomingSocket.h"
 #include "core/UserIdentity.h"
-#include "ProtocolManager.h"
 #include "core/ContactsManager.h"
 #include "ContactRequestServer.h"
 #include <QTcpServer>
@@ -214,12 +213,7 @@ void IncomingSocket::handleIntro(QTcpSocket *socket, uchar version)
     if (socket->peek(reinterpret_cast<char*>(&purpose), 1) < 1)
         return;
 
-    /* Purposes less than 0x20 are allowed as contact-authenticated connections,
-     * all following the same auth rules (with nothing else in intro).
-     * 0x00 has special meaning as a primary connection, while all others are
-     * treated as generic unidirectional auxiliary connections. */
-
-    if (purpose <= ProtocolSocket::PurposeAuxMax)
+    if (purpose == ProtocolSocket::PurposePrimary)
     {
         /* Wait until the auth data is available */
         quint64 available = socket->bytesAvailable();
@@ -256,7 +250,7 @@ void IncomingSocket::handleIntro(QTcpSocket *socket, uchar version)
         socket->disconnect(this);
 
         /* The protocolmanager also takes ownership */
-        user->conn()->addSocket(socket, static_cast<ProtocolSocket::Purpose>(purpose));
+        user->incomingProtocolSocket(socket);
         Q_ASSERT(socket->parent() != this);
     }
     else if (purpose == ProtocolSocket::PurposeContactReq)

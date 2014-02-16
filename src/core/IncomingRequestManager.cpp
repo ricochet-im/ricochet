@@ -261,7 +261,6 @@ void IncomingContactRequest::accept(ContactUser *user)
     }
 
     user->writeSetting("remoteSecret", remoteSecret());
-    user->conn()->setSecret(remoteSecret());
 
     /* If there is a connection, send the accept message and morph it to a primary connection */
     if (connection)
@@ -274,10 +273,7 @@ void IncomingContactRequest::accept(ContactUser *user)
     removeRequest();
     manager->removeRequest(this);
 
-    /* If the new user isn't connected (which can happen if the request connection morphs),
-     * start attempting to connect. */
-    if (!user->isConnected())
-        user->conn()->connectPrimary();
+    user->updateStatus();
 }
 
 void IncomingContactRequest::reject()

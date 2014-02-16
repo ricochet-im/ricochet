@@ -33,7 +33,6 @@
 #include "ContactRequestClient.h"
 #include "core/ContactUser.h"
 #include "core/UserIdentity.h"
-#include "ProtocolManager.h"
 #include "IncomingSocket.h"
 #include "CommandDataParser.h"
 #include "tor/TorControl.h"
@@ -49,6 +48,7 @@ ContactRequestClient::ContactRequestClient(ContactUser *u)
 {
     connectTimer.setSingleShot(true);
     connect(&connectTimer, SIGNAL(timeout()), SLOT(sendRequest()));
+    connect(torControl, SIGNAL(connectivityChanged()), SLOT(connectivityChanged()));
 }
 
 void ContactRequestClient::setMessage(const QString &message)
@@ -77,14 +77,13 @@ void ContactRequestClient::close()
 void ContactRequestClient::sendRequest()
 {
     close();
-    state = WaitConnect;
 
-    if (!torControl->isSocksReady())
-    {
-        /* Impossible to send now, requests are triggered when socks becomes ready */
+    if (!torControl->hasConnectivity()) {
+        /* Impossible to send now. Will be triggered on connectivityChanged */
         return;
     }
 
+    state = WaitConnect;
     socket = new QTcpSocket(this);
     connect(socket, SIGNAL(connected()), this, SLOT(socketConnected()));
     connect(socket, SIGNAL(readyRead()), this, SLOT(socketReadable()));
@@ -92,7 +91,19 @@ void ContactRequestClient::sendRequest()
     connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(spawnReconnect()));
 
     socket->setProxy(torControl->connectionProxy());
-    socket->connectToHost(user->conn()->host(), user->conn()->port());
+    socket->connectToHost(user->hostname(), user->port());
+}
+
+void ContactRequestClient::connectivityChanged()
+{
+    if (torControl->hasConnectivity()) {
+        if (state == NotConnected)
+            sendRequest();
+    } else {
+        connectTimer.stop();
+        connectAttempts = 0;
+        close();
+    }
 }
 
 void ContactRequestClient::spawnReconnect()
@@ -181,11 +192,11 @@ bool ContactRequestClient::buildRequestData(QByteArray cookie)
     CommandDataParser request(&requestData);
 
     /* Hostname */
-    QString hostname = user->conn()->host();
+    QString hostname = user->hostname();
     hostname.truncate(hostname.lastIndexOf(QLatin1Char('.')));
     if (hostname.size() != 16)
     {
-        qWarning() << "Cannot send contact request: unable to determine the local service hostname";
+        qWarning() << "Cannot send contact request: unable to determine the remote service hostname";
         return false;
     }
 
@@ -277,7 +288,7 @@ bool ContactRequestClient::handleResponse()
         emit accepted();
 
         socket->disconnect(this);
-        user->conn()->addSocket(socket, ProtocolSocket::PurposePrimary);
+        user->incomingProtocolSocket(socket);
         Q_ASSERT(socket->parent() != this);
         socket = 0;
 

@@ -81,6 +81,7 @@ private slots:
     void socketConnected();
     void socketReadable();
 
+    void connectivityChanged();
     void spawnReconnect();
 
 private:

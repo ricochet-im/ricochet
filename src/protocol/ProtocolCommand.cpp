@@ -50,11 +50,11 @@ int ProtocolCommand::prepareCommand(quint8 state, unsigned reserveSize)
     return 6;
 }
 
-void ProtocolCommand::sendCommand(ProtocolManager *to, bool ordered)
+void ProtocolCommand::sendCommand(ProtocolSocket *socket, bool ordered)
 {
-        Q_UNUSED(ordered);
+    Q_UNUSED(ordered);
     Q_ASSERT(commandBuffer.size() >= 6);
-    Q_ASSERT(to);
+    Q_ASSERT(socket);
 
     if (commandBuffer.size() > maxCommandData)
     {
@@ -63,9 +63,6 @@ void ProtocolCommand::sendCommand(ProtocolManager *to, bool ordered)
                 << ")";
         commandBuffer.resize(maxCommandData);
     }
-
-    ProtocolSocket *socket = to->primary();
-    Q_ASSERT(socket);
 
     /* [2*length][1*command][1*state][2*identifier] */
 

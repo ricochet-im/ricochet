@@ -52,17 +52,14 @@ ContactUser::ContactUser(UserIdentity *ident, int id, QObject *parent)
 
     loadSettings();
 
-    /* Connection */
-    QString host = readSetting("hostname").toString();
-    quint16 port = (quint16)readSetting("port", 9878).toUInt();
-    m_conn = new ProtocolManager(this, host, port);
+    m_conn = new ProtocolSocket(this);
 
     QByteArray remoteSecret = readSetting("remoteSecret").toByteArray();
-    if (!remoteSecret.isNull())
-        m_conn->setSecret(remoteSecret);
+    //if (!remoteSecret.isNull())
+      //  m_conn->setSecret(remoteSecret);
 
-    connect(m_conn, SIGNAL(primaryConnected()), this, SLOT(onConnected()));
-    connect(m_conn, SIGNAL(primaryDisconnected()), this, SLOT(onDisconnected()));
+    connect(m_conn, SIGNAL(connected()), this, SLOT(onConnected()));
+    connect(m_conn, SIGNAL(disconnected()), this, SLOT(onDisconnected()));
 
     loadContactRequest();
     updateStatus();
@@ -122,13 +119,16 @@ void ContactUser::updateStatus()
     if (!readSetting("request/status").isNull())
         newStatus = RequestPending;
     else
-        newStatus = m_conn->isPrimaryConnected() ? Online : Offline;
+        newStatus = m_conn->isConnected() ? Online : Offline;
 
     if (newStatus != m_status)
     {
         m_status = newStatus;
         emit statusChanged();
     }
+
+    // XXX Start connecting if offline and not already trying
+    // important for incoming requests accepted too
 }
 
 void ContactUser::onConnected()
@@ -182,6 +182,11 @@ QString ContactUser::hostname() const
     return readSetting("hostname").toString();
 }
 
+quint16 ContactUser::port() const
+{
+    return (quint16)readSetting("port", 9878).toUInt();
+}
+
 QString ContactUser::contactID() const
 {
     return ContactIDValidator::idFromHostname(hostname());
@@ -195,7 +200,7 @@ void ContactUser::setHostname(const QString &hostname)
         fh.append(QLatin1String(".onion"));
 
     writeSetting(QLatin1String("hostname"), fh);
-    conn()->setHost(fh);
+    //conn()->setHost(fh);
 }
 
 void ContactUser::setAvatar(QImage image)
@@ -233,7 +238,7 @@ void ContactUser::deleteContact()
 
     emit contactDeleted(this);
 
-    m_conn->disconnectAll();
+    m_conn->disconnect();
     delete m_conn;
     m_conn = 0;
 
@@ -249,5 +254,23 @@ void ContactUser::requestRemoved()
         m_contactRequest = 0;
         updateStatus();
     }
+}
+
+void ContactUser::incomingProtocolSocket(QTcpSocket *socket)
+{
+    /* Per protocol.txt, to resolve connection races:
+     *
+     * - If the remote peer establishes a command connection prior to
+     *   sending authentication data for an outgoing attempt, the outgoing
+     *   attempt is aborted and the peer's connection is used.
+     *
+     * - If the existing connection is more than 30 seconds old, measured
+     *   from the time authentication is sent, it is replaced and closed.
+     *
+     * - Otherwise, both peers close the connection for which the server's
+     *   onion-formatted hostname is considered less by a strcmp function.
+     */
+    // XXX implement the above
+    conn()->setSocket(socket);
 }
 

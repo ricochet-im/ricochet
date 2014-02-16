@@ -1,5 +1,5 @@
 /* Torsion - http://torsionim.org/
- * Copyright (C) 2010, John Brooks <john.brooks@dereferenced.net>
+ * Copyright (C) 2014, John Brooks <john.brooks@dereferenced.net>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -37,10 +37,16 @@
 #include <QTcpSocket>
 #include <QQueue>
 #include <QHash>
+#include <QElapsedTimer>
 
 class ProtocolManager;
 class ProtocolCommand;
+class ContactUser;
 
+/* Send and receive commands with a contact over an established and
+ * authenticated socket. The socket may be established locally or remotely.
+ * There is generally one instance per contact, and the socket may be
+ * lost or replaced at any time. */
 class ProtocolSocket : public QObject
 {
     Q_OBJECT
@@ -50,26 +56,20 @@ public:
     enum Purpose
     {
         PurposePrimary = 0x00,
-        PurposeAuxGeneral = 0x01,
-        PurposeContactReq = 0x80,
-
-        PurposeAuxMin = 0x01,
-        PurposeAuxMax = 0x20
+        PurposeContactReq = 0x80
     };
 
-    ProtocolManager * const manager;
-    QTcpSocket * const socket;
+    ContactUser * const user;
+    explicit ProtocolSocket(ContactUser *user);
 
-    /* Create with an established and authenticated socket (incoming connections) */
-    explicit ProtocolSocket(QTcpSocket *socket, ProtocolManager *manager);
-    /* Create with a new socket */
-    explicit ProtocolSocket(ProtocolManager *manager);
+    /* Connected and authenticated network socket.
+     * Ownership of the socket is taken and it will be deleted if replaced.
+     */
+    QTcpSocket *socket() { return m_socket; }
+    void setSocket(QTcpSocket *socket);
 
-    /* Returns true if the socket is connected and ready (i.e. authenticated) */
     bool isConnected() const;
-    bool isConnecting() const;
-
-    void connectToHost(const QString &host, quint16 port);
+    int connectedDuration() const;
 
     /* Get an available identifier; not reserved, must be followed by sendCommand immediately. */
     quint16 getIdentifier();
@@ -77,32 +77,31 @@ public:
     void sendCommand(ProtocolCommand *command);
 
 signals:
-    /* Connected and authenticated */
-    void socketReady();
-    /* Disconnected from an authenticated connection */
+    /* Moved to a connected state from a disconnected state */
+    void connected();
+    /* Moved to a disconnected state from a connected state */
     void disconnected();
-    /* Connection attempt failed or disconnected from an unauthenticated connection */
-    void connectFailed();
+    /* Socket has changed. This may happen without connected() when replacing. */
+    void socketChanged();
 
 public slots:
-    void abort();
-    void abortConnectionAttempt();
+    void disconnect();
 
 private slots:
-    void sendAuth();
+    void abortCommands();
     void flushCommands();
-
     void read();
     void socketDisconnected();
 
 private:
     QQueue<ProtocolCommand*> commandQueue;
     QHash<quint16,ProtocolCommand*> pendingCommands;
+    QTcpSocket *m_socket;
+    QElapsedTimer m_connectedTime;
     quint16 nextCommandId;
-
-    bool active, authPending, authFinished;
-
-    void setupSocket();
 };
+
+/* Do not change this, as it breaks backwards compatibility. Hopefully, it will never be necessary. */
+static const quint8 protocolVersion = 0x00;
 
 #endif // PROTOCOLSOCKET_H

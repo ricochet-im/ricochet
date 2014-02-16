@@ -41,7 +41,7 @@
 #include <QPixmapCache>
 #include <QMetaType>
 #include <QVariant>
-#include "protocol/ProtocolManager.h"
+#include "protocol/ProtocolSocket.h"
 
 class UserIdentity;
 struct ChatMessageData;
@@ -83,9 +83,8 @@ public:
 
     explicit ContactUser(UserIdentity *identity, int uniqueID, QObject *parent = 0);
 
-    ProtocolManager *conn() const { return m_conn; }
+    ProtocolSocket *conn() const { return m_conn; }
     bool isConnected() const { return status() == Online; }
-    bool isConnectable() const { return m_conn->isConnectable(); }
 
     OutgoingContactRequest *contactRequest() { return m_contactRequest; }
 
@@ -95,6 +94,7 @@ public:
     const QString &nickname() const { return m_nickname; }
     /* Hostname is in the onion hostname format, i.e. it ends with .onion */
     QString hostname() const;
+    quint16 port() const;
     /* Contact ID in the torsion: format */
     QString contactID() const;
 
@@ -127,6 +127,8 @@ public slots:
 
     void updateStatus();
 
+    void incomingProtocolSocket(QTcpSocket *socket);
+
 signals:
     void statusChanged();
     void connected();
@@ -139,7 +141,6 @@ signals:
      * emitted; primarily, to allow UI to create models to handle incomingChatMessage */
     void prepareInteractiveHandler();
     void incomingChatMessage(const ChatMessageData &message);
-    void outgoingChatMessage(const ChatMessageData &message, ChatMessageCommand *command);
 
 private slots:
     void onConnected();
@@ -147,7 +148,7 @@ private slots:
     void requestRemoved();
 
 private:
-    ProtocolManager *m_conn;
+    ProtocolSocket *m_conn;
     QString m_nickname;
     Status m_status;
     quint16 m_lastReceivedChatID;

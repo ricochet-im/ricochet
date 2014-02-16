@@ -121,7 +121,7 @@ void ContactRequestServer::sendAccept(ContactUser *user)
     qDebug() << "Contact request accepted with an active connection; sending accept and morphing to command";
 
     socket->disconnect(this);
-    user->conn()->addSocket(socket, ProtocolSocket::PurposePrimary);
+    user->incomingProtocolSocket(socket);
     Q_ASSERT(socket->parent() != this);
 
     deleteLater();

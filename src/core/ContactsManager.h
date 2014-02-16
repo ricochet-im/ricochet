@@ -75,9 +75,6 @@ public:
 
     static QString hostnameFromID(const QString &ID);
 
-public slots:
-    void connectToAll();
-
 signals:
     void contactAdded(ContactUser *user);
     void outgoingRequestAdded(OutgoingContactRequest *request);

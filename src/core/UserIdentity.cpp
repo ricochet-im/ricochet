@@ -72,8 +72,6 @@ UserIdentity::UserIdentity(int id, QObject *parent)
         m_hiddenService->addTarget(9878, incomingSocket->serverAddress(), incomingSocket->serverPort());
         torControl->addHiddenService(m_hiddenService);
     }
-
-    connect(torControl, SIGNAL(socksReady()), &contacts,  SLOT(connectToAll()));
 }
 
 UserIdentity *UserIdentity::createIdentity(int uniqueID, const QString &dataDirectory)

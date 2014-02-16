@@ -103,7 +103,6 @@ SOURCES += src/main.cpp \
     src/core/ContactsManager.cpp \
     src/core/ContactUser.cpp \
     src/protocol/ProtocolCommand.cpp \
-    src/protocol/ProtocolManager.cpp \
     src/protocol/PingCommand.cpp \
     src/protocol/IncomingSocket.cpp \
     src/protocol/ChatMessageCommand.cpp \
@@ -142,7 +141,6 @@ HEADERS += src/ui/MainWindow.h \
     src/core/ContactsManager.h \
     src/core/ContactUser.h \
     src/protocol/ProtocolCommand.h \
-    src/protocol/ProtocolManager.h \
     src/protocol/PingCommand.h \
     src/protocol/IncomingSocket.h \
     src/main.h \

@@ -40,7 +40,7 @@ PingCommand::PingCommand(QObject *parent)
 {
 }
 
-void PingCommand::send(ProtocolManager *to)
+void PingCommand::send(ProtocolSocket *to)
 {
     prepareCommand(commandState(0));
     sendCommand(to, true);

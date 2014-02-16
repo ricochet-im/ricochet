@@ -52,6 +52,10 @@ TorSocket::TorSocket(QObject *parent)
     connectivityChanged();
 }
 
+TorSocket::~TorSocket()
+{
+}
+
 void TorSocket::setReconnectEnabled(bool enabled)
 {
     if (enabled == m_reconnectEnabled)

@@ -41,7 +41,7 @@ GetSecretCommand::GetSecretCommand(QObject *parent)
 {
 }
 
-void GetSecretCommand::send(ProtocolManager *to)
+void GetSecretCommand::send(ProtocolSocket *to)
 {
     prepareCommand(0x00);
     sendCommand(to, true);
