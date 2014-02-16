@@ -146,6 +146,7 @@ void TorControlPrivate::setTorStatus(TorControl::TorStatus n)
     TorControl::TorStatus old = torStatus;
     torStatus = n;
     emit q->torStatusChanged(torStatus, old);
+    emit q->connectivityChanged();
 
     if (torStatus == TorControl::TorReady && socksAddress.isNull()) {
         // Request info again to read the SOCKS port
@@ -185,9 +186,9 @@ QString TorControl::errorMessage() const
     return d->errorMessage;
 }
 
-bool TorControl::isSocksReady() const
+bool TorControl::hasConnectivity() const
 {
-    return !d->socksAddress.isNull();
+    return torStatus() == TorReady && !d->socksAddress.isNull();
 }
 
 QHostAddress TorControl::socksAddress() const
@@ -403,7 +404,7 @@ void TorControlPrivate::getTorInfo()
         qDebug() << "torctrl: Using manually specified SOCKS connection settings";
         socksAddress = forceAddress;
         socksPort = port;
-        emit q->socksReady();
+        emit q->connectivityChanged();
     } else
         keys << QByteArray("net/listeners/socks");
 
@@ -441,7 +442,7 @@ void TorControlPrivate::getTorInfoReply()
      * is reached. */
     if (!socksAddress.isNull()) {
         qDebug().nospace() << "torctrl: SOCKS address is " << socksAddress.toString() << ":" << socksPort;
-        emit q->socksReady();
+        emit q->connectivityChanged();
     }
 
     if (command->get(QByteArray("status/circuit-established")).toInt() == 1) {

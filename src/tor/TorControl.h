@@ -49,9 +49,12 @@ class TorControl : public QObject
     Q_OBJECT
     Q_ENUMS(Status TorStatus)
 
+    // Status of the control connection
     Q_PROPERTY(Status status READ status NOTIFY statusChanged)
+    // Status of Tor (and whether it believes it can connect)
     Q_PROPERTY(TorStatus torStatus READ torStatus NOTIFY torStatusChanged)
-    Q_PROPERTY(bool isSocksReady READ isSocksReady NOTIFY socksReady)
+    // Whether it's possible to make a SOCKS connection and connect
+    Q_PROPERTY(bool hasConnectivity READ hasConnectivity NOTIFY connectivityChanged)
     Q_PROPERTY(QString torVersion READ torVersion NOTIFY connected)
     Q_PROPERTY(QString errorMessage READ errorMessage NOTIFY statusChanged)
     Q_PROPERTY(QVariantMap bootstrapStatus READ bootstrapStatus NOTIFY bootstrapStatusChanged)
@@ -81,7 +84,7 @@ public:
     QString torVersion() const;
     QString errorMessage() const;
 
-    bool isSocksReady() const;
+    bool hasConnectivity() const;
     QHostAddress socksAddress() const;
     quint16 socksPort() const;
     QNetworkProxy connectionProxy();
@@ -108,7 +111,7 @@ signals:
     void torStatusChanged(int newStatus, int oldStatus);
     void connected();
     void disconnected();
-    void socksReady();
+    void connectivityChanged();
     void bootstrapStatusChanged();
 
 public slots:
