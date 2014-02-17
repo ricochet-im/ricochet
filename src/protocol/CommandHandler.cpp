@@ -68,8 +68,7 @@ void CommandHandler::sendReply(quint8 state, const QByteArray &data)
     message.reserve(data.size() + 6);
     message.resize(6);
 
-    /* One more than the length of the data.. */
-    qToBigEndian(quint16(data.size() + 1), reinterpret_cast<uchar*>(message.data()));
+    qToBigEndian(quint16(data.size()), reinterpret_cast<uchar*>(message.data()));
     message[2] = command;
     message[3] = state;
     qToBigEndian(identifier, reinterpret_cast<uchar*>(message.data()+4));

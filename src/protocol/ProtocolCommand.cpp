@@ -66,8 +66,8 @@ void ProtocolCommand::sendCommand(ProtocolSocket *socket, bool ordered)
 
     /* [2*length][1*command][1*state][2*identifier] */
 
-    /* length is 1 more than the size of data non-inclusive of the header */
-    qToBigEndian(quint16(commandBuffer.size() - 6 + 1), (uchar*)commandBuffer.data());
+    /* length is not inclusive of the header */
+    qToBigEndian(quint16(commandBuffer.size() - 6), (uchar*)commandBuffer.data());
 
     pIdentifier = socket->getIdentifier();
     if (!pIdentifier)

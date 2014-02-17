@@ -180,17 +180,8 @@ void ProtocolSocket::read()
         if (m_socket->peek(reinterpret_cast<char*>(&msgLength), sizeof(msgLength)) < 2)
             return;
 
+        /* Message length does not include the header */
         msgLength = qFromBigEndian(msgLength);
-        if (!msgLength)
-        {
-            /* Unbuffered replies aren't implemented; the connection cannot continue */
-            qWarning() << "Closing connection: Unbuffered protocol replies are not implemented";
-            m_socket->close();
-            return;
-        }
-
-        /* Message length is one more than the actual data length, and does not include the header. */
-        msgLength--;
         if ((available - 6) < msgLength)
             break;
 
