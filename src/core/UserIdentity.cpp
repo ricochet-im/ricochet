@@ -43,7 +43,11 @@
 #include <QDir>
 
 UserIdentity::UserIdentity(int id, QObject *parent)
-    : QObject(parent), uniqueID(id), contacts(this), incomingSocket(0)
+    : QObject(parent)
+    , uniqueID(id)
+    , contacts(this)
+    , m_hiddenService(0)
+    , incomingSocket(0)
 {
     m_nickname = readSetting("nickname", tr("Me")).toString();
 
@@ -72,6 +76,8 @@ UserIdentity::UserIdentity(int id, QObject *parent)
         m_hiddenService->addTarget(9878, incomingSocket->serverAddress(), incomingSocket->serverPort());
         torControl->addHiddenService(m_hiddenService);
     }
+
+    contacts.loadFromSettings();
 }
 
 UserIdentity *UserIdentity::createIdentity(int uniqueID, const QString &dataDirectory)

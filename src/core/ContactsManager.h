@@ -75,6 +75,8 @@ public:
 
     static QString hostnameFromID(const QString &ID);
 
+    void loadFromSettings();
+
 signals:
     void contactAdded(ContactUser *user);
     void outgoingRequestAdded(OutgoingContactRequest *request);
@@ -90,7 +92,6 @@ private:
     int highestID;
 
     void connectSignals(ContactUser *user);
-    void loadFromSettings();
 };
 
 #endif // CONTACTSMANAGER_H

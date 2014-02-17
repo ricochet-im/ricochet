@@ -45,9 +45,6 @@ ContactsManager::ContactsManager(UserIdentity *id)
     : identity(id), incomingRequests(this), highestID(-1)
 {
     contactsManager = this;
-
-    loadFromSettings();
-    incomingRequests.loadRequests();
 }
 
 void ContactsManager::loadFromSettings()
@@ -71,6 +68,8 @@ void ContactsManager::loadFromSettings()
     	pContacts.append(user);
         highestID = qMax(id, highestID);
     }
+
+    incomingRequests.loadRequests();
 }
 
 ContactUser *ContactsManager::addContact(const QString &nickname)
