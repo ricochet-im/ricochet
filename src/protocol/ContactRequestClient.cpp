@@ -35,8 +35,8 @@
 #include "core/UserIdentity.h"
 #include "IncomingSocket.h"
 #include "CommandDataParser.h"
-#include "tor/TorControl.h"
 #include "tor/HiddenService.h"
+#include "tor/TorSocket.h"
 #include "utils/CryptoKey.h"
 #include <QNetworkProxy>
 #include <QtEndian>
@@ -44,11 +44,8 @@
 #include <QDebug>
 
 ContactRequestClient::ContactRequestClient(ContactUser *u)
-    : QObject(u), user(u), socket(0), connectAttempts(0), m_response(NoResponse), state(NotConnected)
+    : QObject(u), user(u), socket(0), m_response(NoResponse), state(NotConnected)
 {
-    connectTimer.setSingleShot(true);
-    connect(&connectTimer, SIGNAL(timeout()), SLOT(sendRequest()));
-    connect(torControl, SIGNAL(connectivityChanged()), SLOT(connectivityChanged()));
 }
 
 void ContactRequestClient::setMessage(const QString &message)
@@ -78,53 +75,13 @@ void ContactRequestClient::sendRequest()
 {
     close();
 
-    if (!torControl->hasConnectivity()) {
-        /* Impossible to send now. Will be triggered on connectivityChanged */
-        return;
-    }
-
-    state = WaitConnect;
-    socket = new QTcpSocket(this);
+    socket = new Tor::TorSocket(this);
     connect(socket, SIGNAL(connected()), this, SLOT(socketConnected()));
     connect(socket, SIGNAL(readyRead()), this, SLOT(socketReadable()));
-    connect(socket, SIGNAL(disconnected()), this, SLOT(spawnReconnect()));
-    connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(spawnReconnect()));
+    socket->setMaxAttemptInterval(600);
 
-    socket->setProxy(torControl->connectionProxy());
+    state = WaitConnect;
     socket->connectToHost(user->hostname(), user->port());
-}
-
-void ContactRequestClient::connectivityChanged()
-{
-    if (torControl->hasConnectivity()) {
-        if (state == NotConnected)
-            sendRequest();
-    } else {
-        connectTimer.stop();
-        connectAttempts = 0;
-        close();
-    }
-}
-
-void ContactRequestClient::spawnReconnect()
-{
-    if (state == Reconnecting || response() != NoResponse)
-        return;
-
-    connectAttempts++;
-
-    int delay = 0;
-    if (connectAttempts <= 4)
-        delay = 30;
-    else if (connectAttempts <= 6)
-        delay = 120;
-    else
-        delay = 600;
-
-    qDebug() << "Spawning reconnection of contact request for" << user->uniqueID << "with a delay of" << delay << "seconds";
-
-    state = Reconnecting;
-    connectTimer.start(delay * 1000);
 }
 
 void ContactRequestClient::socketConnected()
@@ -148,7 +105,7 @@ void ContactRequestClient::socketReadable()
             if (version != protocolVersion)
             {
                 emit rejected(0x90);
-                socket->close();
+                close();
                 return;
             }
 

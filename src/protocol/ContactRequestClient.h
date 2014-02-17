@@ -34,9 +34,12 @@
 #define CONTACTREQUESTCLIENT_H
 
 #include <QObject>
-#include <QTimer>
 
 class ContactUser;
+
+namespace Tor {
+    class TorSocket;
+}
 
 class ContactRequestClient : public QObject
 {
@@ -81,20 +84,14 @@ private slots:
     void socketConnected();
     void socketReadable();
 
-    void connectivityChanged();
-    void spawnReconnect();
-
 private:
-    class QTcpSocket *socket;
+    Tor::TorSocket *socket;
     QString m_message, m_mynick;
-    QTimer connectTimer;
-    int connectAttempts;
     Response m_response;
 
     enum
     {
         NotConnected,
-        Reconnecting,
         WaitConnect,
         WaitCookie,
         WaitAck,
