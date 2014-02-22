@@ -171,5 +171,3 @@ HEADERS += src/ui/MainWindow.h \
 
 RESOURCES += translation/embedded.qrc \
     src/ui/qml/qml.qrc
-
-TRANSLATIONS = translation/torsion.ts

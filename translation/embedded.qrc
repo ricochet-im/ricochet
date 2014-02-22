@@ -1,5 +1,4 @@
 <RCC>
     <qresource prefix="/lang">
-        <file>torsion.qm</file>
     </qresource>
 </RCC>
