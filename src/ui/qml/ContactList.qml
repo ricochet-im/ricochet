@@ -21,6 +21,9 @@ ScrollView {
     property QtObject selectedContact
     property ListView view: contactListView
 
+    // Emitted for double click on a contact
+    signal contactActivated(ContactUser contact, Item actions)
+
     onSelectedContactChanged: {
         if (selectedContact !== contactsModel.contact(contactListView.currentIndex)) {
             contactListView.currentIndex = contactsModel.rowOfContact(selectedContact)
@@ -29,8 +32,10 @@ ScrollView {
 
     ListView {
         id: contactListView
-
         model: contactsModel
+
+        signal contactActivated(ContactUser contact, Item actions)
+        onContactActivated: scroll.contactActivated(contact, actions)
 
         onCurrentIndexChanged: {
             // Not using a binding to allow writes to selectedContact

@@ -62,11 +62,7 @@ Rectangle {
 
         onDoubleClicked: {
             if (mouse.button === Qt.LeftButton) {
-                if (model.status === ContactUser.RequestPending) {
-                    contextMenu.openPreferences()
-                } else {
-                    contextMenu.openWindow()
-                }
+                contactListView.contactActivated(model.contact, contextMenu)
             }
         }
     }
