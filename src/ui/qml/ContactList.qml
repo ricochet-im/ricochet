@@ -18,13 +18,24 @@ ScrollView {
         }
     ]
 
-    property QtObject selectedContact: contactsModel.contact(contactListView.currentIndex)
+    property QtObject selectedContact
     property ListView view: contactListView
+
+    onSelectedContactChanged: {
+        if (selectedContact !== contactsModel.contact(contactListView.currentIndex)) {
+            contactListView.currentIndex = contactsModel.rowOfContact(selectedContact)
+        }
+    }
 
     ListView {
         id: contactListView
 
         model: contactsModel
+
+        onCurrentIndexChanged: {
+            // Not using a binding to allow writes to selectedContact
+            scroll.selectedContact = contactsModel.contact(contactListView.currentIndex)
+        }
 
         section.property: "status"
         section.delegate: Label {

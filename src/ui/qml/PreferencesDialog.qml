@@ -9,7 +9,26 @@ ApplicationWindow {
     height: 500
     title: qsTr("Torsion Preferences")
 
+    property string initialPage
+    property var initialPageProperties: { }
+
+    Component.onCompleted: {
+        if (initialPage != "") {
+            initialPage = Qt.resolvedUrl(initialPage)
+            for (var i = 0; i < tabs.count; i++) {
+                if (tabs.getTab(i).source == initialPage) {
+                    tabs.currentIndex = i
+                    var item = tabs.getTab(i).item
+                    for (var key in initialPageProperties) {
+                        item[key] = initialPageProperties[key]
+                    }
+                }
+            }
+        }
+    }
+
     TabView {
+        id: tabs
         anchors.fill: parent
         anchors.margins: 8
 

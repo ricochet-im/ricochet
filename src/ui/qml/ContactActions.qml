@@ -26,6 +26,10 @@ Item {
         contextMenu.popup()
     }
 
+    function openPreferences() {
+        window.openPreferences("ContactPreferences.qml", { 'selectedContact': contact })
+    }
+
     signal renameTriggered
 
     Menu {
@@ -35,11 +39,15 @@ Item {
             text: "Chat..."
             onTriggered: openWindow()
         }
-        MenuSeparator { }
+        MenuItem {
+            text: "Details..."
+            onTriggered: openPreferences()
+        }
         MenuItem {
             text: "Rename"
             onTriggered: renameTriggered()
         }
+        MenuSeparator { }
         MenuItem {
             text: "Remove"
             onTriggered: removeContact()

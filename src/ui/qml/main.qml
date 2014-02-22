@@ -84,6 +84,16 @@ ApplicationWindow {
         return object
     }
 
+    function openPreferences(page, properties) {
+        var object = createDialog("PreferencesDialog.qml",
+            {
+                'initialPage': page,
+                'initialPageProperties': properties
+            }
+        )
+        object.visible = true
+    }
+
     SystemPalette {
         id: palette
     }

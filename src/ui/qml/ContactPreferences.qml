@@ -4,6 +4,7 @@ import QtQuick.Layouts 1.0
 import org.torsionim.torsion 1.0
 
 Item {
+    property alias selectedContact: contacts.selectedContact
 
     RowLayout {
         anchors {

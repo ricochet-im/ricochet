@@ -1,5 +1,6 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.0
+import org.torsionim.torsion 1.0
 
 Rectangle {
     id: delegate
@@ -61,7 +62,11 @@ Rectangle {
 
         onDoubleClicked: {
             if (mouse.button === Qt.LeftButton) {
-                contextMenu.openWindow()
+                if (model.status === ContactUser.RequestPending) {
+                    contextMenu.openPreferences()
+                } else {
+                    contextMenu.openWindow()
+                }
             }
         }
     }
