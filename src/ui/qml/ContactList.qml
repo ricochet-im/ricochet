@@ -19,6 +19,7 @@ ScrollView {
     ]
 
     property QtObject selectedContact: contactsModel.contact(contactListView.currentIndex)
+    property ListView view: contactListView
 
     ListView {
         id: contactListView

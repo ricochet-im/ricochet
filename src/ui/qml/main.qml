@@ -38,6 +38,7 @@ ApplicationWindow {
 
     toolBar: ToolBar {
         RowLayout {
+            id: toolBarLayout
             width: parent.width
 
             TorStateWidget { }
@@ -48,9 +49,19 @@ ApplicationWindow {
             }
 
             ToolButton {
+                id: addContactButton
                 action: addContactAction
                 implicitHeight: 24
                 implicitWidth: 24
+
+                Loader {
+                    id: emptyState
+                    active: contactList.view.count == 0
+                    sourceComponent: EmptyContactsHint {
+                        targetButton: addContactButton
+                        maximumWidth: toolBarLayout.width
+                    }
+                }
             }
 
             ToolButton {
@@ -139,4 +150,5 @@ ApplicationWindow {
         id: contactList
         anchors.fill: parent
     }
+
 }
