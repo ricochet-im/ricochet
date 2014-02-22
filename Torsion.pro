@@ -109,7 +109,6 @@ SOURCES += src/main.cpp \
     src/protocol/CommandHandler.cpp \
     src/protocol/CommandDataParser.cpp \
     src/tor/GetConfCommand.cpp \
-    src/tor/TorServiceTest.cpp \
     src/tor/HiddenService.cpp \
     src/protocol/ProtocolSocket.cpp \
     src/utils/CryptoKey.cpp \
@@ -149,7 +148,6 @@ HEADERS += src/ui/MainWindow.h \
     src/protocol/CommandHandler.h \
     src/protocol/CommandDataParser.h \
     src/tor/GetConfCommand.h \
-    src/tor/TorServiceTest.h \
     src/tor/HiddenService.h \
     src/protocol/ProtocolSocket.h \
     src/utils/CryptoKey.h \

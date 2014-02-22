@@ -32,7 +32,7 @@
 
 #include "HiddenService.h"
 #include "TorControl.h"
-#include "TorServiceTest.h"
+#include "TorSocket.h"
 #include "utils/CryptoKey.h"
 #include <QDir>
 #include <QFile>
@@ -139,12 +139,10 @@ void HiddenService::startSelfTest()
 
     if (!selfTest)
     {
-        selfTest = new TorServiceTest(torControl);
-        connect(selfTest, SIGNAL(success()), this, SLOT(selfTestSucceeded()));
-        connect(selfTest, SIGNAL(failure()), this, SLOT(selfTestFailed()));
+        selfTest = new TorSocket(this);
+        connect(selfTest, SIGNAL(connected()), this, SLOT(selfTestSucceeded()));
     }
 
-    /* XXX Should probably try all targets */
     selfTest->connectToHost(hostname(), pTargets[0].servicePort);
 }
 
@@ -173,10 +171,12 @@ void HiddenService::selfTestSucceeded()
     selfTest = 0;
 }
 
-void HiddenService::selfTestFailed()
+void HiddenService::connectivityChanged()
 {
-    qDebug() << "Hidden service self-test failed; trying again in 10 seconds";
-    setStatus(Published);
-
-    QTimer::singleShot(10000, this, SLOT(startSelfTest()));
+    if (!torControl->hasConnectivity()) {
+        if (status() == Online)
+            setStatus(Published);
+        startSelfTest();
+    }
 }
+

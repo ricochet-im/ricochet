@@ -42,6 +42,8 @@ class CryptoKey;
 namespace Tor
 {
 
+class TorSocket;
+
 class HiddenService : public QObject
 {
     Q_OBJECT
@@ -87,12 +89,12 @@ signals:
 private slots:
     void servicePublished();
     void selfTestSucceeded();
-    void selfTestFailed();
+    void connectivityChanged();
 
 private:
     QList<Target> pTargets;
     QString pHostname;
-    class TorServiceTest *selfTest;
+    TorSocket *selfTest;
     Status pStatus;
 
     void setStatus(Status newStatus);
