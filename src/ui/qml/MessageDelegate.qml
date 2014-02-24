@@ -65,14 +65,19 @@ Column {
 
         TextEdit {
             id: textField
-            wrapMode: TextEdit.Wrap
             width: Math.min(implicitWidth, background.__maxWidth)
             height: contentHeight
+            x: (parent.width - width) / 2
+            y: 6
+
+            renderType: Text.NativeRendering
+            selectionColor: palette.highlight
+            selectedTextColor: palette.highlightedText
+
+            wrapMode: TextEdit.Wrap
             readOnly: true
             selectByMouse: true
             text: model.text
-            x: (parent.width - width) / 2
-            y: 6
         }
     }
 }
