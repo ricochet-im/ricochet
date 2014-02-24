@@ -20,6 +20,8 @@ void ConversationModel::setContact(ContactUser *contact)
     if (m_contact) {
         connect(m_contact, SIGNAL(incomingChatMessage(ChatMessageData)), this,
                 SLOT(receiveMessage(ChatMessageData)));
+        connect(m_contact, SIGNAL(statusChanged()), this,
+                SLOT(onContactStatusChanged()));
     }
 
     endResetModel();
@@ -80,6 +82,12 @@ void ConversationModel::messageReply()
     emit dataChanged(index(row, 0), index(row, 0));
 }
 
+void ConversationModel::onContactStatusChanged()
+{
+    // Update in case section has changed
+    emit dataChanged(index(0, 0), index(rowCount()-1, 0), QVector<int>() << SectionRole);
+}
+
 QHash<int,QByteArray> ConversationModel::roleNames() const
 {
     QHash<int, QByteArray> roles;
@@ -87,6 +95,7 @@ QHash<int,QByteArray> ConversationModel::roleNames() const
     roles[TimestampRole] = "timestamp";
     roles[IsOutgoingRole] = "isOutgoing";
     roles[StatusRole] = "status";
+    roles[SectionRole] = "section";
     return roles;
 }
 
@@ -109,6 +118,21 @@ QVariant ConversationModel::data(const QModelIndex &index, int role) const
         case TimestampRole: return message.time;
         case IsOutgoingRole: return message.status != Received;
         case StatusRole: return message.status;
+
+        case SectionRole: {
+            if (m_contact->status() == ContactUser::Online)
+                return QString();
+            if (index.row() < messages.size() - 1) {
+                const MessageData &next = messages[index.row()+1];
+                if (next.status != Received && next.status != Delivered)
+                    return QString();
+            }
+            for (int i = 0; i <= index.row(); i++) {
+                if (messages[i].status == Received || messages[i].status == Delivered)
+                    return QString();
+            }
+            return QStringLiteral("offline");
+        }
     }
 
     return QVariant();

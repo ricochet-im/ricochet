@@ -16,7 +16,8 @@ public:
     enum {
         TimestampRole = Qt::UserRole,
         IsOutgoingRole,
-        StatusRole
+        StatusRole,
+        SectionRole
     };
 
     enum MessageStatus {
@@ -44,6 +45,7 @@ signals:
 private slots:
     void receiveMessage(const ChatMessageData &message);
     void messageReply();
+    void onContactStatusChanged();
 
 private:
     struct MessageData {
