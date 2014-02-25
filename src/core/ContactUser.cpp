@@ -116,10 +116,17 @@ ContactUser *ContactUser::addNewContact(UserIdentity *identity, int id)
 void ContactUser::updateStatus()
 {
     Status newStatus;
-    if (!readSetting("request/status").isNull())
-        newStatus = RequestPending;
-    else
+    if (m_contactRequest) {
+        if (m_contactRequest->status() == OutgoingContactRequest::Error ||
+            m_contactRequest->status() == OutgoingContactRequest::Rejected)
+        {
+            newStatus = RequestRejected;
+        } else {
+            newStatus = RequestPending;
+        }
+    } else {
         newStatus = m_conn->isConnected() ? Online : Offline;
+    }
 
     if (newStatus == m_status)
         return;

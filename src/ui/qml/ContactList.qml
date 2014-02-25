@@ -52,7 +52,8 @@ ScrollView {
                 switch (parseInt(section)) {
                     case ContactUser.Online: return "Online"
                     case ContactUser.Offline: return "Offline"
-                    case ContactUser.RequestPending: return "Requested"
+                    case ContactUser.RequestPending: return "Requests"
+                    case ContactUser.RequestRejected: return "Rejected"
                 }
             }
             font.pointSize: 12

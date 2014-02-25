@@ -162,7 +162,7 @@ ApplicationWindow {
         anchors.fill: parent
 
         onContactActivated: {
-            if (contact.status === ContactUser.RequestPending) {
+            if (contact.status === ContactUser.RequestPending || contact.status === ContactUser.RequestRejected) {
                 actions.openPreferences()
             } else {
                 actions.openWindow()

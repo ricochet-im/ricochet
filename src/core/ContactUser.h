@@ -76,7 +76,8 @@ public:
     {
         Online,
         Offline,
-        RequestPending
+        RequestPending,
+        RequestRejected
     };
 
     UserIdentity * const identity;
