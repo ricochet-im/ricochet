@@ -162,6 +162,7 @@ ApplicationWindow {
     ContactList {
         id: contactList
         anchors.fill: parent
+        opacity: offlineLoader.item !== null ? (1 - offlineLoader.item.opacity) : 1
 
         onContactActivated: {
             if (contact.status === ContactUser.RequestPending || contact.status === ContactUser.RequestRejected) {
@@ -172,4 +173,10 @@ ApplicationWindow {
         }
     }
 
+    Loader {
+        id: offlineLoader
+        active: torControl.torStatus !== TorControl.TorReady || (item !== null && item.visible)
+        anchors.fill: parent
+        source: Qt.resolvedUrl("OfflineStateItem.qml")
+    }
 }

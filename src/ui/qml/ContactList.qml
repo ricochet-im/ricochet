@@ -33,6 +33,7 @@ ScrollView {
     ListView {
         id: contactListView
         model: contactsModel
+        currentIndex: -1
 
         signal contactActivated(ContactUser contact, Item actions)
         onContactActivated: scroll.contactActivated(contact, actions)

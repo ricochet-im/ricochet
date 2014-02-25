@@ -25,6 +25,7 @@
         <file>MessageDialogWrapper.qml</file>
         <file>StartupStatusPage.qml</file>
         <file>EmptyContactsHint.qml</file>
+        <file>OfflineStateItem.qml</file>
     </qresource>
     <qresource prefix="/ui/icons">
         <file>plus.png</file>
