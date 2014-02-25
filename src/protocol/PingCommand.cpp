@@ -43,7 +43,7 @@ PingCommand::PingCommand(QObject *parent)
 void PingCommand::send(ProtocolSocket *to)
 {
     prepareCommand(commandState(0));
-    sendCommand(to, true);
+    sendCommand(to);
 
     qDebug() << "Sent ping";
 }

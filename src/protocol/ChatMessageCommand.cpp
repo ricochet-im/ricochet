@@ -54,14 +54,10 @@ void ChatMessageCommand::send(ProtocolSocket *to, const QDateTime &timestamp, co
     builder << lastReceived;
     builder << text;
 
-    sendCommand(to, true);
+    sendCommand(to);
 
     m_messageText = text;
     m_messageTime = timestamp;
-
-    ChatMessageData message = {
-        timestamp, text, identifier(), lastReceived
-    };
 }
 
 void ChatMessageCommand::process(CommandHandler &command)

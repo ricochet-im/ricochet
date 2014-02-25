@@ -50,9 +50,8 @@ int ProtocolCommand::prepareCommand(quint8 state, unsigned reserveSize)
     return 6;
 }
 
-void ProtocolCommand::sendCommand(ProtocolSocket *socket, bool ordered)
+void ProtocolCommand::sendCommand(ProtocolSocket *socket)
 {
-    Q_UNUSED(ordered);
     Q_ASSERT(commandBuffer.size() >= 6);
     Q_ASSERT(socket);
 
@@ -78,21 +77,3 @@ void ProtocolCommand::sendCommand(ProtocolSocket *socket, bool ordered)
     socket->sendCommand(this);
 }
 
-bool ProtocolCommand::beginUnbufferedReply(quint8 state)
-{
-    Q_UNUSED(state);
-    qWarning() << "Received an invalid unbuffered reply for command 0x" << hex << command()
-            << " (no unbuffered reply expected)";
-    return false;
-}
-
-int ProtocolCommand::processUnbufferedReply(const uchar *data, unsigned dataSize)
-{
-    Q_UNUSED(data);
-    Q_UNUSED(dataSize);
-
-    /* This is never called unless startUnbufferedReply is implemented, so any path reaching here is
-     * an implementation error. */
-    Q_ASSERT_X(false, metaObject()->className(), "Command does not implement processUnbufferedReply");
-    return -1;
-}
