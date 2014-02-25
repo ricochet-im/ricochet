@@ -37,6 +37,7 @@
 #include <QByteArray>
 #include "ProtocolSocket.h"
 #include "CommandHandler.h"
+#include "ProtocolConstants.h"
 
 class ProtocolCommand : public QObject
 {
@@ -46,21 +47,6 @@ class ProtocolCommand : public QObject
     friend class ProtocolSocket;
 
 public:
-    static const int maxCommandData = 65540;
-
-    /* These are flagged as final; you can unset that manually if desired */
-    enum StandardReply
-    {
-        GenericError = 0xd0,
-        UnknownCommand = 0xd1,
-        UnknownState = 0xd2,
-        MessageSyntaxError = 0xd3,
-        CommandSyntaxError = 0xd4,
-        InternalError = 0xd5,
-        PermanentInternalError = 0xd6,
-        ConnectionError = 0xd7
-    };
-
     explicit ProtocolCommand(QObject *parent = 0);
 
     virtual quint8 command() const = 0;
@@ -79,47 +65,5 @@ protected:
     int prepareCommand(quint8 state, unsigned reserveSize = 0);
     void sendCommand(ProtocolSocket *to);
 };
-
-inline quint8 commandState(quint8 value)
-{
-    Q_ASSERT(!(value & 0xc0));
-    return (value & (~0x80)) | 0x40;
-}
-
-inline quint8 replyState(bool success, bool final, quint8 value)
-{
-    Q_ASSERT(!(value & 0xe0));
-    if (!success)
-        Q_ASSERT(!(value & 0xf0));
-
-    value |= 0x80;
-
-    if (final)
-        value |= 0x40;
-    else
-        value &= ~0x40;
-
-    if (success)
-        value |= 0x20;
-    else
-        value &= ~0x20;
-
-    return value;
-}
-
-inline bool isReply(quint8 state)
-{
-    return (state & 0x80) == 0x80;
-}
-
-inline bool isSuccess(quint8 state)
-{
-    return (state & 0xa0) == 0xa0;
-}
-
-inline bool isFinal(quint8 state)
-{
-    return (state & 0x40) == 0x40;
-}
 
 #endif // PROTOCOLCOMMAND_H

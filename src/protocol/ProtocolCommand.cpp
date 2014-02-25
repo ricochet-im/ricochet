@@ -31,6 +31,7 @@
  */
 
 #include "ProtocolCommand.h"
+#include "ProtocolConstants.h"
 #include <QtEndian>
 #include <QtDebug>
 
@@ -41,8 +42,8 @@ ProtocolCommand::ProtocolCommand(QObject *parent)
 
 int ProtocolCommand::prepareCommand(quint8 state, unsigned reserveSize)
 {
-    commandBuffer.reserve(reserveSize + 6);
-    commandBuffer.resize(6);
+    commandBuffer.reserve(reserveSize + Protocol::HeaderSize);
+    commandBuffer.resize(Protocol::HeaderSize);
 
     commandBuffer[2] = command();
     commandBuffer[3] = state;
@@ -52,21 +53,22 @@ int ProtocolCommand::prepareCommand(quint8 state, unsigned reserveSize)
 
 void ProtocolCommand::sendCommand(ProtocolSocket *socket)
 {
-    Q_ASSERT(commandBuffer.size() >= 6);
+    Q_ASSERT(commandBuffer.size() >= Protocol::HeaderSize);
     Q_ASSERT(socket);
 
-    if (commandBuffer.size() > maxCommandData)
+    if (commandBuffer.size() > Protocol::MaxCommandSize)
     {
         Q_ASSERT_X(false, metaObject()->className(), "Command data too large, would be truncated");
         qWarning() << "Truncated command" << metaObject()->className() << " (size " << commandBuffer.size()
                 << ")";
-        commandBuffer.resize(maxCommandData);
+        commandBuffer.resize(Protocol::MaxCommandSize);
     }
 
     /* [2*length][1*command][1*state][2*identifier] */
+    Q_ASSERT(Protocol::HeaderSize == 6);
 
     /* length is not inclusive of the header */
-    qToBigEndian(quint16(commandBuffer.size() - 6), (uchar*)commandBuffer.data());
+    qToBigEndian(quint16(commandBuffer.size() - Protocol::HeaderSize), (uchar*)commandBuffer.data());
 
     pIdentifier = socket->getIdentifier();
     if (!pIdentifier)

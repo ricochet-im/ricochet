@@ -36,14 +36,14 @@
 OutgoingContactSocket::OutgoingContactSocket(QObject *parent)
     : QObject(parent)
     , m_socket(0)
-    , m_purpose(ProtocolSocket::PurposePrimary)
+    , m_purpose(Protocol::PurposePrimary)
 {
     m_authTimeout.setInterval(10000);
     m_authTimeout.setSingleShot(true);
     connect(&m_authTimeout, SIGNAL(timeout()), SLOT(onTimeout()));
 }
 
-void OutgoingContactSocket::setAuthentication(ProtocolSocket::Purpose purpose, const QByteArray &secret)
+void OutgoingContactSocket::setAuthentication(Protocol::Purpose purpose, const QByteArray &secret)
 {
     m_purpose = purpose;
     m_secret = secret;
@@ -106,7 +106,7 @@ void OutgoingContactSocket::onReadable()
         return;
     }
 
-    if (reply[0] != protocolVersion) {
+    if (reply[0] != Protocol::ProtocolVersion) {
         qDebug() << "Outgoing socket rejected: Version negotiation failure";
         disconnect();
         emit versionNegotiationFailed();

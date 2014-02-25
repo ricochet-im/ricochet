@@ -34,7 +34,7 @@
 #define OUTGOINGCONTACTSOCKET_H
 
 #include "tor/TorSocket.h"
-#include "ProtocolSocket.h"
+#include "ProtocolConstants.h"
 #include <QTimer>
 
 /* Establish a socket with a peer (via Tor), with automatic retries provided
@@ -50,7 +50,7 @@ class OutgoingContactSocket : public QObject
 public:
     explicit OutgoingContactSocket(QObject *parent = 0);
 
-    void setAuthentication(ProtocolSocket::Purpose purpose, const QByteArray &secret);
+    void setAuthentication(Protocol::Purpose purpose, const QByteArray &secret);
     void connectToHost(const QString &hostname, quint16 port);
     void disconnect();
 
@@ -70,7 +70,7 @@ private slots:
 private:
     Tor::TorSocket *m_socket;
     QTimer m_authTimeout;
-    ProtocolSocket::Purpose m_purpose;
+    Protocol::Purpose m_purpose;
     QByteArray m_secret;
 };
 

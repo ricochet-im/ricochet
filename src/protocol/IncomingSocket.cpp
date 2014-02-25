@@ -181,9 +181,9 @@ bool IncomingSocket::handleVersion(QTcpSocket *socket)
     uchar version = 0xff;
     for (int i = 3; i < versions.size(); ++i)
     {
-        if ((uchar)versions[i] == protocolVersion)
+        if ((uchar)versions[i] == Protocol::ProtocolVersion)
         {
-            version = protocolVersion;
+            version = Protocol::ProtocolVersion;
             break;
         }
     }
@@ -206,7 +206,7 @@ bool IncomingSocket::handleVersion(QTcpSocket *socket)
 
 void IncomingSocket::handleIntro(QTcpSocket *socket, uchar version)
 {
-    Q_ASSERT(version == protocolVersion);
+    Q_ASSERT(version == Protocol::ProtocolVersion);
     Q_UNUSED(version);
 
     /* Peek at the purpose; can't be a read as this may be called repeatedly until it's ready */
@@ -214,7 +214,7 @@ void IncomingSocket::handleIntro(QTcpSocket *socket, uchar version)
     if (socket->peek(reinterpret_cast<char*>(&purpose), 1) < 1)
         return;
 
-    if (purpose == ProtocolSocket::PurposePrimary)
+    if (purpose == Protocol::PurposePrimary)
     {
         /* Wait until the auth data is available */
         quint64 available = socket->bytesAvailable();
@@ -254,7 +254,7 @@ void IncomingSocket::handleIntro(QTcpSocket *socket, uchar version)
         user->incomingProtocolSocket(socket);
         Q_ASSERT(socket->parent() != this);
     }
-    else if (purpose == ProtocolSocket::PurposeContactReq)
+    else if (purpose == Protocol::PurposeContactReq)
     {
         /* Incoming contact request connection */
 
@@ -279,7 +279,7 @@ void IncomingSocket::handleIntro(QTcpSocket *socket, uchar version)
     }
 }
 
-QByteArray IncomingSocket::introData(ProtocolSocket::Purpose purpose)
+QByteArray IncomingSocket::introData(Protocol::Purpose purpose)
 {
     QByteArray re;
     re.resize(5);
@@ -287,7 +287,7 @@ QByteArray IncomingSocket::introData(ProtocolSocket::Purpose purpose)
     re[0] = 0x49;
     re[1] = 0x4D;
     re[2] = 0x01; /* number of versions */
-    re[3] = protocolVersion; /* version */
+    re[3] = Protocol::ProtocolVersion; /* version */
     re[4] = (char)purpose;
 
     return re;

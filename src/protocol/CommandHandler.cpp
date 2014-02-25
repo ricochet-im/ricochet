@@ -32,6 +32,7 @@
 
 #include "CommandHandler.h"
 #include "ProtocolCommand.h"
+#include "ProtocolConstants.h"
 #include <QtEndian>
 #include <QtDebug>
 #include <QTcpSocket>
@@ -40,10 +41,11 @@ CommandHandler::CommandFunc CommandHandler::handlerMap[256] = { 0 };
 
 CommandHandler::CommandHandler(ContactUser *u, QTcpSocket *s, const uchar *m, unsigned mS)
     : user(u),
-      data((mS > 6) ? QByteArray::fromRawData(reinterpret_cast<const char*>(m+6), mS-6) : QByteArray()),
+      data((mS > Protocol::HeaderSize) ? QByteArray::fromRawData(reinterpret_cast<const char*>(m+Protocol::HeaderSize), mS-Protocol::HeaderSize) : QByteArray()),
       socket(s)
 {
-    Q_ASSERT(mS >= 6);
+    Q_ASSERT(mS >= Protocol::HeaderSize);
+    Q_ASSERT(Protocol::HeaderSize == 6);
     command = m[2];
     state = m[3];
     identifier = qFromBigEndian<quint16>(m+4);
@@ -55,7 +57,7 @@ CommandHandler::CommandHandler(ContactUser *u, QTcpSocket *s, const uchar *m, un
 
     if (!handler)
     {
-        sendReply(ProtocolCommand::UnknownCommand);
+        sendReply(Protocol::UnknownCommand);
         return;
     }
 
@@ -65,8 +67,8 @@ CommandHandler::CommandHandler(ContactUser *u, QTcpSocket *s, const uchar *m, un
 void CommandHandler::sendReply(quint8 state, const QByteArray &data)
 {
     QByteArray message;
-    message.reserve(data.size() + 6);
-    message.resize(6);
+    message.reserve(data.size() + Protocol::HeaderSize);
+    message.resize(Protocol::HeaderSize);
 
     qToBigEndian(quint16(data.size()), reinterpret_cast<uchar*>(message.data()));
     message[2] = command;

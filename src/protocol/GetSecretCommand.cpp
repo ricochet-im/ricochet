@@ -32,6 +32,7 @@
 
 #include "GetSecretCommand.h"
 #include "CommandDataParser.h"
+#include "ProtocolConstants.h"
 #include <QDebug>
 
 REGISTER_COMMAND_HANDLER(0x01, GetSecretCommand)
@@ -43,8 +44,8 @@ GetSecretCommand::GetSecretCommand(QObject *parent)
 
 void GetSecretCommand::send(ProtocolSocket *to)
 {
-    prepareCommand(0x00);
-    sendCommand(to, true);
+    prepareCommand(Protocol::commandState(0));
+    sendCommand(to);
 
     user = to->user;
 }
@@ -54,11 +55,11 @@ void GetSecretCommand::process(CommandHandler &command)
     QByteArray secret = command.user->readSetting("localSecret").toByteArray();
     if (secret.size() != 16)
     {
-        command.sendReply(ProtocolCommand::InternalError);
+        command.sendReply(Protocol::InternalError);
         return;
     }
 
-    command.sendReply(replyState(true, true, 0x00), secret);
+    command.sendReply(Protocol::replyState(true, true, 0), secret);
 }
 
 void GetSecretCommand::processReply(quint8 state, const uchar *data, unsigned dataSize)

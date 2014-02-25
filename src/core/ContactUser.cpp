@@ -38,6 +38,7 @@
 #include "protocol/GetSecretCommand.h"
 #include "protocol/ChatMessageCommand.h"
 #include "protocol/OutgoingContactSocket.h"
+#include "protocol/ProtocolConstants.h"
 #include "core/ContactIDValidator.h"
 #include "core/OutgoingContactRequest.h"
 #include <QPixmapCache>
@@ -158,7 +159,7 @@ void ContactUser::setupOutgoingSocket()
         connect(m_outgoingSocket, SIGNAL(socketReady(QTcpSocket*)), SLOT(incomingProtocolSocket(QTcpSocket*)));
     }
 
-    m_outgoingSocket->setAuthentication(ProtocolSocket::PurposePrimary, secret);
+    m_outgoingSocket->setAuthentication(Protocol::PurposePrimary, secret);
     m_outgoingSocket->connectToHost(hostname(), port());
 }
 

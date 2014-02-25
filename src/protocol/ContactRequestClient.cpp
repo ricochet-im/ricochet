@@ -35,6 +35,7 @@
 #include "core/UserIdentity.h"
 #include "IncomingSocket.h"
 #include "CommandDataParser.h"
+#include "ProtocolConstants.h"
 #include "tor/HiddenService.h"
 #include "tor/TorSocket.h"
 #include "utils/CryptoKey.h"
@@ -86,7 +87,7 @@ void ContactRequestClient::sendRequest()
 
 void ContactRequestClient::socketConnected()
 {
-    socket->write(IncomingSocket::introData(ProtocolSocket::PurposeContactReq));
+    socket->write(IncomingSocket::introData(Protocol::PurposeContactReq));
     state = WaitConnect;
 
     qDebug() << "Contact request for" << user->uniqueID << "connected";
@@ -102,9 +103,9 @@ void ContactRequestClient::socketReadable()
             if (socket->read(reinterpret_cast<char*>(&version), 1) < 1)
                 return;
 
-            if (version != protocolVersion)
+            if (version != Protocol::ProtocolVersion)
             {
-                emit rejected(0x90);
+                emit rejected(Protocol::RequestVersionError);
                 close();
                 return;
             }
@@ -115,10 +116,10 @@ void ContactRequestClient::socketReadable()
         }
 
     case WaitCookie:
-        if (socket->bytesAvailable() < 16)
+        if (socket->bytesAvailable() < Protocol::RequestCookieSize)
             return;
 
-        if (!buildRequestData(socket->read(16)))
+        if (!buildRequestData(socket->read(Protocol::RequestCookieSize)))
         {
             socket->close();
             return;

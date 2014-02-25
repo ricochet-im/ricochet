@@ -40,8 +40,6 @@ class QString;
 class CommandDataParser
 {
 public:
-    static const int maxCommandSize = 65535;
-
     CommandDataParser(QByteArray *data);
     CommandDataParser(const QByteArray *data);
 

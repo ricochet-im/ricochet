@@ -31,6 +31,7 @@
  */
 
 #include "CommandDataParser.h"
+#include "ProtocolConstants.h"
 #include <QtEndian>
 #include <QString>
 
@@ -69,7 +70,7 @@ void CommandDataParser::setPos(int pos)
 template<typename T> bool CommandDataParser::appendInt(T value)
 {
     Q_ASSERT(writable);
-    if (!writable || d->size() + int(sizeof(T)) > maxCommandSize)
+    if (!writable || d->size() + int(sizeof(T)) > Protocol::MaxCommandData)
     {
         error = true;
         return false;
@@ -84,7 +85,7 @@ template<typename T> bool CommandDataParser::appendInt(T value)
 template<> bool CommandDataParser::appendInt<quint8>(quint8 value)
 {
     Q_ASSERT(writable);
-    if (!writable || d->size() == maxCommandSize)
+    if (!writable || d->size() == Protocol::MaxCommandData)
     {
         error = true;
         return false;
@@ -180,24 +181,24 @@ CommandDataParser &CommandDataParser::operator<<(quint64 value)
 CommandDataParser &CommandDataParser::operator<<(const QString &string)
 {
     Q_ASSERT(writable);
-    if (!writable || maxCommandSize - d->size() < 2)
+    if (!writable || Protocol::MaxCommandData - d->size() < 2)
     {
         error = true;
         return *this;
     }
 
     QByteArray encoded = string.toUtf8();
-    if (encoded.size() > (maxCommandSize - d->size() - 2))
+    if (encoded.size() > (Protocol::MaxCommandData - d->size() - 2))
     {
         error = true;
-        encoded.resize(maxCommandSize - d->size() - 2);
+        encoded.resize(Protocol::MaxCommandData - d->size() - 2);
     }
 
     d->reserve(d->size() + encoded.size() + 2);
     appendInt((quint16)encoded.size());
     d->append(encoded);
 
-    Q_ASSERT(d->size() <= maxCommandSize);
+    Q_ASSERT(d->size() <= Protocol::MaxCommandData);
 
     return *this;
 }
@@ -205,7 +206,7 @@ CommandDataParser &CommandDataParser::operator<<(const QString &string)
 CommandDataParser &CommandDataParser::writeFixedData(const QByteArray &data)
 {
     Q_ASSERT(writable);
-    if (!writable || d->size() + data.size() > maxCommandSize)
+    if (!writable || d->size() + data.size() > Protocol::MaxCommandData)
     {
         error = true;
         return *this;
@@ -217,8 +218,8 @@ CommandDataParser &CommandDataParser::writeFixedData(const QByteArray &data)
 
 CommandDataParser &CommandDataParser::writeVariableData(const QByteArray &data)
 {
-    Q_ASSERT(data.size() <= 65535);
-    if (data.size() > 65535)
+    Q_ASSERT(data.size() <= Protocol::MaxCommandData);
+    if (data.size() > Protocol::MaxCommandData)
     {
         error = true;
         return *this;

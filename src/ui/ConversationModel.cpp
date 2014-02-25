@@ -78,7 +78,7 @@ void ConversationModel::messageReply()
         return;
 
     MessageData &data = messages[row];
-    data.status = isSuccess(command->finalReplyState()) ? Delivered : Error;
+    data.status = Protocol::isSuccess(command->finalReplyState()) ? Delivered : Error;
     emit dataChanged(index(row, 0), index(row, 0));
 }
 

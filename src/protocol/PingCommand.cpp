@@ -31,6 +31,7 @@
  */
 
 #include "PingCommand.h"
+#include "ProtocolConstants.h"
 #include <QDebug>
 
 REGISTER_COMMAND_HANDLER(0x00, PingCommand)
@@ -42,7 +43,7 @@ PingCommand::PingCommand(QObject *parent)
 
 void PingCommand::send(ProtocolSocket *to)
 {
-    prepareCommand(commandState(0));
+    prepareCommand(Protocol::commandState(0));
     sendCommand(to);
 
     qDebug() << "Sent ping";
@@ -51,7 +52,7 @@ void PingCommand::send(ProtocolSocket *to)
 void PingCommand::process(CommandHandler &command)
 {
     qDebug() << "Received ping with identifier" << command.identifier;
-    command.sendReply(replyState(true, true, 0x00));
+    command.sendReply(Protocol::replyState(true, true, 0));
 }
 
 void PingCommand::processReply(quint8 state, const uchar *data, unsigned dataSize)

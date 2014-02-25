@@ -31,6 +31,7 @@
  */
 
 #include "ChatMessageCommand.h"
+#include "ProtocolConstants.h"
 #include "CommandDataParser.h"
 #include <QDateTime>
 #include <QBuffer>
@@ -47,7 +48,7 @@ ChatMessageCommand::ChatMessageCommand(QObject *parent)
 
 void ChatMessageCommand::send(ProtocolSocket *to, const QDateTime &timestamp, const QString &text, quint16 lastReceived)
 {
-    prepareCommand(0x00, 1024);
+    prepareCommand(Protocol::commandState(0), 1024);
     CommandDataParser builder(&commandBuffer);
 
     builder << (quint32)timestamp.secsTo(QDateTime::currentDateTime());
@@ -70,7 +71,7 @@ void ChatMessageCommand::process(CommandHandler &command)
     parser >> timestamp >> priorMessageID >> text;
     if (!parser)
     {
-        command.sendReply(CommandSyntaxError);
+        command.sendReply(Protocol::CommandSyntaxError);
         return;
     }
 
@@ -87,7 +88,7 @@ void ChatMessageCommand::process(CommandHandler &command)
     command.user->prepareInteractiveHandler();
     command.user->incomingChatMessage(message);
 
-    command.sendReply(replyState(true, true, 0x00));
+    command.sendReply(Protocol::replyState(true, true, 0));
 }
 
 void ChatMessageCommand::processReply(quint8 state, const uchar *data, unsigned dataSize)
@@ -97,6 +98,6 @@ void ChatMessageCommand::processReply(quint8 state, const uchar *data, unsigned 
     Q_UNUSED(dataSize);
 
     qDebug() << "Received chat message reply" << hex << state;
-    if (isFinal(state))
+    if (Protocol::isFinal(state))
         m_finalReplyState = state;
 }

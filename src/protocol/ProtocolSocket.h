@@ -53,12 +53,6 @@ class ProtocolSocket : public QObject
     Q_DISABLE_COPY(ProtocolSocket)
 
 public:
-    enum Purpose
-    {
-        PurposePrimary = 0x00,
-        PurposeContactReq = 0x80
-    };
-
     ContactUser * const user;
     explicit ProtocolSocket(ContactUser *user);
 
@@ -100,8 +94,5 @@ private:
     QElapsedTimer m_connectedTime;
     quint16 nextCommandId;
 };
-
-/* Do not change this, as it breaks backwards compatibility. Hopefully, it will never be necessary. */
-static const quint8 protocolVersion = 0x00;
 
 #endif // PROTOCOLSOCKET_H

@@ -193,7 +193,7 @@ void ProtocolSocket::read()
         Q_ASSERT(re == msgLength + 6);
         Q_UNUSED(re);
 
-        if (isReply(data[3]))
+        if (Protocol::isReply(data[3]))
         {
             quint16 identifier = qFromBigEndian<quint16>(reinterpret_cast<const uchar*>(data.constData())+4);
             QHash<quint16,ProtocolCommand*>::Iterator it = pendingCommands.find(identifier);
@@ -201,7 +201,7 @@ void ProtocolSocket::read()
             if (it != pendingCommands.end())
             {
                 (*it)->processReply(data[3], reinterpret_cast<const uchar*>(data.constData())+6, msgLength);
-                if (isFinal(data[3]))
+                if (Protocol::isFinal(data[3]))
                 {
                     /* Duplicated in socketDisconnected() */
                     qDebug() << "Received final reply for identifier" << identifier;
@@ -232,14 +232,14 @@ void ProtocolSocket::abortCommands()
     /* Send failure replies for all pending commands */
     for (QHash<quint16,ProtocolCommand*>::Iterator it = pendingCommands.begin(); it != pendingCommands.end(); ++it)
     {
-        (*it)->processReply(ProtocolCommand::ConnectionError, 0, 0);
+        (*it)->processReply(Protocol::ConnectionError, 0, 0);
         emit (*it)->commandFinished();
         (*it)->deleteLater();
     }
 
     for (QQueue<ProtocolCommand*>::Iterator it = commandQueue.begin(); it != commandQueue.end(); ++it)
     {
-        (*it)->processReply(ProtocolCommand::ConnectionError, 0, 0);
+        (*it)->processReply(Protocol::ConnectionError, 0, 0);
         emit (*it)->commandFinished();
         (*it)->deleteLater();
     }
