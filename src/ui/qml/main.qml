@@ -128,6 +128,8 @@ ApplicationWindow {
     Component.onCompleted: {
         ContactWindow.createWindow = function(user) {
             var re = createDialog("ChatWindow.qml", { 'contact': user })
+            re.x = window.x + window.width + 10
+            re.y = window.y + (window.height / 2) - (re.height / 2)
             re.visible = true
             return re
         }
