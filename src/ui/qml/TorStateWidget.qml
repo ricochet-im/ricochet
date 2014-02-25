@@ -4,11 +4,10 @@ import QtQuick.Layouts 1.0
 import org.torsionim.torsion 1.0
 
 Label {
-    font.pointSize: 12
-    font.bold: true
+    font.pointSize: 11
     text: {
         if (torControl.status === TorControl.Error)
-            return "Error"
+            return "Connection failed"
         if (torControl.status < TorControl.Connected)
             return "Connecting..."
 
