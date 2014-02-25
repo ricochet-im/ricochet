@@ -81,4 +81,5 @@ void CommandHandler::sendReply(quint8 state, const QByteArray &data)
 
     qint64 re = socket->write(message);
     Q_ASSERT(re == message.size());
+    Q_UNUSED(re);
 }

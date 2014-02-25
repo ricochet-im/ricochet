@@ -87,6 +87,7 @@ void ContactRequestServer::sendCookie()
 
     qint64 re = socket->write(cookie);
     Q_ASSERT(re == cookie.size());
+    Q_UNUSED(re);
 
     state = WaitRequest;
 }
@@ -98,6 +99,7 @@ bool ContactRequestServer::sendResponse(uchar response)
 
     qint64 re = socket->write(reinterpret_cast<const char*>(&response), 1);
     Q_ASSERT(re);
+    Q_UNUSED(re);
 
     if (response != 0x00)
         state = SentResponse;

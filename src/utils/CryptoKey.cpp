@@ -342,8 +342,12 @@ void base32_encode(char *dest, unsigned destlen, const char *src, unsigned srcle
     unsigned i, bit, v, u;
     unsigned nbits = srclen * 8;
 
-    Q_ASSERT((nbits%5) == 0); /* We need an even multiple of 5 bits. */
-    Q_ASSERT((nbits/5)+1 <= destlen); /* We need enough space. */
+     /* We need an even multiple of 5 bits, and enough space */
+    if ((nbits%5) != 0 || destlen > (nbits/5)+1) {
+        Q_ASSERT(false);
+        memset(dest, 0, destlen);
+        return;
+    }
 
     for (i = 0, bit = 0; bit < nbits; ++i, bit += 5)
     {
@@ -366,8 +370,11 @@ bool base32_decode(char *dest, unsigned destlen, const char *src, unsigned srcle
     unsigned int i, j, bit;
     unsigned nbits = srclen * 5;
 
-    Q_ASSERT((nbits%8) == 0); /* We need an even multiple of 8 bits. */
-    Q_ASSERT((nbits/8) <= destlen); /* We need enough space. */
+     /* We need an even multiple of 8 bits, and enough space */
+    if ((nbits%8) != 0 || (nbits/8)+1 > destlen) {
+        Q_ASSERT(false);
+        return false;
+    }
 
     char *tmp = new char[srclen];
 

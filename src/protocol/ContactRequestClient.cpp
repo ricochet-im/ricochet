@@ -216,6 +216,7 @@ bool ContactRequestClient::buildRequestData(QByteArray cookie)
     /* Send */
     qint64 re = socket->write(requestData);
     Q_ASSERT(re == requestData.size());
+    Q_UNUSED(re);
 
     qDebug() << "Contact request for" << user->uniqueID << "sent request data";
     return true;

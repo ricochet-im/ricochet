@@ -61,6 +61,15 @@ void IncomingRequestManager::loadRequests()
     }
 }
 
+QList<QObject*> IncomingRequestManager::requestObjects() const
+{
+    QList<QObject*> re;
+    re.reserve(m_requests.size());
+    foreach (IncomingContactRequest *o, m_requests)
+        re.append(o);
+    return re;
+}
+
 IncomingContactRequest *IncomingRequestManager::requestFromHostname(const QByteArray &hostname)
 {
     Q_ASSERT(!hostname.endsWith(".onion"));

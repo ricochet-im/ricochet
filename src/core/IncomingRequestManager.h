@@ -113,7 +113,7 @@ public:
 
     explicit IncomingRequestManager(ContactsManager *contactsManager);
 
-    QList<QObject*> requestObjects() const { return *reinterpret_cast<const QList<QObject*>*>(&m_requests); }
+    QList<QObject*> requestObjects() const;
     QList<IncomingContactRequest*> requests() const { return m_requests; }
     IncomingContactRequest *requestFromHostname(const QByteArray &hostname);
 

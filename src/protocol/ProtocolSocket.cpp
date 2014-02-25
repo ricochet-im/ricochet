@@ -165,6 +165,7 @@ void ProtocolSocket::sendCommand(ProtocolCommand *command)
     Q_ASSERT(commandQueue.isEmpty());
     qint64 re = m_socket->write(command->commandBuffer);
     Q_ASSERT(re == command->commandBuffer.size());
+    Q_UNUSED(re);
 
     qDebug() << "Wrote command:" << command->commandBuffer.toHex();
 }
@@ -190,6 +191,7 @@ void ProtocolSocket::read()
 
         qint64 re = m_socket->read(data.data(), msgLength + 6);
         Q_ASSERT(re == msgLength + 6);
+        Q_UNUSED(re);
 
         if (isReply(data[3]))
         {

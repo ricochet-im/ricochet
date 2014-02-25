@@ -207,6 +207,7 @@ bool IncomingSocket::handleVersion(QTcpSocket *socket)
 void IncomingSocket::handleIntro(QTcpSocket *socket, uchar version)
 {
     Q_ASSERT(version == protocolVersion);
+    Q_UNUSED(version);
 
     /* Peek at the purpose; can't be a read as this may be called repeatedly until it's ready */
     uchar purpose;
@@ -260,6 +261,7 @@ void IncomingSocket::handleIntro(QTcpSocket *socket, uchar version)
         /* Read purpose */
         int ok = socket->read(1).size();
         Q_ASSERT(ok);
+        Q_UNUSED(ok);
 
         /* Pass to ContactRequestServer */
         pendingSockets.removeOne(socket);
