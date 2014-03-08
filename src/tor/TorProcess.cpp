@@ -180,6 +180,8 @@ void TorProcess::stop()
 
     d->state = NotStarted;
 
+    // Windows can't terminate the process well, but Tor will clean itself up
+#ifndef Q_OS_WIN
     if (d->process.state() == QProcess::Running) {
         d->process.terminate();
         if (!d->process.waitForFinished(5000)) {
@@ -190,6 +192,7 @@ void TorProcess::stop()
             }
         }
     }
+#endif
 
     emit stateChanged(d->state);
 }
