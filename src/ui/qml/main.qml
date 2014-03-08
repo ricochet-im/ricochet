@@ -86,6 +86,16 @@ QtObject {
             id: palette
         },
 
+        Item {
+            id: styleHelper
+            visible: false
+            Label { id: fakeLabel }
+            Label { id: fakeLabelSized; font.pointSize: styleHelper.pointSize }
+
+            property int pointSize: (Qt.platform.os === "windows") ? 10 : fakeLabel.font.pointSize
+            property int textHeight: fakeLabelSized.height
+        },
+
         Timer {
             interval: 2000
             running: true

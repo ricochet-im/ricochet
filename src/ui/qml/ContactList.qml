@@ -57,7 +57,6 @@ ScrollView {
                     case ContactUser.RequestRejected: return "Rejected"
                 }
             }
-            font.pointSize: 12
             font.bold: true
         }
 

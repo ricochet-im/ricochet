@@ -36,6 +36,7 @@ Rectangle {
         text: model.name
         elide: Text.ElideRight
         color: highlighted ? palette.highlightedText : palette.text
+        font.pointSize: styleHelper.pointSize
     }
 
     ContactActions {

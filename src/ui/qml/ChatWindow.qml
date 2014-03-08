@@ -57,6 +57,7 @@ ApplicationWindow {
 
         Label {
             text: contact.nickname
+            font.pointSize: styleHelper.pointSize
         }
 
         Item {
@@ -110,14 +111,13 @@ ApplicationWindow {
                 y: 2
                 // This ridiculous incantation enables an automatically sized TextArea
                 Layout.preferredHeight: mapFromItem(flickableItem, 0, 0).y * 2 +
-                                        Math.max(textHeight.height + 2*edit.textMargin, flickableItem.contentHeight)
-                Layout.maximumHeight: (textHeight.height * 4) + (2 * edit.textMargin)
+                                        Math.max(styleHelper.textHeight + 2*edit.textMargin, flickableItem.contentHeight)
+                Layout.maximumHeight: (styleHelper.textHeight * 4) + (2 * edit.textMargin)
                 textMargin: 3
                 wrapMode: TextEdit.Wrap
+                font.pointSize: styleHelper.pointSize
 
                 property TextEdit edit
-
-                Label { id: textHeight; visible: false }
 
                 Component.onCompleted: {
                     var objects = contentItem.contentItem.children

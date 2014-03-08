@@ -52,7 +52,6 @@ ApplicationWindow {
             horizontalAlignment: Qt.AlignHCenter
             wrapMode: Text.Wrap
             text: "Someone new is asking to connect to you"
-            font.pointSize: 12
         }
 
         Item { height: 1 }

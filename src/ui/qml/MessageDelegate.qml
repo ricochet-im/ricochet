@@ -73,6 +73,7 @@ Column {
             renderType: Text.NativeRendering
             selectionColor: palette.highlight
             selectedTextColor: palette.highlightedText
+            font.pointSize: styleHelper.pointSize
 
             wrapMode: TextEdit.Wrap
             readOnly: true

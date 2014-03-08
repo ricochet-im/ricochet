@@ -45,7 +45,6 @@ ApplicationWindow {
             horizontalAlignment: Qt.AlignHCenter
             wrapMode: Text.Wrap
             text: "Share your Torsion ID to allow connection requests"
-            font.pointSize: 12
         }
 
         ContactIDField {
