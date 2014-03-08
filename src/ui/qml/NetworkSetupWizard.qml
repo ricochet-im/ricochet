@@ -13,6 +13,9 @@ ApplicationWindow {
     title: qsTr("Torsion")
 
     signal networkReady
+    signal closed
+
+    onVisibleChanged: if (!visible) closed()
 
     property Item visibleItem: configPage.visible ? configPage : pageLoader.item
 

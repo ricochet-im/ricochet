@@ -9,6 +9,9 @@ ApplicationWindow {
     height: 500
     title: qsTr("Torsion Preferences")
 
+    signal closed
+    onVisibleChanged: if (!visible) closed()
+
     property string initialPage
     property var initialPageProperties: { }
 

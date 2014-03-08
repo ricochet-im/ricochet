@@ -105,7 +105,7 @@ MouseArea {
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
             text: "Configure"
             onClicked: {
-                var object = createDialog("NetworkSetupWizard.qml")
+                var object = createDialog("NetworkSetupWizard.qml", { }, window)
                 object.visible = true
             }
         }

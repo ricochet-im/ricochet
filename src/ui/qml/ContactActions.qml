@@ -27,7 +27,7 @@ Item {
     }
 
     function openPreferences() {
-        window.openPreferences("ContactPreferences.qml", { 'selectedContact': contact })
+        root.openPreferences("ContactPreferences.qml", { 'selectedContact': contact })
     }
 
     signal renameTriggered

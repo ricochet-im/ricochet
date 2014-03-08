@@ -13,6 +13,9 @@ ApplicationWindow {
     flags: Qt.Dialog
     modality: Qt.WindowModal
 
+    signal closed
+    onVisibleChanged: if (!visible) closed()
+
     function close() {
         visible = false
     }
