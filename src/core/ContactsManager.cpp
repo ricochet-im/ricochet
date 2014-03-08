@@ -37,7 +37,6 @@
 #include "ContactIDValidator.h"
 #include <QStringList>
 #include <QDebug>
-#include <functional>
 
 ContactsManager *contactsManager = 0;
 
@@ -93,8 +92,14 @@ ContactUser *ContactsManager::addContact(const QString &nickname)
 void ContactsManager::connectSignals(ContactUser *user)
 {
     connect(user, SIGNAL(contactDeleted(ContactUser*)), SLOT(contactDeleted(ContactUser*)));
-    connect(user, &ContactUser::prepareInteractiveHandler, std::bind(&ContactsManager::prepareInteractiveHandler,
-                this, user));
+    connect(user, SIGNAL(prepareInteractiveHandler()), SLOT(onPrepareInteractiveHandler()));
+}
+
+void ContactsManager::onPrepareInteractiveHandler()
+{
+    ContactUser *user = qobject_cast<ContactUser*>(sender());
+    if (user)
+        emit prepareInteractiveHandler(user);
 }
 
 ContactUser *ContactsManager::createContactRequest(const QString &contactid, const QString &nickname,

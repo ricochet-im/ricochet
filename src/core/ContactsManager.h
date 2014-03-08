@@ -86,6 +86,7 @@ signals:
 
 private slots:
     void contactDeleted(ContactUser *user);
+    void onPrepareInteractiveHandler();
 
 private:
     QList<ContactUser*> pContacts;

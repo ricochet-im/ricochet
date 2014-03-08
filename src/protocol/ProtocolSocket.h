@@ -39,7 +39,6 @@
 #include <QHash>
 #include <QElapsedTimer>
 
-class ProtocolManager;
 class ProtocolCommand;
 class ContactUser;
 

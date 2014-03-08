@@ -36,7 +36,6 @@ lessThan(QT_MAJOR_VERSION,5)|lessThan(QT_MINOR_VERSION,1) {
 TARGET = Torsion
 TEMPLATE = app
 QT += core gui network quick widgets
-CONFIG += c++11
 
 # Pass DEFINES+=TORSION_NO_PORTABLE for a system-wide installation
 
@@ -175,3 +174,5 @@ HEADERS += src/ui/MainWindow.h \
 
 RESOURCES += translation/embedded.qrc \
     src/ui/qml/qml.qrc
+
+OTHER_FILES += src/ui/qml/*
