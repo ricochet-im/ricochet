@@ -29,6 +29,10 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+lessThan(QT_MAJOR_VERSION,5)|lessThan(QT_MINOR_VERSION,1) {
+    error("Qt 5.1 or greater is required. You can build your own, or get the SDK at https://qt-project.org/downloads")
+}
+
 TARGET = Torsion
 TEMPLATE = app
 QT += core gui network quick widgets
