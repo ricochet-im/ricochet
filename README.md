@@ -17,13 +17,25 @@ For more information, you can [read about Tor](https://www.torproject.org/about/
 This software is an experiment. It hasn't been audited or formally reviewed by anyone. Security and anonymity are difficult topics, and you should carefully evaluate your risks and exposure with any software. *Do not rely on Torsion for your safety* unless you have more trust in my work than it deserves. That said, I believe it does more to try to protect your privacy than any similar software.
 
 ### Downloading & Building
-#### Building from source
-To build for Linux, OS X, or Windows, you need:
- * Qt 5.1 or later
+#### Build requirements
+ * Qt 5.1 or later (see Linux notes below)
  * OpenSSL
  * A pre-built Tor binary and its dependencies
 
-Place `tor` in your build directory or PATH and run `qmake` (or `qmake-qt5`). `make`, and `make install` if desired. To build packages, see the scripts under the `packaging` directory.
+Place `tor` or `tor.exe` in your build directory or PATH. To build packages, see the scripts under the `packaging` directory.
+
+#### Linux
+Users of Ubuntu 14.04 or earlier and other slow distributions will need to use the [Qt SDK](https://qt-project.org/downloads) or build their own Qt.
+
+Run `qmake` or `qmake-qt5`, then `make`. The default build portable, which will store configuration in a folder named `config` next to the binary. For a system installation using XDG configuration directories, run `qmake DEFINES+=TORSION_NO_PORTABLE` instead.
+
+#### OS X
+Use the [Qt SDK](https://qt-project.org/downloads) or homebrew. Run `qmake` and `make` to build an application bundle. The default build will store configuration in a `config.torsion` folder next to the application *unless* the path looks like a system-wide Applications folder, in which case `~/Library/Application Support/Torsion` is used.
+
+#### Windows
+Builds with MinGW or MSVC. You will need the [Qt SDK](https://qt-project.org/downloads) and a copy of OpenSSL headers and libraries.
+
+You must pass `OPENSSLDIR="C:\Path\To\OpenSSL\Build"` to qmake. If using Qt Creator, add it to Additional arguments in the Projects/Build Settings tab. The default build is portable and stores configuration in a `config` folder next to the binary. Pass `DEFINES+=TORSION_NO_PORTABLE` to qmake to use the user appdata location instead.
 
 ### Other
 Bugs can be reported on the [issue tracker](https://github.com/special/torsion/issues).
