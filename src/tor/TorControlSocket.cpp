@@ -63,7 +63,7 @@ void TorControlSocket::registerEvent(const QByteArray &action, TorControlCommand
     eventCommands.insert(action, command);
 
     QByteArray data("SETEVENTS");
-    for (auto it = eventCommands.begin(); it != eventCommands.end(); it++)
+    for (QHash<QByteArray,TorControlCommand*>::iterator it = eventCommands.begin(); it != eventCommands.end(); it++)
         data += " " + it.key();
     data += "\r\n";
 
