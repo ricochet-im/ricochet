@@ -42,7 +42,9 @@ ApplicationWindow {
             id: toolBarLayout
             width: parent.width
 
-            TorStateWidget { }
+            TorStateWidget {
+                anchors.verticalCenter: parent.verticalCenter
+            }
 
             Item {
                 Layout.fillWidth: true

@@ -90,7 +90,7 @@ QtObject {
             id: styleHelper
             visible: false
             Label { id: fakeLabel }
-            Label { id: fakeLabelSized; font.pointSize: styleHelper.pointSize }
+            Label { id: fakeLabelSized; font.pointSize: styleHelper.pointSize > 0 ? styleHelper.pointSize : 1 }
 
             property int pointSize: (Qt.platform.os === "windows") ? 10 : fakeLabel.font.pointSize
             property int textHeight: fakeLabelSized.height
