@@ -1,3 +1,5 @@
+#define ExeVersion GetFileVersion(AddBackslash(SourcePath) + "Torsion.exe")
+
 [Setup]
 OutputBaseFilename=Torsion
 AppName=Torsion IM
@@ -8,8 +10,10 @@ DisableProgramGroupPage=true
 DisableDirPage=false
 DisableReadyPage=false
 DefaultGroupName=Torsion IM
+ArchitecturesAllowed=x64
+ArchitecturesInstallIn64BitMode=x64
 AppID={{B700250B-D3E2-407F-A534-8818EB8E3D93}
-AppVersion=0.1.0
+AppVersion={#ExeVersion}
 UninstallDisplayName=Torsion IM
 Uninstallable=not IsPortableInstall
 VersionInfoDescription=Torsion - Anonymous Instant Messaging
@@ -17,12 +21,9 @@ VersionInfoProductName=Torsion
 WizardImageFile=SetupModern11.bmp
 [Files]
 Source: Torsion.exe; DestDir: {app}; DestName: Torsion.exe; Flags: replacesameversion
-Source: ..\LICENSE; DestDir: {app}
-Source: ..\LICENSE-GPLv2; DestDir: {app}
-Source: ..\README.txt; DestDir: {app}
-Source: Tor\LICENSE; DestDir: {app}\Tor
-Source: Tor\README.txt; DestDir: {app}\Tor
-Source: Tor\tor.exe; DestDir: {app}\Tor; Flags: replacesameversion uninsrestartdelete
+Source: ..\..\LICENSE; DestDir: {app}
+Source: tor.exe; DestDir: {app}; Flags: replacesameversion uninsrestartdelete
+Source: Qt\*; DestDir: {app}
 [Icons]
 Name: {group}\Torsion; Filename: {app}\Torsion.exe; WorkingDir: {app}; Comment: Start Torsion IM; Check: not IsPortableInstall
 Name: {group}\Uninstall Torsion IM; Filename: {uninstallexe}; Check: not IsPortableInstall
@@ -30,10 +31,6 @@ Name: {group}\Uninstall Torsion IM; Filename: {uninstallexe}; Check: not IsPorta
 Filename: {app}\Torsion.exe; WorkingDir: {app}; Description: Launch Torsion IM; Flags: postinstall nowait
 [Messages]
 WelcomeLabel2=This will install [name] on your computer.
-[Dirs]
-Name: {app}\Tor
-[UninstallDelete]
-Name: {app}\Tor; Type: filesandordirs
 [CustomMessages]
 PortableDesc=Do you want a portable installation?
 PortableText=Torsion can be installed on your system, or extracted to a portable folder. The portable installation can be moved between computers or kept secure on an encrypted harddrive.
@@ -43,6 +40,7 @@ PortableOptExtract=Extract (Portable)
 BtnExtract=Extract
 ExtractDirText=Torsion will be extracted into the following folder
 ExtractDirDesc=Where should Torsion be extracted?
+
 [Code]
 // http://www.vincenzo.net/isxkb/index.php?title=Obtaining_the_application's_version
 // http://www.vincenzo.net/isxkb/index.php?title=Uninstall_user_files

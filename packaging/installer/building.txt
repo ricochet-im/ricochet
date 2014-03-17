@@ -1,7 +1,8 @@
 Building the installer requires Inno Setup; see http://www.jrsoftware.org/isinfo.php
 
-Place the statically linked executable (Torsion.exe) in the installer directory.
+Place tor.exe and Torsion.exe in this directory. In console:
 
-You must also place the 'LICENSE' and 'tor.exe' files from the official Tor installer
-into the installer\Tor directory, along with a file called 'README' that includes
-license and version information.
+PATH=%PATH%;C:\Path\To\Qt\bin
+prepare.bat
+
+Then build from installer.iss to create the installer package.

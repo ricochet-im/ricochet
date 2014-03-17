@@ -9,3 +9,6 @@ release
 .packagingrc
 .qmake.stash
 .DS_Store
+*.exe
+packaging/installer/Qt
+packaging/installer/Output
