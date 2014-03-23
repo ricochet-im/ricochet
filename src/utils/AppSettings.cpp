@@ -38,7 +38,7 @@
 
 QString AppSettings::configLocation() const
 {
-    QString s = QDir::toNativeSeparators(fileName());
+    QString s = QDir::fromNativeSeparators(fileName());
     int n = s.lastIndexOf(QLatin1Char('/'));
     return s.mid(0, (n < 0) ? n : (n+1));
 }
