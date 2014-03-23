@@ -10,5 +10,6 @@ release
 .qmake.stash
 .DS_Store
 *.exe
+*.dll
 packaging/installer/Qt
 packaging/installer/Output

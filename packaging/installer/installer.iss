@@ -24,9 +24,13 @@ Source: Torsion.exe; DestDir: {app}; DestName: Torsion.exe; Flags: replacesameve
 Source: ..\..\LICENSE; DestDir: {app}
 Source: tor.exe; DestDir: {app}; Flags: replacesameversion uninsrestartdelete
 Source: Qt\*; DestDir: {app}
+Source: MSVCP110.DLL; DestDir: {app}
+Source: MSVCR110.DLL; DestDir: {app}
 [Icons]
 Name: {group}\Torsion; Filename: {app}\Torsion.exe; WorkingDir: {app}; Comment: Start Torsion IM; Check: not IsPortableInstall
 Name: {group}\Uninstall Torsion IM; Filename: {uninstallexe}; Check: not IsPortableInstall
+[UninstallDelete]
+Name: {app}\config; Type: filesandordirs
 [Run]
 Filename: {app}\Torsion.exe; WorkingDir: {app}; Description: Launch Torsion IM; Flags: postinstall nowait
 [Messages]
