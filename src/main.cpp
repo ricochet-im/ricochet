@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    a.setApplicationVersion(QLatin1String("0.2.0-dev"));
+    a.setApplicationVersion(QLatin1String("1.0.0"));
 
     {
         QString error;
