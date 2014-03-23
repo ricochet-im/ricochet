@@ -23,7 +23,7 @@ WizardImageFile=SetupModern11.bmp
 Source: Torsion.exe; DestDir: {app}; DestName: Torsion.exe; Flags: replacesameversion
 Source: ..\..\LICENSE; DestDir: {app}
 Source: tor.exe; DestDir: {app}; Flags: replacesameversion uninsrestartdelete
-Source: Qt\*; DestDir: {app}
+Source: Qt\*; DestDir: {app}; Flags: recursesubdirs
 Source: MSVCP110.DLL; DestDir: {app}
 Source: MSVCR110.DLL; DestDir: {app}
 [Icons]
