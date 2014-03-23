@@ -46,6 +46,7 @@ class MainWindow : public QObject
     Q_OBJECT
     Q_DISABLE_COPY(MainWindow)
 
+    Q_PROPERTY(QString version READ version CONSTANT)
     Q_PROPERTY(QString aboutText READ aboutText CONSTANT)
 
 public:
@@ -53,6 +54,7 @@ public:
     ~MainWindow();
 
     QString aboutText() const;
+    QString version() const;
 
     Q_INVOKABLE bool showRemoveContactDialog(ContactUser *user);
 

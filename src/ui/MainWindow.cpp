@@ -85,6 +85,11 @@ MainWindow::~MainWindow()
 {
 }
 
+QString MainWindow::version() const
+{
+    return qApp->applicationVersion();
+}
+
 QString MainWindow::aboutText() const
 {
     QFile file(QStringLiteral(":/text/LICENSE"));
