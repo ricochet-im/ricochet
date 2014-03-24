@@ -15,7 +15,7 @@ Column {
             margins: 8
         }
 
-        text: "The Tor process was not started successfully. This is most likely an installation or system error."
+        text: qsTr("The Tor process was not started successfully. This is most likely an installation or system error.")
         font.bold: true
         wrapMode: Text.Wrap
     }
@@ -40,7 +40,7 @@ Column {
 
         Item { height: 1; Layout.fillWidth: true }
         Button {
-            text: "Quit"
+            text: qsTr("Quit")
             onClicked: Qt.quit()
         }
     }

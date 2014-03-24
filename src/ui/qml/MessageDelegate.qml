@@ -9,7 +9,8 @@ Column {
     Loader {
         active: model.section === "offline"
         sourceComponent: Label {
-            text: "%1 is offline".arg(contact !== null ? contact.nickname : "")
+            //: %1 nickname
+            text: qsTr("%1 is offline").arg(contact !== null ? contact.nickname : "")
             width: background.parent.width
             elide: Text.ElideRight
             horizontalAlignment: Qt.AlignHCenter

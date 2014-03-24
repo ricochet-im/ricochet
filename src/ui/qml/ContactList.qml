@@ -51,10 +51,10 @@ ScrollView {
             horizontalAlignment: Qt.AlignHCenter
             text: {
                 switch (parseInt(section)) {
-                    case ContactUser.Online: return "Online"
-                    case ContactUser.Offline: return "Offline"
-                    case ContactUser.RequestPending: return "Requests"
-                    case ContactUser.RequestRejected: return "Rejected"
+                    case ContactUser.Online: return qsTr("Online")
+                    case ContactUser.Offline: return qsTr("Offline")
+                    case ContactUser.RequestPending: return qsTr("Requests")
+                    case ContactUser.RequestRejected: return qsTr("Rejected")
                 }
             }
             font.bold: true

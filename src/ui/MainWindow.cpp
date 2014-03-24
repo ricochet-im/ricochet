@@ -102,7 +102,7 @@ QString MainWindow::aboutText() const
 bool MainWindow::showRemoveContactDialog(ContactUser *user)
 {
     QMessageBox::StandardButton btn = QMessageBox::question(0,
-        QString::fromLatin1("Remove %1").arg(user->nickname()),
-        QString::fromLatin1("Do you want to permanently remove %1?").arg(user->nickname()));
+        tr("Remove %1").arg(user->nickname()),
+        tr("Do you want to permanently remove %1?").arg(user->nickname()));
     return btn == QMessageBox::Yes;
 }

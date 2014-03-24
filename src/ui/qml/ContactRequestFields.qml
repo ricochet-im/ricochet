@@ -14,7 +14,7 @@ GridLayout {
     property bool hasValidRequest: contactIdField.acceptableInput && nameField.text.length
 
     Label {
-        text: "ID:"
+        text: qsTr("ID:")
         Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
     }
 
@@ -26,7 +26,7 @@ GridLayout {
     }
 
     Label {
-        text: "Name:"
+        text: qsTr("Name:")
         Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
     }
 
@@ -37,7 +37,7 @@ GridLayout {
     }
 
     Label {
-        text: "Message:"
+        text: qsTr("Message:")
         Layout.alignment: Qt.AlignTop | Qt.AlignRight
     }
 

@@ -21,15 +21,15 @@ Item {
         GridLayout {
             columns: 4
             width: parent.width
-            Label { text: "Running:" }
-            Label { font.bold: true; Layout.fillWidth: true; text: (torInstance.process ? (torInstance.process.state == TorProcess.Ready ? "Yes" : "No") : "External") }
-            Label { text: "Control connected:" }
-            Label { font.bold: true; Layout.fillWidth: true; text: ((torInstance.control.status == TorControl.Connected) ? "Yes" : "No") }
-            Label { text: "Circuits established:" }
-            Label { font.bold: true; text: ((torInstance.control.torStatus == TorControl.TorReady) ? "Yes" : "No") }
-            Label { text: "Hidden service:" }
-            Label { font.bold: true; text: (userIdentity.isServiceOnline ? "Online" : (userIdentity.isServicePublished ? "Published" : "Offline")) }
-            Label { text: "Version:" }
+            Label { text: qsTr("Running:") }
+            Label { font.bold: true; Layout.fillWidth: true; text: (torInstance.process ? (torInstance.process.state == TorProcess.Ready ? qsTr("Yes") : qsTr("No")) : qsTr("External")) }
+            Label { text: qsTr("Control connected:") }
+            Label { font.bold: true; Layout.fillWidth: true; text: ((torInstance.control.status == TorControl.Connected) ? qsTr("Yes") : qsTr("No")) }
+            Label { text: qsTr("Circuits established:") }
+            Label { font.bold: true; text: ((torInstance.control.torStatus == TorControl.TorReady) ? qsTr("Yes") : qsTr("No")) }
+            Label { text: qsTr("Hidden service:") }
+            Label { font.bold: true; text: (userIdentity.isServiceOnline ? qsTr("Online") : (userIdentity.isServicePublished ? qsTr("Published") : qsTr("Offline"))) }
+            Label { text: qsTr("Version:") }
             Label { font.bold: true; text: torControl.torVersion }
             //Label { text: "Recommended:" }
             //Label { font.bold: true; text: "Unknown" }
@@ -55,7 +55,8 @@ Item {
         }
 
         Label {
-            text: "Error: <b>" + errorMessage + "</b>"
+            //: %1 is error message
+            text: qsTr("Error: <b>%1</b>").arg(errorMessage)
             visible: errorMessage != ""
 
             property string errorMessage: {
@@ -71,7 +72,7 @@ Item {
         }
 
         Button {
-            text: "Configure"
+            text: qsTr("Configure")
             onClicked: {
                 var object = createDialog("NetworkSetupWizard.qml")
                 object.visible = true

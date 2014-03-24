@@ -33,7 +33,7 @@ RowLayout {
     }
 
     Button {
-        text: "Copy"
+        text: qsTr("Copy")
         visible: contactId.showCopyButton
         onClicked: {
             field.selectAll()

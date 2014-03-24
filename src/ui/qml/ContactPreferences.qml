@@ -36,14 +36,14 @@ Item {
             property QtObject contact: contacts.selectedContact
             property QtObject request: (contact !== null) ? contact.contactRequest : null
 
-            Label { text: "Nickname:" }
+            Label { text: qsTr("Nickname:") }
             TextField {
                 Layout.fillWidth: true
                 text: contactInfo.contact.nickname
                 onAccepted: contactInfo.contact.nickname = text
             }
 
-            Label { text: "ID:" }
+            Label { text: qsTr("ID:") }
             ContactIDField {
                 Layout.fillWidth: true
                 Layout.minimumWidth: 100
@@ -51,14 +51,14 @@ Item {
                 text: contactInfo.contact.contactID
             }
 
-            Label { text: "Date added:" }
+            Label { text: qsTr("Date added:") }
             Label {
                 Layout.fillWidth: true
                 elide: Text.ElideRight
                 text: Qt.formatDate(contactInfo.contact.readSetting("whenCreated"), Qt.DefaultLocaleLongDate)
             }
 
-            Label { text: "Last seen:"; visible: lastSeen.visible }
+            Label { text: qsTr("Last seen:"); visible: lastSeen.visible }
             Label {
                 id: lastSeen
                 Layout.fillWidth: true
@@ -67,7 +67,7 @@ Item {
                 text: Qt.formatDateTime(contactInfo.contact.readSetting("lastConnected"), Qt.DefaultLocaleLongDate)
             }
 
-            Label { text: "Request:"; visible: requestStatus.visible }
+            Label { text: qsTr("Request:"); visible: requestStatus.visible }
             Label {
                 id: requestStatus
                 visible: contactInfo.request !== null
@@ -76,19 +76,21 @@ Item {
                     if (contactInfo.request === null)
                         return re
                     switch (contactInfo.request.status) {
-                        case OutgoingContactRequest.Pending: re = "Pending connection"; break
-                        case OutgoingContactRequest.Acknowledged: re = "Delivered"; break
-                        case OutgoingContactRequest.Accepted: re = "Accepted"; break
-                        case OutgoingContactRequest.Error: re = "Error"; break
-                        case OutgoingContactRequest.Rejected: re = "Rejected"; break
+                        case OutgoingContactRequest.Pending: re = qsTr("Pending connection"); break
+                        case OutgoingContactRequest.Acknowledged: re = qsTr("Delivered"); break
+                        case OutgoingContactRequest.Accepted: re = qsTr("Accepted"); break
+                        case OutgoingContactRequest.Error: re = qsTr("Error"); break
+                        case OutgoingContactRequest.Rejected: re = qsTr("Rejected"); break
                     }
-                    if (contactInfo.request.isConnected)
-                        re += " (Connected)"
+                    if (contactInfo.request.isConnected) {
+                        //: %1 status, e.g. "Accepted"
+                        re = qsTr("%1 (Connected)").arg(re)
+                    }
                     return re
                 }
             }
 
-            Label { text: "Response:"; visible: rejectMessage.visible }
+            Label { text: qsTr("Response:"); visible: rejectMessage.visible }
             Label {
                 id: rejectMessage
                 Layout.fillWidth: true
@@ -107,7 +109,7 @@ Item {
             Item { height: 1; width: 1 }
 
             Button {
-                text: "Remove"
+                text: qsTr("Remove")
                 Layout.columnSpan: 2
                 onClicked: contactActions.removeContact()
             }

@@ -122,7 +122,7 @@ void TorProcess::start()
     d->errorMessage.clear();
 
     if (d->executable.isEmpty() || d->dataDir.isEmpty()) {
-        d->errorMessage = QStringLiteral("Tor executable and data directory not specified");
+        d->errorMessage = tr("Tor executable and data directory not specified");
         d->state = Failed;
         emit errorMessageChanged(d->errorMessage);
         emit stateChanged(d->state);
@@ -139,7 +139,7 @@ void TorProcess::start()
     QByteArray password = controlPassword();
     QByteArray hashedPassword = torControlHashedPassword(password);
     if (password.isEmpty() || hashedPassword.isEmpty()) {
-        d->errorMessage = QStringLiteral("Random password generation failed");
+        d->errorMessage = tr("Random password generation failed");
         d->state = Failed;
         emit errorMessageChanged(d->errorMessage);
         emit stateChanged(d->state);
@@ -220,12 +220,12 @@ bool TorProcessPrivate::ensureFilesExist()
     if (!torrc.exists()) {
         QDir dir(dataDir);
         if (!dir.exists() && !dir.mkpath(QStringLiteral("."))) {
-            errorMessage = QStringLiteral("Cannot create Tor data directory: ") + dataDir;
+            errorMessage = tr("Cannot create Tor data directory: %1").arg(dataDir);
             return false;
         }
 
         if (!torrc.open(QIODevice::ReadWrite)) {
-            errorMessage = QStringLiteral("Cannot create Tor configuration file: ") + torrcPath();
+            errorMessage = tr("Cannot create Tor configuration file: %1").arg(torrcPath());
             return false;
         }
     }
@@ -300,7 +300,7 @@ void TorProcessPrivate::tryReadControlPort()
     }
 
     if (++controlPortAttempts * controlPortTimer.interval() > 10000) {
-        errorMessage = QStringLiteral("No control port available after launching process");
+        errorMessage = tr("No control port available after launching process");
         state = TorProcess::Failed;
         emit q->errorMessageChanged(errorMessage);
         emit q->stateChanged(state);

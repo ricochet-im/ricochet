@@ -44,7 +44,7 @@ ApplicationWindow {
             Layout.fillWidth: true
             horizontalAlignment: Qt.AlignHCenter
             wrapMode: Text.Wrap
-            text: "Share your Torsion ID to allow connection requests"
+            text: qsTr("Share your Torsion ID to allow connection requests")
         }
 
         ContactIDField {
@@ -92,12 +92,12 @@ ApplicationWindow {
         }
 
         Button {
-            text: "Cancel"
+            text: qsTr("Cancel")
             onClicked: addContactWindow.close()
         }
 
         Button {
-            text: "Add"
+            text: qsTr("Add")
             isDefault: true
             enabled: fields.hasValidRequest
             onClicked: addContactWindow.accept()

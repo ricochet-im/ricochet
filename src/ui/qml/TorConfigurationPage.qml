@@ -69,7 +69,7 @@ Column {
 
     Label {
         width: parent.width
-        text: "Does this computer need a proxy to access the internet?"
+        text: qsTr("Does this computer need a proxy to access the internet?")
         wrapMode: Text.Wrap
     }
 
@@ -81,19 +81,20 @@ Column {
             columns: 2
 
             Label {
-                text: "Proxy type:"
+                text: qsTr("Proxy type:")
                 color: proxyPalette.text
             }
             ComboBox {
                 id: proxyTypeField
-                model: ListModel {
-                    ListElement { text: "None"; type: "" }
-                    ListElement { text: "SOCKS 4"; type: "socks4" }
-                    ListElement { text: "SOCKS 5"; type: "socks5" }
-                    ListElement { text: "HTTP"; type: "http" }
-                }
+                property string none: qsTr("None")
+                model: [
+                    { "text": qsTr("None"), "type": "" },
+                    { "text": "SOCKS 4", "type": "socks4" },
+                    { "text": "SOCKS 5", "type": "socks5" },
+                    { "text": "HTTP", "type": "http" },
+                ]
                 textRole: "text"
-                property string selectedType: currentIndex >= 0 ? model.get(currentIndex).type : ""
+                property string selectedType: currentIndex >= 0 ? model[currentIndex].type : ""
 
                 SystemPalette {
                     id: proxyPalette
@@ -102,7 +103,7 @@ Column {
             }
 
             Label {
-                text: "Address:"
+                text: qsTr("Address:")
                 color: proxyPalette.text
             }
             RowLayout {
@@ -111,10 +112,10 @@ Column {
                     id: proxyAddressField
                     Layout.fillWidth: true
                     enabled: setup.proxyType
-                    placeholderText: "IP address or hostname"
+                    placeholderText: qsTr("IP address or hostname")
                 }
                 Label {
-                    text: "Port:"
+                    text: qsTr("Port:")
                     color: proxyPalette.text
                 }
                 TextField {
@@ -125,7 +126,7 @@ Column {
             }
 
             Label {
-                text: "Username:"
+                text: qsTr("Username:")
                 color: proxyPalette.text
             }
             RowLayout {
@@ -135,17 +136,17 @@ Column {
                     id: proxyUsernameField
                     Layout.fillWidth: true
                     enabled: setup.proxyType
-                    placeholderText: "Optional"
+                    placeholderText: qsTr("Optional")
                 }
                 Label {
-                    text: "Password:"
+                    text: qsTr("Password:")
                     color: proxyPalette.text
                 }
                 TextField {
                     id: proxyPasswordField
                     Layout.fillWidth: true
                     enabled: setup.proxyType
-                    placeholderText: "Optional"
+                    placeholderText: qsTr("Optional")
                 }
             }
         }
@@ -155,8 +156,7 @@ Column {
 
     Label {
         width: parent.width
-        text: "Does this computer's Internet connection go through a firewall " +
-              "that only allows connections to certain ports?"
+        text: qsTr("Does this computer's Internet connection go through a firewall that only allows connections to certain ports?")
         wrapMode: Text.Wrap
     }
 
@@ -167,14 +167,14 @@ Column {
         RowLayout {
             anchors.fill: parent
             Label {
-                text: "Allowed ports:"
+                text: qsTr("Allowed ports:")
             }
             TextField {
                 id: allowedPortsField
                 Layout.fillWidth: true
             }
             Label {
-                text: "Example: 80,443"
+                text: qsTr("Example: 80,443")
                 SystemPalette { id: disabledPalette; colorGroup: SystemPalette.Disabled }
                 color: disabledPalette.text
             }
@@ -185,8 +185,7 @@ Column {
 
     Label {
         width: parent.width
-        text: "If this computer's Internet connection is censored, you will need " +
-              "to obtain and use bridge relays."
+        text: qsTr("If this computer's Internet connection is censored, you will need to obtain and use bridge relays.")
         wrapMode: Text.Wrap
     }
 
@@ -195,7 +194,7 @@ Column {
         ColumnLayout {
             anchors.fill: parent
             Label {
-                text: "Enter one or more bridge relays (one per line):"
+                text: qsTr("Enter one or more bridge relays (one per line):")
             }
             TextArea {
                 id: bridgesField
@@ -210,14 +209,14 @@ Column {
         width: parent.width
 
         Button {
-            text: "Back"
+            text: qsTr("Back")
             onClicked: window.back()
         }
 
         Item { height: 1; Layout.fillWidth: true }
 
         Button {
-            text: "Connect"
+            text: qsTr("Connect")
             isDefault: true
             onClicked: {
                 setup.save()

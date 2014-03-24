@@ -36,17 +36,17 @@ ApplicationWindow {
         anchors.margins: 8
 
         Tab {
-            title: "Contacts"
+            title: qsTr("Contacts")
             source: Qt.resolvedUrl("ContactPreferences.qml")
         }
 
         Tab {
-            title: "Tor"
+            title: qsTr("Tor")
             source: Qt.resolvedUrl("TorPreferences.qml")
         }
 
         Tab {
-            title: "About"
+            title: qsTr("About")
             source: Qt.resolvedUrl("AboutPreferences.qml")
         }
     }

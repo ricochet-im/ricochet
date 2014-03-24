@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
     {
         QString error;
         if (!initSettings(error)) {
-            QMessageBox::critical(0, QStringLiteral("Torsion Error"), error);
+            QMessageBox::critical(0, qApp->translate("Main", "Torsion Error"), error);
             return 1;
         }
     }
@@ -148,7 +148,7 @@ static bool initSettings(QString &errorMessage)
 
     QDir dir(configPath);
     if (!dir.exists() && !dir.mkpath(QStringLiteral("."))) {
-        errorMessage = QStringLiteral("Cannot create configuration directory");
+        errorMessage = qApp->translate("Main", "Cannot create configuration directory");
         return false;
     }
 
@@ -165,15 +165,15 @@ static bool initSettings(QString &errorMessage)
     configLock->setStaleLockTime(0);
     if (!configLock->tryLock()) {
         if (configLock->error() == QLockFile::LockFailedError)
-            errorMessage = QStringLiteral("Torsion is already running");
+            errorMessage = qApp->translate("Main", "Torsion is already running");
         else
-            errorMessage = QStringLiteral("Cannot write configuration files (failed to acquire lock)");
+            errorMessage = qApp->translate("Main", "Cannot write configuration files (failed to acquire lock)");
         return false;
     }
 
     config = new AppSettings(dir.filePath(QStringLiteral("Torsion.ini")), QSettings::IniFormat);
     if (!config->isWritable()) {
-        errorMessage = QStringLiteral("Configuration file is not writable");
+        errorMessage = qApp->translate("Main", "Configuration file is not writable");
         return false;
     }
 

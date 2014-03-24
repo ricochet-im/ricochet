@@ -36,20 +36,20 @@ Item {
         id: contextMenu
 
         MenuItem {
-            text: "Chat..."
+            text: qsTr("Chat...")
             onTriggered: openWindow()
         }
         MenuItem {
-            text: "Details..."
+            text: qsTr("Details...")
             onTriggered: openPreferences()
         }
         MenuItem {
-            text: "Rename"
+            text: qsTr("Rename")
             onTriggered: renameTriggered()
         }
         MenuSeparator { }
         MenuItem {
-            text: "Remove"
+            text: qsTr("Remove")
             onTriggered: removeContact()
         }
     }

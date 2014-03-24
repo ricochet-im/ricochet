@@ -10,7 +10,7 @@ ApplicationWindow {
     maximumWidth: minimumWidth
     minimumHeight: visibleItem.height + 16
     maximumHeight: minimumHeight
-    title: qsTr("Torsion")
+    title: "Torsion"
 
     signal networkReady
     signal closed
@@ -95,15 +95,14 @@ ApplicationWindow {
 
             Label {
                 width: parent.width
-                text: "This computer's Internet connection is free of obstacles. " +
-                      "I would like to connect directly to the Tor network."
+                text: qsTr("This computer's Internet connection is free of obstacles. I would like to connect directly to the Tor network.")
                 wrapMode: Text.Wrap
                 horizontalAlignment: Qt.AlignHCenter
             }
 
             Button {
                 anchors.horizontalCenter: parent.horizontalCenter
-                text: "Connect"
+                text: qsTr("Connect")
                 isDefault: true
                 onClicked: {
                     // Reset to defaults and proceed to bootstrap page
@@ -120,15 +119,14 @@ ApplicationWindow {
 
             Label {
                 width: parent.width
-                text: "This computer's Internet connection is censored, filtered, or proxied. " +
-                      "I need to configure network settings."
+                text: qsTr("This computer's Internet connection is censored, filtered, or proxied. I need to configure network settings.")
                 wrapMode: Text.Wrap
                 horizontalAlignment: Qt.AlignHCenter
             }
 
             Button {
                 anchors.horizontalCenter: parent.horizontalCenter
-                text: "Configure"
+                text: qsTr("Configure")
                 onClicked: window.openConfig()
             }
         }

@@ -51,7 +51,7 @@ ApplicationWindow {
             Layout.fillWidth: true
             horizontalAlignment: Qt.AlignHCenter
             wrapMode: Text.Wrap
-            text: "Someone new is asking to connect to you"
+            text: qsTr("Someone new is asking to connect to you")
         }
 
         Item { height: 1 }
@@ -98,12 +98,12 @@ ApplicationWindow {
         }
 
         Button {
-            text: "Reject"
+            text: qsTr("Reject")
             onClicked: contactRequestDialog.reject()
         }
 
         Button {
-            text: "Accept"
+            text: qsTr("Accept")
             enabled: hasValidContact
             onClicked: contactRequestDialog.accept()
         }

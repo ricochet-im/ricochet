@@ -20,7 +20,7 @@ ApplicationWindow {
         id: addContactAction
         // CC-BY, Plus by Andre from The Noun Project
         iconSource: "qrc:/ui/icons/plus.png"
-        text: "Add Contact"
+        text: qsTr("Add Contact")
         onTriggered: {
             var object = createDialog("AddContactDialog.qml", { }, window)
             object.visible = true
@@ -30,7 +30,7 @@ ApplicationWindow {
     Action {
         id: preferencesAction
         iconSource: "qrc:/ui/icons/gear.png"
-        text: "Preferences"
+        text: qsTr("Preferences")
         onTriggered: {
             var object = createDialog("PreferencesDialog.qml")
             object.visible = true

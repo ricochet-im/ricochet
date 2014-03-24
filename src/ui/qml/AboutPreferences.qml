@@ -10,7 +10,8 @@ ColumnLayout {
 
     Label {
         Layout.fillWidth: true
-        text: "Torsion " + uiMain.version
+        //: %1 version, e.g. 1.0.0
+        text: qsTr("Torsion %1").arg(uiMain.version)
         horizontalAlignment: Qt.AlignHCenter
     }
 

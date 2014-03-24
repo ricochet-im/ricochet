@@ -13,7 +13,8 @@ Column {
     }
 
     Label {
-        text: "Connecting to the Tor network..."
+        //: \u2026 is ellipsis
+        text: qsTr("Connecting to the Tor network\u2026")
         font.bold: true
     }
 
@@ -46,14 +47,14 @@ Column {
         width: parent.width
 
         Button {
-            text: "Back"
+            text: qsTr("Back")
             onClicked: window.back()
         }
 
         Item { height: 1; Layout.fillWidth: true }
 
         Button {
-            text: logDisplay.height ? "Hide details" : "Show details"
+            text: logDisplay.height ? qsTr("Hide details") : qsTr("Show details")
             onClicked: {
                 if (logDisplay.height)
                     logDisplay.height = 0
@@ -65,7 +66,7 @@ Column {
         Item { height: 1; Layout.fillWidth: true }
 
         Button {
-            text: "Done"
+            text: qsTr("Done")
             isDefault: true
             enabled: bootstrap.tag === "done"
             onClicked: window.visible = false

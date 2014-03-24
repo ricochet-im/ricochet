@@ -24,7 +24,7 @@ Rectangle {
 
     Label {
         id: text
-        text: "Click to add contacts"
+        text: qsTr("Click to add contacts")
         wrapMode: Text.Wrap
         width: maximumWidth - 16
         x: 4
