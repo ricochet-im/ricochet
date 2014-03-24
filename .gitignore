@@ -13,3 +13,6 @@ release
 *.dll
 packaging/installer/Qt
 packaging/installer/Output
+translation/*.qm
+config
+Torsion

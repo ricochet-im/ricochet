@@ -60,6 +60,8 @@ int main(int argc, char *argv[])
 
     a.setApplicationVersion(QLatin1String("1.0.0"));
 
+    initTranslation();
+
     {
         QString error;
         if (!initSettings(error)) {
@@ -67,8 +69,6 @@ int main(int argc, char *argv[])
             return 1;
         }
     }
-
-    initTranslation();
 
     /* Initialize OpenSSL's allocator */
     CRYPTO_malloc_init();
@@ -189,30 +189,13 @@ static void initTranslation()
     QString appPath = qApp->applicationDirPath();
     QString resPath = QLatin1String(":/lang/");
 
-    /* First, try to load the user's configured language */
-    QString configLang = config->value(QLatin1String("core/language")).toString();
-    if (!configLang.isEmpty())
-    {
-        QString filename = QLatin1String("torsion.") + configLang;
-        QString separators = QLatin1String("_");
-
-        /* Look in the application directory */
-        ok = translator->load(filename, appPath, separators);
-        /* Look in the resources */
-        if (!ok)
-            ok = translator->load(filename, resPath, separators);
-    }
-
-    /* Next, try to load the system locale language, and allow it to fall back to the english default */
+    ok = translator->load(QLocale::system(), QStringLiteral("torsion"), QStringLiteral("_"), appPath);
     if (!ok)
-    {
-        QString filename = QLatin1String("torsion.") + QLocale::system().name();
-        ok = translator->load(filename, appPath);
-        if (!ok)
-            ok = translator->load(filename, resPath);
-    }
+        ok = translator->load(QLocale::system(), QStringLiteral("torsion"), QStringLiteral("_"), resPath);
 
     if (ok)
         qApp->installTranslator(translator);
+    else
+        delete translator;
 }
 
