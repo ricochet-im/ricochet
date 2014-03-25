@@ -40,6 +40,6 @@ You must pass `OPENSSLDIR="C:\Path\To\OpenSSL\Build"` to qmake. If using Qt Crea
 ### Other
 Bugs can be reported on the [issue tracker](https://github.com/special/torsion/issues).
 
-You can contact me directly at `john.brooks@dereferenced.net` (PGP [183C045D](http://pgp.mit.edu/pks/lookup?op=get&search=0xFF97C53F183C045D)).
+You can contact me directly with `torsion:rs7ce36jsj24ogfw` or `john.brooks@dereferenced.net` (PGP [183C045D](http://pgp.mit.edu/pks/lookup?op=get&search=0xFF97C53F183C045D)).
 
 You should support [The Tor Project](https://www.torproject.org/donate/donate.html.en), [The Internet Defense League](https://www.internetdefenseleague.org/), [EFF](https://www.eff.org/), and [run a Tor relay](https://www.torproject.org/docs/tor-relay-debian.html.en).
