@@ -64,6 +64,13 @@ Column {
             Behavior on opacity { NumberAnimation { } }
         }
 
+        MouseArea {
+            anchors.fill: parent
+            acceptedButtons: Qt.RightButton
+
+            onClicked: delegate.showContextMenu()
+        }
+
         TextEdit {
             id: textField
             width: Math.min(implicitWidth, background.__maxWidth)
@@ -72,6 +79,7 @@ Column {
             y: 6
 
             renderType: Text.NativeRendering
+            textFormat: TextEdit.AutoText
             selectionColor: palette.highlight
             selectedTextColor: palette.highlightedText
             font.pointSize: styleHelper.pointSize
@@ -79,7 +87,66 @@ Column {
             wrapMode: TextEdit.Wrap
             readOnly: true
             selectByMouse: true
-            text: model.text
+            text: LinkedText.parsed(model.text)
+
+            onLinkActivated: delegate.showContextMenu(link)
+
+            // Workaround an incomplete fix for QTBUG-31646
+            Component.onCompleted: {
+                if (textField.hasOwnProperty('linkHovered'))
+                    textField.linkHovered.connect(function() { })
+            }
+        }
+    }
+
+    function showContextMenu(link) {
+        var object = contextMenu.createObject(delegate, (link !== undefined) ? { 'hoveredLink': link } : { })
+        object.visibleChanged.connect(function() { if (!object.visible) object.destroy() })
+        object.popup()
+    }
+
+    Component {
+        id: contextMenu
+
+        Menu {
+            property string hoveredLink: textField.hasOwnProperty('hoveredLink') ? textField.hoveredLink : ""
+            MenuItem {
+                text: linkAddContact.visible ? qsTr("Copy ID") : qsTr("Copy Link")
+                visible: hoveredLink.length > 0
+                onTriggered: LinkedText.copyToClipboard(hoveredLink)
+            }
+            MenuItem {
+                text: qsTr("Open with Browser")
+                visible: hoveredLink.length > 0 && hoveredLink.substr(0,4).toLowerCase() == "http"
+                onTriggered: {
+                    Qt.openUrlExternally(hoveredLink)
+                }
+            }
+            MenuItem {
+                id: linkAddContact
+                text: qsTr("Add as Contact")
+                visible: hoveredLink.length > 0 && hoveredLink.substr(0,8).toLowerCase() == "torsion:"
+                onTriggered: {
+                    var object = createDialog("AddContactDialog.qml", { 'staticContactId': hoveredLink }, chatWindow)
+                    object.visible = true
+                }
+            }
+            MenuSeparator {
+                visible: hoveredLink.length > 0
+            }
+            MenuItem {
+                text: qsTr("Copy")
+                shortcut: "Ctrl+C"
+                onTriggered: {
+                    if (textField.selectedText.length > 0) {
+                        textField.copy()
+                    } else {
+                        textField.selectAll()
+                        textField.copy()
+                        textField.deselect()
+                    }
+                }
+            }
         }
     }
 }

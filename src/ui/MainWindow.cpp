@@ -43,6 +43,7 @@
 #include "ui/AvatarImageProvider.h"
 #include "ContactsModel.h"
 #include "ui/ConversationModel.h"
+#include "ui/LinkedText.h"
 #include <QtQml>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
@@ -50,6 +51,11 @@
 #include <QPushButton>
 
 MainWindow *uiMain = 0;
+
+static QObject *linkedtext_singleton(QQmlEngine *, QJSEngine *)
+{
+    return new LinkedText;
+}
 
 MainWindow::MainWindow(QObject *parent)
     : QObject(parent)
@@ -70,6 +76,7 @@ MainWindow::MainWindow(QObject *parent)
     qmlRegisterType<ConversationModel>("org.torsionim.torsion", 1, 0, "ConversationModel");
     qmlRegisterType<ContactsModel>("org.torsionim.torsion", 1, 0, "ContactsModel");
     qmlRegisterType<ContactIDValidator>("org.torsionim.torsion", 1, 0, "ContactIDValidator");
+    qmlRegisterSingletonType<LinkedText>("org.torsionim.torsion", 1, 0, "LinkedText", linkedtext_singleton);
 
     Q_ASSERT(!identityManager->identities().isEmpty());
     qml->rootContext()->setContextProperty(QLatin1String("userIdentity"), identityManager->identities()[0]);

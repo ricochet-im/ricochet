@@ -16,6 +16,8 @@ ApplicationWindow {
     signal closed
     onVisibleChanged: if (!visible) closed()
 
+    property string staticContactId: fields.contactIdText
+
     function close() {
         visible = false
     }
@@ -79,7 +81,15 @@ ApplicationWindow {
             rightMargin: 16
         }
 
-        Component.onCompleted: contactId.focus = true
+        Component.onCompleted: {
+            if (staticContactId.length > 0) {
+                fields.contactId.text = staticContactId
+                fields.contactId.readOnly = true
+                fields.name.focus = true
+            } else {
+                fields.contactId.focus = true
+            }
+        }
     }
 
     RowLayout {
