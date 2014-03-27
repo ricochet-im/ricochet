@@ -38,8 +38,8 @@ Builds with MinGW or MSVC. You will need the [Qt SDK](https://qt-project.org/dow
 You must pass `OPENSSLDIR="C:\Path\To\OpenSSL\Build"` to qmake. If using Qt Creator, add it to Additional arguments in the Projects/Build Settings tab. The default build is portable and stores configuration in a `config` folder next to the binary. Pass `DEFINES+=TORSION_NO_PORTABLE` to qmake to use the user appdata location instead.
 
 ### Other
-Bugs can be reported on the [issue tracker](https://github.com/special/torsion/issues).
+Bugs can be reported on the [issue tracker](https://github.com/special/torsion/issues). Translations can be contributed on [Transifex](https://www.transifex.com/projects/p/torsion/).
 
-You can contact me directly with `torsion:rs7ce36jsj24ogfw` or `john.brooks@dereferenced.net` (PGP [183C045D](http://pgp.mit.edu/pks/lookup?op=get&search=0xFF97C53F183C045D)).
+You can contact me with `torsion:rs7ce36jsj24ogfw` or `john.brooks@dereferenced.net` (PGP [183C045D](http://pgp.mit.edu/pks/lookup?op=get&search=0xFF97C53F183C045D)).
 
 You should support [The Tor Project](https://www.torproject.org/donate/donate.html.en), [The Internet Defense League](https://www.internetdefenseleague.org/), [EFF](https://www.eff.org/), and [run a Tor relay](https://www.torproject.org/docs/tor-relay-debian.html.en).
