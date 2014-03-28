@@ -27,6 +27,7 @@
         <file>EmptyContactsHint.qml</file>
         <file>OfflineStateItem.qml</file>
         <file>MainWindow.qml</file>
+        <file>OpenBrowserDialog.qml</file>
     </qresource>
     <qresource prefix="/ui/icons">
         <file>plus.png</file>
