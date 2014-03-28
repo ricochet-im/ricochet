@@ -190,7 +190,8 @@ lupdate_only {
 
 # Translations
 TRANSLATIONS += \
-    translation/torsion_en.ts
+    translation/torsion_en.ts \
+    translation/torsion_it.ts
 
 isEmpty(QMAKE_LRELEASE) {
     win32:QMAKE_LRELEASE = $$[QT_INSTALL_BINS]\lrelease.exe

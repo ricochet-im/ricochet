@@ -35,6 +35,7 @@ Name: {app}\config; Type: filesandordirs
 Filename: {app}\Torsion.exe; WorkingDir: {app}; Description: {cm:RunShortcut}; Flags: postinstall nowait
 [Languages]
 Name: "en"; MessagesFile: "compiler:Default.isl,..\..\translation\installer_en.isl"
+Name: "it"; MessagesFile: "compiler:Languages\Italian.isl,..\..\translation\installer_it.isl"
 
 [Code]
 // http://www.vincenzo.net/isxkb/index.php?title=Obtaining_the_application's_version
