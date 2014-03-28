@@ -189,9 +189,13 @@ static void initTranslation()
     QString appPath = qApp->applicationDirPath();
     QString resPath = QLatin1String(":/lang/");
 
-    ok = translator->load(QLocale::system(), QStringLiteral("torsion"), QStringLiteral("_"), appPath);
+    QLocale locale = QLocale::system();
+    if (!qgetenv("TORSION_LOCALE").isEmpty())
+        locale = QLocale(QString::fromLatin1(qgetenv("TORSION_LOCALE")));
+
+    ok = translator->load(locale, QStringLiteral("torsion"), QStringLiteral("_"), appPath);
     if (!ok)
-        ok = translator->load(QLocale::system(), QStringLiteral("torsion"), QStringLiteral("_"), resPath);
+        ok = translator->load(locale, QStringLiteral("torsion"), QStringLiteral("_"), resPath);
 
     if (ok)
         qApp->installTranslator(translator);
