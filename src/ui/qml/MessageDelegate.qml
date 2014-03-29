@@ -75,7 +75,7 @@ Column {
             id: textField
             width: Math.min(implicitWidth, background.__maxWidth)
             height: contentHeight
-            x: (parent.width - width) / 2
+            x: Math.round((parent.width - width) / 2)
             y: 6
 
             renderType: Text.NativeRendering
