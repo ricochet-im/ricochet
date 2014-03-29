@@ -29,11 +29,24 @@ ApplicationWindow {
 
     Action {
         id: preferencesAction
-        iconSource: "qrc:/ui/icons/gear.png"
         text: qsTr("Preferences")
         onTriggered: {
             var object = createDialog("PreferencesDialog.qml")
             object.visible = true
+        }
+    }
+
+    // OS X Menu
+    Loader {
+        active: Qt.platform.os == 'osx'
+        sourceComponent: MenuBar {
+            Menu {
+                title: qsTr("Torsion")
+                MenuItem {
+                    text: qsTranslate("QCocoaMenuItem", "Preference")
+                    onTriggered: preferencesAction.trigger()
+                }
+            }
         }
     }
 
@@ -69,6 +82,7 @@ ApplicationWindow {
 
             ToolButton {
                 action: preferencesAction
+                iconSource: "qrc:/ui/icons/gear.png"
                 implicitHeight: 24
                 implicitWidth: 24
             }

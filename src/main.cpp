@@ -38,6 +38,7 @@
 #include "utils/CryptoKey.h"
 #include "utils/SecureRNG.h"
 #include <QApplication>
+#include <QLibraryInfo>
 #include <QSettings>
 #include <QTime>
 #include <QDir>
@@ -197,9 +198,16 @@ static void initTranslation()
     if (!ok)
         ok = translator->load(locale, QStringLiteral("torsion"), QStringLiteral("_"), resPath);
 
-    if (ok)
+    if (ok) {
         qApp->installTranslator(translator);
-    else
+
+        QTranslator *qtTranslator = new QTranslator;
+        ok = qtTranslator->load(QStringLiteral("qt_") + locale.name(), QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+        if (ok)
+            qApp->installTranslator(qtTranslator);
+        else
+            delete qtTranslator;
+    } else
         delete translator;
 }
 
