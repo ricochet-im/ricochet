@@ -2,21 +2,21 @@
 
 [Setup]
 OutputBaseFilename=Torsion
-AppName=Torsion IM
+AppName=Torsion
 RestartIfNeededByRun=false
 PrivilegesRequired=lowest
 DefaultDirName={localappdata}\Torsion\
 DisableProgramGroupPage=true
 DisableDirPage=false
 DisableReadyPage=false
-DefaultGroupName=Torsion IM
+DefaultGroupName=Torsion
 ArchitecturesAllowed=x64
 ArchitecturesInstallIn64BitMode=x64
 AppID={{B700250B-D3E2-407F-A534-8818EB8E3D93}
 AppVersion={#ExeVersion}
-UninstallDisplayName=Torsion IM
+UninstallDisplayName=Torsion
 Uninstallable=not IsPortableInstall
-VersionInfoDescription=Torsion - Anonymous Instant Messaging
+VersionInfoDescription={cm:AppTitle}
 VersionInfoProductName=Torsion
 WizardImageFile=SetupModern11.bmp
 [Files]
@@ -27,23 +27,14 @@ Source: Qt\*; DestDir: {app}; Flags: recursesubdirs
 Source: MSVCP110.DLL; DestDir: {app}
 Source: MSVCR110.DLL; DestDir: {app}
 [Icons]
-Name: {group}\Torsion; Filename: {app}\Torsion.exe; WorkingDir: {app}; Comment: Start Torsion IM; Check: not IsPortableInstall
-Name: {group}\Uninstall Torsion IM; Filename: {uninstallexe}; Check: not IsPortableInstall
+Name: {group}\Torsion; Filename: {app}\Torsion.exe; WorkingDir: {app}; Comment: {cm:AppTitle}; Check: not IsPortableInstall
+Name: {group}\{cm:UninstallShortcut}; Filename: {uninstallexe}; Check: not IsPortableInstall
 [UninstallDelete]
 Name: {app}\config; Type: filesandordirs
 [Run]
-Filename: {app}\Torsion.exe; WorkingDir: {app}; Description: Launch Torsion IM; Flags: postinstall nowait
-[Messages]
-WelcomeLabel2=This will install [name] on your computer.
-[CustomMessages]
-PortableDesc=Do you want a portable installation?
-PortableText=Torsion can be installed on your system, or extracted to a portable folder. The portable installation can be moved between computers or kept secure on an encrypted harddrive.
-PortableTitle=Installation Mode
-PortableOptInstall=Install (Recommended)
-PortableOptExtract=Extract (Portable)
-BtnExtract=Extract
-ExtractDirText=Torsion will be extracted into the following folder
-ExtractDirDesc=Where should Torsion be extracted?
+Filename: {app}\Torsion.exe; WorkingDir: {app}; Description: {cm:RunShortcut}; Flags: postinstall nowait
+[Languages]
+Name: "en"; MessagesFile: "compiler:Default.isl,..\..\translation\installer_en.isl"
 
 [Code]
 // http://www.vincenzo.net/isxkb/index.php?title=Obtaining_the_application's_version
@@ -85,10 +76,10 @@ begin
 		end else begin
 			WizardForm.NextButton.Caption := SetupMessage(msgButtonInstall);
 			s := SetupMessage(msgSelectDirLabel3);
-			StringChangeEx(s, '[name]', 'Torsion IM', True);
+			StringChangeEx(s, '[name]', 'Torsion', True);
 			WizardForm.SelectDirLabel.Caption := s;
 			s := SetupMessage(msgSelectDirDesc);
-			StringChangeEx(s, '[name]', 'Torsion IM', True);
+			StringChangeEx(s, '[name]', 'Torsion', True);
 			WizardForm.PageDescriptionLabel.Caption := s;
 			if WizardForm.DirEdit.Text = DefaultPortableDir then
 				WizardForm.DirEdit.Text := DefaultInstallDir;
