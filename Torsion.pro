@@ -80,8 +80,13 @@ win32-msvc2008|win32-msvc2010 {
 INCLUDEPATH += src
 
 unix:!macx {
-    CONFIG += link_pkgconfig
-    PKGCONFIG += libcrypto # Using libcrypto instead of openssl to avoid needlessly linking libssl
+    !isEmpty(OPENSSLDIR) {
+        INCLUDEPATH += $${OPENSSLDIR}/include
+        LIBS += -L$${OPENSSLDIR}/lib -lcrypto
+    } else {
+        CONFIG += link_pkgconfig
+        PKGCONFIG += libcrypto
+    }
 }
 win32 {
     isEmpty(OPENSSLDIR):error(You must pass OPENSSLDIR=path/to/openssl to qmake on this platform)
