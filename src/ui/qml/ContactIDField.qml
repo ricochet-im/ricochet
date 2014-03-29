@@ -1,43 +1,97 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.0
+import QtQuick.Controls.Styles 1.0
 import QtQuick.Layouts 1.0
 import org.torsionim.torsion 1.0
 
-RowLayout {
+FocusScope {
     id: contactId
+    z: 4
+    height: layout.height
+    Layout.fillWidth: true
+
     property alias text: field.text
     property alias readOnly: field.readOnly
     property alias horizontalAlignment: field.horizontalAlignment
     property alias acceptableInput: field.acceptableInput
     property bool showCopyButton: true
 
-    TextField {
-        id: field
-        Layout.fillWidth: true
-        font.family: "Courier"
-        validator: readOnly ? null : idValidator
+    RowLayout {
+        id: layout
+        width: parent.width
 
-        ContactIDValidator {
-            id: idValidator
-            notContactOfIdentity: userIdentity
-        }
+        TextField {
+            id: field
+            Layout.fillWidth: true
+            font.family: "Courier"
+            validator: readOnly ? null : idValidator
+            placeholderText: "torsion:"
+            focus: true
 
-        MouseArea {
-            anchors.fill: parent
-            enabled: field.readOnly
-            onClicked: {
+            onTextChanged: errorBubble.clear()
+
+            ContactIDValidator {
+                id: idValidator
+                notContactOfIdentity: userIdentity
+
+                onFailed: {
+                    var contact
+                    if ((contact = matchingContact(field.text)))
+                        errorBubble.show(qsTr("<b>%1</b> is already your contact").arg(contact.nickname))
+                    else if (matchesIdentity(field.text))
+                        errorBubble.show(qsTr("You can't add yourself as a contact"))
+                    else
+                        errorBubble.show(qsTr("Enter an ID starting with <b>torsion:</b>"))
+                }
+            }
+
+            Bubble {
+                id: errorBubble
+                target: field
+                horizontalAlignment: Qt.AlignLeft
+
+                function show(value) {
+                    text = value
+                    opacity = 1
+                }
+
+                function clear() {
+                    opacity = 0
+                }
+            }
+
+            function copyLoudly() {
                 field.selectAll()
                 field.copy()
+                field.deselect()
+                copyBubble.displayed = true
+                bubbleResetTimer.start()
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                enabled: field.readOnly
+                onClicked: field.copyLoudly()
+            }
+
+            Bubble {
+                id: copyBubble
+                target: field
+                text: qsTr("Copied to clipboard")
+                displayed: false
+            }
+
+            Timer {
+                id: bubbleResetTimer
+                interval: 1000
+                onTriggered: copyBubble.displayed = false
             }
         }
-    }
 
-    Button {
-        text: qsTr("Copy")
-        visible: contactId.showCopyButton
-        onClicked: {
-            field.selectAll()
-            field.copy()
+        Button {
+            text: qsTr("Copy")
+            visible: contactId.showCopyButton
+            onClicked: field.copyLoudly()
         }
     }
 }

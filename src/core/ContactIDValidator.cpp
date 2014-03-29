@@ -48,17 +48,31 @@ QValidator::State ContactIDValidator::validate(QString &text, int &pos) const
         return QValidator::Intermediate;
 
     QValidator::State re = QRegularExpressionValidator::validate(text, pos);
-    if (re != QValidator::Acceptable)
+    if (re != QValidator::Acceptable) {
+        if (re == QValidator::Invalid)
+            emit failed();
         return re;
+    }
 
-    ContactUser *u;
-    if (m_uniqueIdentity && (u = m_uniqueIdentity->contacts.lookupHostname(text)))
-    {
-        emit contactExists(u);
-        return QValidator::Intermediate;
+    if (matchingContact(text) || matchesIdentity(text)) {
+        emit failed();
+        return QValidator::Invalid;
     }
 
     return re;
+}
+
+ContactUser *ContactIDValidator::matchingContact(const QString &text) const
+{
+    ContactUser *u = 0;
+    if (m_uniqueIdentity)
+        u = m_uniqueIdentity->contacts.lookupHostname(text);
+    return u;
+}
+
+bool ContactIDValidator::matchesIdentity(const QString &text) const
+{
+    return m_uniqueIdentity && m_uniqueIdentity->contactID() == text;
 }
 
 void ContactIDValidator::fixup(QString &text) const

@@ -73,9 +73,10 @@ ApplicationWindow {
                 Loader {
                     id: emptyState
                     active: contactList.view.count == 0
-                    sourceComponent: EmptyContactsHint {
-                        targetButton: addContactButton
+                    sourceComponent: Bubble {
+                        target: addContactButton
                         maximumWidth: toolBarLayout.width
+                        text: qsTr("Click to add contacts")
                     }
                 }
             }

@@ -16,7 +16,7 @@ ApplicationWindow {
     signal closed
     onVisibleChanged: if (!visible) closed()
 
-    property string staticContactId: fields.contactIdText
+    property string staticContactId: fields.contactId.text
 
     function close() {
         visible = false
@@ -32,6 +32,7 @@ ApplicationWindow {
 
     ColumnLayout {
         id: infoArea
+        z: 2
         anchors {
             left: parent.left
             right: parent.right
