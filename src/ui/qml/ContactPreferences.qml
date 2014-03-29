@@ -29,6 +29,7 @@ Item {
 
         GridLayout {
             id: contactInfo
+            visible: contact !== null
             columns: 2
             Layout.fillHeight: true
             Layout.fillWidth: true
@@ -39,7 +40,7 @@ Item {
             Label { text: qsTr("Nickname:") }
             TextField {
                 Layout.fillWidth: true
-                text: contactInfo.contact.nickname
+                text: visible ? contactInfo.contact.nickname : ""
                 onAccepted: contactInfo.contact.nickname = text
             }
 
@@ -48,14 +49,14 @@ Item {
                 Layout.fillWidth: true
                 Layout.minimumWidth: 100
                 readOnly: true
-                text: contactInfo.contact.contactID
+                text: visible ? contactInfo.contact.contactID : ""
             }
 
             Label { text: qsTr("Date added:") }
             Label {
                 Layout.fillWidth: true
                 elide: Text.ElideRight
-                text: Qt.formatDate(contactInfo.contact.readSetting("whenCreated"), Qt.DefaultLocaleLongDate)
+                text: visible ? Qt.formatDate(contactInfo.contact.readSetting("whenCreated"), Qt.DefaultLocaleLongDate) : ""
             }
 
             Label { text: qsTr("Last seen:"); visible: lastSeen.visible }
@@ -64,7 +65,7 @@ Item {
                 Layout.fillWidth: true
                 elide: Text.ElideRight
                 visible: contactInfo.request === null
-                text: Qt.formatDateTime(contactInfo.contact.readSetting("lastConnected"), Qt.DefaultLocaleLongDate)
+                text: visible ? Qt.formatDateTime(contactInfo.contact.readSetting("lastConnected"), Qt.DefaultLocaleLongDate) : ""
             }
 
             Label { text: qsTr("Request:"); visible: requestStatus.visible }
