@@ -259,6 +259,8 @@ void TorProcessPrivate::processFinished()
 
     controlPortTimer.stop();
     errorMessage = process.errorString();
+    if (errorMessage.isEmpty())
+        errorMessage = tr("Process exited unexpectedly (code %1)").arg(process.exitCode());
     state = TorProcess::Failed;
     emit q->errorMessageChanged(errorMessage);
     emit q->stateChanged(state);

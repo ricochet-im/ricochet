@@ -31,6 +31,12 @@ Column {
         wrapMode: Text.Wrap
     }
 
+    TorLogDisplay {
+        id: logDisplay
+        width: parent.width
+        height: 300
+    }
+
     RowLayout {
         anchors {
             left: parent.left
