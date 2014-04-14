@@ -37,7 +37,7 @@ TARGET = Torsion
 TEMPLATE = app
 QT += core gui network quick widgets
 
-VERSION = 1.0.0
+VERSION = 1.0.1
 
 # Pass DEFINES+=TORSION_NO_PORTABLE for a system-wide installation
 
