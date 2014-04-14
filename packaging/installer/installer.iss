@@ -16,9 +16,10 @@ AppID={{B700250B-D3E2-407F-A534-8818EB8E3D93}
 AppVersion={#ExeVersion}
 UninstallDisplayName=Torsion
 Uninstallable=not IsPortableInstall
-VersionInfoDescription={cm:AppTitle}
+VersionInfoDescription=Torsion
 VersionInfoProductName=Torsion
 WizardImageFile=SetupModern11.bmp
+ShowLanguageDialog=no
 [Files]
 Source: Torsion.exe; DestDir: {app}; DestName: Torsion.exe; Flags: replacesameversion
 Source: ..\..\LICENSE; DestDir: {app}
