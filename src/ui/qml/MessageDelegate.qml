@@ -79,7 +79,7 @@ Column {
             y: 6
 
             renderType: Text.NativeRendering
-            textFormat: TextEdit.AutoText
+            textFormat: TextEdit.RichText
             selectionColor: palette.highlight
             selectedTextColor: palette.highlightedText
             font.pointSize: styleHelper.pointSize
