@@ -37,6 +37,7 @@ Filename: {app}\Torsion.exe; WorkingDir: {app}; Description: {cm:RunShortcut}; F
 [Languages]
 Name: "en"; MessagesFile: "compiler:Default.isl,..\..\translation\installer_en.isl"
 Name: "it"; MessagesFile: "compiler:Languages\Italian.isl,..\..\translation\installer_it.isl"
+Name: "es"; MessagesFile: "compiler:Languages\Spanish.isl,..\..\translation\installer_es.isl"
 
 [Code]
 // http://www.vincenzo.net/isxkb/index.php?title=Obtaining_the_application's_version
