@@ -1,4 +1,6 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS language="es" version="2.1">
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
+<TS version="2.1" language="es">
 <context>
     <name>AboutPreferences</name>
     <message>
@@ -11,17 +13,17 @@
 <context>
     <name>AddContactDialog</name>
     <message>
-        <location filename="../src/ui/qml/AddContactDialog.qml" line="49"/>
+        <location filename="../src/ui/qml/AddContactDialog.qml" line="50"/>
         <source>Share your Ricochet ID to allow connection requests</source>
         <translation>Comparta su ID (identificador) de Ricochet para permitir solicitudes de conexión</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/AddContactDialog.qml" line="105"/>
+        <location filename="../src/ui/qml/AddContactDialog.qml" line="106"/>
         <source>Cancel</source>
         <translation>Cancelar</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/AddContactDialog.qml" line="110"/>
+        <location filename="../src/ui/qml/AddContactDialog.qml" line="111"/>
         <source>Add</source>
         <translation>Añadir</translation>
     </message>
@@ -52,7 +54,27 @@
 <context>
     <name>ContactIDField</name>
     <message>
-        <location filename="../src/ui/qml/ContactIDField.qml" line="36"/>
+        <location filename="../src/ui/qml/ContactIDField.qml" line="40"/>
+        <source>&lt;b&gt;%1&lt;/b&gt; is already your contact</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/qml/ContactIDField.qml" line="42"/>
+        <source>You can&apos;t add yourself as a contact</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/qml/ContactIDField.qml" line="44"/>
+        <source>Enter an ID starting with &lt;b&gt;ricochet:&lt;/b&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/qml/ContactIDField.qml" line="80"/>
+        <source>Copied to clipboard</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/qml/ContactIDField.qml" line="92"/>
         <source>Copy</source>
         <translation>Copiar</translation>
     </message>
@@ -83,68 +105,68 @@
 <context>
     <name>ContactPreferences</name>
     <message>
-        <location filename="../src/ui/qml/ContactPreferences.qml" line="39"/>
+        <location filename="../src/ui/qml/ContactPreferences.qml" line="40"/>
         <source>Nickname:</source>
         <translation>Apodo:</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactPreferences.qml" line="46"/>
+        <location filename="../src/ui/qml/ContactPreferences.qml" line="47"/>
         <source>ID:</source>
         <translation>ID (identificador):</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactPreferences.qml" line="54"/>
+        <location filename="../src/ui/qml/ContactPreferences.qml" line="55"/>
         <source>Date added:</source>
         <translation>Añadido desde:</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactPreferences.qml" line="61"/>
+        <location filename="../src/ui/qml/ContactPreferences.qml" line="62"/>
         <source>Last seen:</source>
         <translation>Visto por última vez:</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactPreferences.qml" line="70"/>
+        <location filename="../src/ui/qml/ContactPreferences.qml" line="71"/>
         <source>Request:</source>
         <translation>Solicitud:</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactPreferences.qml" line="79"/>
+        <location filename="../src/ui/qml/ContactPreferences.qml" line="80"/>
         <source>Pending connection</source>
         <translation>Conexión pendiente</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactPreferences.qml" line="80"/>
+        <location filename="../src/ui/qml/ContactPreferences.qml" line="81"/>
         <source>Delivered</source>
         <translation>Entregado</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactPreferences.qml" line="81"/>
+        <location filename="../src/ui/qml/ContactPreferences.qml" line="82"/>
         <source>Accepted</source>
         <translation>Aceptado</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactPreferences.qml" line="82"/>
+        <location filename="../src/ui/qml/ContactPreferences.qml" line="83"/>
         <source>Error</source>
         <translation>Error</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactPreferences.qml" line="83"/>
+        <location filename="../src/ui/qml/ContactPreferences.qml" line="84"/>
         <source>Rejected</source>
         <translation>Rechazado</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactPreferences.qml" line="87"/>
+        <location filename="../src/ui/qml/ContactPreferences.qml" line="88"/>
         <source>%1 (Connected)</source>
         <extracomment>%1 status, e.g. &quot;Accepted&quot;</extracomment>
         <translation>% 1 (Conectado)</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactPreferences.qml" line="93"/>
+        <location filename="../src/ui/qml/ContactPreferences.qml" line="94"/>
         <source>Response:</source>
         <translation>Respuesta:</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactPreferences.qml" line="112"/>
+        <location filename="../src/ui/qml/ContactPreferences.qml" line="113"/>
         <source>Remove</source>
         <translation>Eliminar</translation>
     </message>
@@ -188,9 +210,8 @@
 <context>
     <name>EmptyContactsHint</name>
     <message>
-        <location filename="../src/ui/qml/EmptyContactsHint.qml" line="27"/>
         <source>Click to add contacts</source>
-        <translation>Haga clic para añadir contactos</translation>
+        <translation type="vanished">Haga clic para añadir contactos</translation>
     </message>
 </context>
 <context>
@@ -224,10 +245,8 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../src/ui/qml/MainWindow.qml" line="16"/>
-        <location filename="../src/ui/qml/MainWindow.qml" line="44"/>
         <source>Ricochet</source>
-        <translation>Ricochet</translation>
+        <translation type="vanished">Ricochet</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/MainWindow.qml" line="23"/>
@@ -240,12 +259,17 @@
         <translation>Preferencias</translation>
     </message>
     <message>
-        <location filename="../src/ui/MainWindow.cpp" line="112"/>
+        <location filename="../src/ui/qml/MainWindow.qml" line="79"/>
+        <source>Click to add contacts</source>
+        <translation type="unfinished">Haga clic para añadir contactos</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/MainWindow.cpp" line="114"/>
         <source>Remove %1</source>
         <translation>Eliminar %1</translation>
     </message>
     <message>
-        <location filename="../src/ui/MainWindow.cpp" line="113"/>
+        <location filename="../src/ui/MainWindow.cpp" line="115"/>
         <source>Do you want to permanently remove %1?</source>
         <translation>¿Quiere eliminar permanentemente %1?</translation>
     </message>
@@ -279,7 +303,7 @@
         <translation>Añadir como contacto</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/MessageDelegate.qml" line="139"/>
+        <location filename="../src/ui/qml/MessageDelegate.qml" line="140"/>
         <source>Copy</source>
         <translation>Copiar</translation>
     </message>
@@ -420,7 +444,7 @@
         <translation>El proceso de Tor no se inició con éxito. Lo más probable es que esto sea un error de instalación o de sistema.</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/StartupStatusPage.qml" line="43"/>
+        <location filename="../src/ui/qml/StartupStatusPage.qml" line="49"/>
         <source>Quit</source>
         <translation>Salir</translation>
     </message>
@@ -525,7 +549,12 @@
         <translation>No se pudo crear fichero de configuración de Tor: %1</translation>
     </message>
     <message>
-        <location filename="../src/tor/TorProcess.cpp" line="303"/>
+        <location filename="../src/tor/TorProcess.cpp" line="263"/>
+        <source>Process exited unexpectedly (code %1)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/tor/TorProcess.cpp" line="305"/>
         <source>No control port available after launching process</source>
         <translation>No hay puerto de control disponible después de ejecutar el proceso</translation>
     </message>
