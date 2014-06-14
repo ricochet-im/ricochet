@@ -96,7 +96,11 @@ int main(int argc, char *argv[])
 
 static QString userConfigPath()
 {
-    return QStandardPaths::writableLocation(QStandardPaths::DataLocation);
+    QString path = QStandardPaths::writableLocation(QStandardPaths::DataLocation);
+    QString oldPath = path.replace(QStringLiteral("Torsion"), QStringLiteral("Ricochet"));
+    if (QFile::exists(oldPath))
+        return oldPath;
+    return path;
 }
 
 #ifdef Q_OS_MAC
@@ -120,7 +124,7 @@ static bool initSettings(QString &errorMessage)
      * directory next to the binary. If not writable, launching fails.
      *
      * Portable OS X is an exception. In that case, configuration is stored in a
-     * 'config.torsion' folder next to the application bundle, unless the application
+     * 'config.ricochet' folder next to the application bundle, unless the application
      * path contains "/Applications", in which case non-portable mode is used.
      *
      * When not in portable mode, a platform-specific per-user config location is used.
@@ -128,7 +132,7 @@ static bool initSettings(QString &errorMessage)
      * This behavior may be overriden by passing a folder path as the first argument.
      */
 
-    qApp->setOrganizationName(QStringLiteral("Torsion"));
+    qApp->setOrganizationName(QStringLiteral("Ricochet"));
 
     QString configPath;
     QStringList args = qApp->arguments();
@@ -137,8 +141,12 @@ static bool initSettings(QString &errorMessage)
     } else {
 #ifndef RICOCHET_NO_PORTABLE
 # ifdef Q_OS_MAC
-        if (!qApp->applicationDirPath().contains(QStringLiteral("/Applications")))
+        if (!qApp->applicationDirPath().contains(QStringLiteral("/Applications"))) {
+            // Try old configuration path first
             configPath = appBundlePath() + QStringLiteral("config.torsion");
+            if (!QFile::exists(configPath))
+                configPath = appBundlePath() + QStringLiteral("config.ricochet");
+        }
 # else
         configPath = qApp->applicationDirPath() + QStringLiteral("/config");
 # endif
@@ -172,7 +180,12 @@ static bool initSettings(QString &errorMessage)
         return false;
     }
 
-    config = new AppSettings(dir.filePath(QStringLiteral("Torsion.ini")), QSettings::IniFormat);
+    // Try old name first
+    QString filePath = dir.filePath(QStringLiteral("Torsion.ini"));
+    if (!QFile::exists(filePath))
+        filePath = dir.filePath(QStringLiteral("ricochet.ini"));
+
+    config = new AppSettings(filePath, QSettings::IniFormat);
     if (!config->isWritable()) {
         errorMessage = qApp->translate("Main", "Configuration file is not writable");
         return false;
