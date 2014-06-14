@@ -11,7 +11,7 @@ Once you run Ricochet, configuration will be stored in a 'config' directory
 inside this folder. To upgrade, extract the new version to the same location.
 
 For more information, see: https://ricochet.im/
-Bug tracker: https://github.com/special/torsion/issues
+Bug tracker: https://github.com/ricochet-im/ricochet/issues
 Contact:
     ricochet:rs7ce36jsj24ogfw
     john.brooks@dereferenced.net

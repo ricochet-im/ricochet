@@ -1,5 +1,5 @@
 This file aims to document the low-level details of communication and protocol
-in Torsion.
+in Ricochet.
 
 Unless otherwise noted, this document describes protocol version 0. Section 1
 (protocol negotiation) is intended to be invariant, as it is responsible for
@@ -277,7 +277,7 @@ Table of contents:
 7. Defined commands
 
     This is a comprehensive listing of all commands implemented in the version
-    of Torsion to which this document corrosponds, and potentially those used
+    of Ricochet to which this document corrosponds, and potentially those used
     by other applications that are considered reserved for that purpose.
 
 7.1. 0x00 - Ping

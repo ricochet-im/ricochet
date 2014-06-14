@@ -1,6 +1,6 @@
-# Technical design of Torsion
+# Technical design of Ricochet
 
-Torsion is an instant messaging system designed around Tor hidden services. This document describes the goals and design of that system from a technical perspective.
+Ricochet is an instant messaging system designed around Tor hidden services. This document describes the goals and design of that system from a technical perspective.
 
 The reader should be familiar with [Tor](https://www.torproject.org/about/overview.html.en) and [hidden services](https://www.torproject.org/docs/hidden-services.html.en).
 
@@ -18,11 +18,11 @@ To implement a real-time messaging system with these properties:
 
 ## Introduction
 
-Each user identity is represented by a hidden service as its connection point. The identity is shared as a contact ID in the form `torsion:qjj5g7bxwcvs3d7i`, which is unique and sufficient to connect to the service.
+Each user identity is represented by a hidden service as its connection point. The identity is shared as a contact ID in the form `ricochet:qjj5g7bxwcvs3d7i`, which is unique and sufficient to connect to the service.
 
 When online, the user publishes a hidden service corresponding with the onion hostname in the contact ID, and accepts bidirectionally anonymous connections, which are authenticated as known contacts or used to receive contact requests.
 
-Known contacts use a [customized protocol](https://github.com/special/torsion/blob/master/doc/protocol.txt) over these connections for basic instant messaging features.
+Known contacts use a [customized protocol](https://github.com/ricochet-im/ricochet/blob/master/doc/protocol.txt) over these connections for basic instant messaging features.
 
 ## Contact requests
 
@@ -43,7 +43,7 @@ The recipient can calculate the sender's contact ID based on the public key, and
 
 The recipient user has the choice to accept or reject that request. A rejected public key may be added to a blacklist and rejected automatically from future requests.
 
-For more detail, see section 8 of the [protocol documentation](https://github.com/special/torsion/blob/master/doc/protocol.txt).
+For more detail, see section 8 of the [protocol documentation](https://github.com/ricochet-im/ricochet/blob/master/doc/protocol.txt).
 
 ## Contact connections
 
@@ -53,13 +53,13 @@ The hidden service layer conveniently provides confidentiality, ephemerality, an
 
 A simple command/reply based binary protocol is used to communicate. It attempts to offer some reliability for commands to recover from unstable connections. This was chosen over any existing protocol (such as XMPP) or implementation for simplicity and strict control over the surface exposed for attacks against security and anonymity.
 
-The protocol includes a version negotiation step for future expansion. A detailed description of the format and commands can be found in the [protocol documentation](https://github.com/special/torsion/blob/master/doc/protocol.txt).
+The protocol includes a version negotiation step for future expansion. A detailed description of the format and commands can be found in the [protocol documentation](https://github.com/ricochet-im/ricochet/blob/master/doc/protocol.txt).
 
 ## UI and usability
 
 User interface is an extremely important and often underconsidered aspect of security and anonymity. Less technical users should be able to easily learn how to use the software, and what they need to do to keep themselves safe.
 
-Torsion's UI aims to be simple and familiar to users of other IM software. Knowledge of Tor and networking concepts aren't a requirement. It should be easy to do things the right way, hard to accidentally break them, and possible for technical users to tweak.
+Ricochet's UI aims to be simple and familiar to users of other IM software. Knowledge of Tor and networking concepts aren't a requirement. It should be easy to do things the right way, hard to accidentally break them, and possible for technical users to tweak.
 
 Contributions in this area are very welcome, especially in translations and non-technical documentation and review.
 
@@ -67,4 +67,4 @@ Contributions in this area are very welcome, especially in translations and non-
 
 The design described here is close to the simplest implementation possible. More advanced protocol can enable features like file transfer or even voice/video streaming. More advanced use of hidden services (e.g. authentication) can mitigate the risks of publishing a publicly connectable service. Separate services or more elaborate designs can be used to prevent attacks by non-contacts. Future development in Tor can improve the cryptography and principles behind hidden services. Your ideas can go here.
 
-Ideas, suggestions, and bugs are welcome on the [issue tracker](https://github.com/special/torsion/issues). Patches are welcome via pull request.
+Ideas, suggestions, and bugs are welcome on the [issue tracker](https://github.com/ricochet-im/ricochet/issues). Patches are welcome via pull request.
