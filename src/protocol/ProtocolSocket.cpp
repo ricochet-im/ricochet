@@ -1,4 +1,4 @@
-/* Torsion - http://torsionim.org/
+/* Ricochet - https://ricochet.im/
  * Copyright (C) 2014, John Brooks <john.brooks@dereferenced.net>
  *
  * Redistribution and use in source and binary forms, with or without
