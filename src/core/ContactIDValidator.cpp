@@ -32,7 +32,7 @@
 
 #include "ContactIDValidator.h"
 
-static QRegularExpression regex(QStringLiteral("torsion:[a-z2-7]{16}"));
+static QRegularExpression regex(QStringLiteral("(torsion|ricochet):[a-z2-7]{16}"));
 
 ContactIDValidator::ContactIDValidator(QObject *parent)
     : QRegularExpressionValidator(parent), m_uniqueIdentity(0)
@@ -105,7 +105,7 @@ QString ContactIDValidator::idFromHostname(const QString &hostname)
             return QString();
     }
 
-    re.prepend(QStringLiteral("torsion:"));
+    re.prepend(QStringLiteral("ricochet:"));
 
     if (!isValidID(re))
         return QString();

@@ -97,7 +97,7 @@ public:
     /* Hostname is in the onion hostname format, i.e. it ends with .onion */
     QString hostname() const;
     quint16 port() const;
-    /* Contact ID in the torsion: format */
+    /* Contact ID in the ricochet: format */
     QString contactID() const;
 
     Status status() const { return m_status; }

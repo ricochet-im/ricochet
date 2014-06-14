@@ -66,7 +66,7 @@ public:
     ContactUser *lookupUniqueID(int uniqueID) const;
 
     /* Create a new user and a contact request for that user. Use this instead of addContact.
-     * Note that contactID should be an torsion: ID. */
+     * Note that contactID should be an ricochet: ID. */
     Q_INVOKABLE ContactUser *createContactRequest(const QString &contactID, const QString &nickname,
                                                   const QString &myNickname, const QString &message);
 

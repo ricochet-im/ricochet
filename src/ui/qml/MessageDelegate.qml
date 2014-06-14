@@ -126,7 +126,8 @@ Column {
             MenuItem {
                 id: linkAddContact
                 text: qsTr("Add as Contact")
-                visible: hoveredLink.length > 0 && hoveredLink.substr(0,8).toLowerCase() == "torsion:"
+                visible: hoveredLink.length > 0 && (hoveredLink.substr(0,9).toLowerCase() == "ricochet:"
+                                                    || hoveredLink.substr(0,8).toLowerCase() == "torsion:")
                 onTriggered: {
                     var object = createDialog("AddContactDialog.qml", { 'staticContactId': hoveredLink }, chatWindow)
                     object.visible = true

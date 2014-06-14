@@ -45,7 +45,8 @@ LinkedText::LinkedText(QObject *parent)
 
     allowedSchemes << QStringLiteral("http")
                    << QStringLiteral("https")
-                   << QStringLiteral("torsion");
+                   << QStringLiteral("torsion")
+                   << QStringLiteral("ricochet");
 }
 
 QString LinkedText::parsed(const QString &input)

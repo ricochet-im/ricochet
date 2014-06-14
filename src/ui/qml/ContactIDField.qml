@@ -25,7 +25,7 @@ FocusScope {
             Layout.fillWidth: true
             font.family: "Courier"
             validator: readOnly ? null : idValidator
-            placeholderText: "torsion:"
+            placeholderText: "ricochet:"
             focus: true
 
             onTextChanged: errorBubble.clear()
@@ -41,7 +41,7 @@ FocusScope {
                     else if (matchesIdentity(field.text))
                         errorBubble.show(qsTr("You can't add yourself as a contact"))
                     else
-                        errorBubble.show(qsTr("Enter an ID starting with <b>torsion:</b>"))
+                        errorBubble.show(qsTr("Enter an ID starting with <b>ricochet:</b>"))
                 }
             }
 
