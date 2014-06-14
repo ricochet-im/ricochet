@@ -9,7 +9,7 @@
 
 set -e
 
-if [ ! -d .git ] || [ ! -f Torsion.pro ]; then
+if [ ! -d .git ] || [ ! -f ricochet.pro ]; then
     echo "Must be run from source directory"
     exit 1
 fi
@@ -28,19 +28,19 @@ cd build
 qmake CONFIG+=release ..
 make
 
-cp "$TOR_BINARY" Torsion.app/Contents/MacOS/
+cp "$TOR_BINARY" ricochet.app/Contents/MacOS/
 
-macdeployqt Torsion.app -qmldir=../src/ui/qml/
+macdeployqt ricochet.app -qmldir=../src/ui/qml/
 # Workaround macdeployqt bug
-rm -r Torsion.app/Contents/Resources/qml/org
+rm -r ricochet.app/Contents/Resources/qml/org
 
-hdiutil create Torsion.dmg -srcfolder Torsion.app -format UDZO -volname Torsion
+hdiutil create Ricochet.dmg -srcfolder ricochet.app -format UDZO -volname Ricochet
 
 echo "---------"
 
-otool -L Torsion.app/Contents/MacOS/Torsion
-otool -L Torsion.app/Contents/MacOS/tor
+otool -L ricochet.app/Contents/MacOS/ricochet
+otool -L ricochet.app/Contents/MacOS/tor
 
 echo
-echo "Output: ./build/Torsion.dmg"
+echo "Output: ./build/Ricochet.dmg"
 

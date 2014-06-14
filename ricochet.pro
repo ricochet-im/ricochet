@@ -1,5 +1,5 @@
-# Torsion - http://torsionim.org/
-# Copyright (C) 2010, John Brooks <john.brooks@dereferenced.net>
+# Ricochet - https://ricochet.im/
+# Copyright (C) 2014, John Brooks <john.brooks@dereferenced.net>
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are
@@ -33,29 +33,29 @@ lessThan(QT_MAJOR_VERSION,5)|lessThan(QT_MINOR_VERSION,1) {
     error("Qt 5.1 or greater is required. You can build your own, or get the SDK at https://qt-project.org/downloads")
 }
 
-TARGET = Torsion
+TARGET = ricochet
 TEMPLATE = app
 QT += core gui network quick widgets
 
 VERSION = 1.0.1
 
-# Pass DEFINES+=TORSION_NO_PORTABLE for a system-wide installation
+# Pass DEFINES+=RICOCHET_NO_PORTABLE for a system-wide installation
 
 CONFIG(release,debug|release):DEFINES += QT_NO_DEBUG_OUTPUT QT_NO_WARNING_OUTPUT
 
-contains(DEFINES, TORSION_NO_PORTABLE) {
+contains(DEFINES, RICOCHET_NO_PORTABLE) {
     unix:!macx {
         target.path = /usr/bin
         shortcut.path = /usr/share/applications
-        shortcut.files = src/Torsion.desktop
+        shortcut.files = src/ricochet.desktop
         INSTALLS += target shortcut
 
         exists(tor) {
             message(Adding bundled Tor to installations)
-            bundletor.path = /usr/lib/torsion/tor/
+            bundletor.path = /usr/lib/ricochet/tor/
             bundletor.files = tor/*
             INSTALLS += bundletor
-            DEFINES += BUNDLED_TOR_PATH=\\\"/usr/lib/torsion/tor/\\\"
+            DEFINES += BUNDLED_TOR_PATH=\\\"/usr/lib/ricochet/tor/\\\"
         }
     }
 }

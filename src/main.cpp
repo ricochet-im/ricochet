@@ -135,7 +135,7 @@ static bool initSettings(QString &errorMessage)
     if (args.size() > 1) {
         configPath = args[1];
     } else {
-#ifndef TORSION_NO_PORTABLE
+#ifndef RICOCHET_NO_PORTABLE
 # ifdef Q_OS_MAC
         if (!qApp->applicationDirPath().contains(QStringLiteral("/Applications")))
             configPath = appBundlePath() + QStringLiteral("config.torsion");

@@ -1,19 +1,19 @@
-Torsion - http://torsionim.org/
+Ricochet - https://ricochet.im/
 
-This is a pre-built static distribution of Torsion intended to run on most
+This is a pre-built static distribution of Ricochet intended to run on most
 Linux distributions. For source or other packages, visit the website above.
 
 You do not need to run or configure an instance of 'tor'. It is bundled with
 this software, and will be configured on the first run. There is not currently
 any option to use a system-wide instance of tor.
 
-Once you run Torsion, configuration will be stored in a 'config' directory
+Once you run Ricochet, configuration will be stored in a 'config' directory
 inside this folder. To upgrade, extract the new version to the same location.
 
-For more information, see: https://github.com/special/torsion
+For more information, see: https://ricochet.im/
 Bug tracker: https://github.com/special/torsion/issues
 Contact:
-    torsion:rs7ce36jsj24ogfw
+    ricochet:rs7ce36jsj24ogfw
     john.brooks@dereferenced.net
 
 -----BEGIN PGP PUBLIC KEY BLOCK-----

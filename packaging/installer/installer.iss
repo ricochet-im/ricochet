@@ -1,39 +1,39 @@
-#define ExeVersion GetFileVersion(AddBackslash(SourcePath) + "Torsion.exe")
+#define ExeVersion GetFileVersion(AddBackslash(SourcePath) + "ricochet.exe")
 
 [Setup]
-OutputBaseFilename=Torsion
-AppName=Torsion
+OutputBaseFilename=Ricochet
+AppName=Ricochet
 RestartIfNeededByRun=false
 PrivilegesRequired=lowest
-DefaultDirName={localappdata}\Torsion\
+DefaultDirName={localappdata}\Ricochet\
 DisableProgramGroupPage=true
 DisableDirPage=false
 DisableReadyPage=false
-DefaultGroupName=Torsion
+DefaultGroupName=Ricochet
 ArchitecturesAllowed=x64
 ArchitecturesInstallIn64BitMode=x64
 AppID={{B700250B-D3E2-407F-A534-8818EB8E3D93}
 AppVersion={#ExeVersion}
-UninstallDisplayName=Torsion
+UninstallDisplayName=Ricochet
 Uninstallable=not IsPortableInstall
-VersionInfoDescription=Torsion
-VersionInfoProductName=Torsion
+VersionInfoDescription=Ricochet
+VersionInfoProductName=Ricochet
 WizardImageFile=SetupModern11.bmp
 ShowLanguageDialog=no
 [Files]
-Source: Torsion.exe; DestDir: {app}; DestName: Torsion.exe; Flags: replacesameversion
+Source: ricochet.exe; DestDir: {app}; DestName: ricochet.exe; Flags: replacesameversion
 Source: ..\..\LICENSE; DestDir: {app}
 Source: tor.exe; DestDir: {app}; Flags: replacesameversion uninsrestartdelete
 Source: Qt\*; DestDir: {app}; Flags: recursesubdirs
 Source: MSVCP110.DLL; DestDir: {app}
 Source: MSVCR110.DLL; DestDir: {app}
 [Icons]
-Name: {group}\Torsion; Filename: {app}\Torsion.exe; WorkingDir: {app}; Comment: {cm:AppTitle}; Check: not IsPortableInstall
+Name: {group}\Ricochet; Filename: {app}\ricochet.exe; WorkingDir: {app}; Comment: {cm:AppTitle}; Check: not IsPortableInstall
 Name: {group}\{cm:UninstallShortcut}; Filename: {uninstallexe}; Check: not IsPortableInstall
 [UninstallDelete]
 Name: {app}\config; Type: filesandordirs
 [Run]
-Filename: {app}\Torsion.exe; WorkingDir: {app}; Description: {cm:RunShortcut}; Flags: postinstall nowait
+Filename: {app}\ricochet.exe; WorkingDir: {app}; Description: {cm:RunShortcut}; Flags: postinstall nowait
 [Languages]
 Name: "en"; MessagesFile: "compiler:Default.isl,..\..\translation\installer_en.isl"
 Name: "it"; MessagesFile: "compiler:Languages\Italian.isl,..\..\translation\installer_it.isl"
@@ -67,8 +67,8 @@ var
 	DefaultInstallDir: String;
 begin
 	if CurPageID = wpSelectDir then begin
-		DefaultPortableDir := ExtractFilePath(ExpandConstant('{srcexe}')) + 'Torsion';
-		DefaultInstallDir := ExpandConstant('{localappdata}') + '\Torsion';
+		DefaultPortableDir := ExtractFilePath(ExpandConstant('{srcexe}')) + 'Ricochet';
+		DefaultInstallDir := ExpandConstant('{localappdata}') + '\Ricochet';
 
 		if IsPortableInstall() then begin
 			WizardForm.NextButton.Caption := CustomMessage('BtnExtract');
@@ -79,10 +79,10 @@ begin
 		end else begin
 			WizardForm.NextButton.Caption := SetupMessage(msgButtonInstall);
 			s := SetupMessage(msgSelectDirLabel3);
-			StringChangeEx(s, '[name]', 'Torsion', True);
+			StringChangeEx(s, '[name]', 'Ricochet', True);
 			WizardForm.SelectDirLabel.Caption := s;
 			s := SetupMessage(msgSelectDirDesc);
-			StringChangeEx(s, '[name]', 'Torsion', True);
+			StringChangeEx(s, '[name]', 'Ricochet', True);
 			WizardForm.PageDescriptionLabel.Caption := s;
 			if WizardForm.DirEdit.Text = DefaultPortableDir then
 				WizardForm.DirEdit.Text := DefaultInstallDir;

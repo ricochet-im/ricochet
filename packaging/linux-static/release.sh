@@ -9,7 +9,7 @@
 
 set -e
 
-if [ ! -d .git ] || [ ! -f Torsion.pro ]; then
+if [ ! -d .git ] || [ ! -f ricochet.pro ]; then
     echo "Must be run from source directory"
     exit 1
 fi
@@ -30,15 +30,15 @@ cd build
 qmake CONFIG+=release ${QMAKEOPTS} ..
 make
 
-mkdir -p staging/torsion
+mkdir -p staging/ricochet
 # Copy binaries to staging area
-cp Torsion staging/torsion/
-cp "$TOR_BINARY" staging/torsion/
+cp ricochet staging/ricochet/
+cp "$TOR_BINARY" staging/ricochet/
 # Copy extra files
-cp -r ../packaging/linux-static/content/* staging/torsion/
+cp -r ../packaging/linux-static/content/* staging/ricochet/
 
 cd staging
-tar cfj torsion-${VERSION}-static.tar.bz2 torsion
+tar cfj ricochet-${VERSION}-static.tar.bz2 ricochet
 mv *.bz2 ..
 cd ..
 
@@ -47,5 +47,5 @@ echo "---------"
 tar fjt *.bz2
 
 echo
-echo "Output: ./build/torsion-${VERSION}-static.tar.bz2"
+echo "Output: ./build/ricochet-${VERSION}-static.tar.bz2"
 

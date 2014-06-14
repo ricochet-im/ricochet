@@ -1,8 +1,8 @@
 [Desktop Entry]
 Encoding=UTF-8
 Type=Application
-Name=Torsion
+Name=Ricochet IM
 Categories=Network;InstantMessaging;Chat;FileTransfer;Qt
 Comment=Anonymous instant messaging
-Exec=Torsion
+Exec=ricochet
 
