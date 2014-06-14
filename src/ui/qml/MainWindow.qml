@@ -2,7 +2,7 @@ import QtQuick 2.0
 import QtQuick.Window 2.0
 import QtQuick.Controls 1.0
 import QtQuick.Layouts 1.0
-import org.torsionim.torsion 1.0
+import im.ricochet 1.0
 import "ContactWindow.js" as ContactWindow
 
 ApplicationWindow {

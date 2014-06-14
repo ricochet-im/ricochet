@@ -65,18 +65,18 @@ MainWindow::MainWindow(QObject *parent)
 
     qml = new QQmlApplicationEngine(this);
 
-    qmlRegisterUncreatableType<ContactUser>("org.torsionim.torsion", 1, 0, "ContactUser", QString());
-    qmlRegisterUncreatableType<UserIdentity>("org.torsionim.torsion", 1, 0, "UserIdentity", QString());
-    qmlRegisterUncreatableType<ContactsManager>("org.torsionim.torsion", 1, 0, "ContactsManager", QString());
-    qmlRegisterUncreatableType<IncomingRequestManager>("org.torsionim.torsion", 1, 0, "IncomingRequestManager", QString());
-    qmlRegisterUncreatableType<IncomingContactRequest>("org.torsionim.torsion", 1, 0, "IncomingContactRequest", QString());
-    qmlRegisterUncreatableType<OutgoingContactRequest>("org.torsionim.torsion", 1, 0, "OutgoingContactRequest", QString());
-    qmlRegisterUncreatableType<Tor::TorControl>("org.torsionim.torsion", 1, 0, "TorControl", QString());
-    qmlRegisterUncreatableType<Tor::TorProcess>("org.torsionim.torsion", 1, 0, "TorProcess", QString());
-    qmlRegisterType<ConversationModel>("org.torsionim.torsion", 1, 0, "ConversationModel");
-    qmlRegisterType<ContactsModel>("org.torsionim.torsion", 1, 0, "ContactsModel");
-    qmlRegisterType<ContactIDValidator>("org.torsionim.torsion", 1, 0, "ContactIDValidator");
-    qmlRegisterSingletonType<LinkedText>("org.torsionim.torsion", 1, 0, "LinkedText", linkedtext_singleton);
+    qmlRegisterUncreatableType<ContactUser>("im.ricochet", 1, 0, "ContactUser", QString());
+    qmlRegisterUncreatableType<UserIdentity>("im.ricochet", 1, 0, "UserIdentity", QString());
+    qmlRegisterUncreatableType<ContactsManager>("im.ricochet", 1, 0, "ContactsManager", QString());
+    qmlRegisterUncreatableType<IncomingRequestManager>("im.ricochet", 1, 0, "IncomingRequestManager", QString());
+    qmlRegisterUncreatableType<IncomingContactRequest>("im.ricochet", 1, 0, "IncomingContactRequest", QString());
+    qmlRegisterUncreatableType<OutgoingContactRequest>("im.ricochet", 1, 0, "OutgoingContactRequest", QString());
+    qmlRegisterUncreatableType<Tor::TorControl>("im.ricochet", 1, 0, "TorControl", QString());
+    qmlRegisterUncreatableType<Tor::TorProcess>("im.ricochet", 1, 0, "TorProcess", QString());
+    qmlRegisterType<ConversationModel>("im.ricochet", 1, 0, "ConversationModel");
+    qmlRegisterType<ContactsModel>("im.ricochet", 1, 0, "ContactsModel");
+    qmlRegisterType<ContactIDValidator>("im.ricochet", 1, 0, "ContactIDValidator");
+    qmlRegisterSingletonType<LinkedText>("im.ricochet", 1, 0, "LinkedText", linkedtext_singleton);
 
     Q_ASSERT(!identityManager->identities().isEmpty());
     qml->rootContext()->setContextProperty(QLatin1String("userIdentity"), identityManager->identities()[0]);

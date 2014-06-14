@@ -1,5 +1,5 @@
 import QtQuick 2.0
-import org.torsionim.torsion 1.0
+import im.ricochet 1.0
 
 Rectangle {
     id: presenceIcon
