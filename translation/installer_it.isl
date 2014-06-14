@@ -1,14 +1,14 @@
 [Messages]
-WelcomeLabel2=Questo installerà Torsion sul tuo computer
+WelcomeLabel2=Questo installerà Ricochet sul tuo computer
 [CustomMessages]
-AppTitle=Torsion - Messaggistica Istantanea Anonima
-UninstallShortcut=Disinstalla Torsion
-RunShortcut=Avvia Torsion
+AppTitle=Ricochet - Messaggistica Istantanea Anonima
+UninstallShortcut=Disinstalla Ricochet
+RunShortcut=Avvia Ricochet
 PortableDesc=Vuoi un installazione portabile?
-PortableText=Torsion può essere installato sul tuo sistema, o estratto in una cartella portabile. L'installazione portabile può essere spostata fra computer o tenuta al sicuro su un disco rigido crittografato.
+PortableText=Ricochet può essere installato sul tuo sistema, o estratto in una cartella portabile. L'installazione portabile può essere spostata fra computer o tenuta al sicuro su un disco rigido crittografato.
 PortableTitle=Modalità di installazione
 PortableOptInstall=Installazione (Consigliato)
 PortableOptExtract=Estrazione (Portabile)
 BtnExtract=Estrai
-ExtractDirText=Torsion verrà estratto nella seguente cartella
-ExtractDirDesc=Dove dovrebbe essere estratto Torsion?
+ExtractDirText=Ricochet verrà estratto nella seguente cartella
+ExtractDirDesc=Dove dovrebbe essere estratto Ricochet?

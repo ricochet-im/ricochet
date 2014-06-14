@@ -191,12 +191,12 @@ static void initTranslation()
     QString resPath = QLatin1String(":/lang/");
 
     QLocale locale = QLocale::system();
-    if (!qgetenv("TORSION_LOCALE").isEmpty())
-        locale = QLocale(QString::fromLatin1(qgetenv("TORSION_LOCALE")));
+    if (!qgetenv("RICOCHET_LOCALE").isEmpty())
+        locale = QLocale(QString::fromLatin1(qgetenv("RICOCHET_LOCALE")));
 
-    ok = translator->load(locale, QStringLiteral("torsion"), QStringLiteral("_"), appPath);
+    ok = translator->load(locale, QStringLiteral("ricochet"), QStringLiteral("_"), appPath);
     if (!ok)
-        ok = translator->load(locale, QStringLiteral("torsion"), QStringLiteral("_"), resPath);
+        ok = translator->load(locale, QStringLiteral("ricochet"), QStringLiteral("_"), resPath);
 
     if (ok) {
         qApp->installTranslator(translator);
