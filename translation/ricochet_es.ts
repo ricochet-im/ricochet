@@ -3,17 +3,17 @@
     <name>AboutPreferences</name>
     <message>
         <location filename="../src/ui/qml/AboutPreferences.qml" line="14"/>
-        <source>Torsion %1</source>
+        <source>Ricochet %1</source>
         <extracomment>%1 version, e.g. 1.0.0</extracomment>
-        <translation>Torsion %1</translation>
+        <translation>Ricochet %1</translation>
     </message>
 </context>
 <context>
     <name>AddContactDialog</name>
     <message>
         <location filename="../src/ui/qml/AddContactDialog.qml" line="49"/>
-        <source>Share your Torsion ID to allow connection requests</source>
-        <translation>Comparta su ID (identificador) de Torsion para permitir solicitudes de conexión</translation>
+        <source>Share your Ricochet ID to allow connection requests</source>
+        <translation>Comparta su ID (identificador) de Ricochet para permitir solicitudes de conexión</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/AddContactDialog.qml" line="105"/>
@@ -197,8 +197,8 @@
     <name>Main</name>
     <message>
         <location filename="../src/main.cpp" line="69"/>
-        <source>Torsion Error</source>
-        <translation>Error de Torsion</translation>
+        <source>Ricochet Error</source>
+        <translation>Error de Ricochet</translation>
     </message>
     <message>
         <location filename="../src/main.cpp" line="152"/>
@@ -207,8 +207,8 @@
     </message>
     <message>
         <location filename="../src/main.cpp" line="169"/>
-        <source>Torsion is already running</source>
-        <translation>Torsion ya está ejecutándose</translation>
+        <source>Ricochet is already running</source>
+        <translation>Ricochet ya está ejecutándose</translation>
     </message>
     <message>
         <location filename="../src/main.cpp" line="171"/>
@@ -226,8 +226,8 @@
     <message>
         <location filename="../src/ui/qml/MainWindow.qml" line="16"/>
         <location filename="../src/ui/qml/MainWindow.qml" line="44"/>
-        <source>Torsion</source>
-        <translation>Torsion</translation>
+        <source>Ricochet</source>
+        <translation>Ricochet</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/MainWindow.qml" line="23"/>
@@ -385,8 +385,8 @@
     <name>PreferencesDialog</name>
     <message>
         <location filename="../src/ui/qml/PreferencesDialog.qml" line="10"/>
-        <source>Torsion Preferences</source>
-        <translation>Preferencias de Torsion</translation>
+        <source>Ricochet Preferences</source>
+        <translation>Preferencias de Ricochet</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/PreferencesDialog.qml" line="39"/>

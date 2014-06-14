@@ -13,7 +13,7 @@ ApplicationWindow {
     maximumHeight: height
     minimumWidth: width
     minimumHeight: height
-    title: qsTr("Torsion")
+    title: "Ricochet"
     visibility: Window.AutomaticVisibility
 
     Action {
@@ -41,7 +41,7 @@ ApplicationWindow {
         active: Qt.platform.os == 'osx'
         sourceComponent: MenuBar {
             Menu {
-                title: qsTr("Torsion")
+                title: "Ricochet"
                 MenuItem {
                     text: qsTranslate("QCocoaMenuItem", "Preference")
                     onTriggered: preferencesAction.trigger()

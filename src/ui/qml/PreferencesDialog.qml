@@ -7,7 +7,7 @@ ApplicationWindow {
     id: preferencesWindow
     width: 600
     height: 500
-    title: qsTr("Torsion Preferences")
+    title: qsTr("Ricochet Preferences")
 
     signal closed
     onVisibleChanged: if (!visible) closed()

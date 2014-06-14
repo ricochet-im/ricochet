@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
     {
         QString error;
         if (!initSettings(error)) {
-            QMessageBox::critical(0, qApp->translate("Main", "Torsion Error"), error);
+            QMessageBox::critical(0, qApp->translate("Main", "Ricochet Error"), error);
             return 1;
         }
     }
@@ -166,7 +166,7 @@ static bool initSettings(QString &errorMessage)
     configLock->setStaleLockTime(0);
     if (!configLock->tryLock()) {
         if (configLock->error() == QLockFile::LockFailedError)
-            errorMessage = qApp->translate("Main", "Torsion is already running");
+            errorMessage = qApp->translate("Main", "Ricochet is already running");
         else
             errorMessage = qApp->translate("Main", "Cannot write configuration files (failed to acquire lock)");
         return false;

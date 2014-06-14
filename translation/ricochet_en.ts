@@ -5,7 +5,7 @@
     <name>AboutPreferences</name>
     <message>
         <location filename="../src/ui/qml/AboutPreferences.qml" line="14"/>
-        <source>Torsion %1</source>
+        <source>Ricochet %1</source>
         <extracomment>%1 version, e.g. 1.0.0</extracomment>
         <translation type="unfinished"></translation>
     </message>
@@ -14,7 +14,7 @@
     <name>AddContactDialog</name>
     <message>
         <location filename="../src/ui/qml/AddContactDialog.qml" line="47"/>
-        <source>Share your Torsion ID to allow connection requests</source>
+        <source>Share your Ricochet ID to allow connection requests</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -199,7 +199,7 @@
     <name>Main</name>
     <message>
         <location filename="../src/main.cpp" line="68"/>
-        <source>Torsion Error</source>
+        <source>Ricochet Error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -209,7 +209,7 @@
     </message>
     <message>
         <location filename="../src/main.cpp" line="168"/>
-        <source>Torsion is already running</source>
+        <source>Ricochet is already running</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -227,7 +227,7 @@
     <name>MainWindow</name>
     <message>
         <location filename="../src/ui/qml/MainWindow.qml" line="16"/>
-        <source>Torsion</source>
+        <source>Ricochet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -338,7 +338,7 @@
     <name>PreferencesDialog</name>
     <message>
         <location filename="../src/ui/qml/PreferencesDialog.qml" line="10"/>
-        <source>Torsion Preferences</source>
+        <source>Ricochet Preferences</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

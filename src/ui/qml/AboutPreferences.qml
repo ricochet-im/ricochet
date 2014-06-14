@@ -11,18 +11,18 @@ ColumnLayout {
     Label {
         Layout.fillWidth: true
         //: %1 version, e.g. 1.0.0
-        text: qsTr("Torsion %1").arg(uiMain.version)
+        text: qsTr("Ricochet %1").arg(uiMain.version)
         horizontalAlignment: Qt.AlignHCenter
     }
 
     Label {
         Layout.fillWidth: true
-        text: "<a href='http://torsionim.org/'>torsionim.org</a>"
+        text: "<a href='https://ricochet.im/'>ricochet.im</a>"
         horizontalAlignment: Qt.AlignHCenter
 
         MouseArea {
             anchors.fill: parent
-            onClicked: Qt.openUrlExternally("http://torsionim.org")
+            onClicked: Qt.openUrlExternally("https://ricochet.im/")
         }
     }
 

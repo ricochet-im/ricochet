@@ -47,7 +47,7 @@ ApplicationWindow {
             Layout.fillWidth: true
             horizontalAlignment: Qt.AlignHCenter
             wrapMode: Text.Wrap
-            text: qsTr("Share your Torsion ID to allow connection requests")
+            text: qsTr("Share your Ricochet ID to allow connection requests")
         }
 
         ContactIDField {
