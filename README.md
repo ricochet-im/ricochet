@@ -6,6 +6,8 @@ Ricochet is an experiment with a different kind of instant messaging that **does
 * There are no servers to compromise or operators to intimidate for your information
 * It's cross-platform and easy for non-technical users
 
+**Note**: This project was recently renamed from *Torsion*. Some references may not yet be updated, and new releases are coming soon.
+
 ### How it works
 Ricochet is a peer-to-peer instant messaging system built on Tor [hidden services](https://www.torproject.org/docs/hidden-services.html.en). Your login is your hidden service address, and contacts connect to you (not an intermediate server) through Tor. The rendezvous system makes it extremely hard for anyone to learn your identity from your address.
 
@@ -38,7 +40,7 @@ Builds with MinGW or MSVC. You will need the [Qt SDK](https://qt-project.org/dow
 You must pass `OPENSSLDIR="C:\Path\To\OpenSSL\Build"` to qmake. If using Qt Creator, add it to Additional arguments in the Projects/Build Settings tab. The default build is portable and stores configuration in a `config` folder next to the binary. Pass `DEFINES+=RICOCHET_NO_PORTABLE` to qmake to use the user appdata location instead.
 
 ### Other
-Bugs can be reported on the [issue tracker](https://github.com/ricochet-im/ricochet/issues). Translations can be contributed on [Transifex](https://www.transifex.com/projects/p/torsion/).
+Bugs can be reported on the [issue tracker](https://github.com/ricochet-im/ricochet/issues). Translations can be contributed on [Transifex](https://www.transifex.com/projects/p/ricochet/).
 
 You can contact me with `ricochet:rs7ce36jsj24ogfw` or `john.brooks@dereferenced.net` (PGP [183C045D](http://pgp.mit.edu/pks/lookup?op=get&search=0xFF97C53F183C045D)).
 
