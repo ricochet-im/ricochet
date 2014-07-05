@@ -62,6 +62,7 @@ contains(DEFINES, RICOCHET_NO_PORTABLE) {
 
 macx {
     CONFIG += bundle
+    QMAKE_INFO_PLIST = src/Info.plist
 
     exists(tor) {
         # Copy the entire tor/ directory, which should contain tor/tor (the binary itself)

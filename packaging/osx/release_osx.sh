@@ -32,14 +32,15 @@ cp "$TOR_BINARY" ricochet.app/Contents/MacOS/
 
 macdeployqt ricochet.app -qmldir=../src/ui/qml/
 # Workaround macdeployqt bug
-rm -r ricochet.app/Contents/Resources/qml/org
+rm -r ricochet.app/Contents/Resources/qml/{im,ContactWindow,qml}
 
-hdiutil create Ricochet.dmg -srcfolder ricochet.app -format UDZO -volname Ricochet
+mv ricochet.app Ricochet.app
+hdiutil create Ricochet.dmg -srcfolder Ricochet.app -format UDZO -volname Ricochet
 
 echo "---------"
 
-otool -L ricochet.app/Contents/MacOS/ricochet
-otool -L ricochet.app/Contents/MacOS/tor
+otool -L Ricochet.app/Contents/MacOS/ricochet
+otool -L Ricochet.app/Contents/MacOS/tor
 
 echo
 echo "Output: ./build/Ricochet.dmg"
