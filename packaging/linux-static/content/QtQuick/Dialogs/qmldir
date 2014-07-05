@@ -1,0 +1,4 @@
+module QtQuick.Dialogs
+plugin dialogplugin
+classname QtQuick2DialogsPlugin
+typeinfo plugins.qmltypes
