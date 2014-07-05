@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    a.setApplicationVersion(QLatin1String("1.0.1"));
+    a.setApplicationVersion(QLatin1String("1.0.2"));
 
     initTranslation();
 

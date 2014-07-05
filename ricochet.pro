@@ -37,7 +37,7 @@ TARGET = ricochet
 TEMPLATE = app
 QT += core gui network quick widgets
 
-VERSION = 1.0.1
+VERSION = 1.0.2
 
 # Pass DEFINES+=RICOCHET_NO_PORTABLE for a system-wide installation
 
