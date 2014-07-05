@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="es">
+<?xml version="1.0" ?><!DOCTYPE TS><TS language="es" version="2.1">
 <context>
     <name>AboutPreferences</name>
     <message>
@@ -56,22 +54,22 @@
     <message>
         <location filename="../src/ui/qml/ContactIDField.qml" line="40"/>
         <source>&lt;b&gt;%1&lt;/b&gt; is already your contact</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;%1&lt;/b&gt; ya es su contacto</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactIDField.qml" line="42"/>
         <source>You can&apos;t add yourself as a contact</source>
-        <translation type="unfinished"></translation>
+        <translation>No puede añadirse a usted mismo como un contacto</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactIDField.qml" line="44"/>
         <source>Enter an ID starting with &lt;b&gt;ricochet:&lt;/b&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>Introduzca una identificación de usuario que comience con &lt;b&gt;ricochet:&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactIDField.qml" line="80"/>
         <source>Copied to clipboard</source>
-        <translation type="unfinished"></translation>
+        <translation>Copiado al portapapeles</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactIDField.qml" line="92"/>
@@ -208,13 +206,6 @@
     </message>
 </context>
 <context>
-    <name>EmptyContactsHint</name>
-    <message>
-        <source>Click to add contacts</source>
-        <translation type="vanished">Haga clic para añadir contactos</translation>
-    </message>
-</context>
-<context>
     <name>Main</name>
     <message>
         <location filename="../src/main.cpp" line="69"/>
@@ -245,10 +236,6 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <source>Ricochet</source>
-        <translation type="vanished">Ricochet</translation>
-    </message>
-    <message>
         <location filename="../src/ui/qml/MainWindow.qml" line="23"/>
         <source>Add Contact</source>
         <translation>Añadir contacto</translation>
@@ -261,7 +248,7 @@
     <message>
         <location filename="../src/ui/qml/MainWindow.qml" line="79"/>
         <source>Click to add contacts</source>
-        <translation type="unfinished">Haga clic para añadir contactos</translation>
+        <translation>Haga clic para añadir contactos</translation>
     </message>
     <message>
         <location filename="../src/ui/MainWindow.cpp" line="114"/>
@@ -551,7 +538,7 @@
     <message>
         <location filename="../src/tor/TorProcess.cpp" line="263"/>
         <source>Process exited unexpectedly (code %1)</source>
-        <translation type="unfinished"></translation>
+        <translation>El proceso finalizó inesperadamente (código %1)</translation>
     </message>
     <message>
         <location filename="../src/tor/TorProcess.cpp" line="305"/>
