@@ -10,8 +10,6 @@ DisableProgramGroupPage=true
 DisableDirPage=false
 DisableReadyPage=false
 DefaultGroupName=Ricochet
-ArchitecturesAllowed=x64
-ArchitecturesInstallIn64BitMode=x64
 AppID={{B700250B-D3E2-407F-A534-8818EB8E3D93}
 AppVersion={#ExeVersion}
 UninstallDisplayName=Ricochet
@@ -25,8 +23,8 @@ Source: ricochet.exe; DestDir: {app}; DestName: ricochet.exe; Flags: replacesame
 Source: ..\..\LICENSE; DestDir: {app}
 Source: tor.exe; DestDir: {app}; Flags: replacesameversion uninsrestartdelete
 Source: Qt\*; DestDir: {app}; Flags: recursesubdirs
-Source: MSVCP110.DLL; DestDir: {app}
-Source: MSVCR110.DLL; DestDir: {app}
+Source: MSVCP120.DLL; DestDir: {app}
+Source: MSVCR120.DLL; DestDir: {app}
 [Icons]
 Name: {group}\Ricochet; Filename: {app}\ricochet.exe; WorkingDir: {app}; Comment: {cm:AppTitle}; Check: not IsPortableInstall
 Name: {group}\{cm:UninstallShortcut}; Filename: {uninstallexe}; Check: not IsPortableInstall
