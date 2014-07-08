@@ -41,7 +41,6 @@
 #include "protocol/ProtocolConstants.h"
 #include "core/ContactIDValidator.h"
 #include "core/OutgoingContactRequest.h"
-#include <QPixmapCache>
 #include <QtDebug>
 #include <QBuffer>
 #include <QDateTime>
@@ -234,25 +233,6 @@ void ContactUser::setHostname(const QString &hostname)
 
     writeSetting(QLatin1String("hostname"), fh);
     setupOutgoingSocket();
-}
-
-void ContactUser::setAvatar(QImage image)
-{
-    if (image.width() > 160 || image.height() > 160)
-        image = image.scaled(QSize(160, 160), Qt::KeepAspectRatio, Qt::SmoothTransformation);
-
-    if (!image.isNull())
-    {
-        QBuffer buffer;
-        buffer.open(QBuffer::ReadWrite);
-        if (image.save(&buffer, "jpeg", 90))
-            writeSetting("avatar", buffer.buffer());
-        else
-            image = QImage();
-    }
-
-    if (image.isNull())
-        removeSetting("avatar");
 }
 
 void ContactUser::deleteContact()

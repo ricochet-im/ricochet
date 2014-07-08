@@ -36,11 +36,7 @@
 #include "main.h"
 #include "ContactsManager.h"
 #include <QObject>
-#include <QPixmapCache>
 #include <QMetaType>
-
-class QPixmap;
-class QImage;
 
 namespace Tor
 {
@@ -79,7 +75,6 @@ public:
     ContactsManager *getContacts() { return &contacts; }
 
     void setNickname(const QString &nickname);
-    void setAvatar(QImage image);
 
     /* State */
     bool isServiceOnline() const;

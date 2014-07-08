@@ -36,9 +36,6 @@
 #include "tor/HiddenService.h"
 #include "protocol/IncomingSocket.h"
 #include "core/ContactIDValidator.h"
-#include <QImage>
-#include <QPixmap>
-#include <QPixmapCache>
 #include <QBuffer>
 #include <QDir>
 
@@ -128,25 +125,6 @@ void UserIdentity::setNickname(const QString &nick)
     m_nickname = nick;
     writeSetting("nickname", nick);
     emit nicknameChanged();
-}
-
-void UserIdentity::setAvatar(QImage image)
-{
-    if (image.width() > 160 || image.height() > 160)
-        image = image.scaled(QSize(160, 160), Qt::KeepAspectRatio, Qt::SmoothTransformation);
-
-    if (!image.isNull())
-    {
-        QBuffer buffer;
-        buffer.open(QBuffer::ReadWrite);
-        if (image.save(&buffer, "jpeg", 90))
-            writeSetting("avatar", buffer.buffer());
-        else
-            image = QImage();
-    }
-
-    if (image.isNull())
-        removeSetting("avatar");
 }
 
 void UserIdentity::onStatusChanged(int newStatus, int oldStatus)

@@ -35,10 +35,7 @@
 
 #include "main.h"
 #include <QObject>
-#include <QImage>
-#include <QPixmap>
 #include <QHash>
-#include <QPixmapCache>
 #include <QMetaType>
 #include <QVariant>
 #include "protocol/ProtocolSocket.h"
@@ -125,7 +122,6 @@ public:
 public slots:
     void setNickname(const QString &nickname);
     void setHostname(const QString &hostname);
-    void setAvatar(QImage image);
 
     void updateStatus();
 

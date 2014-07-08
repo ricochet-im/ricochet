@@ -133,7 +133,6 @@ SOURCES += src/main.cpp \
     src/core/UserIdentity.cpp \
     src/core/IdentityManager.cpp \
     src/utils/AppSettings.cpp \
-    src/ui/AvatarImageProvider.cpp \
     src/ui/ConversationModel.cpp \
     src/tor/TorProcess.cpp \
     src/tor/TorManager.cpp \
@@ -173,7 +172,6 @@ HEADERS += src/ui/MainWindow.h \
     src/core/UserIdentity.h \
     src/core/IdentityManager.h \
     src/utils/AppSettings.h \
-    src/ui/AvatarImageProvider.h \
     src/ui/ConversationModel.h \
     src/tor/TorProcess.h \
     src/tor/TorProcess_p.h \

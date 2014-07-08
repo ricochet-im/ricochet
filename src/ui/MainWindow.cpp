@@ -40,7 +40,6 @@
 #include "tor/TorControl.h"
 #include "tor/TorManager.h"
 #include "tor/TorProcess.h"
-#include "ui/AvatarImageProvider.h"
 #include "ContactsModel.h"
 #include "ui/ConversationModel.h"
 #include "ui/LinkedText.h"
@@ -84,7 +83,6 @@ MainWindow::MainWindow(QObject *parent)
     qml->rootContext()->setContextProperty(QLatin1String("torInstance"), Tor::TorManager::instance());
     qml->rootContext()->setContextProperty(QLatin1String("uiMain"), this);
 
-    qml->addImageProvider(QLatin1String("avatar"), new AvatarImageProvider);
     qml->load(QUrl(QLatin1String("qrc:/ui/main.qml")));
 }
 
