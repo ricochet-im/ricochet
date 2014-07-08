@@ -30,7 +30,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "main.h"
 #include "MainWindow.h"
 #include "core/UserIdentity.h"
 #include "core/IncomingRequestManager.h"

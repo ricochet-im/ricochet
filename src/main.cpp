@@ -30,13 +30,13 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "main.h"
 #include "ui/MainWindow.h"
 #include "core/IdentityManager.h"
 #include "tor/TorManager.h"
 #include "tor/TorControl.h"
 #include "utils/CryptoKey.h"
 #include "utils/SecureRNG.h"
+#include "utils/Settings.h"
 #include <QApplication>
 #include <QLibraryInfo>
 #include <QSettings>
@@ -45,27 +45,26 @@
 #include <QTranslator>
 #include <QMessageBox>
 #include <QLocale>
-#include <QLockFile>
 #include <QStandardPaths>
 #include <openssl/crypto.h>
 
-AppSettings *config = 0;
-static QLockFile *configLock = 0;
-
-static bool initSettings(QString &errorMessage);
+static bool initSettings(SettingsFile *settings, QString &errorMessage);
+static bool importLegacySettings(SettingsFile *settings, const QString &oldPath);
 static void initTranslation();
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-
     a.setApplicationVersion(QLatin1String("1.0.2"));
-
+    a.setOrganizationName(QStringLiteral("Ricochet"));
     initTranslation();
+
+    QScopedPointer<SettingsFile> settings(new SettingsFile);
+    SettingsObject::setDefaultFile(settings.data());
 
     {
         QString error;
-        if (!initSettings(error)) {
+        if (!initSettings(settings.data(), error)) {
             QMessageBox::critical(0, qApp->translate("Main", "Ricochet Error"), error);
             return 1;
         }
@@ -80,8 +79,10 @@ int main(int argc, char *argv[])
     qsrand(SecureRNG::randomInt(UINT_MAX));
 
     /* Tor control manager */
-    torControl = Tor::TorManager::instance()->control();
-    Tor::TorManager::instance()->start();
+    Tor::TorManager *torManager = Tor::TorManager::instance();
+    torManager->setDataDirectory(QFileInfo(settings->filePath()).path() + QStringLiteral("/tor/"));
+    torControl = torManager->control();
+    torManager->start();
 
     /* Identities */
     identityManager = new IdentityManager;
@@ -89,9 +90,7 @@ int main(int argc, char *argv[])
     /* Window */
     MainWindow w;
 
-    int r = a.exec();
-    delete configLock;
-    return r;
+    return a.exec();
 }
 
 static QString userConfigPath()
@@ -118,7 +117,7 @@ static QString appBundlePath()
 }
 #endif
 
-static bool initSettings(QString &errorMessage)
+static bool initSettings(SettingsFile *settings, QString &errorMessage)
 {
     /* If built in portable mode (default), configuration is stored in the 'config'
      * directory next to the binary. If not writable, launching fails.
@@ -131,8 +130,6 @@ static bool initSettings(QString &errorMessage)
      *
      * This behavior may be overriden by passing a folder path as the first argument.
      */
-
-    qApp->setOrganizationName(QStringLiteral("Ricochet"));
 
     QString configPath;
     QStringList args = qApp->arguments();
@@ -156,42 +153,109 @@ static bool initSettings(QString &errorMessage)
     }
 
     QDir dir(configPath);
-    if (!dir.exists() && !dir.mkpath(QStringLiteral("."))) {
-        errorMessage = qApp->translate("Main", "Cannot create configuration directory");
+    settings->setFilePath(dir.filePath(QStringLiteral("ricochet.json")));
+    if (settings->hasError()) {
+        errorMessage = settings->errorMessage();
         return false;
     }
 
-    QFile dirf(configPath);
-    static QFile::Permissions perm = QFileDevice::ReadUser | QFileDevice::WriteUser | QFileDevice::ExeUser;
-    static QFile::Permissions ignore = QFileDevice::ReadOwner | QFileDevice::WriteOwner | QFileDevice::ExeOwner;
-    if ((dirf.permissions() & ~ignore) != perm) {
-        qWarning() << "Correcting permissions on configuration directory";
-        if (!dirf.setPermissions(perm))
-            qWarning() << "Setting permissions failed";
-    }
-
-    configLock = new QLockFile(dir.filePath(QStringLiteral("lock")));
-    configLock->setStaleLockTime(0);
-    if (!configLock->tryLock()) {
-        if (configLock->error() == QLockFile::LockFailedError)
-            errorMessage = qApp->translate("Main", "Ricochet is already running");
-        else
-            errorMessage = qApp->translate("Main", "Cannot write configuration files (failed to acquire lock)");
-        return false;
-    }
-
-    // Try old name first
-    QString filePath = dir.filePath(QStringLiteral("Torsion.ini"));
-    if (!QFile::exists(filePath))
-        filePath = dir.filePath(QStringLiteral("ricochet.ini"));
-
-    config = new AppSettings(filePath, QSettings::IniFormat);
-    if (!config->isWritable()) {
-        errorMessage = qApp->translate("Main", "Configuration file is not writable");
-        return false;
+    if (settings->root()->data().isEmpty()) {
+        QString filePath = dir.filePath(QStringLiteral("Torsion.ini"));
+        if (!QFile::exists(filePath))
+            filePath = dir.filePath(QStringLiteral("ricochet.ini"));
+        if (QFile::exists(filePath))
+            importLegacySettings(settings, filePath);
     }
 
     QDir::setCurrent(dir.absolutePath());
+    return true;
+}
+
+static void copyKeys(QSettings &old, SettingsObject *object)
+{
+    foreach (const QString &key, old.childKeys()) {
+        QVariant value = old.value(key);
+        if ((QMetaType::Type)value.type() == QMetaType::QDateTime)
+            object->write(key, value.toDateTime());
+        else if ((QMetaType::Type)value.type() == QMetaType::QByteArray)
+            object->write(key, Base64Encode(value.toByteArray()));
+        else
+            object->write(key, value.toString());
+    }
+}
+
+static bool importLegacySettings(SettingsFile *settings, const QString &oldPath)
+{
+    QSettings old(oldPath, QSettings::IniFormat);
+    SettingsObject *root = settings->root();
+    QVariant value;
+
+    qDebug() << "Importing legacy format settings from" << oldPath;
+
+    if (!(value = old.value(QStringLiteral("tor/controlIp"))).isNull())
+        root->write("tor.controlAddress", value.toString());
+    if (!(value = old.value(QStringLiteral("tor/controlPort"))).isNull())
+        root->write("tor.controlPort", value.toInt());
+    if (!(value = old.value(QStringLiteral("tor/authPassword"))).isNull())
+        root->write("tor.controlPassword", value.toString());
+    if (!(value = old.value(QStringLiteral("tor/socksIp"))).isNull())
+        root->write("tor.socksAddress", value.toString());
+    if (!(value = old.value(QStringLiteral("tor/socksPort"))).isNull())
+        root->write("tor.socksPort", value.toInt());
+    if (!(value = old.value(QStringLiteral("tor/executablePath"))).isNull())
+        root->write("tor.executablePath", value.toString());
+    if (!(value = old.value(QStringLiteral("core/neverPublishService"))).isNull())
+        root->write("tor.neverPublishServices", value.toBool());
+    if (!(value = old.value(QStringLiteral("identity/0/dataDirectory"))).isNull())
+        root->write("identity.dataDirectory", value.toString());
+    if (!(value = old.value(QStringLiteral("identity/0/createNewService"))).isNull())
+        root->write("identity.initializing", value.toBool());
+    if (!(value = old.value(QStringLiteral("core/listenIp"))).isNull())
+        root->write("identity.localListenAddress", value.toString());
+    if (!(value = old.value(QStringLiteral("core/listenPort"))).isNull())
+        root->write("identity.localListenPort", value.toInt());
+
+    {
+        old.beginGroup(QStringLiteral("contacts"));
+        QStringList ids = old.childGroups();
+        foreach (const QString &id, ids) {
+            old.beginGroup(id);
+            SettingsObject userObject(root, QStringLiteral("contacts.%1").arg(id));
+
+            copyKeys(old, &userObject);
+
+            if (old.childGroups().contains(QStringLiteral("request"))) {
+                old.beginGroup(QStringLiteral("request"));
+                QStringList requestKeys = old.childKeys();
+                foreach (const QString &key, requestKeys)
+                    userObject.write(QStringLiteral("request.") + key, old.value(key).toString());
+                old.endGroup();
+            }
+
+            old.endGroup();
+        }
+        old.endGroup();
+    }
+
+    {
+        old.beginGroup(QStringLiteral("contactRequests"));
+        QStringList contacts = old.childGroups();
+
+        foreach (const QString &hostname, contacts) {
+            old.beginGroup(hostname);
+            SettingsObject requestObject(root, QStringLiteral("contactRequests.%1").arg(hostname));
+            copyKeys(old, &requestObject);
+            old.endGroup();
+        }
+
+        old.endGroup();
+    }
+
+    if (!(value = old.value(QStringLiteral("core/hostnameBlacklist"))).isNull()) {
+        QStringList blacklist = value.toStringList();
+        root->write("identity.hostnameBlacklist", QJsonArray::fromStringList(blacklist));
+    }
+
     return true;
 }
 

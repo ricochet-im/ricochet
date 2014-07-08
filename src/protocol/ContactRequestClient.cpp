@@ -159,7 +159,7 @@ bool ContactRequestClient::buildRequestData(QByteArray cookie)
     }
 
     /* Connection secret */
-    QByteArray connSecret = user->readSetting("localSecret").toByteArray();
+    QByteArray connSecret = user->settings()->read<Base64Encode>("localSecret");
     if (connSecret.size() != 16)
     {
         qWarning() << "Cannot send contact request: invalid local secret";

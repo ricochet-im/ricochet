@@ -30,7 +30,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "main.h"
 #include "OutgoingContactRequest.h"
 #include "ContactsManager.h"
 #include "ContactUser.h"
@@ -44,9 +43,10 @@ OutgoingContactRequest *OutgoingContactRequest::createNewRequest(ContactUser *us
 {
     Q_ASSERT(!user->contactRequest());
 
-    user->writeSetting(QLatin1String("request/status"), static_cast<int>(Pending));
-    user->writeSetting(QLatin1String("request/myNickname"), myNickname);
-    user->writeSetting(QLatin1String("request/message"), message);
+    SettingsObject *settings = user->settings();
+    settings->write("request.status", static_cast<int>(Pending));
+    settings->write("request.myNickname", myNickname);
+    settings->write("request.message", message);
 
     user->loadContactRequest();
     Q_ASSERT(user->contactRequest());
@@ -55,6 +55,7 @@ OutgoingContactRequest *OutgoingContactRequest::createNewRequest(ContactUser *us
 
 OutgoingContactRequest::OutgoingContactRequest(ContactUser *u)
     : QObject(u), user(u), m_client(0)
+    , m_settings(new SettingsObject(u->settings(), QStringLiteral("request"), this))
 {
     emit user->identity->contacts.outgoingRequestAdded(this);
 
@@ -74,22 +75,22 @@ OutgoingContactRequest::~OutgoingContactRequest()
 
 QString OutgoingContactRequest::myNickname() const
 {
-    return user->readSetting("request/myNickname").toString();
+    return m_settings->read("myNickname").toString();
 }
 
 QString OutgoingContactRequest::message() const
 {
-    return user->readSetting("request/message").toString();
+    return m_settings->read("message").toString();
 }
 
 OutgoingContactRequest::Status OutgoingContactRequest::status() const
 {
-    return static_cast<Status>(user->readSetting("request/status").toInt());
+    return static_cast<Status>(m_settings->read("status").toInt());
 }
 
 QString OutgoingContactRequest::rejectMessage() const
 {
-    return user->readSetting("request/rejectMessage").toString();
+    return m_settings->read("rejectMessage").toString();
 }
 
 void OutgoingContactRequest::setStatus(Status newStatus)
@@ -98,7 +99,7 @@ void OutgoingContactRequest::setStatus(Status newStatus)
     if (newStatus == oldStatus)
         return;
 
-    user->writeSetting("request/status", static_cast<int>(newStatus));
+    m_settings->write("status", static_cast<int>(newStatus));
     emit statusChanged(newStatus, oldStatus);
 }
 
@@ -157,7 +158,7 @@ void OutgoingContactRequest::removeRequest()
     }
 
     /* Clear the request settings */
-    user->removeSetting("request");
+    m_settings->undefine();
     emit removed();
 }
 
@@ -170,7 +171,7 @@ void OutgoingContactRequest::accept()
 
 void OutgoingContactRequest::reject(bool error, const QString &reason)
 {
-    user->writeSetting("request/rejectMessage", reason);
+    m_settings->write("rejectMessage", reason);
     setStatus(error ? Error : Rejected);
 
     if (m_client)

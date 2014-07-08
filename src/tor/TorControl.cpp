@@ -30,7 +30,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "main.h"
 #include "TorControl.h"
 #include "TorControlSocket.h"
 #include "HiddenService.h"
@@ -39,6 +38,7 @@
 #include "SetConfCommand.h"
 #include "GetConfCommand.h"
 #include "utils/StringUtil.h"
+#include "utils/Settings.h"
 #include <QHostAddress>
 #include <QDir>
 #include <QNetworkProxy>
@@ -397,8 +397,9 @@ void TorControlPrivate::getTorInfo()
     keys << QByteArray("status/circuit-established") << QByteArray("status/bootstrap-phase");
 
     /* If these are set in the config, they override the automatic behavior. */
-    QHostAddress forceAddress(config->value("tor/socksIp").toString());
-    quint16 port = (quint16)config->value("tor/socksPort").toUInt();
+    SettingsObject settings(QStringLiteral("tor"));
+    QHostAddress forceAddress(settings.read("socksAddress").toString());
+    quint16 port = (quint16)settings.read("socksPort").toInt();
 
     if (!forceAddress.isNull() && port) {
         qDebug() << "torctrl: Using manually specified SOCKS connection settings";
@@ -471,7 +472,8 @@ void TorControlPrivate::publishServices()
     if (services.isEmpty())
         return;
 
-    if (config->value("core/neverPublishService", false).toBool())
+    SettingsObject settings(QStringLiteral("tor"));
+    if (settings.read("neverPublishServices").toBool())
     {
         qDebug() << "torctrl: Skipping service publication because neverPublishService is enabled";
 
@@ -483,7 +485,7 @@ void TorControlPrivate::publishServices()
     }
 
     SetConfCommand *command = new SetConfCommand;
-    QList<QPair<QByteArray,QByteArray> > settings;
+    QList<QPair<QByteArray,QByteArray> > torConfig;
 
     for (QList<HiddenService*>::Iterator it = services.begin(); it != services.end(); ++it)
     {
@@ -492,7 +494,7 @@ void TorControlPrivate::publishServices()
 
         qDebug() << "torctrl: Configuring hidden service at" << service->dataPath;
 
-        settings.append(qMakePair(QByteArray("HiddenServiceDir"), dir.absolutePath().toLocal8Bit()));
+        torConfig.append(qMakePair(QByteArray("HiddenServiceDir"), dir.absolutePath().toLocal8Bit()));
 
         const QList<HiddenService::Target> &targets = service->targets();
         for (QList<HiddenService::Target>::ConstIterator tit = targets.begin(); tit != targets.end(); ++tit)
@@ -500,13 +502,13 @@ void TorControlPrivate::publishServices()
             QString target = QString::fromLatin1("%1 %2:%3").arg(tit->servicePort)
                              .arg(tit->targetAddress.toString())
                              .arg(tit->targetPort);
-            settings.append(qMakePair(QByteArray("HiddenServicePort"), target.toLatin1()));
+            torConfig.append(qMakePair(QByteArray("HiddenServicePort"), target.toLatin1()));
         }
 
         QObject::connect(command, SIGNAL(setConfSucceeded()), service, SLOT(servicePublished()));
     }
 
-    socket->sendCommand(command, command->build(settings));
+    socket->sendCommand(command, command->build(torConfig));
 }
 
 void TorControl::shutdown()

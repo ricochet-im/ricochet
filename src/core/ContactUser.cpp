@@ -30,7 +30,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "main.h"
 #include "ContactUser.h"
 #include "UserIdentity.h"
 #include "ContactsManager.h"
@@ -52,10 +51,12 @@ ContactUser::ContactUser(UserIdentity *ident, int id, QObject *parent)
     , m_lastReceivedChatID(0)
     , m_contactRequest(0)
     , m_outgoingSocket(0)
+    , m_settings(0)
 {
     Q_ASSERT(uniqueID >= 0);
 
-    loadSettings();
+    m_settings = new SettingsObject(QStringLiteral("contacts.%1").arg(uniqueID));
+    connect(m_settings, &SettingsObject::modified, this, &ContactUser::onSettingsModified);
 
     m_conn = new ProtocolSocket(this);
     connect(m_conn, SIGNAL(connected()), this, SLOT(onConnected()));
@@ -65,21 +66,12 @@ ContactUser::ContactUser(UserIdentity *ident, int id, QObject *parent)
     updateStatus();
 }
 
-void ContactUser::loadSettings()
-{
-    config->beginGroup(QLatin1String("contacts/") + QString::number(uniqueID));
-
-    m_nickname = config->value("nickname", uniqueID).toString();
-
-    config->endGroup();
-}
-
 void ContactUser::loadContactRequest()
 {
     if (m_contactRequest)
         return;
 
-    if (!readSetting("request/status").isNull()) {
+    if (m_settings->read("request.status") != QJsonValue::Undefined) {
         m_contactRequest = new OutgoingContactRequest(this);
         connect(m_contactRequest, SIGNAL(statusChanged(int,int)), SLOT(updateStatus()));
         connect(m_contactRequest, SIGNAL(removed()), SLOT(requestRemoved()));
@@ -87,28 +79,13 @@ void ContactUser::loadContactRequest()
     }
 }
 
-QVariant ContactUser::readSetting(const QString &key, const QVariant &defaultValue) const
-{
-    return config->value(QString::fromLatin1("contacts/%1/%2").arg(uniqueID).arg(key), defaultValue);
-}
-
-void ContactUser::writeSetting(const QString &key, const QVariant &value)
-{
-    config->setValue(QString::fromLatin1("contacts/%1/%2").arg(uniqueID).arg(key), value);
-}
-
-void ContactUser::removeSetting(const QString &key)
-{
-    config->remove(QString::fromLatin1("contacts/%1/%2").arg(uniqueID).arg(key));
-}
-
 ContactUser *ContactUser::addNewContact(UserIdentity *identity, int id)
 {
     ContactUser *user = new ContactUser(identity, id);
-    user->writeSetting("whenCreated", QDateTime::currentDateTime());
+    user->settings()->write("whenCreated", QDateTime::currentDateTime());
 
     /* Generate the local secret and set it */
-    user->writeSetting("localSecret", SecureRNG::random(16));
+    user->settings()->write("localSecret", Base64Encode(SecureRNG::random(16)));
 
     return user;
 }
@@ -138,12 +115,19 @@ void ContactUser::updateStatus()
         setupOutgoingSocket();
 }
 
+void ContactUser::onSettingsModified(const QString &key, const QJsonValue &value)
+{
+    Q_UNUSED(value);
+    if (key == QLatin1String("nickname"))
+        emit nicknameChanged();
+}
+
 void ContactUser::setupOutgoingSocket()
 {
     if (m_status != Offline)
         return;
 
-    QByteArray secret = readSetting("remoteSecret").toByteArray();
+    QByteArray secret = m_settings->read<Base64Encode>("remoteSecret");
     if (secret.isEmpty() || hostname().isEmpty() || !port())
         return;
 
@@ -164,7 +148,7 @@ void ContactUser::setupOutgoingSocket()
 
 void ContactUser::onConnected()
 {
-    writeSetting("lastConnected", QDateTime::currentDateTime());
+    m_settings->write("lastConnected", QDateTime::currentDateTime());
 
     if (m_contactRequest)
     {
@@ -175,7 +159,7 @@ void ContactUser::onConnected()
         Q_ASSERT(status() != RequestPending);
     }
 
-    if (readSetting("remoteSecret").isNull())
+    if (m_settings->read("remoteSecret") == QJsonValue::Undefined)
     {
         qDebug() << "Requesting remote secret from user" << uniqueID;
         GetSecretCommand *command = new GetSecretCommand(this);
@@ -189,34 +173,35 @@ void ContactUser::onConnected()
 void ContactUser::onDisconnected()
 {
     qDebug() << "Contact" << uniqueID << "disconnected";
-    writeSetting("lastConnected", QDateTime::currentDateTime());
+    m_settings->write("lastConnected", QDateTime::currentDateTime());
 
     updateStatus();
     emit disconnected();
 }
 
+SettingsObject *ContactUser::settings()
+{
+    return m_settings;
+}
+
+QString ContactUser::nickname() const
+{
+    return m_settings->read("nickname").toString();
+}
+
 void ContactUser::setNickname(const QString &nickname)
 {
-    if (m_nickname == nickname)
-        return;
-
-    /* non-critical, just a safety net for UI checks */
-    Q_ASSERT(!identity->contacts.lookupNickname(nickname));
-
-    m_nickname = nickname;
-
-    writeSetting("nickname", nickname);
-    emit nicknameChanged();
+    m_settings->write("nickname", nickname);
 }
 
 QString ContactUser::hostname() const
 {
-    return readSetting("hostname").toString();
+    return m_settings->read("hostname").toString();
 }
 
 quint16 ContactUser::port() const
 {
-    return (quint16)readSetting("port", 9878).toUInt();
+    return m_settings->read("port", 9878).toInt();
 }
 
 QString ContactUser::contactID() const
@@ -231,7 +216,7 @@ void ContactUser::setHostname(const QString &hostname)
     if (!hostname.endsWith(QLatin1String(".onion")))
         fh.append(QLatin1String(".onion"));
 
-    writeSetting(QLatin1String("hostname"), fh);
+    m_settings->write("hostname", fh);
     setupOutgoingSocket();
 }
 
@@ -255,8 +240,7 @@ void ContactUser::deleteContact()
     delete m_conn;
     m_conn = 0;
 
-    config->remove(QLatin1String("contacts/") + QString::number(uniqueID));
-
+    m_settings->undefine();
     deleteLater();
 }
 

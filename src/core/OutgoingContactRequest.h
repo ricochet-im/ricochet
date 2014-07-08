@@ -34,6 +34,7 @@
 #define OUTGOINGCONTACTREQUEST_H
 
 #include <QObject>
+#include "utils/Settings.h"
 
 class ContactUser;
 class ContactRequestClient;
@@ -96,6 +97,7 @@ private slots:
 
 private:
     ContactRequestClient *m_client;
+    SettingsObject *m_settings;
 
     void setStatus(Status newStatus);
     void removeRequest();
