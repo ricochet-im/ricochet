@@ -9,3 +9,4 @@
 ### Thanks
 * Helder Ribeiro (@obvio171) - "Ricochet"
 * Robin Burchell (@rburchell)
+* prof7bit (TorChat) - Inspiration
