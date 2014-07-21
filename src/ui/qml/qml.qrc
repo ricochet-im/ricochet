@@ -28,6 +28,7 @@
         <file>MainWindow.qml</file>
         <file>OpenBrowserDialog.qml</file>
         <file>Bubble.qml</file>
+        <file>PageView.qml</file>
     </qresource>
     <qresource prefix="/ui/icons">
         <file>plus.png</file>
