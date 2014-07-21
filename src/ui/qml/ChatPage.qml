@@ -13,6 +13,8 @@ FocusScope {
         textField.forceActiveFocus()
     }
 
+    onVisibleChanged: if (visible) forceActiveFocus()
+
     ConversationModel {
         id: conversationModel
         contact: chatPage.contact

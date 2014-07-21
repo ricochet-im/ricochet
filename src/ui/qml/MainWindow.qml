@@ -7,34 +7,17 @@ import "ContactWindow.js" as ContactWindow
 
 ApplicationWindow {
     id: window
-    width: 250
-    height: 400
-    maximumWidth: width
-    maximumHeight: height
-    minimumWidth: width
-    minimumHeight: height
     title: "Ricochet"
     visibility: Window.AutomaticVisibility
 
-    Action {
-        id: addContactAction
-        // CC-BY, Plus by Andre from The Noun Project
-        iconSource: "qrc:/ui/icons/plus.png"
-        text: qsTr("Add Contact")
-        onTriggered: {
-            var object = createDialog("AddContactDialog.qml", { }, window)
-            object.visible = true
-        }
-    }
+    width: 250
+    height: 400
+    minimumHeight: 400
+    minimumWidth: uiSettings.data.combinedChatWindow ? 650 : 250
+    maximumWidth: uiSettings.data.combinedChatWindow ? (1 << 24) - 1 : 250
 
-    Action {
-        id: preferencesAction
-        text: qsTr("Preferences")
-        onTriggered: {
-            var object = createDialog("PreferencesDialog.qml")
-            object.visible = true
-        }
-    }
+    onMinimumWidthChanged: width = Math.max(width, minimumWidth)
+    onMaximumWidthChanged: width = Math.min(width, maximumWidth)
 
     // OS X Menu
     Loader {
@@ -44,70 +27,76 @@ ApplicationWindow {
                 title: "Ricochet"
                 MenuItem {
                     text: qsTranslate("QCocoaMenuItem", "Preference")
-                    onTriggered: preferencesAction.trigger()
+                    onTriggered: toolBar.preferences.trigger()
                 }
             }
         }
     }
 
-    toolBar: ToolBar {
-        RowLayout {
-            id: toolBarLayout
-            width: parent.width
+    RowLayout {
+        anchors.fill: parent
+        spacing: 0
 
-            TorStateWidget {
-                anchors.verticalCenter: parent.verticalCenter
+        ColumnLayout {
+            spacing: 0
+            Layout.preferredWidth: combinedChatView.visible ? 220 : 0
+            Layout.fillWidth: !combinedChatView.visible
+
+            MainToolBar {
+                id: toolBar
+                // Needed to allow bubble to appear over contact list
+                z: 3
             }
 
             Item {
+                Layout.fillHeight: true
                 Layout.fillWidth: true
-                height: 1
-            }
 
-            ToolButton {
-                id: addContactButton
-                action: addContactAction
-                implicitHeight: 24
-                implicitWidth: 24
+                ContactList {
+                    id: contactList
+                    anchors.fill: parent
+                    opacity: offlineLoader.item !== null ? (1 - offlineLoader.item.opacity) : 1
 
-                Loader {
-                    id: emptyState
-                    active: contactList.view.count == 0
-                    sourceComponent: Bubble {
-                        target: addContactButton
-                        maximumWidth: toolBarLayout.width
-                        text: qsTr("Click to add contacts")
+                    onContactActivated: {
+                        if (contact.status === ContactUser.RequestPending || contact.status === ContactUser.RequestRejected) {
+                            actions.openPreferences()
+                        } else if (!uiSettings.data.combinedChatWindow) {
+                            actions.openWindow()
+                        }
                     }
                 }
-            }
 
-            ToolButton {
-                action: preferencesAction
-                iconSource: "qrc:/ui/icons/gear.png"
-                implicitHeight: 24
-                implicitWidth: 24
-            }
-        }
-    }
-
-    ContactList {
-        id: contactList
-        anchors.fill: parent
-        opacity: offlineLoader.item !== null ? (1 - offlineLoader.item.opacity) : 1
-
-        onContactActivated: {
-            if (contact.status === ContactUser.RequestPending || contact.status === ContactUser.RequestRejected) {
-                actions.openPreferences()
-            } else {
-                actions.openWindow()
+                Loader {
+                    id: offlineLoader
+                    active: torControl.torStatus !== TorControl.TorReady || (item !== null && item.visible)
+                    anchors.fill: parent
+                    source: Qt.resolvedUrl("OfflineStateItem.qml")
+                }
             }
         }
-    }
 
-    Loader {
-        id: offlineLoader
-        active: torControl.torStatus !== TorControl.TorReady || (item !== null && item.visible)
-        anchors.fill: parent
-        source: Qt.resolvedUrl("OfflineStateItem.qml")
+        Rectangle {
+            visible: combinedChatView.visible
+            width: 1
+            Layout.fillHeight: true
+            color: Qt.darker(palette.window, 1.5)
+        }
+
+        PageView {
+            id: combinedChatView
+            visible: uiSettings.data.combinedChatWindow || false
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+
+            property QtObject currentContact: (visible && width > 0) ? contactList.selectedContact : null
+            onCurrentContactChanged: {
+                if (currentContact !== null) {
+                    show(currentContact.uniqueID, Qt.resolvedUrl("ChatPage.qml"),
+                         { 'contact': currentContact });
+                } else {
+                    currentKey = ""
+                }
+            }
+        }
     }
 }
