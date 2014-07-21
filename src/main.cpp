@@ -45,10 +45,11 @@
 #include <QTranslator>
 #include <QMessageBox>
 #include <QLocale>
+#include <QLockFile>
 #include <QStandardPaths>
 #include <openssl/crypto.h>
 
-static bool initSettings(SettingsFile *settings, QString &errorMessage);
+static bool initSettings(SettingsFile *settings, QLockFile **lockFile, QString &errorMessage);
 static bool importLegacySettings(SettingsFile *settings, const QString &oldPath);
 static void initTranslation();
 
@@ -62,13 +63,13 @@ int main(int argc, char *argv[])
     QScopedPointer<SettingsFile> settings(new SettingsFile);
     SettingsObject::setDefaultFile(settings.data());
 
-    {
-        QString error;
-        if (!initSettings(settings.data(), error)) {
-            QMessageBox::critical(0, qApp->translate("Main", "Ricochet Error"), error);
-            return 1;
-        }
+    QString error;
+    QLockFile *lock = 0;
+    if (!initSettings(settings.data(), &lock, error)) {
+        QMessageBox::critical(0, qApp->translate("Main", "Ricochet Error"), error);
+        return 1;
     }
+    QScopedPointer<QLockFile> lockFile(lock);
 
     /* Initialize OpenSSL's allocator */
     CRYPTO_malloc_init();
@@ -117,7 +118,7 @@ static QString appBundlePath()
 }
 #endif
 
-static bool initSettings(SettingsFile *settings, QString &errorMessage)
+static bool initSettings(SettingsFile *settings, QLockFile **lockFile, QString &errorMessage)
 {
     /* If built in portable mode (default), configuration is stored in the 'config'
      * directory next to the binary. If not writable, launching fails.
@@ -153,6 +154,20 @@ static bool initSettings(SettingsFile *settings, QString &errorMessage)
     }
 
     QDir dir(configPath);
+
+    QLockFile *lock = new QLockFile(dir.filePath(QStringLiteral("ricochet.json.lock")));
+    *lockFile = lock;
+    lock->setStaleLockTime(0);
+    if (!lock->tryLock()) {
+        if (lock->error() == QLockFile::LockFailedError) {
+            // XXX Need to offer UI or heuristics for removeStaleLockFile
+            errorMessage = QStringLiteral("Configuration file is already in use");
+        } else {
+            errorMessage = QStringLiteral("Cannot write configuration file (failed to acquire lock)");
+        }
+        return false;
+    }
+
     settings->setFilePath(dir.filePath(QStringLiteral("ricochet.json")));
     if (settings->hasError()) {
         errorMessage = settings->errorMessage();

@@ -34,7 +34,6 @@
 #include <QCoreApplication>
 #include <QJsonDocument>
 #include <QJsonParseError>
-#include <QLockFile>
 #include <QSaveFile>
 #include <QFile>
 #include <QDir>
@@ -51,7 +50,6 @@ public:
     SettingsFile *q;
     QString filePath;
     QString errorMessage;
-    QLockFile *lock;
     QTimer syncTimer;
     QJsonObject jsonRoot;
     SettingsObject *rootObject;
@@ -62,7 +60,6 @@ public:
     void reset();
     void setError(const QString &message);
     bool checkDirPermissions(const QString &path);
-    bool acquireLock(const QString &path);
     bool readFile();
     bool writeFile();
 
@@ -90,7 +87,6 @@ SettingsFile::~SettingsFile()
 SettingsFilePrivate::SettingsFilePrivate(SettingsFile *qp)
     : QObject(qp)
     , q(qp)
-    , lock(0)
     , rootObject(0)
 {
     syncTimer.setInterval(0);
@@ -102,7 +98,6 @@ SettingsFilePrivate::~SettingsFilePrivate()
 {
     if (syncTimer.isActive())
         sync();
-    delete lock;
     delete rootObject;
 }
 
@@ -110,8 +105,6 @@ void SettingsFilePrivate::reset()
 {
     filePath.clear();
     errorMessage.clear();
-    delete lock;
-    lock = 0;
 
     jsonRoot = QJsonObject();
     emit modified(QStringList(), jsonRoot);
@@ -137,9 +130,6 @@ bool SettingsFile::setFilePath(const QString &filePath)
         return false;
     }
     d->checkDirPermissions(fileInfo.path());
-
-    if (!d->acquireLock(filePath + QStringLiteral(".lock")))
-        return false;
 
     if (!d->readFile())
         return false;
@@ -175,31 +165,6 @@ bool SettingsFilePrivate::checkDirPermissions(const QString &path)
             qWarning() << "Correcting permissions on configuration directory failed";
             return false;
         }
-    }
-
-    return true;
-}
-
-bool SettingsFilePrivate::acquireLock(const QString &path)
-{
-    if (lock) {
-        setError(QStringLiteral("Lock is already held"));
-        return false;
-    }
-
-    lock = new QLockFile(path);
-    lock->setStaleLockTime(0);
-    if (!lock->tryLock()) {
-        if (lock->error() == QLockFile::LockFailedError) {
-            // XXX Should offer a way to removeStaleLockFile() from the UI
-            setError(QStringLiteral("Configuration file is already in use"));
-        } else {
-            setError(QStringLiteral("Cannot write configuration file (failed to acquire lock)"));
-        }
-
-        delete lock;
-        lock = 0;
-        return false;
     }
 
     return true;

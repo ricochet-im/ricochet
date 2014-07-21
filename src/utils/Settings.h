@@ -46,10 +46,8 @@ class SettingsObjectPrivate;
 
 /* SettingsFile represents a JSON-encoded configuration file.
  *
- * SettingsFile handles atomic write and file locking over a settings
- * file, which is a JSON file with a root object. The lock is held
- * while the SettingsFile instance exists, and will prevent other
- * processes from using that configuration simultaneously.
+ * SettingsFile is an API for reading, writing, and change notification
+ * on JSON-encoded settings files.
  *
  * Data is accessed via SettingsObject, either using the root property
  * or by creating a SettingsObject, optionally using a base path.
