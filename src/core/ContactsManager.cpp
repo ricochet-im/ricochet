@@ -30,7 +30,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "main.h"
 #include "ContactsManager.h"
 #include "IncomingRequestManager.h"
 #include "OutgoingContactRequest.h"
@@ -48,17 +47,14 @@ ContactsManager::ContactsManager(UserIdentity *id)
 
 void ContactsManager::loadFromSettings()
 {
-    config->beginGroup(QLatin1String("contacts"));
-    QStringList sections = config->childGroups();
-    config->endGroup();
-
-    for (QStringList::Iterator it = sections.begin(); it != sections.end(); ++it)
+    SettingsObject settings(QStringLiteral("contacts"));
+    foreach (const QString &key, settings.data().keys())
     {
         bool ok = false;
-        int id = it->toInt(&ok);
+        int id = key.toInt(&ok);
         if (!ok)
         {
-            qWarning("Ignoring contact %s with a non-integer ID", qPrintable(*it));
+            qWarning() << "Ignoring contact" << key << " with a non-integer ID";
             continue;
         }
 
@@ -137,7 +133,7 @@ ContactUser *ContactsManager::lookupSecret(const QByteArray &secret) const
 
     for (QList<ContactUser*>::ConstIterator it = pContacts.begin(); it != pContacts.end(); ++it)
     {
-        if ((*it)->readSetting("localSecret") == secret)
+        if (secret == (*it)->settings()->read<Base64Encode>("localSecret"))
             return *it;
     }
 

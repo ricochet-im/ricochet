@@ -55,6 +55,7 @@ class TorManager : public QObject
     Q_PROPERTY(Tor::TorControl* control READ control CONSTANT)
     Q_PROPERTY(bool hasError READ hasError NOTIFY errorChanged)
     Q_PROPERTY(QString errorMessage READ errorMessage NOTIFY errorChanged)
+    Q_PROPERTY(QString dataDirectory READ dataDirectory WRITE setDataDirectory)
 
 public:
     explicit TorManager(QObject *parent = 0);
@@ -62,6 +63,9 @@ public:
 
     TorProcess *process();
     TorControl *control();
+
+    QString dataDirectory() const;
+    void setDataDirectory(const QString &path);
 
     // True on first run or when the Tor configuration wizard needs to be shown
     bool configurationNeeded() const;

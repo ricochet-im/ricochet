@@ -30,7 +30,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "main.h"
 #include "IdentityManager.h"
 #include "IncomingRequestManager.h"
 #include "ContactsManager.h"
@@ -47,13 +46,11 @@ IncomingRequestManager::IncomingRequestManager(ContactsManager *c)
 
 void IncomingRequestManager::loadRequests()
 {
-    config->beginGroup(QLatin1String("contactRequests"));
-    QStringList contacts = config->childGroups();
-    config->endGroup();
+    SettingsObject settings(QStringLiteral("contactRequests"));
 
-    for (QStringList::ConstIterator it = contacts.begin(); it != contacts.end(); ++it)
+    foreach (const QString &host, settings.data().keys())
     {
-        IncomingContactRequest *request = new IncomingContactRequest(this, it->toLatin1());
+        IncomingContactRequest *request = new IncomingContactRequest(this, host.toLatin1());
         request->load();
 
         m_requests.append(request);
@@ -157,19 +154,18 @@ void IncomingRequestManager::removeRequest(IncomingContactRequest *request)
 
 void IncomingRequestManager::addRejectedHost(const QByteArray &hostname)
 {
-    QStringList hosts = rejectedHosts();
-    hosts.append(QString::fromLatin1(hostname));
-    config->setValue("core/hostnameBlacklist", QVariant::fromValue(hosts));
+    SettingsObject *settings = contacts->identity->settings();
+    QJsonArray blacklist = settings->read<QJsonArray>("hostnameBlacklist");
+    if (!blacklist.contains(QString::fromLatin1(hostname))) {
+        blacklist.append(QString::fromLatin1(hostname));
+        settings->write("hostnameBlacklist", blacklist);
+    }
 }
 
 bool IncomingRequestManager::isHostnameRejected(const QByteArray &hostname) const
 {
-    return rejectedHosts().contains(QString::fromLatin1(hostname));
-}
-
-QStringList IncomingRequestManager::rejectedHosts() const
-{
-    return config->value("core/hostnameBlacklist").value<QStringList>();
+    QJsonArray blacklist = contacts->identity->settings()->read<QJsonArray>("hostnameBlacklist");
+    return blacklist.contains(QString::fromLatin1(hostname));
 }
 
 IncomingContactRequest::IncomingContactRequest(IncomingRequestManager *m, const QByteArray &h,
@@ -184,33 +180,29 @@ IncomingContactRequest::IncomingContactRequest(IncomingRequestManager *m, const 
 
 void IncomingContactRequest::load()
 {
-    config->beginGroup(QLatin1String("contactRequests/") + QString::fromLatin1(m_hostname));
+    SettingsObject settings(QStringLiteral("contactRequests.%1").arg(QLatin1String(m_hostname)));
 
-    setRemoteSecret(config->value(QLatin1String("remoteSecret")).toByteArray());
-    setNickname(config->value(QLatin1String("nickname")).toString());
-    setMessage(config->value(QLatin1String("message")).toString());
+    setRemoteSecret(settings.read<Base64Encode>("remoteSecret"));
+    setNickname(settings.read("nickname").toString());
+    setMessage(settings.read("message").toString());
 
-    m_requestDate = config->value(QLatin1String("requestDate")).toDateTime();
-    m_lastRequestDate = config->value(QLatin1String("lastRequestDate")).toDateTime();
-
-    config->endGroup();
+    m_requestDate = settings.read<QDateTime>("requestDate");
+    m_lastRequestDate = settings.read<QDateTime>("lastRequestDate");
 }
 
 void IncomingContactRequest::save()
 {
-    config->beginGroup(QLatin1String("contactRequests/") + QString::fromLatin1(m_hostname));
+    SettingsObject settings(QStringLiteral("contactRequests.%1").arg(QLatin1String(m_hostname)));
 
-    config->setValue(QLatin1String("remoteSecret"), remoteSecret());
-    config->setValue(QLatin1String("nickname"), nickname());
-    config->setValue(QLatin1String("message"), message());
+    settings.write("remoteSecret", Base64Encode(remoteSecret()));
+    settings.write("nickname", nickname());
+    settings.write("message", message());
 
     if (m_requestDate.isNull())
         m_requestDate = m_lastRequestDate = QDateTime::currentDateTime();
 
-    config->setValue(QLatin1String("requestDate"), m_requestDate);
-    config->setValue(QLatin1String("lastRequestDate"), m_lastRequestDate);
-
-    config->endGroup();
+    settings.write("requestDate", m_requestDate);
+    settings.write("lastRequestDate", m_lastRequestDate);
 }
 
 void IncomingContactRequest::renew()
@@ -220,10 +212,8 @@ void IncomingContactRequest::renew()
 
 void IncomingContactRequest::removeRequest()
 {
-    /* Remove from config */
-    config->beginGroup(QLatin1String("contactRequests/") + QString::fromLatin1(m_hostname));
-    config->remove("");
-    config->endGroup();
+    SettingsObject settings(QStringLiteral("contactRequests.%1").arg(QLatin1String(m_hostname)));
+    settings.undefine();
 }
 
 void IncomingContactRequest::setRemoteSecret(const QByteArray &remoteSecret)
@@ -269,7 +259,7 @@ void IncomingContactRequest::accept(ContactUser *user)
         user->setHostname(QString::fromLatin1(m_hostname));
     }
 
-    user->writeSetting("remoteSecret", remoteSecret());
+    user->settings()->write("remoteSecret", Base64Encode(remoteSecret()));
 
     /* If there is a connection, send the accept message and morph it to a primary connection */
     if (connection)

@@ -30,7 +30,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "main.h"
 #include "MainWindow.h"
 #include "core/UserIdentity.h"
 #include "core/IncomingRequestManager.h"
@@ -43,6 +42,7 @@
 #include "ContactsModel.h"
 #include "ui/ConversationModel.h"
 #include "ui/LinkedText.h"
+#include "utils/Settings.h"
 #include <QtQml>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
@@ -75,6 +75,7 @@ MainWindow::MainWindow(QObject *parent)
     qmlRegisterType<ConversationModel>("im.ricochet", 1, 0, "ConversationModel");
     qmlRegisterType<ContactsModel>("im.ricochet", 1, 0, "ContactsModel");
     qmlRegisterType<ContactIDValidator>("im.ricochet", 1, 0, "ContactIDValidator");
+    qmlRegisterType<SettingsObject>("im.ricochet", 1, 0, "Settings");
     qmlRegisterSingletonType<LinkedText>("im.ricochet", 1, 0, "LinkedText", linkedtext_singleton);
 
     Q_ASSERT(!identityManager->identities().isEmpty());

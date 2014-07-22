@@ -30,7 +30,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "main.h"
 #include "UserIdentity.h"
 #include "tor/TorControl.h"
 #include "tor/HiddenService.h"
@@ -43,19 +42,26 @@ UserIdentity::UserIdentity(int id, QObject *parent)
     : QObject(parent)
     , uniqueID(id)
     , contacts(this)
+    , m_settings(0)
     , m_hiddenService(0)
     , incomingSocket(0)
 {
-    m_nickname = readSetting("nickname", tr("Me")).toString();
+    m_settings = new SettingsObject(QStringLiteral("identity"), this);
+    connect(m_settings, &SettingsObject::modified, this, &UserIdentity::onSettingsModified);
 
-    QString dir = readSetting("dataDirectory", QLatin1String("data-") + QString::number(uniqueID)).toString();
+    QString dir = m_settings->read("dataDirectory", QString::fromLatin1("data-%1").arg(uniqueID)).toString();
+
     m_hiddenService = new Tor::HiddenService(dir, this);
     connect(m_hiddenService, SIGNAL(statusChanged(int,int)), SLOT(onStatusChanged(int,int)));
 
-    QHostAddress address(config->value("core/listenIp", QLatin1String("127.0.0.1")).toString());
-    quint16 port = (quint16)config->value("core/listenPort", 0).toUInt();
+    // Generally, these are not used, and we bind to localhost and port 0
+    // for an automatic (and portable) selection.
+    QHostAddress address(m_settings->read("localListenAddress").toString());
+    if (address.isNull())
+        address = QHostAddress::LocalHost;
+    quint16 port = (quint16)m_settings->read("localListenPort").toInt();
 
-    if (m_hiddenService->status() == Tor::HiddenService::NotCreated && !readSetting("createNewService", false).toBool())
+    if (!m_settings->read("initializing").toBool() && m_hiddenService->status() == Tor::HiddenService::NotCreated)
     {
         qWarning("Hidden service data for identity %d in %s does not exist", uniqueID, qPrintable(dir));
         delete m_hiddenService;
@@ -79,32 +85,24 @@ UserIdentity::UserIdentity(int id, QObject *parent)
 
 UserIdentity *UserIdentity::createIdentity(int uniqueID, const QString &dataDirectory)
 {
-    config->beginGroup(QString::fromLatin1("identity/%1").arg(uniqueID));
-    config->setValue("createNewService", true);
+    // There is actually no support for multiple identities currently.
+    Q_ASSERT(uniqueID == 0);
+    if (uniqueID != 0)
+        return 0;
+
+    SettingsObject settings(QStringLiteral("identity"));
+    settings.write("initializing", true);
     if (dataDirectory.isEmpty())
-        config->setValue("dataDirectory", QLatin1String("data-") + QString::number(uniqueID));
+        settings.write("dataDirectory", QString::fromLatin1("data-%1").arg(uniqueID));
     else
-        config->setValue("dataDirectory", dataDirectory);
-    config->endGroup();
+        settings.write("dataDirectory", dataDirectory);
 
     return new UserIdentity(uniqueID);
 }
 
-QVariant UserIdentity::readSetting(const QString &key, const QVariant &defaultValue) const
+SettingsObject *UserIdentity::settings()
 {
-    return config->value(QString::fromLatin1("identity/%1/%2").arg(uniqueID).arg(key), defaultValue);
-}
-
-void UserIdentity::writeSetting(const QString &key, const QVariant &value)
-{
-    config->setValue(QString::fromLatin1("identity/%1/%2").arg(uniqueID).arg(key), value);
-    emit settingsChanged(key);
-}
-
-void UserIdentity::removeSetting(const QString &key)
-{
-    config->remove(QString::fromLatin1("identity/%1/%2").arg(uniqueID).arg(key));
-    emit settingsChanged(key);
+    return m_settings;
 }
 
 QString UserIdentity::hostname() const
@@ -117,21 +115,28 @@ QString UserIdentity::contactID() const
     return ContactIDValidator::idFromHostname(hostname());
 }
 
+QString UserIdentity::nickname() const
+{
+    return m_settings->read("nickname").toString();
+}
+
 void UserIdentity::setNickname(const QString &nick)
 {
-    if (nick == m_nickname)
-        return;
+    m_settings->write("nickname", nick);
+}
 
-    m_nickname = nick;
-    writeSetting("nickname", nick);
-    emit nicknameChanged();
+void UserIdentity::onSettingsModified(const QString &key, const QJsonValue &value)
+{
+    Q_UNUSED(value);
+    if (key == QLatin1String("nickname"))
+        emit nicknameChanged();
 }
 
 void UserIdentity::onStatusChanged(int newStatus, int oldStatus)
 {
     if (oldStatus == Tor::HiddenService::NotCreated && newStatus > oldStatus)
     {
-        removeSetting("createNewService");
+        m_settings->write("initializing", QJsonValue::Undefined);
         emit contactIDChanged();
     }
     emit statusChanged();

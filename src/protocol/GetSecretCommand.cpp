@@ -52,7 +52,7 @@ void GetSecretCommand::send(ProtocolSocket *to)
 
 void GetSecretCommand::process(CommandHandler &command)
 {
-    QByteArray secret = command.user->readSetting("localSecret").toByteArray();
+    QByteArray secret = command.user->settings()->read<Base64Encode>("localSecret");
     if (secret.size() != 16)
     {
         command.sendReply(Protocol::InternalError);
@@ -71,5 +71,6 @@ void GetSecretCommand::processReply(quint8 state, const uchar *data, unsigned da
 
     qDebug() << "Setting remote secret for user" << user->uniqueID << "from command response";
 
-    user->writeSetting("remoteSecret", QByteArray((const char*)data, dataSize));
+    QByteArray secret((const char*)data, dataSize);
+    user->settings()->write("remoteSecret", Base64Encode(secret));
 }

@@ -33,11 +33,11 @@
 #ifndef CONTACTUSER_H
 #define CONTACTUSER_H
 
-#include "main.h"
 #include <QObject>
 #include <QHash>
 #include <QMetaType>
 #include <QVariant>
+#include "utils/Settings.h"
 #include "protocol/ProtocolSocket.h"
 
 class UserIdentity;
@@ -62,7 +62,8 @@ class ContactUser : public QObject
     Q_PROPERTY(QString nickname READ nickname WRITE setNickname NOTIFY nicknameChanged)
     Q_PROPERTY(QString contactID READ contactID CONSTANT)
     Q_PROPERTY(Status status READ status NOTIFY statusChanged)
-    Q_PROPERTY(OutgoingContactRequest* contactRequest READ contactRequest NOTIFY statusChanged)
+    Q_PROPERTY(OutgoingContactRequest *contactRequest READ contactRequest NOTIFY statusChanged)
+    Q_PROPERTY(SettingsObject *settings READ settings CONSTANT)
 
     friend class ContactsManager;
     friend class ChatMessageCommand;
@@ -90,7 +91,7 @@ public:
     UserIdentity *getIdentity() const { return identity; }
     int getUniqueID() const { return uniqueID; }
 
-    const QString &nickname() const { return m_nickname; }
+    QString nickname() const;
     /* Hostname is in the onion hostname format, i.e. it ends with .onion */
     QString hostname() const;
     quint16 port() const;
@@ -99,23 +100,7 @@ public:
 
     Status status() const { return m_status; }
 
-    Q_INVOKABLE QVariant readSetting(const QString &key, const QVariant &defaultValue = QVariant()) const;
-    QVariant readSetting(const char *key, const QVariant &defaultValue = QVariant()) const
-    {
-        return readSetting(QLatin1String(key), defaultValue);
-    }
-
-    Q_INVOKABLE void writeSetting(const QString &key, const QVariant &value);
-    void writeSetting(const char *key, const QVariant &value)
-    {
-        writeSetting(QLatin1String(key), value);
-    }
-
-    Q_INVOKABLE void removeSetting(const QString &key);
-    void removeSetting(const char *key)
-    {
-        removeSetting(QLatin1String(key));
-    }
+    SettingsObject *settings();
 
     Q_INVOKABLE void deleteContact();
 
@@ -144,19 +129,19 @@ private slots:
     void onConnected();
     void onDisconnected();
     void requestRemoved();
+    void onSettingsModified(const QString &key, const QJsonValue &value);
 
 private:
     ProtocolSocket *m_conn;
-    QString m_nickname;
     Status m_status;
     quint16 m_lastReceivedChatID;
     OutgoingContactRequest *m_contactRequest;
     OutgoingContactSocket *m_outgoingSocket;
+    SettingsObject *m_settings;
 
     /* See ContactsManager::addContact */
     static ContactUser *addNewContact(UserIdentity *identity, int id);
 
-    void loadSettings();
     void loadContactRequest();
     void setupOutgoingSocket();
 };

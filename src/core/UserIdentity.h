@@ -33,7 +33,6 @@
 #ifndef USERIDENTITY_H
 #define USERIDENTITY_H
 
-#include "main.h"
 #include "ContactsManager.h"
 #include <QObject>
 #include <QMetaType>
@@ -45,6 +44,15 @@ namespace Tor
 
 class IncomingSocket;
 
+/* UserIdentity represents the local identity offered by the user.
+ *
+ * In particular, it represents the published hidden service, and
+ * theoretically holds the list of contacts.
+ *
+ * At present, implementation (and settings) assumes that there is
+ * only one identity, but some code is confusingly written to allow
+ * for several.
+ */
 class UserIdentity : public QObject
 {
     Q_OBJECT
@@ -57,7 +65,8 @@ class UserIdentity : public QObject
     Q_PROPERTY(QString contactID READ contactID NOTIFY contactIDChanged)
     Q_PROPERTY(bool isOnline READ isServiceOnline NOTIFY statusChanged)
     Q_PROPERTY(bool isPublished READ isServicePublished NOTIFY statusChanged)
-    Q_PROPERTY(ContactsManager* contacts READ getContacts CONSTANT)
+    Q_PROPERTY(ContactsManager *contacts READ getContacts CONSTANT)
+    Q_PROPERTY(SettingsObject *settings READ settings CONSTANT)
 
 public:
     const int uniqueID;
@@ -67,7 +76,7 @@ public:
 
     /* Properties */
     int getUniqueID() const { return uniqueID; }
-    const QString &nickname() const { return m_nickname; }
+    QString nickname() const;
     /* Hostname is .onion format, like ContactUser */
     QString hostname() const;
     QString contactID() const;
@@ -81,24 +90,7 @@ public:
     bool isServicePublished() const;
     Tor::HiddenService *hiddenService() const { return m_hiddenService; }
 
-    /* Settings API */
-    QVariant readSetting(const QString &key, const QVariant &defaultValue = QVariant()) const;
-    QVariant readSetting(const char *key, const QVariant &defaultValue = QVariant()) const
-    {
-        return readSetting(QLatin1String(key), defaultValue);
-    }
-
-    void writeSetting(const QString &key, const QVariant &value);
-    void writeSetting(const char *key, const QVariant &value)
-    {
-        writeSetting(QLatin1String(key), value);
-    }
-
-    void removeSetting(const QString &key);
-    void removeSetting(const char *key)
-    {
-        removeSetting(QLatin1String(key));
-    }
+    SettingsObject *settings();
 
 signals:
     void statusChanged();
@@ -108,9 +100,10 @@ signals:
 
 private slots:
     void onStatusChanged(int newStatus, int oldStatus);
+    void onSettingsModified(const QString &key, const QJsonValue &value);
 
 private:
-    QString m_nickname;
+    SettingsObject *m_settings;
     Tor::HiddenService *m_hiddenService;
     IncomingSocket *incomingSocket;
 

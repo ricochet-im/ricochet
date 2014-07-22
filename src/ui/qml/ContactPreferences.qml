@@ -56,7 +56,7 @@ Item {
             Label {
                 Layout.fillWidth: true
                 elide: Text.ElideRight
-                text: visible ? Qt.formatDate(contactInfo.contact.readSetting("whenCreated"), Qt.DefaultLocaleLongDate) : ""
+                text: visible ? Qt.formatDate(contactInfo.contact.settings.read("whenCreated"), Qt.DefaultLocaleLongDate) : ""
             }
 
             Label { text: qsTr("Last seen:"); visible: lastSeen.visible }
@@ -65,7 +65,7 @@ Item {
                 Layout.fillWidth: true
                 elide: Text.ElideRight
                 visible: contactInfo.request === null
-                text: visible ? Qt.formatDateTime(contactInfo.contact.readSetting("lastConnected"), Qt.DefaultLocaleLongDate) : ""
+                text: visible ? Qt.formatDateTime(contactInfo.contact.settings.read("lastConnected"), Qt.DefaultLocaleLongDate) : ""
             }
 
             Label { text: qsTr("Request:"); visible: requestStatus.visible }

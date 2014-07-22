@@ -68,36 +68,12 @@ void IdentityManager::addIdentity(UserIdentity *identity)
 
 void IdentityManager::loadFromSettings()
 {
-    config->beginGroup(QLatin1String("identity"));
-    QStringList sections = config->childGroups();
-    config->endGroup();
-
-    for (QStringList::Iterator it = sections.begin(); it != sections.end(); ++it)
+    SettingsObject settings;
+    if (settings.read("identity") != QJsonValue::Undefined)
     {
-        bool ok = false;
-        int id = it->toInt(&ok);
-        if (!ok)
-            continue;
-
-        UserIdentity *user = new UserIdentity(id, this);
-        addIdentity(user);
+        addIdentity(new UserIdentity(0, this));
     }
-
-    /* Attempt to convert from old style configs if necessary */
-    if (config->contains(QLatin1String("core/serviceDirectory")))
-    {
-        QString directory = config->value("core/serviceDirectory").toString();
-        foreach (UserIdentity *user, m_identities)
-        {
-            if (user->readSetting("dataDirectory").toString() == directory)
-                return;
-        }
-
-        qDebug() << "Creating new identity from old single-identity configuration";
-        createIdentity(directory);
-    }
-
-    if (m_identities.isEmpty())
+    else
     {
         /* No identities exist (probably inital run); create one */
         createIdentity();
@@ -107,6 +83,9 @@ void IdentityManager::loadFromSettings()
 UserIdentity *IdentityManager::createIdentity(const QString &serviceDirectory, const QString &nickname)
 {
     UserIdentity *identity = UserIdentity::createIdentity(++highestID, serviceDirectory);
+    if (!identity)
+        return identity;
+
     if (!nickname.isEmpty())
         identity->setNickname(nickname);
 
