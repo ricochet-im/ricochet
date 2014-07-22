@@ -36,11 +36,11 @@
 #include "core/OutgoingContactRequest.h"
 #include "core/IdentityManager.h"
 #include "core/ContactIDValidator.h"
+#include "core/ConversationModel.h"
 #include "tor/TorControl.h"
 #include "tor/TorManager.h"
 #include "tor/TorProcess.h"
 #include "ContactsModel.h"
-#include "ui/ConversationModel.h"
 #include "ui/LinkedText.h"
 #include "utils/Settings.h"
 #include <QtQml>

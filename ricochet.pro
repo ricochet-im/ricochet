@@ -132,7 +132,7 @@ SOURCES += src/main.cpp \
     src/protocol/GetSecretCommand.cpp \
     src/core/UserIdentity.cpp \
     src/core/IdentityManager.cpp \
-    src/ui/ConversationModel.cpp \
+    src/core/ConversationModel.cpp \
     src/tor/TorProcess.cpp \
     src/tor/TorManager.cpp \
     src/tor/TorSocket.cpp \
@@ -170,7 +170,7 @@ HEADERS += src/ui/MainWindow.h \
     src/protocol/GetSecretCommand.h \
     src/core/UserIdentity.h \
     src/core/IdentityManager.h \
-    src/ui/ConversationModel.h \
+    src/core/ConversationModel.h \
     src/tor/TorProcess.h \
     src/tor/TorProcess_p.h \
     src/tor/TorManager.h \

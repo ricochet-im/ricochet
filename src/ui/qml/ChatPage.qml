@@ -8,17 +8,13 @@ FocusScope {
 
     property var contact
     property TextArea textField: textInput
+    property var conversationModel: (contact !== null) ? contact.conversation : null
 
     function forceActiveFocus() {
         textField.forceActiveFocus()
     }
 
     onVisibleChanged: if (visible) forceActiveFocus()
-
-    ConversationModel {
-        id: conversationModel
-        contact: chatPage.contact
-    }
 
     RowLayout {
         id: infoBar
