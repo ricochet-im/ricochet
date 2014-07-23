@@ -34,6 +34,7 @@
 #include "IncomingRequestManager.h"
 #include "OutgoingContactRequest.h"
 #include "ContactIDValidator.h"
+#include "ConversationModel.h"
 #include <QStringList>
 #include <QDebug>
 
@@ -89,6 +90,7 @@ void ContactsManager::connectSignals(ContactUser *user)
 {
     connect(user, SIGNAL(contactDeleted(ContactUser*)), SLOT(contactDeleted(ContactUser*)));
     connect(user, SIGNAL(prepareInteractiveHandler()), SLOT(onPrepareInteractiveHandler()));
+    connect(user->conversation(), &ConversationModel::unreadCountChanged, this, &ContactsManager::onUnreadCountChanged);
 }
 
 void ContactsManager::onPrepareInteractiveHandler()
@@ -178,5 +180,16 @@ ContactUser *ContactsManager::lookupUniqueID(int uniqueID) const
     }
 
     return 0;
+}
+
+void ContactsManager::onUnreadCountChanged()
+{
+    ConversationModel *model = qobject_cast<ConversationModel*>(sender());
+    Q_ASSERT(model);
+    if (!model)
+        return;
+    ContactUser *user = model->contact();
+
+    emit unreadCountChanged(user, model->unreadCount());
 }
 

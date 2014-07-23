@@ -15,3 +15,6 @@ function getWindow(user) {
     return window
 }
 
+function windowExists(user) {
+    return windows[user.uniqueID] !== undefined && windows[user.uniqueID] !== null
+}

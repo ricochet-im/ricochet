@@ -33,6 +33,14 @@ ApplicationWindow {
         }
     }
 
+    Connections {
+        target: userIdentity.contacts
+        onUnreadCountChanged: {
+            if (unreadCount > 0 && !ContactWindow.windowExists(user))
+                window.alert(0)
+        }
+    }
+
     RowLayout {
         anchors.fill: parent
         spacing: 0
