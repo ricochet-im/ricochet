@@ -5,8 +5,8 @@ import im.ricochet 1.0
 
 ApplicationWindow {
     id: preferencesWindow
-    width: 600
-    height: 500
+    width: 550
+    height: 400
     title: qsTr("Ricochet Preferences")
 
     signal closed
@@ -34,6 +34,11 @@ ApplicationWindow {
         id: tabs
         anchors.fill: parent
         anchors.margins: 8
+
+        Tab {
+            title: qsTr("General")
+            source: Qt.resolvedUrl("GeneralPreferences.qml")
+        }
 
         Tab {
             title: qsTr("Contacts")
