@@ -16,6 +16,17 @@ FocusScope {
 
     onVisibleChanged: if (visible) forceActiveFocus()
 
+    property bool active: visible && activeFocusItem !== null
+    onActiveChanged: {
+        if (active)
+            conversationModel.resetUnreadCount()
+    }
+
+    Connections {
+        target: conversationModel
+        onUnreadCountChanged: if (active) conversationModel.resetUnreadCount()
+    }
+
     RowLayout {
         id: infoBar
         anchors {

@@ -31,6 +31,7 @@
         <file>PageView.qml</file>
         <file>ChatPage.qml</file>
         <file>MainToolBar.qml</file>
+        <file>UnreadCountBadge.qml</file>
     </qresource>
     <qresource prefix="/ui/icons">
         <file>plus.png</file>
