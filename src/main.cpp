@@ -154,6 +154,10 @@ static bool initSettings(SettingsFile *settings, QLockFile **lockFile, QString &
     }
 
     QDir dir(configPath);
+    if (!dir.exists() && !dir.mkpath(QStringLiteral("."))) {
+        errorMessage = QStringLiteral("Cannot create directory: %1").arg(dir.path());
+        return false;
+    }
 
     QLockFile *lock = new QLockFile(dir.filePath(QStringLiteral("ricochet.json.lock")));
     *lockFile = lock;
