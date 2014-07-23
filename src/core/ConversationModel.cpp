@@ -2,7 +2,10 @@
 #include "protocol/ChatMessageCommand.h"
 
 ConversationModel::ConversationModel(QObject *parent)
-    : QAbstractListModel(parent), m_contact(0), lastReceivedId(0)
+    : QAbstractListModel(parent)
+    , m_contact(0)
+    , lastReceivedId(0)
+    , m_unreadCount(0)
 {
 }
 
@@ -65,6 +68,9 @@ void ConversationModel::receiveMessage(const ChatMessageData &data)
     lastReceivedId = data.messageID;
     messages.insert(row, message);
     endInsertRows();
+
+    m_unreadCount++;
+    emit unreadCountChanged();
 }
 
 void ConversationModel::messageReply()
@@ -80,6 +86,26 @@ void ConversationModel::messageReply()
     MessageData &data = messages[row];
     data.status = Protocol::isSuccess(command->finalReplyState()) ? Delivered : Error;
     emit dataChanged(index(row, 0), index(row, 0));
+}
+
+void ConversationModel::clear()
+{
+    if (messages.isEmpty())
+        return;
+
+    beginRemoveRows(QModelIndex(), 0, messages.size()-1);
+    messages.clear();
+    endRemoveRows();
+
+    resetUnreadCount();
+}
+
+void ConversationModel::resetUnreadCount()
+{
+    if (m_unreadCount == 0)
+        return;
+    m_unreadCount = 0;
+    emit unreadCountChanged();
 }
 
 void ConversationModel::onContactStatusChanged()
