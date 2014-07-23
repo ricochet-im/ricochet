@@ -17,6 +17,12 @@ ApplicationWindow {
             closed()
     }
 
+    onClosed: {
+        // If not also in combined window mode, clear chat history when closing
+        if (!uiSettings.data.combinedChatWindow)
+            chatPage.conversationModel.clear()
+    }
+
     property bool inactive: true
     onActiveFocusItemChanged: {
         // Focus text input when window regains focus
