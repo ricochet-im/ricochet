@@ -97,7 +97,8 @@ int main(int argc, char *argv[])
 static QString userConfigPath()
 {
     QString path = QStandardPaths::writableLocation(QStandardPaths::DataLocation);
-    QString oldPath = path.replace(QStringLiteral("Torsion"), QStringLiteral("Ricochet"));
+    QString oldPath = path;
+    oldPath.replace(QStringLiteral("Ricochet"), QStringLiteral("Torsion"), Qt::CaseInsensitive);
     if (QFile::exists(oldPath))
         return oldPath;
     return path;
