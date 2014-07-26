@@ -6,7 +6,7 @@ import im.ricochet 1.0
 ApplicationWindow {
     id: dialog
     width: 400
-    height: layout.height + 24
+    height: layout.height + 32
     minimumWidth: width
     maximumWidth: width
     minimumHeight: height
@@ -20,6 +20,7 @@ ApplicationWindow {
     function close() { visible = false }
 
     property string link
+    property QtObject contact
 
     ColumnLayout {
         id: layout
@@ -29,23 +30,38 @@ ApplicationWindow {
             left: parent.left
             right: parent.right
             top: parent.top
-            margins: 8
-            topMargin: 16
+            margins: 16
         }
 
         Label {
             Layout.fillWidth: true
-            text: qsTr("<b>Warning!</b> Using your default browser may compromise your anonymity. Are you sure you want to open this link:")
+            text: qsTr("<b>Warning!</b> Opening links with your default browser will harm your security and anonymity.<br><br>You can <a href='.'>copy to the clipboard</a> instead.")
             wrapMode: Text.Wrap
             horizontalAlignment: Qt.AlignHCenter
+            onLinkActivated: {
+                LinkedText.copyToClipboard(dialog.link)
+                dialog.close()
+            }
         }
 
-        Label {
+        Item { width: 1; height: 1 }
+
+        Rectangle {
+            height: 1
             Layout.fillWidth: true
-            text: dialog.link
-            textFormat: Text.PlainText
-            horizontalAlignment: Qt.AlignHCenter
-            elide: Text.ElideMiddle
+            color: Qt.darker(palette.window, 1.5)
+        }
+
+        CheckBox {
+            id: alwaysOpenContact
+            text: qsTr("Don't ask again for links from %1").arg(contact ? contact.nickname : "???")
+            checked: contact.settings.data.alwaysOpenBrowser || false
+        }
+
+        CheckBox {
+            id: alwaysOpenAll
+            text: qsTr("Don't ask again for any links (not recommended!)")
+            checked: uiSettings.data.alwaysOpenBrowser || false
         }
 
         RowLayout {
@@ -53,15 +69,11 @@ ApplicationWindow {
             Button {
                 text: qsTr("Open Browser")
                 onClicked: {
+                    if (alwaysOpenContact.checked)
+                        contact.settings.write("alwaysOpenBrowser", true)
+                    if (alwaysOpenAll.checked)
+                        uiSettings.write("alwaysOpenBrowser", true)
                     Qt.openUrlExternally(link)
-                    dialog.close()
-                }
-            }
-            Item { Layout.fillWidth: true; height: 1 }
-            Button {
-                text: qsTr("Copy Link")
-                onClicked: {
-                    LinkedText.copyToClipboard(link)
                     dialog.close()
                 }
             }

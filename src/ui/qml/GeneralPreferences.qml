@@ -16,6 +16,14 @@ ColumnLayout {
         }
     }
 
+    CheckBox {
+        text: qsTr("Open links in default browser without prompting")
+        checked: uiSettings.data.alwaysOpenBrowser
+        onCheckedChanged: {
+            uiSettings.write("alwaysOpenBrowser", checked)
+        }
+    }
+
     Item {
         Layout.fillHeight: true
         Layout.fillWidth: true
