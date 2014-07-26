@@ -40,6 +40,8 @@ class UserIdentity;
 class IncomingContactRequest;
 class OutgoingContactRequest;
 class QQmlApplicationEngine;
+class QQuickItem;
+class QQuickWindow;
 
 class MainWindow : public QObject
 {
@@ -57,6 +59,9 @@ public:
     QString version() const;
 
     Q_INVOKABLE bool showRemoveContactDialog(ContactUser *user);
+
+    // Find parent window of a QQuickItem; exposed as property after Qt 5.4
+    Q_INVOKABLE QQuickWindow *findParentWindow(QQuickItem *item);
 
 private:
     QQmlApplicationEngine *qml;

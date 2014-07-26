@@ -119,7 +119,8 @@ Column {
                 text: qsTr("Open with Browser")
                 visible: hoveredLink.length > 0 && hoveredLink.substr(0,4).toLowerCase() == "http"
                 onTriggered: {
-                    var object = createDialog("OpenBrowserDialog.qml", { 'link': hoveredLink }, chatWindow)
+                    var window = uiMain.findParentWindow(delegate)
+                    var object = createDialog("OpenBrowserDialog.qml", { 'link': hoveredLink }, window)
                     object.visible = true
                 }
             }
