@@ -119,8 +119,13 @@ Column {
                 text: qsTr("Open with Browser")
                 visible: hoveredLink.length > 0 && hoveredLink.substr(0,4).toLowerCase() == "http"
                 onTriggered: {
-                    var object = createDialog("OpenBrowserDialog.qml", { 'link': hoveredLink }, chatWindow)
-                    object.visible = true
+                    if (uiSettings.data.alwaysOpenBrowser || contact.settings.data.alwaysOpenBrowser) {
+                        Qt.openUrlExternally(hoveredLink)
+                    } else {
+                        var window = uiMain.findParentWindow(delegate)
+                        var object = createDialog("OpenBrowserDialog.qml", { 'link': hoveredLink, 'contact': contact }, window)
+                        object.visible = true
+                    }
                 }
             }
             MenuItem {

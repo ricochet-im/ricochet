@@ -48,6 +48,7 @@
 #include <QQmlContext>
 #include <QMessageBox>
 #include <QPushButton>
+#include <QQuickItem>
 
 MainWindow *uiMain = 0;
 
@@ -113,4 +114,10 @@ bool MainWindow::showRemoveContactDialog(ContactUser *user)
         tr("Remove %1").arg(user->nickname()),
         tr("Do you want to permanently remove %1?").arg(user->nickname()));
     return btn == QMessageBox::Yes;
+}
+
+QQuickWindow *MainWindow::findParentWindow(QQuickItem *item)
+{
+    Q_ASSERT(item);
+    return item ? item->window() : 0;
 }
