@@ -84,9 +84,12 @@ signals:
      * emitted; primarily, to allow UI to create models to handle incomingChatMessage */
     void prepareInteractiveHandler(ContactUser *user);
 
+    void unreadCountChanged(ContactUser *user, int unreadCount);
+
 private slots:
     void contactDeleted(ContactUser *user);
     void onPrepareInteractiveHandler();
+    void onUnreadCountChanged();
 
 private:
     QList<ContactUser*> pContacts;

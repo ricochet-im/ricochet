@@ -30,13 +30,24 @@ Rectangle {
         anchors {
             left: presenceIcon.right
             leftMargin: 8
-            right: parent.right
+            right: unreadBadge.left
             rightMargin: 8
         }
         text: model.name
         elide: Text.ElideRight
         color: highlighted ? palette.highlightedText : palette.text
         font.pointSize: styleHelper.pointSize
+    }
+
+    UnreadCountBadge {
+        id: unreadBadge
+        anchors {
+            verticalCenter: parent.verticalCenter
+            right: parent.right
+            rightMargin: 8
+        }
+
+        value: model.contact.conversation.unreadCount
     }
 
     ContactActions {

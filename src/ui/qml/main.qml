@@ -67,7 +67,8 @@ QtObject {
         Connections {
             target: userIdentity.contacts
             onPrepareInteractiveHandler: {
-                ContactWindow.getWindow(user)
+                if (!uiSettings.data.combinedChatWindow)
+                    ContactWindow.getWindow(user)
             }
         },
 
@@ -80,6 +81,11 @@ QtObject {
                     object.visible = true
                 }
             }
+        },
+
+        Settings {
+            id: uiSettings
+            path: "ui"
         },
 
         SystemPalette {

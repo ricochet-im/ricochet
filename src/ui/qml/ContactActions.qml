@@ -36,7 +36,7 @@ Item {
         id: contextMenu
 
         MenuItem {
-            text: qsTr("Chat...")
+            text: qsTr("Open Window")
             onTriggered: openWindow()
         }
         MenuItem {

@@ -45,6 +45,7 @@ struct ChatMessageData;
 class ChatMessageCommand;
 class OutgoingContactRequest;
 class OutgoingContactSocket;
+class ConversationModel;
 
 /* Represents a user on the contact list.
  * All persistent uses of a ContactUser instance must either connect to the
@@ -64,6 +65,7 @@ class ContactUser : public QObject
     Q_PROPERTY(Status status READ status NOTIFY statusChanged)
     Q_PROPERTY(OutgoingContactRequest *contactRequest READ contactRequest NOTIFY statusChanged)
     Q_PROPERTY(SettingsObject *settings READ settings CONSTANT)
+    Q_PROPERTY(ConversationModel *conversation READ conversation CONSTANT)
 
     friend class ContactsManager;
     friend class ChatMessageCommand;
@@ -87,6 +89,7 @@ public:
     bool isConnected() const { return status() == Online; }
 
     OutgoingContactRequest *contactRequest() { return m_contactRequest; }
+    ConversationModel *conversation() { return m_conversation; }
 
     UserIdentity *getIdentity() const { return identity; }
     int getUniqueID() const { return uniqueID; }
@@ -138,6 +141,7 @@ private:
     OutgoingContactRequest *m_contactRequest;
     OutgoingContactSocket *m_outgoingSocket;
     SettingsObject *m_settings;
+    ConversationModel *m_conversation;
 
     /* See ContactsManager::addContact */
     static ContactUser *addNewContact(UserIdentity *identity, int id);

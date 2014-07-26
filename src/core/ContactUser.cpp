@@ -40,8 +40,8 @@
 #include "protocol/ProtocolConstants.h"
 #include "core/ContactIDValidator.h"
 #include "core/OutgoingContactRequest.h"
+#include "core/ConversationModel.h"
 #include <QtDebug>
-#include <QBuffer>
 #include <QDateTime>
 
 ContactUser::ContactUser(UserIdentity *ident, int id, QObject *parent)
@@ -52,11 +52,15 @@ ContactUser::ContactUser(UserIdentity *ident, int id, QObject *parent)
     , m_contactRequest(0)
     , m_outgoingSocket(0)
     , m_settings(0)
+    , m_conversation(0)
 {
     Q_ASSERT(uniqueID >= 0);
 
     m_settings = new SettingsObject(QStringLiteral("contacts.%1").arg(uniqueID));
     connect(m_settings, &SettingsObject::modified, this, &ContactUser::onSettingsModified);
+
+    m_conversation = new ConversationModel(this);
+    m_conversation->setContact(this);
 
     m_conn = new ProtocolSocket(this);
     connect(m_conn, SIGNAL(connected()), this, SLOT(onConnected()));
