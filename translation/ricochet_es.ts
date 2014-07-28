@@ -1,4 +1,6 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS language="es" version="2.1">
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
+<TS version="2.1" language="es">
 <context>
     <name>AboutPreferences</name>
     <message>
@@ -29,9 +31,13 @@
 <context>
     <name>ContactActions</name>
     <message>
-        <location filename="../src/ui/qml/ContactActions.qml" line="39"/>
         <source>Chat...</source>
-        <translation>Conversar...</translation>
+        <translation type="vanished">Conversar...</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/qml/ContactActions.qml" line="39"/>
+        <source>Open Window</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactActions.qml" line="43"/>
@@ -206,6 +212,19 @@
     </message>
 </context>
 <context>
+    <name>GeneralPreferences</name>
+    <message>
+        <location filename="../src/ui/qml/GeneralPreferences.qml" line="12"/>
+        <source>Use a single window for conversations</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/qml/GeneralPreferences.qml" line="20"/>
+        <source>Open links in default browser without prompting</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>Main</name>
     <message>
         <location filename="../src/main.cpp" line="69"/>
@@ -213,42 +232,53 @@
         <translation>Error de Ricochet</translation>
     </message>
     <message>
-        <location filename="../src/main.cpp" line="152"/>
         <source>Cannot create configuration directory</source>
-        <translation>No se pudo crear el directorio de configuración</translation>
+        <translation type="vanished">No se pudo crear el directorio de configuración</translation>
     </message>
     <message>
-        <location filename="../src/main.cpp" line="169"/>
         <source>Ricochet is already running</source>
-        <translation>Ricochet ya está ejecutándose</translation>
+        <translation type="vanished">Ricochet ya está ejecutándose</translation>
     </message>
     <message>
-        <location filename="../src/main.cpp" line="171"/>
         <source>Cannot write configuration files (failed to acquire lock)</source>
-        <translation>No se pudieron escribir los ficheros de configuración (parecen ocupados)</translation>
+        <translation type="vanished">No se pudieron escribir los ficheros de configuración (parecen ocupados)</translation>
     </message>
     <message>
-        <location filename="../src/main.cpp" line="177"/>
         <source>Configuration file is not writable</source>
-        <translation>El fichero de configuración no es escribible</translation>
+        <translation type="vanished">El fichero de configuración no es escribible</translation>
+    </message>
+</context>
+<context>
+    <name>MainToolBar</name>
+    <message>
+        <location filename="../src/ui/qml/MainToolBar.qml" line="18"/>
+        <source>Add Contact</source>
+        <translation type="unfinished">Añadir contacto</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/qml/MainToolBar.qml" line="27"/>
+        <source>Preferences</source>
+        <translation type="unfinished">Preferencias</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/qml/MainToolBar.qml" line="60"/>
+        <source>Click to add contacts</source>
+        <translation type="unfinished">Haga clic para añadir contactos</translation>
     </message>
 </context>
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../src/ui/qml/MainWindow.qml" line="23"/>
         <source>Add Contact</source>
-        <translation>Añadir contacto</translation>
+        <translation type="vanished">Añadir contacto</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/MainWindow.qml" line="32"/>
         <source>Preferences</source>
-        <translation>Preferencias</translation>
+        <translation type="vanished">Preferencias</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/MainWindow.qml" line="79"/>
         <source>Click to add contacts</source>
-        <translation>Haga clic para añadir contactos</translation>
+        <translation type="vanished">Haga clic para añadir contactos</translation>
     </message>
     <message>
         <location filename="../src/ui/MainWindow.cpp" line="114"/>
@@ -285,12 +315,12 @@
         <translation>Abrir con el navegador</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/MessageDelegate.qml" line="128"/>
+        <location filename="../src/ui/qml/MessageDelegate.qml" line="133"/>
         <source>Add as Contact</source>
         <translation>Añadir como contacto</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/MessageDelegate.qml" line="140"/>
+        <location filename="../src/ui/qml/MessageDelegate.qml" line="145"/>
         <source>Copy</source>
         <translation>Copiar</translation>
     </message>
@@ -364,22 +394,35 @@
 <context>
     <name>OpenBrowserDialog</name>
     <message>
-        <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="38"/>
         <source>&lt;b&gt;Warning!&lt;/b&gt; Using your default browser may compromise your anonymity. Are you sure you want to open this link:</source>
-        <translation>&lt;b&gt;¡Advertencia!&lt;/b&gt; Usar su navegador predeterminado puede comprometer su anonimato. ¿Está seguro de que quiere abrir este enlace?:</translation>
+        <translation type="vanished">&lt;b&gt;¡Advertencia!&lt;/b&gt; Usar su navegador predeterminado puede comprometer su anonimato. ¿Está seguro de que quiere abrir este enlace?:</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="54"/>
+        <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="38"/>
+        <source>&lt;b&gt;Warning!&lt;/b&gt; Opening links with your default browser will harm your security and anonymity.&lt;br&gt;&lt;br&gt;You can &lt;a href=&apos;.&apos;&gt;copy to the clipboard&lt;/a&gt; instead.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="57"/>
+        <source>Don&apos;t ask again for links from %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="63"/>
+        <source>Don&apos;t ask again for any links (not recommended!)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="70"/>
         <source>Open Browser</source>
         <translation>Abrir navegador</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="62"/>
         <source>Copy Link</source>
-        <translation>Copiar enlace</translation>
+        <translation type="vanished">Copiar enlace</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="70"/>
+        <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="82"/>
         <source>Cancel</source>
         <translation>Cancelar</translation>
     </message>
@@ -387,7 +430,7 @@
 <context>
     <name>OutgoingContactRequest</name>
     <message>
-        <location filename="../src/core/OutgoingContactRequest.cpp" line="202"/>
+        <location filename="../src/core/OutgoingContactRequest.cpp" line="203"/>
         <source>An error occurred with the contact request (code: %1)</source>
         <translation>Ocurrió un error con la solicitud de contacto (código: %1)</translation>
     </message>
@@ -401,16 +444,21 @@
     </message>
     <message>
         <location filename="../src/ui/qml/PreferencesDialog.qml" line="39"/>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/qml/PreferencesDialog.qml" line="44"/>
         <source>Contacts</source>
         <translation>Contactos</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/PreferencesDialog.qml" line="44"/>
+        <location filename="../src/ui/qml/PreferencesDialog.qml" line="49"/>
         <source>Tor</source>
         <translation>Tor</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/PreferencesDialog.qml" line="49"/>
+        <location filename="../src/ui/qml/PreferencesDialog.qml" line="54"/>
         <source>About</source>
         <translation>Acerca de</translation>
     </message>
@@ -418,7 +466,7 @@
 <context>
     <name>QCocoaMenuItem</name>
     <message>
-        <location filename="../src/ui/qml/MainWindow.qml" line="46"/>
+        <location filename="../src/ui/qml/MainWindow.qml" line="29"/>
         <source>Preference</source>
         <translation>Preferencia</translation>
     </message>
@@ -495,17 +543,17 @@
 <context>
     <name>Tor::TorManager</name>
     <message>
-        <location filename="../src/tor/TorManager.cpp" line="141"/>
+        <location filename="../src/tor/TorManager.cpp" line="155"/>
         <source>Cannot find tor executable</source>
         <translation>No se pudo encontrar el ejecutable de Tor</translation>
     </message>
     <message>
-        <location filename="../src/tor/TorManager.cpp" line="155"/>
+        <location filename="../src/tor/TorManager.cpp" line="168"/>
         <source>Cannot write data location: %1</source>
         <translation>No se pudo escribir en la ubicación de datos: %1</translation>
     </message>
     <message>
-        <location filename="../src/tor/TorManager.cpp" line="161"/>
+        <location filename="../src/tor/TorManager.cpp" line="174"/>
         <source>Cannot write data files: %1</source>
         <translation>No se pudieron escribir los ficheros de datos: %1</translation>
     </message>
@@ -768,9 +816,8 @@
 <context>
     <name>UserIdentity</name>
     <message>
-        <location filename="../src/core/UserIdentity.cpp" line="52"/>
         <source>Me</source>
-        <translation>Yo</translation>
+        <translation type="vanished">Yo</translation>
     </message>
 </context>
 </TS>
