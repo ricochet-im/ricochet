@@ -64,9 +64,12 @@ public:
 
 protected:
     virtual void onReply(int statusCode, const QByteArray &data);
+    virtual void onDataLine(const QByteArray &data);
+    virtual void onDataFinished();
 
 private:
     QVariantMap m_results;
+    QString m_lastKey;
 };
 
 }

@@ -32,6 +32,7 @@
 
 #include "GetConfCommand.h"
 #include "utils/StringUtil.h"
+#include <QDebug>
 
 using namespace Tor;
 
@@ -78,6 +79,7 @@ void GetConfCommand::onReply(int statusCode, const QByteArray &data)
     if (kep >= 0)
         value = QString::fromLatin1(unquotedString(data.mid(kep + 1)));
 
+    m_lastKey = key;
     QVariantMap::iterator it = m_results.find(key);
     if (it != m_results.end()) {
         // Make a list of values
@@ -89,6 +91,30 @@ void GetConfCommand::onReply(int statusCode, const QByteArray &data)
     } else {
         m_results.insert(key, value);
     }
+}
+
+void GetConfCommand::onDataLine(const QByteArray &data)
+{
+    if (m_lastKey.isEmpty()) {
+        qWarning() << "torctrl: Unexpected data line in GetConf command";
+        return;
+    }
+
+    QVariantMap::iterator it = m_results.find(m_lastKey);
+    if (it != m_results.end()) {
+        QVariantList results = it->toList();
+        if (results.isEmpty() && !it->toByteArray().isEmpty())
+            results.append(*it);
+        results.append(data);
+        *it = QVariant(results);
+    } else {
+        m_results.insert(m_lastKey, QVariantList() << data);
+    }
+}
+
+void GetConfCommand::onDataFinished()
+{
+    m_lastKey.clear();
 }
 
 QVariant GetConfCommand::get(const QByteArray &key) const
