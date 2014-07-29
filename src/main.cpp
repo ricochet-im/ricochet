@@ -160,6 +160,10 @@ static bool initSettings(SettingsFile *settings, QLockFile **lockFile, QString &
         return false;
     }
 
+    // Reset to config directory for consistency; avoid depending on this behavior for paths
+    if (QDir::setCurrent(dir.absolutePath()) && dir.isRelative())
+        dir.setPath(QStringLiteral("."));
+
     QLockFile *lock = new QLockFile(dir.filePath(QStringLiteral("ricochet.json.lock")));
     *lockFile = lock;
     lock->setStaleLockTime(0);
@@ -187,7 +191,6 @@ static bool initSettings(SettingsFile *settings, QLockFile **lockFile, QString &
             importLegacySettings(settings, filePath);
     }
 
-    QDir::setCurrent(dir.absolutePath());
     return true;
 }
 
