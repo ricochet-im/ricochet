@@ -64,7 +64,7 @@ public:
     QString cookieFile() const { return m_cookieFile; }
 
 protected:
-    virtual void handleReply(int code, QByteArray &data, bool end);
+    virtual void onReply(int statusCode, const QByteArray &data);
 
 private:
     TorControl *manager;

@@ -48,7 +48,13 @@ class GetConfCommand : public TorControlCommand
     Q_PROPERTY(QVariantMap results READ results CONSTANT)
 
 public:
-    GetConfCommand(const char *type = "GETCONF");
+    enum Type {
+        GetConf,
+        GetInfo
+    };
+    const Type type;
+
+    GetConfCommand(Type type);
 
     QByteArray build(const QByteArray &key);
     QByteArray build(const QList<QByteArray> &keys);
@@ -57,7 +63,7 @@ public:
     QVariant get(const QByteArray &key) const;
 
 protected:
-    virtual void handleReply(int code, QByteArray &data, bool end);
+    virtual void onReply(int statusCode, const QByteArray &data);
 
 private:
     QVariantMap m_results;

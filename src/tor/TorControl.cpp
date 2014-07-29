@@ -84,8 +84,7 @@ public slots:
     void socketDisconnected();
     void socketError();
 
-    void commandFinished(class TorControlCommand *command);
-
+    void authenticateReply();
     void protocolInfoReply();
     void getTorInfoReply();
     void setError(const QString &message);
@@ -106,12 +105,10 @@ TorControlPrivate::TorControlPrivate(TorControl *parent)
       status(TorControl::NotConnected), torStatus(TorControl::TorUnknown)
 {
     socket = new TorControlSocket;
-    QObject::connect(socket, SIGNAL(commandFinished(TorControlCommand*)), this,
-                     SLOT(commandFinished(TorControlCommand*)));
     QObject::connect(socket, SIGNAL(connected()), this, SLOT(socketConnected()));
     QObject::connect(socket, SIGNAL(disconnected()), this, SLOT(socketDisconnected()));
     QObject::connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(socketError()));
-    QObject::connect(socket, SIGNAL(controlError(QString)), this, SLOT(setError(QString)));
+    QObject::connect(socket, SIGNAL(error(QString)), this, SLOT(setError(QString)));
 }
 
 QNetworkProxy TorControl::connectionProxy()
@@ -246,37 +243,30 @@ void TorControl::reconnect()
     d->socket->connectToHost(d->torAddress, d->controlPort);
 }
 
-void TorControlPrivate::commandFinished(TorControlCommand *command)
+void TorControlPrivate::authenticateReply()
 {
-    QLatin1String keyword(command->keyword);
+    AuthenticateCommand *command = qobject_cast<AuthenticateCommand*>(sender());
+    Q_ASSERT(command);
+    Q_ASSERT(status == TorControl::Authenticating);
+    if (!command)
+        return;
 
-    if (keyword == QLatin1String("AUTHENTICATE"))
-    {
-        Q_ASSERT(status == TorControl::Authenticating);
-
-        if (command->statusCode() == 515)
-        {
-            setError(QStringLiteral("Authentication failed - incorrect password"));
-            return;
-        }
-        else if (command->statusCode() != 250)
-        {
-            setError(QStringLiteral("Authentication failed (error %1)").arg(command->statusCode()));
-            return;
-        }
-
-        qDebug() << "torctrl: Authentication successful";
-        setStatus(TorControl::Connected);
-
-        setTorStatus(TorControl::TorUnknown);
-
-        TorControlCommand *clientEvents = new TorControlCommand("STATUS_CLIENT");
-        connect(clientEvents, SIGNAL(replyLine(int,QByteArray,bool)), this, SLOT(statusEvent(int,QByteArray)));
-        socket->registerEvent("STATUS_CLIENT", clientEvents);
-
-        getTorInfo();
-        publishServices();
+    if (!command->isSuccessful()) {
+        setError(command->errorMessage());
+        return;
     }
+
+    qDebug() << "torctrl: Authentication successful";
+    setStatus(TorControl::Connected);
+
+    setTorStatus(TorControl::TorUnknown);
+
+    TorControlCommand *clientEvents = new TorControlCommand;
+    connect(clientEvents, &TorControlCommand::replyLine, this, &TorControlPrivate::statusEvent);
+    socket->registerEvent("STATUS_CLIENT", clientEvents);
+
+    getTorInfo();
+    publishServices();
 }
 
 void TorControlPrivate::socketConnected()
@@ -287,7 +277,7 @@ void TorControlPrivate::socketConnected()
     setStatus(TorControl::Authenticating);
 
     ProtocolInfoCommand *command = new ProtocolInfoCommand(q);
-    QObject::connect(command, SIGNAL(finished()), SLOT(protocolInfoReply()));
+    connect(command, &TorControlCommand::finished, this, &TorControlPrivate::protocolInfoReply);
     socket->sendCommand(command, command->build());
 }
 
@@ -319,8 +309,9 @@ void TorControlPrivate::protocolInfoReply()
     if (status == TorControl::Authenticating)
     {
         AuthenticateCommand *auth = new AuthenticateCommand;
-        QByteArray data;
+        connect(auth, &TorControlCommand::finished, this, &TorControlPrivate::authenticateReply);
 
+        QByteArray data;
         ProtocolInfoCommand::AuthMethods methods = info->authMethods();
 
         if (methods.testFlag(ProtocolInfoCommand::AuthNull))
@@ -390,8 +381,8 @@ void TorControlPrivate::getTorInfo()
 {
     Q_ASSERT(q->isConnected());
 
-    GetConfCommand *command = new GetConfCommand("GETINFO");
-    QObject::connect(command, SIGNAL(finished()), this, SLOT(getTorInfoReply()));
+    GetConfCommand *command = new GetConfCommand(GetConfCommand::GetInfo);
+    connect(command, &TorControlCommand::finished, this, &TorControlPrivate::getTorInfoReply);
 
     QList<QByteArray> keys;
     keys << QByteArray("status/circuit-established") << QByteArray("status/bootstrap-phase");
@@ -417,8 +408,6 @@ void TorControlPrivate::getTorInfoReply()
     GetConfCommand *command = qobject_cast<GetConfCommand*>(sender());
     if (!command || !q->isConnected())
         return;
-
-    Q_ASSERT(QLatin1String(command->keyword) == QLatin1String("GETINFO"));
 
     QList<QByteArray> listenAddresses = splitQuotedStrings(command->get(QByteArray("net/listeners/socks")).toString().toLatin1(), ' ');
     for (QList<QByteArray>::Iterator it = listenAddresses.begin(); it != listenAddresses.end(); ++it) {
@@ -505,7 +494,7 @@ void TorControlPrivate::publishServices()
             torConfig.append(qMakePair(QByteArray("HiddenServicePort"), target.toLatin1()));
         }
 
-        QObject::connect(command, SIGNAL(setConfSucceeded()), service, SLOT(servicePublished()));
+        QObject::connect(command, &SetConfCommand::setConfSucceeded, service, &HiddenService::servicePublished);
     }
 
     socket->sendCommand(command, command->build(torConfig));
@@ -566,7 +555,7 @@ void TorControlPrivate::updateBootstrap(const QList<QByteArray> &data)
 
 QObject *TorControl::getConfiguration(const QString &options)
 {
-    GetConfCommand *command = new GetConfCommand;
+    GetConfCommand *command = new GetConfCommand(GetConfCommand::GetConf);
     d->socket->sendCommand(command, command->build(options.toLatin1()));
 
     QQmlEngine::setObjectOwnership(command, QQmlEngine::CppOwnership);
@@ -585,7 +574,7 @@ QObject *TorControl::setConfiguration(const QVariantMap &options)
 
 QObject *TorControl::saveConfiguration()
 {
-    TorControlCommand *command = new TorControlCommand("SAVECONF");
+    TorControlCommand *command = new TorControlCommand;
     d->socket->sendCommand(command, "SAVECONF\r\n");
 
     QQmlEngine::setObjectOwnership(command, QQmlEngine::CppOwnership);
@@ -594,8 +583,7 @@ QObject *TorControl::saveConfiguration()
 
 void TorControl::takeOwnership()
 {
-    TorControlCommand *command = new TorControlCommand("TAKEOWNERSHIP");
-    d->socket->sendCommand(command, "TAKEOWNERSHIP\r\n");
+    d->socket->sendCommand("TAKEOWNERSHIP\r\n");
 
     // Reset PID-based polling
     QVariantMap options;

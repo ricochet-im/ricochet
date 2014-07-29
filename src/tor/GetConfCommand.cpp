@@ -35,35 +35,41 @@
 
 using namespace Tor;
 
-GetConfCommand::GetConfCommand(const char *type)
-    : TorControlCommand(type)
+GetConfCommand::GetConfCommand(Type t)
+    : type(t)
 {
-    Q_ASSERT((QLatin1String(type) == QLatin1String("GETINFO")) || (QLatin1String(type) == QLatin1String("GETCONF")));
 }
 
 QByteArray GetConfCommand::build(const QByteArray &key)
 {
-    return QByteArray(keyword) + " " + key + "\r\n";
+    return build(QList<QByteArray>() << key);
 }
 
 QByteArray GetConfCommand::build(const QList<QByteArray> &keys)
 {
-    QByteArray out(keyword);
-    for (QList<QByteArray>::ConstIterator it = keys.begin(); it != keys.end(); ++it)
-    {
+    QByteArray out;
+    if (type == GetConf) {
+        out = "GETCONF";
+    } else if (type == GetInfo) {
+        out = "GETINFO";
+    } else {
+        Q_ASSERT(false);
+        return out;
+    }
+
+    foreach (const QByteArray &key, keys) {
         out.append(' ');
-        out.append(*it);
+        out.append(key);
     }
 
     out.append("\r\n");
     return out;
 }
 
-void GetConfCommand::handleReply(int code, QByteArray &data, bool end)
+void GetConfCommand::onReply(int statusCode, const QByteArray &data)
 {
-    Q_UNUSED(end);
-
-    if (code != 250)
+    TorControlCommand::onReply(statusCode, data);
+    if (statusCode != 250)
         return;
 
     int kep = data.indexOf('=');

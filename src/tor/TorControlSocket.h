@@ -48,23 +48,28 @@ public:
     explicit TorControlSocket(QObject *parent = 0);
     virtual ~TorControlSocket();
 
-    void registerEvent(const QByteArray &action, TorControlCommand *handler);
+    QString errorMessage() const { return m_errorMessage; }
+
+    void registerEvent(const QByteArray &event, TorControlCommand *handler);
 
     void sendCommand(const QByteArray &data) { sendCommand(0, data); }
     void sendCommand(TorControlCommand *command, const QByteArray &data);
 
 signals:
-    void commandFinished(TorControlCommand *command);
-    void controlError(const QString &message);
+    void error(const QString &message);
 
 private slots:
     void process();
-    void clearCommands();
+    void clear();
 
 private:
     QQueue<TorControlCommand*> commandQueue;
     QHash<QByteArray,TorControlCommand*> eventCommands;
-    TorControlCommand *activeEventCommand;
+    QString m_errorMessage;
+    TorControlCommand *currentCommand;
+    bool inDataReply;
+
+    void setError(const QString &message);
 };
 
 }

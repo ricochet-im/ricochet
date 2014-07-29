@@ -37,45 +37,56 @@
 using namespace Tor;
 
 TorControlSocket::TorControlSocket(QObject *parent)
-    : QTcpSocket(parent), activeEventCommand(0)
+    : QTcpSocket(parent), currentCommand(0), inDataReply(false)
 {
     connect(this, SIGNAL(readyRead()), this, SLOT(process()));
-    connect(this, SIGNAL(disconnected()), this, SLOT(clearCommands()));
+    connect(this, SIGNAL(disconnected()), this, SLOT(clear()));
 }
 
 TorControlSocket::~TorControlSocket()
 {
-    clearCommands();
+    clear();
 }
 
 void TorControlSocket::sendCommand(TorControlCommand *command, const QByteArray &data)
 {
-    commandQueue.append(command);
-
     Q_ASSERT(data.endsWith("\r\n"));
+
+    commandQueue.append(command);
     write(data);
 
     qDebug() << "torctrl: Sent" << data.trimmed();
 }
 
-void TorControlSocket::registerEvent(const QByteArray &action, TorControlCommand *command)
+void TorControlSocket::registerEvent(const QByteArray &event, TorControlCommand *command)
 {
-    eventCommands.insert(action, command);
+    eventCommands.insert(event, command);
 
     QByteArray data("SETEVENTS");
-    for (QHash<QByteArray,TorControlCommand*>::iterator it = eventCommands.begin(); it != eventCommands.end(); it++)
-        data += " " + it.key();
+    foreach (const QByteArray &key, eventCommands.keys()) {
+        data += ' ';
+        data += key;
+    }
     data += "\r\n";
 
     sendCommand(data);
 }
 
-void TorControlSocket::clearCommands()
+void TorControlSocket::clear()
 {
     qDeleteAll(commandQueue);
     commandQueue.clear();
     qDeleteAll(eventCommands);
     eventCommands.clear();
+    inDataReply = false;
+    currentCommand = 0;
+}
+
+void TorControlSocket::setError(const QString &message)
+{
+    m_errorMessage = message;
+    emit error(message);
+    abort();
 }
 
 void TorControlSocket::process()
@@ -85,62 +96,79 @@ void TorControlSocket::process()
             return;
 
         QByteArray line = readLine(5120);
+        if (!line.endsWith("\r\n")) {
+            setError(QStringLiteral("Invalid control message syntax"));
+            return;
+        }
+        line.chop(2);
 
-        if (line.size() < 4 || !line.endsWith("\r\n")) {
-            controlError(QStringLiteral("Invalid control message syntax (may not be a Tor control port)"));
+        if (inDataReply) {
+            if (line == ".") {
+                inDataReply = false;
+                if (currentCommand)
+                    currentCommand->onDataFinished();
+                currentCommand = 0;
+            } else {
+                if (currentCommand)
+                    currentCommand->onDataLine(line);
+            }
+            continue;
+        }
+
+        if (line.size() < 4) {
+            setError(QStringLiteral("Invalid control message syntax"));
             return;
         }
 
-        if (line[3] == '+') {
-            controlError(QStringLiteral("BUG: Data replies are not supported"));
+        int statusCode = line.left(3).toInt();
+        char type = line[3];
+        bool isFinalReply = (type == ' ');
+        inDataReply = (type == '+');
+
+        // Trim down to just data
+        line = line.mid(4);
+
+        if (!isFinalReply && !inDataReply && type != '-') {
+            setError(QStringLiteral("Invalid control message syntax"));
             return;
         }
 
-        int code = line.left(3).toInt();
-        bool end = (line[3] == ' ');
+        // 6xx replies are asynchronous responses
+        if (statusCode >= 600 && statusCode < 700) {
+            if (!currentCommand) {
+                int space = line.indexOf(' ');
+                if (space > 0)
+                    currentCommand = eventCommands.value(line.mid(0, space));
 
-        if (!end && line[3] != '-') {
-            controlError(QStringLiteral("Invalid or unrecognized syntax (may not be a Tor control port)"));
-            return;
-        }
-
-        if (code >= 600 && code < 700) {
-            // 6xx replies are asynchronous responses
-            if (!activeEventCommand) {
-                int space = line.indexOf(' ', 4);
-                QByteArray word = line.mid(4, space - 4);
-                if (!(activeEventCommand = eventCommands.value(word))) {
-                    qWarning("torctrl: Ignoring unknown event");
+                if (!currentCommand) {
+                    qWarning() << "torctrl: Ignoring unknown event";
                     continue;
                 }
             }
 
-            QByteArray data = line.mid(4, line.size() - 6);
-            activeEventCommand->inputReply(code, data, end);
-            if (end)
-                activeEventCommand = 0;
+            currentCommand->onReply(statusCode, line);
+            if (isFinalReply) {
+                currentCommand->onFinished(statusCode);
+                currentCommand = 0;
+            }
             continue;
         }
 
         if (commandQueue.isEmpty()) {
-            qWarning("torctrl: Received unexpected data");
+            qWarning() << "torctrl: Received unexpected data";
             continue;
         }
 
         TorControlCommand *command = commandQueue.first();
+        if (command)
+            command->onReply(statusCode, line);
 
-        qDebug() << "torctrl: Received" << (end ? "final" : "intermediate") << "reply for"
-                << (command ? command->keyword : "???") << "-" << code << line.mid(4, line.size() - 6);
-
-        if (end)
+        if (inDataReply) {
+            currentCommand = command;
+        } else if (isFinalReply) {
             commandQueue.takeFirst();
-
-        if (command) {
-            QByteArray data = line.mid(4, line.size() - 6);
-            command->inputReply(code, data, end);
-
-            if (end) {
-                emit commandFinished(command);
+            if (command) {
+                command->onFinished(statusCode);
                 command->deleteLater();
             }
         }
