@@ -87,12 +87,12 @@ void TorControlSocket::process()
         QByteArray line = readLine(5120);
 
         if (line.size() < 4 || !line.endsWith("\r\n")) {
-            controlError(tr("Invalid control message syntax (may not be a Tor control port)"));
+            controlError(QStringLiteral("Invalid control message syntax (may not be a Tor control port)"));
             return;
         }
 
         if (line[3] == '+') {
-            controlError(tr("BUG: Data replies are not supported"));
+            controlError(QStringLiteral("BUG: Data replies are not supported"));
             return;
         }
 
@@ -100,7 +100,7 @@ void TorControlSocket::process()
         bool end = (line[3] == ' ');
 
         if (!end && line[3] != '-') {
-            controlError(tr("Invalid or unrecognized syntax (may not be a Tor control port)"));
+            controlError(QStringLiteral("Invalid or unrecognized syntax (may not be a Tor control port)"));
             return;
         }
 

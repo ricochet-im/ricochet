@@ -152,7 +152,7 @@ void TorManager::start()
         // Launch a bundled Tor instance
         QString executable = d->torExecutablePath();
         if (executable.isEmpty()) {
-            d->setError(tr("Cannot find tor executable"));
+            d->setError(QStringLiteral("Cannot find tor executable"));
             return;
         }
 
@@ -165,13 +165,13 @@ void TorManager::start()
         }
 
         if (!QFile::exists(d->dataDir) && !d->createDataDir(d->dataDir)) {
-            d->setError(tr("Cannot write data location: %1").arg(d->dataDir));
+            d->setError(QStringLiteral("Cannot write data location: %1").arg(d->dataDir));
             return;
         }
 
         QString defaultTorrc = d->dataDir + QStringLiteral("default_torrc");
         if (!QFile::exists(defaultTorrc) && !d->createDefaultTorrc(defaultTorrc)) {
-            d->setError(tr("Cannot write data files: %1").arg(defaultTorrc));
+            d->setError(QStringLiteral("Cannot write data files: %1").arg(defaultTorrc));
             return;
         }
 

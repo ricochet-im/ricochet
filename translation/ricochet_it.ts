@@ -498,111 +498,88 @@
 <context>
     <name>Tor::TorControlPrivate</name>
     <message>
-        <location filename="../src/tor/TorControl.cpp" line="259"/>
         <source>Authentication failed - incorrect password</source>
-        <translation>Autenticazione fallita - password non corretta</translation>
+        <translation type="vanished">Autenticazione fallita - password non corretta</translation>
     </message>
     <message>
-        <location filename="../src/tor/TorControl.cpp" line="264"/>
         <source>Authentication failed (error %1)</source>
-        <translation>Autenticazione fallita (errore %1)</translation>
+        <translation type="vanished">Autenticazione fallita (errore %1)</translation>
     </message>
     <message>
-        <location filename="../src/tor/TorControl.cpp" line="308"/>
         <source>Connection failed: %1</source>
-        <translation>Connessione fallita: %1</translation>
+        <translation type="vanished">Connessione fallita: %1</translation>
     </message>
     <message>
-        <location filename="../src/tor/TorControl.cpp" line="348"/>
         <source>Unexpected file size</source>
-        <translation>Dimensione del file inaspettata</translation>
+        <translation type="vanished">Dimensione del file inaspettata</translation>
     </message>
     <message>
-        <location filename="../src/tor/TorControl.cpp" line="364"/>
         <source>Unable to read authentication cookie file: %1</source>
-        <translation>Impossibile leggere il file cookie di autenticazione: %1</translation>
+        <translation type="vanished">Impossibile leggere il file cookie di autenticazione: %1</translation>
     </message>
     <message>
-        <location filename="../src/tor/TorControl.cpp" line="378"/>
         <source>Tor requires a control password to connect, but no password is configured.</source>
-        <translation>Tor richiede una password per potersi connettere, ma nessuna password è configurata.</translation>
+        <translation type="vanished">Tor richiede una password per potersi connettere, ma nessuna password è configurata.</translation>
     </message>
     <message>
-        <location filename="../src/tor/TorControl.cpp" line="380"/>
         <source>Tor is not configured to accept any supported authentication methods.</source>
-        <translation>Tor non è configurato per accettare un metodo di autenticazione supportato.</translation>
+        <translation type="vanished">Tor non è configurato per accettare un metodo di autenticazione supportato.</translation>
     </message>
 </context>
 <context>
     <name>Tor::TorControlSocket</name>
     <message>
-        <location filename="../src/tor/TorControlSocket.cpp" line="90"/>
         <source>Invalid control message syntax (may not be a Tor control port)</source>
-        <translation>Messaggio di controllo sintassi non valido (potrebbe non essere una porta di controllo di Tor)</translation>
+        <translation type="vanished">Messaggio di controllo sintassi non valido (potrebbe non essere una porta di controllo di Tor)</translation>
     </message>
     <message>
-        <location filename="../src/tor/TorControlSocket.cpp" line="95"/>
         <source>BUG: Data replies are not supported</source>
-        <translation>BUG: Risposte di dati non supportate</translation>
+        <translation type="vanished">BUG: Risposte di dati non supportate</translation>
     </message>
     <message>
-        <location filename="../src/tor/TorControlSocket.cpp" line="103"/>
         <source>Invalid or unrecognized syntax (may not be a Tor control port)</source>
-        <translation>Sintassi invalida o non riconosciuta (potrebbe non essere una porta di controllo Tor)</translation>
+        <translation type="vanished">Sintassi invalida o non riconosciuta (potrebbe non essere una porta di controllo Tor)</translation>
     </message>
 </context>
 <context>
     <name>Tor::TorManager</name>
     <message>
-        <location filename="../src/tor/TorManager.cpp" line="155"/>
         <source>Cannot find tor executable</source>
-        <translation>Eseguibile tor non trovato</translation>
+        <translation type="vanished">Eseguibile tor non trovato</translation>
     </message>
     <message>
-        <location filename="../src/tor/TorManager.cpp" line="168"/>
         <source>Cannot write data location: %1</source>
-        <translation>Impossibile scrivere nella locazione dati: %1</translation>
+        <translation type="vanished">Impossibile scrivere nella locazione dati: %1</translation>
     </message>
     <message>
-        <location filename="../src/tor/TorManager.cpp" line="174"/>
         <source>Cannot write data files: %1</source>
-        <translation>Impossibile scrivere file dati: %1</translation>
+        <translation type="vanished">Impossibile scrivere file dati: %1</translation>
     </message>
 </context>
 <context>
     <name>Tor::TorProcess</name>
     <message>
-        <location filename="../src/tor/TorProcess.cpp" line="125"/>
         <source>Tor executable and data directory not specified</source>
-        <translation>L&apos;eseguibile di Tor e la cartella dati non sono specificati</translation>
+        <translation type="vanished">L&apos;eseguibile di Tor e la cartella dati non sono specificati</translation>
     </message>
     <message>
-        <location filename="../src/tor/TorProcess.cpp" line="142"/>
         <source>Random password generation failed</source>
-        <translation>Generazione password casuale fallita</translation>
+        <translation type="vanished">Generazione password casuale fallita</translation>
     </message>
 </context>
 <context>
     <name>Tor::TorProcessPrivate</name>
     <message>
-        <location filename="../src/tor/TorProcess.cpp" line="223"/>
         <source>Cannot create Tor data directory: %1</source>
-        <translation>Impossibile creare la cartella dati Tor: %1</translation>
+        <translation type="vanished">Impossibile creare la cartella dati Tor: %1</translation>
     </message>
     <message>
-        <location filename="../src/tor/TorProcess.cpp" line="228"/>
         <source>Cannot create Tor configuration file: %1</source>
-        <translation>Impossibile creare il file di configurazione Tor: %1</translation>
+        <translation type="vanished">Impossibile creare il file di configurazione Tor: %1</translation>
     </message>
     <message>
-        <location filename="../src/tor/TorProcess.cpp" line="263"/>
-        <source>Process exited unexpectedly (code %1)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/tor/TorProcess.cpp" line="305"/>
         <source>No control port available after launching process</source>
-        <translation>Porta di controllo non disponibile dopo l&apos;avvio</translation>
+        <translation type="vanished">Porta di controllo non disponibile dopo l&apos;avvio</translation>
     </message>
 </context>
 <context>

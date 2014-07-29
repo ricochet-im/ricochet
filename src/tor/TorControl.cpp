@@ -256,12 +256,12 @@ void TorControlPrivate::commandFinished(TorControlCommand *command)
 
         if (command->statusCode() == 515)
         {
-            setError(tr("Authentication failed - incorrect password"));
+            setError(QStringLiteral("Authentication failed - incorrect password"));
             return;
         }
         else if (command->statusCode() != 250)
         {
-            setError(tr("Authentication failed (error %1)").arg(command->statusCode()));
+            setError(QStringLiteral("Authentication failed (error %1)").arg(command->statusCode()));
             return;
         }
 
@@ -305,7 +305,7 @@ void TorControlPrivate::socketDisconnected()
 
 void TorControlPrivate::socketError()
 {
-    setError(tr("Connection failed: %1").arg(socket->errorString()));
+    setError(QStringLiteral("Connection failed: %1").arg(socket->errorString()));
 }
 
 void TorControlPrivate::protocolInfoReply()
@@ -345,7 +345,7 @@ void TorControlPrivate::protocolInfoReply()
                 if (cookie.size() == 32)
                     data = auth->build(cookie);
                 else
-                    cookieError = tr("Unexpected file size");
+                    cookieError = QStringLiteral("Unexpected file size");
             }
             else
                 cookieError = file.errorString();
@@ -361,7 +361,7 @@ void TorControlPrivate::protocolInfoReply()
                     goto usePasswordAuth;
                 }
 
-                setError(tr("Unable to read authentication cookie file: %1").arg(cookieError));
+                setError(QStringLiteral("Unable to read authentication cookie file: %1").arg(cookieError));
                 delete auth;
                 return;
             }
@@ -375,9 +375,9 @@ void TorControlPrivate::protocolInfoReply()
         else
         {
             if (methods.testFlag(ProtocolInfoCommand::AuthHashedPassword))
-                setError(tr("Tor requires a control password to connect, but no password is configured."));
+                setError(QStringLiteral("Tor requires a control password to connect, but no password is configured."));
             else
-                setError(tr("Tor is not configured to accept any supported authentication methods."));
+                setError(QStringLiteral("Tor is not configured to accept any supported authentication methods."));
             delete auth;
             return;
         }
