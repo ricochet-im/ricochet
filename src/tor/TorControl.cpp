@@ -39,11 +39,13 @@
 #include "GetConfCommand.h"
 #include "utils/StringUtil.h"
 #include "utils/Settings.h"
+#include "utils/PendingOperation.h"
 #include <QHostAddress>
 #include <QDir>
 #include <QNetworkProxy>
 #include <QQmlEngine>
 #include <QTimer>
+#include <QSaveFile>
 #include <QDebug>
 
 Tor::TorControl *torControl = 0;
@@ -267,6 +269,10 @@ void TorControlPrivate::authenticateReply()
 
     getTorInfo();
     publishServices();
+
+    // XXX Fix old configurations that would store unwanted options in torrc.
+    // This can be removed some suitable amount of time after 1.0.4.
+    q->saveConfiguration();
 }
 
 void TorControlPrivate::socketConnected()
@@ -572,13 +578,102 @@ QObject *TorControl::setConfiguration(const QVariantMap &options)
     return command;
 }
 
-QObject *TorControl::saveConfiguration()
-{
-    TorControlCommand *command = new TorControlCommand;
-    d->socket->sendCommand(command, "SAVECONF\r\n");
+namespace Tor {
 
-    QQmlEngine::setObjectOwnership(command, QQmlEngine::CppOwnership);
-    return command;
+class SaveConfigOperation : public PendingOperation
+{
+    Q_OBJECT
+
+public:
+    SaveConfigOperation(QObject *parent)
+        : PendingOperation(parent), command(0)
+    {
+    }
+
+    void start(TorControlSocket *socket)
+    {
+        Q_ASSERT(!command);
+        command = new GetConfCommand(GetConfCommand::GetInfo);
+        QObject::connect(command, &TorControlCommand::finished, this, &SaveConfigOperation::configTextReply);
+        socket->sendCommand(command, command->build(QList<QByteArray>() << "config-text" << "config-file"));
+    }
+
+private slots:
+    void configTextReply()
+    {
+        Q_ASSERT(command);
+        if (!command)
+            return;
+
+        QString path = QFile::decodeName(command->get("config-file").toByteArray());
+        if (path.isEmpty()) {
+            finishWithError(QStringLiteral("Cannot write torrc without knowing its path"));
+            return;
+        }
+
+        // Out of paranoia, refuse to write any file not named 'torrc', or if the
+        // file doesn't exist
+        QFileInfo fileInfo(path);
+        if (fileInfo.fileName() != QStringLiteral("torrc") || !fileInfo.exists()) {
+            finishWithError(QStringLiteral("Refusing to write torrc to unacceptable path %1").arg(path));
+            return;
+        }
+
+        QSaveFile file(path);
+        if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+            finishWithError(QStringLiteral("Failed opening torrc file for writing: %1").arg(file.errorString()));
+            return;
+        }
+
+        // Remove these keys when writing torrc; they are set at runtime and contain
+        // absolute paths or port numbers
+        static const char *bannedKeys[] = {
+            "ControlPortWriteToFile",
+            "DataDirectory",
+            "HiddenServiceDir",
+            "HiddenServicePort",
+            0
+        };
+
+        QVariantList configText = command->get("config-text").toList();
+        foreach (const QVariant &value, configText) {
+            QByteArray line = value.toByteArray();
+
+            bool skip = false;
+            for (const char **key = bannedKeys; *key; key++) {
+                if (line.startsWith(*key)) {
+                    skip = true;
+                    break;
+                }
+            }
+            if (skip)
+                continue;
+
+            file.write(line);
+            file.write("\r\n");
+        }
+
+        if (!file.commit()) {
+            finishWithError(QStringLiteral("Failed writing torrc: %1").arg(file.errorString()));
+            return;
+        }
+
+        qDebug() << "torctrl: Wrote torrc file";
+        finishWithSuccess();
+    }
+
+private:
+    GetConfCommand *command;
+};
+
+}
+
+PendingOperation *TorControl::saveConfiguration()
+{
+    SaveConfigOperation *operation = new SaveConfigOperation(this);
+    QObject::connect(operation, &PendingOperation::finished, operation, &QObject::deleteLater);
+    operation->start(d->socket);
+    return operation;
 }
 
 void TorControl::takeOwnership()
