@@ -6,6 +6,7 @@
 * GIANNAT - Italian
 * strel - Spanish
 * Mikkel Kroman - Danish
+* swperman - Portuguese (Brazil)
 
 ### Thanks
 * Helder Ribeiro (@obvio171) - "Ricochet"
