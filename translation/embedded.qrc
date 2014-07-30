@@ -3,5 +3,6 @@
         <file>ricochet_en.qm</file>
         <file>ricochet_it.qm</file>
         <file>ricochet_es.qm</file>
+        <file>ricochet_da.qm</file>
     </qresource>
 </RCC>

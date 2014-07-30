@@ -5,6 +5,7 @@
 * HostFat - Italian
 * GIANNAT - Italian
 * strel - Spanish
+* Mikkel Kroman - Danish
 
 ### Thanks
 * Helder Ribeiro (@obvio171) - "Ricochet"

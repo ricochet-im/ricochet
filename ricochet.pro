@@ -190,7 +190,8 @@ lupdate_only {
 TRANSLATIONS += \
     translation/ricochet_en.ts \
     translation/ricochet_it.ts \
-    translation/ricochet_es.ts
+    translation/ricochet_es.ts \
+    translation/ricochet_da.ts
 
 isEmpty(QMAKE_LRELEASE) {
     win32:QMAKE_LRELEASE = $$[QT_INSTALL_BINS]\lrelease.exe
