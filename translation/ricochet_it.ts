@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="it">
+<?xml version="1.0" ?><!DOCTYPE TS><TS language="it" version="2.1">
 <context>
     <name>AboutPreferences</name>
     <message>
@@ -31,13 +29,9 @@
 <context>
     <name>ContactActions</name>
     <message>
-        <source>Chat...</source>
-        <translation type="vanished">Chat...</translation>
-    </message>
-    <message>
         <location filename="../src/ui/qml/ContactActions.qml" line="39"/>
         <source>Open Window</source>
-        <translation type="unfinished"></translation>
+        <translation>Apri Finestra</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactActions.qml" line="43"/>
@@ -60,22 +54,22 @@
     <message>
         <location filename="../src/ui/qml/ContactIDField.qml" line="40"/>
         <source>&lt;b&gt;%1&lt;/b&gt; is already your contact</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;%1&lt;/b&gt; è già un tuo contatto</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactIDField.qml" line="42"/>
         <source>You can&apos;t add yourself as a contact</source>
-        <translation type="unfinished"></translation>
+        <translation>Non puoi aggiungere te stesso come contatto</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactIDField.qml" line="44"/>
         <source>Enter an ID starting with &lt;b&gt;ricochet:&lt;/b&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>Inserisci un ID che inizi con &lt;b&gt;ricochet:&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactIDField.qml" line="80"/>
         <source>Copied to clipboard</source>
-        <translation type="unfinished"></translation>
+        <translation>Copiato negli appunti</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactIDField.qml" line="92"/>
@@ -212,23 +206,16 @@
     </message>
 </context>
 <context>
-    <name>EmptyContactsHint</name>
-    <message>
-        <source>Click to add contacts</source>
-        <translation type="vanished">Clicca per aggiungere contatti</translation>
-    </message>
-</context>
-<context>
     <name>GeneralPreferences</name>
     <message>
         <location filename="../src/ui/qml/GeneralPreferences.qml" line="12"/>
         <source>Use a single window for conversations</source>
-        <translation type="unfinished"></translation>
+        <translation>Usa una finestra singola per le conversazioni</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/GeneralPreferences.qml" line="20"/>
         <source>Open links in default browser without prompting</source>
-        <translation type="unfinished"></translation>
+        <translation>Apri link nel browser di default senza chiedere</translation>
     </message>
 </context>
 <context>
@@ -238,59 +225,27 @@
         <source>Ricochet Error</source>
         <translation>Errore Ricochet</translation>
     </message>
-    <message>
-        <source>Cannot create configuration directory</source>
-        <translation type="vanished">Impossibile creare cartella di configurazione</translation>
-    </message>
-    <message>
-        <source>Ricochet is already running</source>
-        <translation type="vanished">Ricochet è già in esecuzione</translation>
-    </message>
-    <message>
-        <source>Cannot write configuration files (failed to acquire lock)</source>
-        <translation type="vanished">Impossibile scrivere file di configurazione (fallito nel acquisire blocco)</translation>
-    </message>
-    <message>
-        <source>Configuration file is not writable</source>
-        <translation type="vanished">Il file di configurazione non è scrivibile</translation>
-    </message>
 </context>
 <context>
     <name>MainToolBar</name>
     <message>
         <location filename="../src/ui/qml/MainToolBar.qml" line="18"/>
         <source>Add Contact</source>
-        <translation type="unfinished">Aggiungere Contatto</translation>
+        <translation>Aggiungere Contatto</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/MainToolBar.qml" line="27"/>
         <source>Preferences</source>
-        <translation type="unfinished">Preferenze</translation>
+        <translation>Preferenze</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/MainToolBar.qml" line="60"/>
         <source>Click to add contacts</source>
-        <translation type="unfinished">Clicca per aggiungere contatti</translation>
+        <translation>Clicca per aggiungere contatti</translation>
     </message>
 </context>
 <context>
     <name>MainWindow</name>
-    <message>
-        <source>Ricochet</source>
-        <translation type="vanished">Ricochet</translation>
-    </message>
-    <message>
-        <source>Add Contact</source>
-        <translation type="vanished">Aggiungere Contatto</translation>
-    </message>
-    <message>
-        <source>Preferences</source>
-        <translation type="vanished">Preferenze</translation>
-    </message>
-    <message>
-        <source>Click to add contacts</source>
-        <translation type="obsolete">Clicca per aggiungere contatti</translation>
-    </message>
     <message>
         <location filename="../src/ui/MainWindow.cpp" line="114"/>
         <source>Remove %1</source>
@@ -405,32 +360,24 @@
 <context>
     <name>OpenBrowserDialog</name>
     <message>
-        <source>&lt;b&gt;Warning!&lt;/b&gt; Using your default browser may compromise your anonymity. Are you sure you want to open this link:</source>
-        <translation type="vanished">&lt;b&gt;Attenzione!&lt;/b&gt; Usare il tuo browser predefinito potrebbe compromettere la tua anoniminità. Sei sicuro di voler aprire questo link? : </translation>
-    </message>
-    <message>
         <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="38"/>
         <source>&lt;b&gt;Warning!&lt;/b&gt; Opening links with your default browser will harm your security and anonymity.&lt;br&gt;&lt;br&gt;You can &lt;a href=&apos;.&apos;&gt;copy to the clipboard&lt;/a&gt; instead.</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;Attenzione!&lt;/b&gt; Aprire link con il tuo browser di default danneggerà la tua sicurezza e anonimia.&lt;br&gt;&lt;br&gt;Puoi &lt;a href=&apos;.&apos;&gt;copiare negli appunti&lt;/a&gt; invece.</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="57"/>
         <source>Don&apos;t ask again for links from %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Non chiedere ancora per link da %1</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="63"/>
         <source>Don&apos;t ask again for any links (not recommended!)</source>
-        <translation type="unfinished"></translation>
+        <translation>Non chiedere più per ogni link (non raccomandato)</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="70"/>
         <source>Open Browser</source>
         <translation>Apri Browser</translation>
-    </message>
-    <message>
-        <source>Copy Link</source>
-        <translation type="vanished">Copia Link</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="82"/>
@@ -456,7 +403,7 @@
     <message>
         <location filename="../src/ui/qml/PreferencesDialog.qml" line="39"/>
         <source>General</source>
-        <translation type="unfinished"></translation>
+        <translation>Generali</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/PreferencesDialog.qml" line="44"/>
@@ -493,93 +440,6 @@
         <location filename="../src/ui/qml/StartupStatusPage.qml" line="49"/>
         <source>Quit</source>
         <translation>Esci</translation>
-    </message>
-</context>
-<context>
-    <name>Tor::TorControlPrivate</name>
-    <message>
-        <source>Authentication failed - incorrect password</source>
-        <translation type="vanished">Autenticazione fallita - password non corretta</translation>
-    </message>
-    <message>
-        <source>Authentication failed (error %1)</source>
-        <translation type="vanished">Autenticazione fallita (errore %1)</translation>
-    </message>
-    <message>
-        <source>Connection failed: %1</source>
-        <translation type="vanished">Connessione fallita: %1</translation>
-    </message>
-    <message>
-        <source>Unexpected file size</source>
-        <translation type="vanished">Dimensione del file inaspettata</translation>
-    </message>
-    <message>
-        <source>Unable to read authentication cookie file: %1</source>
-        <translation type="vanished">Impossibile leggere il file cookie di autenticazione: %1</translation>
-    </message>
-    <message>
-        <source>Tor requires a control password to connect, but no password is configured.</source>
-        <translation type="vanished">Tor richiede una password per potersi connettere, ma nessuna password è configurata.</translation>
-    </message>
-    <message>
-        <source>Tor is not configured to accept any supported authentication methods.</source>
-        <translation type="vanished">Tor non è configurato per accettare un metodo di autenticazione supportato.</translation>
-    </message>
-</context>
-<context>
-    <name>Tor::TorControlSocket</name>
-    <message>
-        <source>Invalid control message syntax (may not be a Tor control port)</source>
-        <translation type="vanished">Messaggio di controllo sintassi non valido (potrebbe non essere una porta di controllo di Tor)</translation>
-    </message>
-    <message>
-        <source>BUG: Data replies are not supported</source>
-        <translation type="vanished">BUG: Risposte di dati non supportate</translation>
-    </message>
-    <message>
-        <source>Invalid or unrecognized syntax (may not be a Tor control port)</source>
-        <translation type="vanished">Sintassi invalida o non riconosciuta (potrebbe non essere una porta di controllo Tor)</translation>
-    </message>
-</context>
-<context>
-    <name>Tor::TorManager</name>
-    <message>
-        <source>Cannot find tor executable</source>
-        <translation type="vanished">Eseguibile tor non trovato</translation>
-    </message>
-    <message>
-        <source>Cannot write data location: %1</source>
-        <translation type="vanished">Impossibile scrivere nella locazione dati: %1</translation>
-    </message>
-    <message>
-        <source>Cannot write data files: %1</source>
-        <translation type="vanished">Impossibile scrivere file dati: %1</translation>
-    </message>
-</context>
-<context>
-    <name>Tor::TorProcess</name>
-    <message>
-        <source>Tor executable and data directory not specified</source>
-        <translation type="vanished">L&apos;eseguibile di Tor e la cartella dati non sono specificati</translation>
-    </message>
-    <message>
-        <source>Random password generation failed</source>
-        <translation type="vanished">Generazione password casuale fallita</translation>
-    </message>
-</context>
-<context>
-    <name>Tor::TorProcessPrivate</name>
-    <message>
-        <source>Cannot create Tor data directory: %1</source>
-        <translation type="vanished">Impossibile creare la cartella dati Tor: %1</translation>
-    </message>
-    <message>
-        <source>Cannot create Tor configuration file: %1</source>
-        <translation type="vanished">Impossibile creare il file di configurazione Tor: %1</translation>
-    </message>
-    <message>
-        <source>No control port available after launching process</source>
-        <translation type="vanished">Porta di controllo non disponibile dopo l&apos;avvio</translation>
     </message>
 </context>
 <context>
@@ -799,13 +659,6 @@
         <location filename="../src/ui/qml/TorStateWidget.qml" line="34"/>
         <source>Connected</source>
         <translation>Connesso</translation>
-    </message>
-</context>
-<context>
-    <name>UserIdentity</name>
-    <message>
-        <source>Me</source>
-        <translation type="vanished">Me</translation>
     </message>
 </context>
 </TS>
