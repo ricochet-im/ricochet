@@ -43,6 +43,7 @@
 #include "ContactsModel.h"
 #include "ui/LinkedText.h"
 #include "utils/Settings.h"
+#include "utils/PendingOperation.h"
 #include <QtQml>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
@@ -78,6 +79,8 @@ MainWindow::MainWindow(QObject *parent)
     qmlRegisterType<ContactIDValidator>("im.ricochet", 1, 0, "ContactIDValidator");
     qmlRegisterType<SettingsObject>("im.ricochet", 1, 0, "Settings");
     qmlRegisterSingletonType<LinkedText>("im.ricochet", 1, 0, "LinkedText", linkedtext_singleton);
+
+    qRegisterMetaType<PendingOperation*>();
 
     Q_ASSERT(!identityManager->identities().isEmpty());
     qml->rootContext()->setContextProperty(QLatin1String("userIdentity"), identityManager->identities()[0]);
