@@ -36,7 +36,7 @@
 using namespace Tor;
 
 SetConfCommand::SetConfCommand()
-    : TorControlCommand("SETCONF"), m_resetMode(false)
+    : m_resetMode(false)
 {
 }
 
@@ -88,18 +88,19 @@ QByteArray SetConfCommand::build(const QList<QPair<QByteArray, QByteArray> > &da
     return out;
 }
 
-void SetConfCommand::handleReply(int code, QByteArray &data, bool end)
+void SetConfCommand::onReply(int statusCode, const QByteArray &data)
 {
-    Q_UNUSED(code);
+    TorControlCommand::onReply(statusCode, data);
+    if (statusCode != 250)
+        m_errorMessage = QString::fromLatin1(data);
+}
 
-    if (end)
-    {
-        if (isSuccessful()) {
-            emit setConfSucceeded();
-        } else {
-            m_errorMessage = QString::fromLatin1(data);
-            emit setConfFailed(code);
-        }
-    }
+void SetConfCommand::onFinished(int statusCode)
+{
+    TorControlCommand::onFinished(statusCode);
+    if (isSuccessful())
+        emit setConfSucceeded();
+    else
+        emit setConfFailed(statusCode);
 }
 

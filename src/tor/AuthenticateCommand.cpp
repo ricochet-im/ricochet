@@ -35,7 +35,6 @@
 using namespace Tor;
 
 AuthenticateCommand::AuthenticateCommand()
-    : TorControlCommand("AUTHENTICATE")
 {
 }
 
@@ -47,9 +46,19 @@ QByteArray AuthenticateCommand::build(const QByteArray &data)
     return QByteArray("AUTHENTICATE ") + data.toHex() + "\r\n";
 }
 
-void AuthenticateCommand::handleReply(int code, QByteArray &data, bool end)
+void AuthenticateCommand::onReply(int statusCode, const QByteArray &data)
 {
-        Q_UNUSED(code);
-    if (end)
-        statusMessage = data;
+    TorControlCommand::onReply(statusCode, data);
+    m_statusMessage = QString::fromLatin1(data);
+}
+
+void AuthenticateCommand::onFinished(int statusCode)
+{
+    if (statusCode == 515) {
+        m_statusMessage = QStringLiteral("Authentication failed - incorrect password");
+    } else if (statusCode != 250) {
+        if (m_statusMessage.isEmpty())
+            m_statusMessage = QStringLiteral("Authentication failed (error %1").arg(statusCode);
+    }
+    TorControlCommand::onFinished(statusCode);
 }

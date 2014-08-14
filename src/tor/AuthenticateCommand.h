@@ -40,15 +40,22 @@ namespace Tor
 
 class AuthenticateCommand : public TorControlCommand
 {
-public:
-    QByteArray statusMessage;
+    Q_OBJECT
 
+public:
     AuthenticateCommand();
 
     QByteArray build(const QByteArray &data = QByteArray());
 
+    bool isSuccessful() const { return statusCode() == 250; }
+    QString errorMessage() const { return m_statusMessage; }
+
 protected:
-    virtual void handleReply(int code, QByteArray &data, bool end);
+    virtual void onReply(int statusCode, const QByteArray &data);
+    virtual void onFinished(int statusCode);
+
+private:
+    QString m_statusMessage;
 };
 
 }

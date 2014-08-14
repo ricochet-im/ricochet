@@ -69,7 +69,8 @@ protected:
     QString m_errorMessage;
     bool m_resetMode;
 
-    virtual void handleReply(int code, QByteArray &data, bool end);
+    virtual void onReply(int statusCode, const QByteArray &data);
+    virtual void onFinished(int statusCode);
 };
 
 }

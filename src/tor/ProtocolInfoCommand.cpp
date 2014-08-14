@@ -38,7 +38,7 @@
 using namespace Tor;
 
 ProtocolInfoCommand::ProtocolInfoCommand(TorControl *m)
-    : TorControlCommand("PROTOCOLINFO"), manager(m)
+    : manager(m)
 {
 }
 
@@ -47,11 +47,10 @@ QByteArray ProtocolInfoCommand::build()
     return QByteArray("PROTOCOLINFO 1\r\n");
 }
 
-void ProtocolInfoCommand::handleReply(int code, QByteArray &data, bool end)
+void ProtocolInfoCommand::onReply(int statusCode, const QByteArray &data)
 {
-    Q_UNUSED(end);
-
-    if (code != 250)
+    TorControlCommand::onReply(statusCode, data);
+    if (statusCode != 250)
         return;
 
     if (data.startsWith("AUTH "))

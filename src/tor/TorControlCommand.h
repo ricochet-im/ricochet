@@ -47,25 +47,22 @@ class TorControlCommand : public QObject
     friend class TorControlSocket;
 
 public:
-    const char * const keyword;
+    TorControlCommand();
 
-    TorControlCommand(const char *keyword);
-
-    int statusCode() const { return pStatusCode; }
+    int statusCode() const { return m_finalStatus; }
 
 signals:
-    void replyLine(int code, const QByteArray &data, bool lastLine);
-    void reply(int code, const QByteArray &data);
+    void replyLine(int statusCode, const QByteArray &data);
     void finished();
 
 protected:
-    virtual void handleReply(int code, QByteArray &data, bool end);
+    virtual void onReply(int statusCode, const QByteArray &data);
+    virtual void onFinished(int statusCode);
+    virtual void onDataLine(const QByteArray &data);
+    virtual void onDataFinished();
 
 private:
-    QByteArray pData;
-    int pStatusCode;
-
-    void inputReply(int code, QByteArray &data, bool end);
+    int m_finalStatus;
 };
 
 }
