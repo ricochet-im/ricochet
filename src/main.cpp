@@ -169,12 +169,19 @@ static bool initSettings(SettingsFile *settings, QLockFile **lockFile, QString &
     lock->setStaleLockTime(0);
     if (!lock->tryLock()) {
         if (lock->error() == QLockFile::LockFailedError) {
-            // XXX Need to offer UI or heuristics for removeStaleLockFile
-            errorMessage = QStringLiteral("Configuration file is already in use");
+            // This happens if a stale lock file exists and another process uses that PID.
+            // Try removing the stale file, which will fail if a real process is holding a
+            // file-level lock. A false error is more problematic than not locking properly
+            // on corner-case systems.
+            if (!lock->removeStaleLockFile() || !lock->tryLock()) {
+                errorMessage = QStringLiteral("Configuration file is already in use");
+                return false;
+            } else
+                qDebug() << "Removed stale lock file";
         } else {
             errorMessage = QStringLiteral("Cannot write configuration file (failed to acquire lock)");
+            return false;
         }
-        return false;
     }
 
     settings->setFilePath(dir.filePath(QStringLiteral("ricochet.json")));
