@@ -17,9 +17,12 @@ tests/*/tst_*
 !tst_*.pro
 !tst_*.cpp
 !tst_*.h
+*.pb.h
+*.pb.cc
 packaging/installer/Qt
 packaging/installer/Output
 translation/*.qm
 config
 config.ricochet
 ricochet
+

@@ -15,15 +15,18 @@ By default, Ricochet will be portable, and configuration is stored in a folder n
 You will need:
  * Qt >= 5.1.0
  * OpenSSL (libcrypto)
+ * Protocol Buffers (libprotobuf, protoc)
 
 #### Fedora
 ```sh
-yum install make gcc-c++ qt5-qtbase qt5-qttools-devel qt5-qttools qt5-qtquickcontrols qt5-qtdeclarative qt5-qtbase-devel qt5-qtbase-gui qt5-qtdeclarative-devel openssl-devel
+yum install make gcc-c++ protobuf-devel protobuf-compiler openssl-devel
+yum install qt5-qtbase qt5-qttools-devel qt5-qttools qt5-qtquickcontrols qt5-qtdeclarative qt5-qtbase-devel qt5-qtbase-gui qt5-qtdeclarative-devel
 yum install tor # or build your own
 ```
 #### Ubuntu 14.04 or later
 ```sh
-apt-get install build-essential libssl-dev pkg-config qt5-qmake qt5-default qtbase5-dev qttools5-dev-tools qtdeclarative5-dev qtdeclarative5-controls-plugin
+apt-get install build-essential libssl-dev pkg-config libprotobuf-dev protobuf-compiler
+apt-get install qt5-qmake qt5-default qtbase5-dev qttools5-dev-tools qtdeclarative5-dev qtdeclarative5-controls-plugin
 apt-get install tor # or build your own
 ```
 #### Qt SDK
@@ -53,6 +56,7 @@ The [buildscripts](https://github.com/ricochet-im/buildscripts) repository conta
 You will need:
  * Xcode (for toolchain)
  * Qt 5 - preferably the [Qt SDK](https://qt-project.org/downloads)
+ * Protocol Buffers (libprotobuf, protoc) - `brew install protobuf`
 
 You can either load `ricochet.pro` in Qt Creator and build normally, or build command-line with:
 ```sh
@@ -72,8 +76,17 @@ Building for Windows is difficult. You will need:
  * Visual Studio C++ or MinGW
  * Qt 5 - preferably the [Qt SDK](https://qt-project.org/downloads)
  * OpenSSL (including libs and headers)
+ * Protocol Buffers >= 2.6.0
 
-After installing the Qt SDK, open the `ricochet.pro` project in Qt Creator. Before building, you must click the 'Projects' tab on the left side, and under 'Build Steps', modify 'Additional arguments' to add: `OPENSSLDIR=C:\path\to\openssl\`. Use the 'Build -> Run qmake' menu to test your changes.
+Compile OpenSSL and protobuf first, according to their instructions.
+
+After installing the Qt SDK, open the `ricochet.pro` project in Qt Creator. Before building, you must click the 'Projects' tab on the left side, and under 'Build Steps', modify 'Additional arguments' to add:
+
+```
+    OPENSSLDIR=C:\path\to\openssl\ PROTOBUFDIR=C:\path\to\protobuf
+```
+
+Use the 'Build -> Run qmake' menu to test your changes.
 
 You also need a `tor.exe` binary, placed in the same folder as `ricochet.exe`.
 

@@ -36,6 +36,7 @@ lessThan(QT_MAJOR_VERSION,5)|lessThan(QT_MINOR_VERSION,1) {
 TARGET = ricochet
 TEMPLATE = app
 QT += core gui network quick widgets
+CONFIG += c++11
 
 VERSION = 1.0.4
 
