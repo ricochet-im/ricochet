@@ -107,4 +107,25 @@ ApplicationWindow {
             }
         }
     }
+
+    property bool inactive: true
+    onActiveFocusItemChanged: {
+        // Focus current page when window regains focus
+        if (activeFocusItem !== null && inactive) {
+            inactive = false
+            retakeFocus.start()
+        } else if (activeFocusItem === null) {
+            inactive = true
+        }
+    }
+
+    Timer {
+        id: retakeFocus
+        interval: 1
+        onTriggered: {
+            if (combinedChatView.currentPage !== null)
+                combinedChatView.currentPage.forceActiveFocus()
+        }
+    }
 }
+
