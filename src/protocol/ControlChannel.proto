@@ -1,0 +1,39 @@
+package Protocol.Data.Control;
+
+message Packet {
+    // Must contain exactly one field
+    optional OpenChannel open_channel = 1;
+    optional ChannelResult channel_result = 2;
+    optional KeepAlive keep_alive = 3;
+}
+
+message OpenChannel {
+    required int32 channel_identifier = 1;      // Arbitrary unique identifier for this channel instance
+    required string channel_type = 2;           // String identifying channel type; e.g. im.ricochet.chat
+
+    // It is valid to extend the OpenChannel message to add fields specific
+    // to the requested channel_type.
+    extensions 100 to max;
+}
+
+message ChannelResult {
+    required int32 channel_identifier = 1;      // Matching the value from OpenChannel
+    required bool opened = 2;                   // If the channel is now open
+
+    enum CommonError {
+        GenericError = 0;
+        UnknownTypeError = 1;
+        UnauthorizedError = 2;
+    }
+
+    optional CommonError common_error = 3;
+    optional string error_message = 4;
+
+    // As with OpenChannel, it is valid to extend this message with fields specific
+    // to the channel type.
+    extensions 100 to max;
+}
+
+message KeepAlive {
+    required bool response_requested = 1;
+}

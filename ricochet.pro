@@ -182,6 +182,11 @@ HEADERS += src/ui/MainWindow.h \
     src/utils/Settings.h \
     src/utils/PendingOperation.h
 
+contains(DEFINES,PROTOCOL_NEW) {
+    include(protobuf.pri)
+    PROTOS += src/protocol/ControlChannel.proto
+}
+
 # QML
 RESOURCES += src/ui/qml/qml.qrc
 OTHER_FILES += src/ui/qml/*
