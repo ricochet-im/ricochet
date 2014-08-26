@@ -73,7 +73,7 @@ template<typename T> bool Channel::sendMessage(const T &message)
     }
 
     if (size < 1) {
-        BUG() << "Message on" << type() << "channel encoded as zero-length; this isn't possible to send:"
+        BUG() << "Message on" << type() << "channel encoded as invalid length; this isn't possible to send:"
               << QString::fromStdString(message.DebugString());
         return false;
     }
