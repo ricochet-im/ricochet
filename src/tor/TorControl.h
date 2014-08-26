@@ -35,6 +35,7 @@
 
 #include <QObject>
 #include <QHostAddress>
+#include "utils/PendingOperation.h"
 
 class QNetworkProxy;
 
@@ -104,7 +105,7 @@ public:
     QVariantMap bootstrapStatus() const;
     Q_INVOKABLE QObject *getConfiguration(const QString &options);
     Q_INVOKABLE QObject *setConfiguration(const QVariantMap &options);
-    Q_INVOKABLE QObject *saveConfiguration();
+    Q_INVOKABLE PendingOperation *saveConfiguration();
 
 signals:
     void statusChanged(int newStatus, int oldStatus);

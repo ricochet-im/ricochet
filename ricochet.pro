@@ -138,7 +138,8 @@ SOURCES += src/main.cpp \
     src/tor/TorSocket.cpp \
     src/protocol/OutgoingContactSocket.cpp \
     src/ui/LinkedText.cpp \
-    src/utils/Settings.cpp
+    src/utils/Settings.cpp \
+    src/utils/PendingOperation.cpp
 
 HEADERS += src/ui/MainWindow.h \
     src/ui/ContactsModel.h \
@@ -177,7 +178,8 @@ HEADERS += src/ui/MainWindow.h \
     src/tor/TorSocket.h \
     src/protocol/OutgoingContactSocket.h \
     src/ui/LinkedText.h \
-    src/utils/Settings.h
+    src/utils/Settings.h \
+    src/utils/PendingOperation.h
 
 # QML
 RESOURCES += src/ui/qml/qml.qrc

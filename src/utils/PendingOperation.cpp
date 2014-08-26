@@ -30,48 +30,55 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GETCONFCOMMAND_H
-#define GETCONFCOMMAND_H
+#include "PendingOperation.h"
 
-#include "TorControlCommand.h"
-#include <QList>
-#include <QVariantMap>
-
-namespace Tor
+PendingOperation::PendingOperation(QObject *parent)
+    : QObject(parent), m_finished(false)
 {
-
-class GetConfCommand : public TorControlCommand
-{
-    Q_OBJECT
-    Q_DISABLE_COPY(GetConfCommand)
-
-    Q_PROPERTY(QVariantMap results READ results CONSTANT)
-
-public:
-    enum Type {
-        GetConf,
-        GetInfo
-    };
-    const Type type;
-
-    GetConfCommand(Type type);
-
-    QByteArray build(const QByteArray &key);
-    QByteArray build(const QList<QByteArray> &keys);
-
-    const QVariantMap &results() const { return m_results; }
-    QVariant get(const QByteArray &key) const;
-
-protected:
-    virtual void onReply(int statusCode, const QByteArray &data);
-    virtual void onDataLine(const QByteArray &data);
-    virtual void onDataFinished();
-
-private:
-    QVariantMap m_results;
-    QString m_lastKey;
-};
-
 }
 
-#endif // GETCONFCOMMAND_H
+bool PendingOperation::isFinished() const
+{
+    return m_finished;
+}
+
+bool PendingOperation::isSuccess() const
+{
+    return m_finished && m_errorMessage.isNull();
+}
+
+bool PendingOperation::isError() const
+{
+    return m_finished && !m_errorMessage.isNull();
+}
+
+QString PendingOperation::errorMessage() const
+{
+    return m_errorMessage;
+}
+
+void PendingOperation::finishWithError(const QString &message)
+{
+    if (message.isEmpty())
+        m_errorMessage = QStringLiteral("Unknown Error");
+    m_errorMessage = message;
+
+    if (!m_finished) {
+        m_finished = true;
+        emit finished();
+        emit error(m_errorMessage);
+    }
+}
+
+void PendingOperation::finishWithSuccess()
+{
+    Q_ASSERT(m_errorMessage.isNull());
+
+    if (!m_finished) {
+        m_finished = true;
+        emit finished();
+        if (isSuccess())
+            emit success();
+    }
+}
+

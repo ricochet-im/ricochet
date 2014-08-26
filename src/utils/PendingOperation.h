@@ -30,48 +30,58 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GETCONFCOMMAND_H
-#define GETCONFCOMMAND_H
+#ifndef PENDINGOPERATION_H
+#define PENDINGOPERATION_H
 
-#include "TorControlCommand.h"
-#include <QList>
-#include <QVariantMap>
+#include <QObject>
 
-namespace Tor
-{
-
-class GetConfCommand : public TorControlCommand
+/* Represents an asynchronous operation for reporting status
+ *
+ * This class is used for asynchronous operations that report a
+ * status and errors when finished, particularly for exposing them
+ * to QML.
+ *
+ * Subclass PendingOperation to implement your operation's logic.
+ * You also need to handle the object's lifetime, for example by
+ * calling deleteLater() when finished() is emitted.
+ *
+ * PendingOperation will emit finished() and one of success() or
+ * error() when completed.
+ */
+class PendingOperation : public QObject
 {
     Q_OBJECT
-    Q_DISABLE_COPY(GetConfCommand)
 
-    Q_PROPERTY(QVariantMap results READ results CONSTANT)
+    Q_PROPERTY(bool isFinished READ isFinished NOTIFY finished FINAL)
+    Q_PROPERTY(bool isSuccess READ isSuccess NOTIFY success FINAL)
+    Q_PROPERTY(bool isError READ isError NOTIFY error FINAL)
+    Q_PROPERTY(QString errorMessage READ errorMessage NOTIFY finished FINAL)
 
 public:
-    enum Type {
-        GetConf,
-        GetInfo
-    };
-    const Type type;
+    PendingOperation(QObject *parent = 0);
 
-    GetConfCommand(Type type);
+    bool isFinished() const;
+    bool isSuccess() const;
+    bool isError() const;
+    QString errorMessage() const;
 
-    QByteArray build(const QByteArray &key);
-    QByteArray build(const QList<QByteArray> &keys);
+signals:
+    // Always emitted once when finished, regardless of status
+    void finished();
 
-    const QVariantMap &results() const { return m_results; }
-    QVariant get(const QByteArray &key) const;
+    // One of error() or success() is emitted once
+    void error(const QString &errorMessage);
+    void success();
 
-protected:
-    virtual void onReply(int statusCode, const QByteArray &data);
-    virtual void onDataLine(const QByteArray &data);
-    virtual void onDataFinished();
+protected slots:
+    void finishWithError(const QString &errorMessage);
+    void finishWithSuccess();
 
 private:
-    QVariantMap m_results;
-    QString m_lastKey;
+    bool m_finished;
+    QString m_errorMessage;
 };
 
-}
+Q_DECLARE_METATYPE(PendingOperation*)
 
-#endif // GETCONFCOMMAND_H
+#endif
