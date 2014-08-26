@@ -183,6 +183,11 @@ HEADERS += src/ui/MainWindow.h \
     src/utils/PendingOperation.h
 
 contains(DEFINES,PROTOCOL_NEW) {
+    SOURCES += src/protocol/Channel.cpp
+
+    HEADERS += src/protocol/Channel.h \
+        src/protocol/Channel_p.h
+
     include(protobuf.pri)
     PROTOS += src/protocol/ControlChannel.proto
 }
