@@ -34,6 +34,7 @@
 #define PROTOCOL_CHANNEL_P_H
 
 #include "Channel.h"
+#include "Connection_p.h"
 #include "utils/Useful.h"
 #include <QDebug>
 
@@ -47,14 +48,19 @@ class ChannelPrivate : public QObject
     Q_DECLARE_PUBLIC(Channel)
 
 public:
-    explicit ChannelPrivate(Channel *q, const QString &type, Channel::Direction direction);
+    explicit ChannelPrivate(Channel *q, const QString &type, Channel::Direction direction, Connection *conn);
     virtual ~ChannelPrivate();
 
     Channel *q_ptr;
+    Connection *connection;
     QString type;
     int identifier;
     Channel::Direction direction;
     bool isOpened;
+    bool hasSentClose;
+    bool isInvalidated;
+
+    void invalidate();
 
     // Called by ControlChannel to act on valid channel request/result messages
     bool openChannelInbound(const Data::Control::OpenChannel *request, Data::Control::ChannelResult *result);
@@ -65,8 +71,7 @@ public:
 template<typename T> bool Channel::sendMessage(const T &message)
 {
     int size = message.ByteSize();
-    // XXX Add real maximum size
-    if (size > 55555) {
+    if (size > ConnectionPrivate::PacketMaxDataSize) {
         BUG() << "Message on" << type() << "channel is too big -" << size << "bytes:"
               << QString::fromStdString(message.DebugString());
         return false;

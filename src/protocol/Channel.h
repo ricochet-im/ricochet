@@ -40,6 +40,7 @@
 namespace Protocol
 {
 
+class Connection;
 class ChannelPrivate;
 
 /* Base representation of a channel inside of a connection
@@ -69,6 +70,7 @@ class Channel : public QObject
     Q_DECLARE_PRIVATE(Channel)
 
     friend class ControlChannel;
+    friend class ConnectionPrivate;
 
 public:
     enum Direction {
@@ -81,24 +83,36 @@ public:
      *
      * Returns null if 'type' is unrecognized.
      */
-    static Channel *create(const QString &type, Direction direction, QObject *parent);
+    static Channel *create(const QString &type, Direction direction, Connection *connection);
 
     QString type() const;
     int identifier() const;
     Direction direction() const;
+    Connection *connection();
     bool isOpened() const;
 
 signals:
     void channelOpened();
     void channelRejected(Data::Control::ChannelResult::CommonError error, const QString &errorMessage);
-    void channelClosed();
+
+    /* Emitted when the channel has become invalid and will be destroyed
+     *
+     * This signal is emitted when a channel is closed, an outbound channel request is
+     * rejected, or the connection is lost. It indicates that the channel is no longer
+     * valid and will be deleted once control reaches the event loop (i.e.
+     * QObject::deleteLater).
+     *
+     * Any object using the channel must clear all references to it when this signal
+     * is emitted.
+     */
+    void invalidated();
 
 public slots:
     void closeChannel();
 
 protected:
-    explicit Channel(const QString &type, Direction direction, QObject *parent);
-    explicit Channel(ChannelPrivate *d, QObject *parent);
+    explicit Channel(const QString &type, Direction direction, Connection *connection);
+    explicit Channel(ChannelPrivate *d);
     virtual ~Channel();
 
     /* Determine the response to an inbound OpenChannel request

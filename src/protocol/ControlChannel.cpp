@@ -32,14 +32,22 @@
 
 #include "ControlChannel.h"
 #include "Channel_p.h"
+#include "Connection_p.h"
 #include "utils/Useful.h"
+#include <QScopedPointer>
 #include <QDebug>
 
 using namespace Protocol;
 
-ControlChannel::ControlChannel(Direction direction, QObject *parent)
-    : Channel(QStringLiteral("control"), direction, parent)
+ControlChannel::ControlChannel(Direction direction, Connection *connection)
+    : Channel(QStringLiteral("control"), direction, connection)
 {
+    if (connection->channel(0))
+        BUG() << "Created ControlChannel for connection which already has a channel 0";
+
+    Q_D(Channel);
+    d->isOpened = true;
+    d->identifier = 0;
 }
 
 bool ControlChannel::openChannel(Channel *channel)
@@ -49,9 +57,16 @@ bool ControlChannel::openChannel(Channel *channel)
         return false;
     }
 
+    if (channel->connection() != connection()) {
+        BUG() << "openChannel called for" << channel->type() << "channel on a different connection";
+        return false;
+    }
+
     QScopedPointer<Data::Control::OpenChannel> request(new Data::Control::OpenChannel);
-    // XXX Also, add to the connection's list
-    qCritical("XXX I'm supposed to set the identifier here");
+    int channelId = connection()->d->availableOutboundChannelId();
+    if (channelId <= 0)
+        return false;
+    request->set_channel_identifier(channelId);
 
     if (!channel->d_ptr->openChannelOutbound(request.data())) {
         qDebug() << "Outbound OpenChannel request of type" << channel->type() << "refused locally";
@@ -67,6 +82,11 @@ bool ControlChannel::openChannel(Channel *channel)
 
     if (request->channel_identifier() != channel->identifier()) {
         BUG() << "Channel identifier doesn't match in OpenChannel request of type" << channel->type();
+        return false;
+    }
+
+    if (!connection()->d->insertChannel(channel)) {
+        BUG() << "Valid channel refused by connection";
         return false;
     }
 
@@ -133,10 +153,8 @@ void ControlChannel::handleOpenChannel(const Data::Control::OpenChannel &message
 {
     // Validate channel_identifier
     int id = message.channel_identifier();
-    // XXX client/server range rules
-    // XXX identifier in use rules
-    // XXX re-use rules
-    if (id <= 0 || id > UINT16_MAX) {
+    Connection::Direction peerSide = (connection()->direction() == Connection::ClientSide) ? Connection::ServerSide : Connection::ClientSide;
+    if (!connection()->d->isValidAvailableChannelId(id, peerSide)) {
         qWarning() << "Received OpenChannel with invalid channel_identifier:" << QString::fromStdString(message.DebugString());
         // Deliberately invalid behavior; kill the connection
         closeChannel();
@@ -146,7 +164,7 @@ void ControlChannel::handleOpenChannel(const Data::Control::OpenChannel &message
     Data::Control::ChannelResult *response = new Data::Control::ChannelResult;
     response->set_channel_identifier(id);
 
-    Channel *channel = Channel::create(QString::fromStdString(message.channel_type()), Inbound, parent());
+    Channel *channel = Channel::create(QString::fromStdString(message.channel_type()), Inbound, connection());
     if (!channel) {
         qDebug() << "Received OpenChannel for unknown channel type:" << QString::fromStdString(message.channel_type());
         response->set_opened(false);
@@ -171,12 +189,13 @@ void ControlChannel::handleOpenChannel(const Data::Control::OpenChannel &message
         {
             BUG() << "Channel" << channel->type() << "in unexpected state after inbound open";
             response->set_opened(false);
-            response->set_common_error(ControlChannelData::ChannelResult::GenericError);
             // The channel may think it's open, so force it to close
             channel->closeChannel();
-        } else {
-            // XXX Add channel to connection's list
-            qCritical() << "XXX This should be implemented!";
+        } else if (!connection()->d->insertChannel(channel)) {
+            Q_ASSERT_X(false, "handleOpenChannel", "Valid channel refused by connection");
+            qWarning() << "BUG: Valid channel refused by connection";
+            response->set_opened(false);
+            channel->closeChannel();
         }
     }
 
@@ -190,11 +209,45 @@ void ControlChannel::handleOpenChannel(const Data::Control::OpenChannel &message
     Data::Control::Packet responseMessage;
     responseMessage.set_allocated_channel_result(response);
     sendMessage(responseMessage);
+
+    if (response->opened())
+        emit connection()->channelOpened(channel);
 }
 
 void ControlChannel::handleChannelResult(const Data::Control::ChannelResult &message)
 {
-    qFatal("XXX handleChannelResult not implemented");
+    int id = message.channel_identifier();
+    Channel *channel = connection()->channel(id);
+    if (!channel) {
+        qWarning() << "Received ChannelResult for unknown identifier, ignoring:" << QString::fromStdString(message.DebugString());
+        return;
+    }
+
+    if (channel->direction() != Outbound || channel->isOpened()) {
+        qWarning() << "Received (duplicate?) ChannelResult for existing channel in an unexpected state:" << QString::fromStdString(message.DebugString());
+        return;
+    }
+
+    bool opened = channel->d_ptr->openChannelResult(&message);
+
+    if (opened && !channel->isOpened()) {
+        BUG() << "Outbound channel isn't open after successful ChannelResult";
+        channel->closeChannel();
+    } else if (!opened && channel->isOpened()) {
+        BUG() << "Outbound channel is open after failed ChannelResult";
+        channel->closeChannel();
+    }
+
+    // Channel::outboundOpenResult will invalidate on failure, causing the
+    // instance to be deleted once it's safe to do so
+    if (!opened || !channel->isOpened()) {
+        if (connection()->channel(channel->identifier())) {
+            BUG() << "Channel not invalidated after failed outbound OpenChannel request";
+            channel->closeChannel();
+        }
+    } else {
+        emit connection()->channelOpened(channel);
+    }
 }
 
 void ControlChannel::handleKeepAlive(const Data::Control::KeepAlive &message)

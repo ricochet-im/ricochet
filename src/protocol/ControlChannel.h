@@ -44,6 +44,8 @@ class ControlChannel : public Channel
     Q_OBJECT
     Q_DISABLE_COPY(ControlChannel)
 
+    friend class ConnectionPrivate;
+
 public:
     bool openChannel(Channel *channel);
     void keepAlive();
@@ -52,7 +54,7 @@ signals:
     void keepAliveResponse();
 
 protected:
-    explicit ControlChannel(Direction direction, QObject *parent);
+    explicit ControlChannel(Direction direction, Connection *connection);
 
     virtual bool allowInboundChannelRequest(const Data::Control::OpenChannel *request, Data::Control::ChannelResult *result);
     virtual bool allowOutboundChannelRequest(Data::Control::OpenChannel *request);

@@ -31,6 +31,7 @@
  */
 
 #include "Connection_p.h"
+#include "ControlChannel.h"
 #include "utils/Useful.h"
 #include <QTcpSocket>
 #include <QtEndian>
@@ -102,6 +103,17 @@ void ConnectionPrivate::setSocket(QTcpSocket *s, Connection::Direction d)
 
     if (socket->state() != QAbstractSocket::ConnectedState) {
         BUG() << "Connection created with socket in a non-connected state" << socket->state();
+    }
+
+    Channel *control = new ControlChannel(direction == Connection::ClientSide ? Channel::Outbound : Channel::Inbound, q);
+    // Closing the control channel must also close the connection
+    connect(control, &Channel::invalidated, q, &Connection::close);
+    insertChannel(control);
+
+    if (!control->isOpened() || control->identifier() != 0 || q->channel(0) != control) {
+        BUG() << "Control channel on new connection is not set up properly";
+        q->close();
+        return;
     }
 
     if (direction == Connection::ClientSide) {
@@ -354,7 +366,6 @@ bool ConnectionPrivate::insertChannel(Channel *channel)
     }
 
     channels.insert(channel->identifier(), channel);
-    emit q->channelOpened(channel);
     return true;
 }
 

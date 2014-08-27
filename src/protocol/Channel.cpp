@@ -31,29 +31,37 @@
  */
 
 #include "Channel_p.h"
+#include "Connection_p.h"
+#include "utils/Useful.h"
+#include <QDebug>
 
 using namespace Protocol;
 
-Channel *Channel::create(const QString &type, Direction direction, QObject *parent)
+Channel *Channel::create(const QString &type, Direction direction, Connection *connection)
 {
+    if (!connection)
+        return 0;
     qFatal("XXX not implemented");
     return 0;
 }
 
-Channel::Channel(const QString &type, Direction direction, QObject *parent)
-    : QObject(parent)
-    , d_ptr(new ChannelPrivate(this, type, direction))
+Channel::Channel(const QString &type, Direction direction, Connection *connection)
+    : QObject(connection)
+    , d_ptr(new ChannelPrivate(this, type, direction, connection))
 {
 }
 
-Channel::Channel(ChannelPrivate *d_ptr, QObject *parent)
-    : QObject(parent)
+Channel::Channel(ChannelPrivate *d_ptr)
+    : QObject(d_ptr->connection)
     , d_ptr(d_ptr)
 {
 }
 
 Channel::~Channel()
 {
+    Q_D(Channel);
+    if (d->identifier >= 0)
+        d->connection->d->removeChannel(this);
 }
 
 QString Channel::type() const
@@ -66,7 +74,8 @@ QString Channel::type() const
 int Channel::identifier() const
 {
     Q_D(const Channel);
-    Q_ASSERT(d->identifier <= UINT16_MAX);
+    if (d->identifier > UINT16_MAX)
+        return -1;
     return d->identifier;
 }
 
@@ -74,6 +83,12 @@ Channel::Direction Channel::direction() const
 {
     Q_D(const Channel);
     return d->direction;
+}
+
+Connection *Channel::connection()
+{
+    Q_D(Channel);
+    return d->connection;
 }
 
 bool Channel::isOpened() const
@@ -86,7 +101,18 @@ bool Channel::isOpened() const
 
 void Channel::closeChannel()
 {
-    qFatal("XXX not implemented");
+    Q_D(Channel);
+
+    if (!d->hasSentClose && d->identifier >= 0 && connection()->isConnected()) {
+        d->hasSentClose = true;
+        bool ok = connection()->d->writePacket(this, QByteArray());
+        if (!ok)
+            qDebug() << "Failed sending channel close message";
+    }
+
+    // Invalidate will remove and eventually destroy the Channel
+    d->isOpened = false;
+    d->invalidate();
 }
 
 /* Called by ControlChannel to handle an inbound OpenChannel message.
@@ -95,20 +121,79 @@ void Channel::closeChannel()
  */
 bool ChannelPrivate::openChannelInbound(const Data::Control::OpenChannel *request, Data::Control::ChannelResult *result)
 {
-    qFatal("XXX not implemented");
-    return false;
+    Q_Q(Channel);
+    result->set_opened(false);
+    if (direction != Channel::Inbound || isOpened || identifier >= 0 || hasSentClose || isInvalidated) {
+        BUG() << "Handling inbound open channel request on a channel in an unexpected state; rejecting";
+        return false;
+    }
+
+    if (request->channel_identifier() <= 0) {
+        BUG() << "Invalid channel identifier in inboundOpenChannel handler";
+        return false;
+    }
+
+    if (!q->allowInboundChannelRequest(request, result))
+        return false;
+
+    if (result->has_common_error() || result->has_error_message()) {
+        BUG() << "Accepted inbound OpenChannel request, but result has error details set. Assuming it's actually an error.";
+        result->set_opened(false);
+        return false;
+    }
+
+    result->set_opened(true);
+    identifier = request->channel_identifier();
+    isOpened = true;
+    emit q->channelOpened();
+    return true;
 }
 
 bool ChannelPrivate::openChannelOutbound(Data::Control::OpenChannel *request)
 {
-    qFatal("XXX not implemented");
-    return false;
+    Q_Q(Channel);
+    if (direction != Channel::Outbound || isOpened || identifier >= 0) {
+        BUG() << "Handling outbound open channel request on a channel in an unexpected state; rejecting";
+        return false;
+    }
+
+    if (!q->allowOutboundChannelRequest(request))
+        return false;
+
+    request->set_channel_type(type.toStdString());
+    identifier = request->channel_identifier();
+    return true;
 }
 
 bool ChannelPrivate::openChannelResult(const Data::Control::ChannelResult *result)
 {
-    qFatal("XXX not implemented");
-    return false;
+    Q_Q(Channel);
+    // ControlChannel should weed out clearly invalid messages, so assert here if it didn't
+    if (direction != Channel::Outbound || isOpened || identifier < 0) {
+        BUG() << "Handling response for outbound open channel on a channel in an unexpected state; ignoring";
+        return false;
+    }
+
+    bool ok = result->opened();
+    if (!q->processChannelOpenResult(result)) {
+        // If the peer thinks the channel was opened successfully, send a close
+        if (result->opened())
+            q->closeChannel();
+        ok = false;
+    }
+
+    if (ok) {
+        isOpened = true;
+        emit q->channelOpened();
+    } else {
+        Data::Control::ChannelResult::CommonError error = Data::Control::ChannelResult::GenericError;
+        if (result->has_common_error())
+            error = result->common_error();
+        emit q->channelRejected(error, QString::fromStdString(result->error_message()));
+        invalidate();
+    }
+
+    return ok;
 }
 
 bool Channel::processChannelOpenResult(const Data::Control::ChannelResult *result)
@@ -119,19 +204,63 @@ bool Channel::processChannelOpenResult(const Data::Control::ChannelResult *resul
 
 bool Channel::sendPacket(const QByteArray &packet)
 {
-    qFatal("XXX not implemented");
-    return false;
+    Q_D(Channel);
+    if (d->identifier < 0) {
+        BUG() << "Cannot send packet to channel" << type() << "without an assigned identifier";
+        return false;
+    }
+
+    if (packet.size() == 0) {
+        BUG() << "Cannot send empty packet to channel" << type();
+        return false;
+    }
+
+    if (packet.size() > ConnectionPrivate::PacketMaxDataSize) {
+        BUG() << "Packet is too big on channel" << type();
+        return false;
+    }
+
+    return connection()->d->writePacket(this, packet);
 }
 
-ChannelPrivate::ChannelPrivate(Channel *q, const QString &type, Channel::Direction direction)
+ChannelPrivate::ChannelPrivate(Channel *q, const QString &type, Channel::Direction direction, Connection *conn)
     : q_ptr(q)
+    , connection(conn)
     , type(type)
     , identifier(-1)
     , direction(direction)
     , isOpened(false)
+    , hasSentClose(false)
+    , isInvalidated(false)
 {
 }
 
 ChannelPrivate::~ChannelPrivate()
 {
+    Q_Q(Channel);
+    if (identifier >= 0 && !isInvalidated) {
+        BUG() << "Channel of type" << type << "was deleted without being invalidated";
+        connection->d->removeChannel(q);
+    }
+}
+
+void ChannelPrivate::invalidate()
+{
+    Q_Q(Channel);
+    if (isInvalidated)
+        return;
+
+    Q_ASSERT(!isOpened);
+
+    qDebug() << "Invalidating channel" << q << "type" << type << "id" << identifier;
+
+    isInvalidated = true;
+    emit q->invalidated();
+
+    if (identifier >= 0) {
+        connection->d->removeChannel(q);
+        Q_ASSERT(!connection->channel(identifier));
+    }
+
+    q->deleteLater();
 }
