@@ -130,7 +130,7 @@
     <message>
         <location filename="../src/ui/qml/ContactPreferences.qml" line="80"/>
         <source>Pending connection</source>
-        <translation type="unfinished"/>
+        <translation>Afventer forbindelse</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactPreferences.qml" line="81"/>
@@ -448,7 +448,7 @@
         <location filename="../src/ui/qml/TorBootstrapStatus.qml" line="17"/>
         <source>Connecting to the Tor network…</source>
         <extracomment>\u2026 is ellipsis</extracomment>
-        <translation type="unfinished"/>
+        <translation>Forbinder til Tor-netværket...</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorBootstrapStatus.qml" line="50"/>
@@ -476,7 +476,7 @@
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="72"/>
         <source>Does this computer need a proxy to access the internet?</source>
-        <translation type="unfinished"/>
+        <translation>Skal denne computer forbinde gennem en proxy for at tilgå internettet?</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="84"/>
@@ -523,7 +523,7 @@
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="159"/>
         <source>Does this computer&apos;s Internet connection go through a firewall that only allows connections to certain ports?</source>
-        <translation type="unfinished"/>
+        <translation>Går denne computers internetforbindelse gennem en firewall der kun tillader forbindelser på visse porte?</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="170"/>
@@ -538,12 +538,12 @@
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="188"/>
         <source>If this computer&apos;s Internet connection is censored, you will need to obtain and use bridge relays.</source>
-        <translation type="unfinished"/>
+        <translation>Hvis denne computers internetforbindelse er censureret, er du nødt til at finde og benytte bridge relæer.</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="197"/>
         <source>Enter one or more bridge relays (one per line):</source>
-        <translation type="unfinished"/>
+        <translation>Indtast et eller flere bridge relæer (et per linje):</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="212"/>
