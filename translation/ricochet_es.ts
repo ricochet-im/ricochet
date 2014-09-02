@@ -362,17 +362,17 @@
     <message>
         <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="38"/>
         <source>&lt;b&gt;Warning!&lt;/b&gt; Opening links with your default browser will harm your security and anonymity.&lt;br&gt;&lt;br&gt;You can &lt;a href=&apos;.&apos;&gt;copy to the clipboard&lt;/a&gt; instead.</source>
-        <translation type="unfinished"/>
+        <translation>&lt;b&gt;¡Advertencia!&lt;/b&gt; Abrir enlaces con su navegador predeterminado perjudicará su seguridad y anonimato. &lt;br&gt;&lt;br&gt;En su lugar puede &lt;a href=&apos;.&apos;&gt;copiarlos al portapapeles&lt;/a&gt;.</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="57"/>
         <source>Don&apos;t ask again for links from %1</source>
-        <translation type="unfinished"/>
+        <translation>No realice peticiones a enlaces desde %1 de nuevo</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="63"/>
         <source>Don&apos;t ask again for any links (not recommended!)</source>
-        <translation type="unfinished"/>
+        <translation>No realice peticiones de ningún enlace de nuevo (¡no recomendado!)</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="70"/>
@@ -403,7 +403,7 @@
     <message>
         <location filename="../src/ui/qml/PreferencesDialog.qml" line="39"/>
         <source>General</source>
-        <translation type="unfinished"/>
+        <translation>General</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/PreferencesDialog.qml" line="44"/>
