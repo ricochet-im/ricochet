@@ -251,7 +251,9 @@ void IncomingSocket::handleIntro(QTcpSocket *socket, uchar version)
         socket->disconnect(this);
 
         /* The protocolmanager also takes ownership */
+#ifndef PROTOCOL_NEW
         user->incomingProtocolSocket(socket);
+#endif
         Q_ASSERT(socket->parent() != this);
     }
     else if (purpose == Protocol::PurposeContactReq)
