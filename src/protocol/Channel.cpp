@@ -36,14 +36,20 @@
 #include "utils/Useful.h"
 #include <QDebug>
 
+#include "AuthHiddenServiceChannel.h"
+
 using namespace Protocol;
 
 Channel *Channel::create(const QString &type, Direction direction, Connection *connection)
 {
     if (!connection)
         return 0;
-    qFatal("XXX not implemented");
-    return 0;
+
+    if (type == QStringLiteral("im.ricochet.auth.hidden-service")) {
+        return new AuthHiddenServiceChannel(direction, connection);
+    } else {
+        return 0;
+    }
 }
 
 Channel::Channel(const QString &type, Direction direction, Connection *connection)
