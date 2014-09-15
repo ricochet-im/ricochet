@@ -176,10 +176,14 @@ QString CryptoKey::torServiceID() const
     if (digest.isNull())
         return QString();
 
-    QByteArray re;
-    re.resize(17);
+    static const int hostnameDigestSize = 10;
+    static const int hostnameEncodedSize = 16;
 
-    base32_encode(re.data(), 17, digest.constData(), 10);
+    QByteArray re(hostnameEncodedSize+1, 0);
+    base32_encode(re.data(), re.size(), digest.constData(), hostnameDigestSize);
+
+    // Chop extra null byte
+    re.chop(1);
 
     return QString::fromLatin1(re);
 }
