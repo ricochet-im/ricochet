@@ -98,6 +98,7 @@ bool SecureRNG::random(char *buf, int size)
     int r = RAND_bytes(reinterpret_cast<unsigned char*>(buf), size);
     if (!r)
     {
+        // FIXME: This should be fatal
         qWarning() << "RNG failed:" << ERR_get_error();
         return false;
     }
@@ -111,6 +112,7 @@ QByteArray SecureRNG::random(int size)
     re.resize(size);
 
     if (!random(re.data(), size))
+        // FIXME: This is really unsafe!
         return QByteArray();
 
     return re;
@@ -120,20 +122,32 @@ QByteArray SecureRNG::randomPrintable(int length)
 {
     QByteArray re = random(length);
     for (int i = 0; i < re.size(); i++)
-        re[i] = (quint8(re[i]) % 95) + 32;
+        re[i] = randomInt(95) + 32;
     return re;
 }
 
 unsigned SecureRNG::randomInt(unsigned max)
 {
-    unsigned cutoff = UINT_MAX - (UINT_MAX % max);
+    unsigned mask = 0;
     unsigned value = 0;
 
+    for (int i = max; i > 0; i >>= 1) {
+        mask++;
+    }
+    if (mask == 32) {
+        mask = 0xffffffff;
+    } else {
+        mask = (1<<mask) - 1;
+    }
+    
     for (;;)
     {
-        random(reinterpret_cast<char*>(&value), sizeof(value));
-        if (value < cutoff)
-            return value % max;
+        if(random(reinterpret_cast<char*>(&value), sizeof(value))) {
+            value &= mask;
+            if (value <= max) {
+                return value;
+            }
+        }
     }
 }
 
@@ -143,13 +157,25 @@ unsigned SecureRNG::randomInt(unsigned max)
 
 quint64 SecureRNG::randomInt64(quint64 max)
 {
-    quint64 cutoff = UINT64_MAX - (UINT64_MAX % max);
+    quint64 mask = 0;
     quint64 value = 0;
 
+    for (int i = max; i > 0; i >>= 1) {
+        mask++;
+    }
+    if (mask == 64) {
+        mask = 0xffffffffffffffff;
+    } else {
+        mask = ((quint64)1<<mask) - 1;
+    }
+    
     for (;;)
     {
-        random(reinterpret_cast<char*>(value), sizeof(value));
-        if (value < cutoff)
-            return value % max;
+        if(random(reinterpret_cast<char*>(&value), sizeof(value))) {
+            value &= mask;
+            if (value <= max) {
+                return value;
+            }
+        }
     }
 }
