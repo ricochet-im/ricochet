@@ -7,6 +7,7 @@
 * strel - Spanish
 * Mikkel Kroman - Danish
 * swperman - Portuguese (Brazil)
+* Daniel James Smith (@djsmith85) - German
 
 ### Thanks
 * Helder Ribeiro (@obvio171) - "Ricochet"

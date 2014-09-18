@@ -194,7 +194,8 @@ TRANSLATIONS += \
     translation/ricochet_it.ts \
     translation/ricochet_es.ts \
     translation/ricochet_da.ts \
-    translation/ricochet_pt_BR.ts
+    translation/ricochet_pt_BR.ts \
+    translation/ricochet_de.ts
 
 isEmpty(QMAKE_LRELEASE) {
     win32:QMAKE_LRELEASE = $$[QT_INSTALL_BINS]\lrelease.exe
