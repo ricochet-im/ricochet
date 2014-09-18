@@ -38,6 +38,7 @@ Name: "it"; MessagesFile: "compiler:Languages\Italian.isl,..\..\translation\inst
 Name: "es"; MessagesFile: "compiler:Languages\Spanish.isl,..\..\translation\installer_es.isl"
 Name: "pt_BR"; MessagesFile: "compiler:Languages\BrazilianPortuguese.isl,..\..\translation\installer_pt_BR.isl"
 Name: "da"; MessagesFile: "compiler:Languages\Danish.isl,..\..\translation\installer_da.isl"
+Name: "de"; MessagesFile: "compiler:Languages\German.isl,..\..\translation\installer_de.isl"
 
 [Code]
 // http://www.vincenzo.net/isxkb/index.php?title=Obtaining_the_application's_version
