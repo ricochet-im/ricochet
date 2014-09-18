@@ -113,15 +113,15 @@ void HiddenService::readHostname()
     qDebug() << "Hidden service hostname is" << pHostname;
 }
 
-CryptoKey HiddenService::cryptoKey() const
+CryptoKey HiddenService::cryptoKey()
 {
-    CryptoKey key;
+    if (!pCryptoKey.isLoaded()) {
+        bool ok = pCryptoKey.loadFromFile(dataPath + QLatin1String("/private_key"), true);
+        if (!ok)
+            qWarning() << "Failed to load hidden service key";
+    }
 
-    bool ok = key.loadFromFile(dataPath + QLatin1String("/private_key"), true);
-    if (!ok)
-        qWarning() << "Failed to load hidden service key";
-
-    return key;
+    return pCryptoKey;
 }
 
 void HiddenService::startSelfTest()

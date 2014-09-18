@@ -36,8 +36,7 @@
 #include <QObject>
 #include <QHostAddress>
 #include <QList>
-
-class CryptoKey;
+#include "utils/CryptoKey.h"
 
 namespace Tor
 {
@@ -73,7 +72,7 @@ public:
     Status status() const { return pStatus; }
 
     const QString &hostname() const { return pHostname; }
-    CryptoKey cryptoKey() const;
+    CryptoKey cryptoKey();
 
     const QList<Target> &targets() const { return pTargets; }
     void addTarget(const Target &target);
@@ -96,6 +95,7 @@ private:
     QString pHostname;
     TorSocket *selfTest;
     Status pStatus;
+    CryptoKey pCryptoKey;
 
     void setStatus(Status newStatus);
     void readHostname();
