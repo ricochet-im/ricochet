@@ -23,7 +23,7 @@ yum install tor # or build your own
 ```
 #### Ubuntu 14.04 or later
 ```sh
-apt-get install build-essential libssl-dev qt5-qmake qt5-default qtbase5-dev qttools5-dev-tools qtdeclarative5-dev qtdeclarative5-controls-plugin
+apt-get install build-essential libssl-dev pkg-config qt5-qmake qt5-default qtbase5-dev qttools5-dev-tools qtdeclarative5-dev qtdeclarative5-controls-plugin
 apt-get install tor # or build your own
 ```
 #### Qt SDK
