@@ -88,6 +88,25 @@ public:
     /* Age of the connection in seconds */
     int age() const;
 
+    /* Assigned purpose of this connection
+     *
+     * A purpose is assigned to the connection after the peer has
+     * authenticated or otherwise indicated what the connection will
+     * be used for.
+     *
+     * Purposes may be used to limit the features available on a
+     * connection, change behavior, and impose restrictions.
+     *
+     * Connections with an unknown purpose are killed after a timeout.
+     */
+    enum class Purpose {
+        Unknown,
+        KnownContact
+    };
+
+    Purpose purpose() const;
+    bool setPurpose(Purpose purpose);
+
     QHash<int,Channel*> channels();
     Channel *channel(int identifier);
     template<typename T> T *findChannel(Channel::Direction direction = Channel::Invalid);
@@ -108,6 +127,7 @@ public slots:
 signals:
     void closed();
     void authenticated(AuthenticationType type, const QString &identity);
+    void purposeChanged(Purpose after, Purpose before);
     void channelOpened(Channel *channel);
 
 private:

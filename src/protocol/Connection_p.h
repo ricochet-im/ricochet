@@ -58,6 +58,7 @@ public:
     QMap<Connection::AuthenticationType,QString> authentication;
     QElapsedTimer ageTimer;
     Connection::Direction direction;
+    Connection::Purpose purpose;
 
     void setSocket(QTcpSocket *socket, Connection::Direction direction);
 

@@ -51,6 +51,7 @@ ConnectionPrivate::ConnectionPrivate(Connection *qq)
     , q(qq)
     , socket(0)
     , direction(Connection::ClientSide)
+    , purpose(Connection::Purpose::Unknown)
     , nextOutboundChannelId(-1)
 {
     ageTimer.start();
@@ -404,6 +405,32 @@ QHash<int,Channel*> Connection::channels()
 Channel *Connection::channel(int identifier)
 {
     return d->channels.value(identifier);
+}
+
+Connection::Purpose Connection::purpose() const
+{
+    return d->purpose;
+}
+
+bool Connection::setPurpose(Purpose value)
+{
+    if (d->purpose == value)
+        return true;
+
+    if (value == Purpose::Unknown) {
+        qWarning() << "BUG: A connection can't reset to unknown purpose";
+        return false;
+    } else if (value == Purpose::KnownContact) {
+        if (!hasAuthenticated(HiddenServiceAuth)) {
+            BUG() << "Connection purpose cannot be KnownContact without authenticating a service";
+            return false;
+        }
+    }
+
+    Purpose old = d->purpose;
+    d->purpose = value;
+    emit purposeChanged(d->purpose, old);
+    return true;
 }
 
 bool Connection::hasAuthenticated(AuthenticationType type) const
