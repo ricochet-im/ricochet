@@ -34,6 +34,7 @@
 #include "ControlChannel.h"
 #include "utils/Useful.h"
 #include <QTcpSocket>
+#include <QTimer>
 #include <QtEndian>
 #include <QDebug>
 
@@ -55,6 +56,20 @@ ConnectionPrivate::ConnectionPrivate(Connection *qq)
     , nextOutboundChannelId(-1)
 {
     ageTimer.start();
+
+    QTimer *timeout = new QTimer(this);
+    timeout->setSingleShot(true);
+    timeout->setInterval(UnknownPurposeTimeout * 1000);
+    connect(timeout, &QTimer::timeout, this,
+        [this,timeout]() {
+            if (purpose == Connection::Purpose::Unknown) {
+                qDebug() << "Closing connection" << q << "with unknown purpose after timeout";
+                q->close();
+            }
+            timeout->deleteLater();
+        }
+    );
+    timeout->start();
 }
 
 Connection::Direction Connection::direction() const

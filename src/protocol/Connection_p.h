@@ -49,6 +49,8 @@ class ConnectionPrivate : public QObject
 public:
     static const int PacketHeaderSize = 4;
     static const int PacketMaxDataSize = UINT16_MAX - PacketHeaderSize;
+    // Time in seconds before a connection with a purpose of Unknown is killed
+    static const int UnknownPurposeTimeout = 15;
 
     explicit ConnectionPrivate(Connection *q);
 
