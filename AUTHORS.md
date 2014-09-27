@@ -8,6 +8,7 @@
 * Mikkel Kroman - Danish
 * swperman - Portuguese (Brazil)
 * Daniel James Smith (@djsmith85) - German
+* Jan Kowalewicz (@jwhx) - German
 
 ### Thanks
 * Helder Ribeiro (@obvio171) - "Ricochet"
