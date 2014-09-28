@@ -116,7 +116,7 @@ void HiddenService::readHostname()
 CryptoKey HiddenService::cryptoKey()
 {
     if (!pCryptoKey.isLoaded()) {
-        bool ok = pCryptoKey.loadFromFile(dataPath + QLatin1String("/private_key"), true);
+        bool ok = pCryptoKey.loadFromFile(dataPath + QLatin1String("/private_key"), CryptoKey::PrivateKey);
         if (!ok)
             qWarning() << "Failed to load hidden service key";
     }

@@ -40,12 +40,17 @@
 class CryptoKey
 {
 public:
+    enum KeyType {
+        PrivateKey,
+        PublicKey
+    };
+
     CryptoKey();
     CryptoKey(const CryptoKey &other) : d(other.d) { }
     ~CryptoKey();
 
-    bool loadFromData(const QByteArray &data, bool privateKey = false);
-    bool loadFromFile(const QString &path, bool privateKey = false);
+    bool loadFromData(const QByteArray &data, KeyType type);
+    bool loadFromFile(const QString &path, KeyType type);
     void clear();
 
     bool isLoaded() const { return d.data() && d->key != 0; }

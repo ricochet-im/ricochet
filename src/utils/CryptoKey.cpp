@@ -63,12 +63,12 @@ void CryptoKey::clear()
     d = 0;
 }
 
-bool CryptoKey::loadFromData(const QByteArray &data, bool privateKey)
+bool CryptoKey::loadFromData(const QByteArray &data, KeyType type)
 {
     BIO *b = BIO_new_mem_buf((void*)data.constData(), -1);
 
     RSA *key;
-    if (privateKey)
+    if (type == PrivateKey)
         key = PEM_read_bio_RSAPrivateKey(b, NULL, NULL, NULL);
     else
         key = PEM_read_bio_RSAPublicKey(b, NULL, NULL, NULL);
@@ -77,7 +77,7 @@ bool CryptoKey::loadFromData(const QByteArray &data, bool privateKey)
 
     if (!key)
     {
-        qWarning() << "Failed to parse" << (privateKey ? "private" : "public") << "key from data";
+        qWarning() << "Failed to parse" << (type == PrivateKey ? "private" : "public") << "key from data";
         return false;
     }
 
@@ -85,19 +85,20 @@ bool CryptoKey::loadFromData(const QByteArray &data, bool privateKey)
     return true;
 }
 
-bool CryptoKey::loadFromFile(const QString &path, bool privateKey)
+bool CryptoKey::loadFromFile(const QString &path, KeyType type)
 {
     QFile file(path);
     if (!file.open(QIODevice::ReadOnly))
     {
-        qWarning() << "Failed to open private key from" << path << "-" << file.errorString();
+        qWarning() << "Failed to open" << (type == PrivateKey ? "private" : "public") << "key from"
+                   << path << "-" << file.errorString();
         return false;
     }
 
     QByteArray data = file.readAll();
     file.close();
 
-    return loadFromData(data, privateKey);
+    return loadFromData(data, type);
 }
 
 bool CryptoKey::isPrivate() const
