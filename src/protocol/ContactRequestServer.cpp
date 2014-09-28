@@ -202,7 +202,7 @@ void ContactRequestServer::handleRequest(const QByteArray &data)
 
     /* Load the public key */
     CryptoKey key;
-    if (!key.loadFromData(encodedPublicKey)) {
+    if (!key.loadFromData(encodedPublicKey, CryptoKey::PublicKey)) {
         qDebug() << "Incoming contact request has an unparsable public key; rejecting";
         sendResponse(0x81);
         return;
