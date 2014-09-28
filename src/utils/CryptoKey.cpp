@@ -242,41 +242,6 @@ bool CryptoKey::verifySignature(const QByteArray &data, QByteArray signature) co
     return true;
 }
 
-void CryptoKey::test(const QString &file)
-{
-    CryptoKey key;
-
-    bool ok = key.loadFromFile(file, true);
-    Q_ASSERT(ok);
-    Q_ASSERT(key.isLoaded());
-
-    QByteArray pubkey = key.encodedPublicKey();
-    Q_ASSERT(!pubkey.isEmpty());
-
-    qDebug() << "(crypto test) Encoded public key:" << pubkey;
-
-    QByteArray pubdigest = key.publicKeyDigest();
-    Q_ASSERT(!pubdigest.isEmpty());
-
-    qDebug() << "(crypto test) Public key digest:" << pubdigest.toHex();
-
-    QString serviceid = key.torServiceID();
-    Q_ASSERT(!serviceid.isEmpty());
-
-    qDebug() << "(crypto test) Tor service ID:" << serviceid;
-
-    QByteArray data = SecureRNG::random(16);
-    Q_ASSERT(!data.isNull());
-    qDebug() << "(crypto test) Random data:" << data.toHex();
-
-    QByteArray signature = key.signData(data);
-    Q_ASSERT(!signature.isNull());
-    qDebug() << "(crypto test) Signature:" << signature.toHex();
-
-    ok = key.verifySignature(data, signature);
-    qDebug() << "(crypto test) Verified signature:" << ok;
-}
-
 /* Cryptographic hash of a password as expected by Tor's HashedControlPassword */
 QByteArray torControlHashedPassword(const QByteArray &password)
 {
