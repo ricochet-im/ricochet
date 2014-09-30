@@ -11,6 +11,12 @@ release
 .DS_Store
 *.exe
 *.dll
+*.o
+*.moc
+tests/*/tst_*
+!tst_*.pro
+!tst_*.cpp
+!tst_*.h
 packaging/installer/Qt
 packaging/installer/Output
 translation/*.qm

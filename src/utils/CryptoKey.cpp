@@ -63,12 +63,12 @@ void CryptoKey::clear()
     d = 0;
 }
 
-bool CryptoKey::loadFromData(const QByteArray &data, bool privateKey)
+bool CryptoKey::loadFromData(const QByteArray &data, KeyType type)
 {
     BIO *b = BIO_new_mem_buf((void*)data.constData(), -1);
 
     RSA *key;
-    if (privateKey)
+    if (type == PrivateKey)
         key = PEM_read_bio_RSAPrivateKey(b, NULL, NULL, NULL);
     else
         key = PEM_read_bio_RSAPublicKey(b, NULL, NULL, NULL);
@@ -77,7 +77,7 @@ bool CryptoKey::loadFromData(const QByteArray &data, bool privateKey)
 
     if (!key)
     {
-        qWarning() << "Failed to parse" << (privateKey ? "private" : "public") << "key from data";
+        qWarning() << "Failed to parse" << (type == PrivateKey ? "private" : "public") << "key from data";
         return false;
     }
 
@@ -85,19 +85,20 @@ bool CryptoKey::loadFromData(const QByteArray &data, bool privateKey)
     return true;
 }
 
-bool CryptoKey::loadFromFile(const QString &path, bool privateKey)
+bool CryptoKey::loadFromFile(const QString &path, KeyType type)
 {
     QFile file(path);
     if (!file.open(QIODevice::ReadOnly))
     {
-        qWarning() << "Failed to open private key from" << path << "-" << file.errorString();
+        qWarning() << "Failed to open" << (type == PrivateKey ? "private" : "public") << "key from"
+                   << path << "-" << file.errorString();
         return false;
     }
 
     QByteArray data = file.readAll();
     file.close();
 
-    return loadFromData(data, privateKey);
+    return loadFromData(data, type);
 }
 
 bool CryptoKey::isPrivate() const
@@ -176,10 +177,14 @@ QString CryptoKey::torServiceID() const
     if (digest.isNull())
         return QString();
 
-    QByteArray re;
-    re.resize(17);
+    static const int hostnameDigestSize = 10;
+    static const int hostnameEncodedSize = 16;
 
-    base32_encode(re.data(), 17, digest.constData(), 10);
+    QByteArray re(hostnameEncodedSize+1, 0);
+    base32_encode(re.data(), re.size(), digest.constData(), hostnameDigestSize);
+
+    // Chop extra null byte
+    re.chop(1);
 
     return QString::fromLatin1(re);
 }
@@ -236,41 +241,6 @@ bool CryptoKey::verifySignature(const QByteArray &data, QByteArray signature) co
     if (r != 1)
         return false;
     return true;
-}
-
-void CryptoKey::test(const QString &file)
-{
-    CryptoKey key;
-
-    bool ok = key.loadFromFile(file, true);
-    Q_ASSERT(ok);
-    Q_ASSERT(key.isLoaded());
-
-    QByteArray pubkey = key.encodedPublicKey();
-    Q_ASSERT(!pubkey.isEmpty());
-
-    qDebug() << "(crypto test) Encoded public key:" << pubkey;
-
-    QByteArray pubdigest = key.publicKeyDigest();
-    Q_ASSERT(!pubdigest.isEmpty());
-
-    qDebug() << "(crypto test) Public key digest:" << pubdigest.toHex();
-
-    QString serviceid = key.torServiceID();
-    Q_ASSERT(!serviceid.isEmpty());
-
-    qDebug() << "(crypto test) Tor service ID:" << serviceid;
-
-    QByteArray data = SecureRNG::random(16);
-    Q_ASSERT(!data.isNull());
-    qDebug() << "(crypto test) Random data:" << data.toHex();
-
-    QByteArray signature = key.signData(data);
-    Q_ASSERT(!signature.isNull());
-    qDebug() << "(crypto test) Signature:" << signature.toHex();
-
-    ok = key.verifySignature(data, signature);
-    qDebug() << "(crypto test) Verified signature:" << ok;
 }
 
 /* Cryptographic hash of a password as expected by Tor's HashedControlPassword */
