@@ -354,6 +354,7 @@ bool ConnectionPrivate::insertChannel(Channel *channel)
     }
 
     channels.insert(channel->identifier(), channel);
+    emit q->channelOpened(channel);
     return true;
 }
 

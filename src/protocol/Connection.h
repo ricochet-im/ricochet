@@ -108,6 +108,7 @@ public slots:
 signals:
     void closed();
     void authenticated(AuthenticationType type, const QString &identity);
+    void channelOpened(Channel *channel);
 
 private:
     ConnectionPrivate *d;
