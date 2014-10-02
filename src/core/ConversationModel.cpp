@@ -31,12 +31,21 @@
  */
 
 #include "ConversationModel.h"
-#include "protocol/ChatMessageCommand.h"
+#include <QDebug>
+#ifdef PROTOCOL_NEW
+# include "protocol/Connection.h"
+# include "protocol/ChatChannel.h"
+# include "protocol/ControlChannel.h"
+#else
+# include "protocol/ChatMessageCommand.h"
+#endif
 
 ConversationModel::ConversationModel(QObject *parent)
     : QAbstractListModel(parent)
     , m_contact(0)
+#ifndef PROTOCOL_NEW
     , lastReceivedId(0)
+#endif
     , m_unreadCount(0)
 {
 }
@@ -53,10 +62,27 @@ void ConversationModel::setContact(ContactUser *contact)
         disconnect(m_contact, 0, this, 0);
     m_contact = contact;
     if (m_contact) {
+#ifdef PROTOCOL_NEW
+        // XXX Find a way to avoid signal spaghetti
+        // XXX Also connect if we're already connected or already have channel
+        connect(m_contact, &ContactUser::connected, this,
+            [this]() {
+                connect(m_contact->connection(), &Protocol::Connection::channelOpened, this,
+                    [this](Protocol::Channel *channel) {
+                        if (Protocol::ChatChannel *chat = qobject_cast<Protocol::ChatChannel*>(channel)) {
+                            connect(chat, &Protocol::ChatChannel::messageReceived, this, &ConversationModel::messageReceived);
+                            connect(chat, &Protocol::ChatChannel::messageDelivered, this, &ConversationModel::messageDelivered);
+                        }
+                    }
+                );
+            }
+        );
+#else
         connect(m_contact, SIGNAL(incomingChatMessage(ChatMessageData)), this,
                 SLOT(receiveMessage(ChatMessageData)));
-        connect(m_contact, SIGNAL(statusChanged()), this,
-                SLOT(onContactStatusChanged()));
+#endif
+        connect(m_contact, &ContactUser::statusChanged,
+                this, &ConversationModel::onContactStatusChanged);
     }
 
     endResetModel();
@@ -68,16 +94,69 @@ void ConversationModel::sendMessage(const QString &text)
     if (text.isEmpty())
         return;
 
+#ifdef PROTOCOL_NEW
+    // XXX Ugh, API.
+    if (!m_contact->connection()) {
+        // XXX save
+        return;
+    }
+    Protocol::ChatChannel *channel = m_contact->connection()->findChannel<Protocol::ChatChannel>(Protocol::Channel::Outbound);
+    if (!channel) {
+        channel = new Protocol::ChatChannel(Protocol::Channel::Outbound, m_contact->connection());
+        // XXX return value
+        m_contact->connection()->findChannel<Protocol::ControlChannel>()->openChannel(channel);
+    }
+    if (!channel->isOpened()) {
+        // XXX save
+        return;
+    }
+
+    MessageId id = 0;
+    if (!channel->sendChatMessage(text, QDateTime(), id)) {
+        // XXX error
+        return;
+    }
+
+    MessageData message = { text, QDateTime::currentDateTime(), id, Sending };
+#else
     ChatMessageCommand *command = new ChatMessageCommand;
     connect(command, SIGNAL(commandFinished()), this, SLOT(messageReply()));
     command->send(m_contact->conn(), QDateTime::currentDateTime(), text, lastReceivedId);
 
-    beginInsertRows(QModelIndex(), 0, 0);
     MessageData message = { text, QDateTime::currentDateTime(), command->identifier(), Sending };
+#endif
+
+    beginInsertRows(QModelIndex(), 0, 0);
     messages.prepend(message);
     endInsertRows();
 }
 
+#ifdef PROTOCOL_NEW
+void ConversationModel::messageReceived(const QString &text, const QDateTime &time, MessageId id)
+{
+    // XXX reposition by most recent acknowledged
+
+    beginInsertRows(QModelIndex(), 0, 0);
+    MessageData message = { text, time, id, Received };
+    messages.prepend(message);
+    endInsertRows();
+
+    m_unreadCount++;
+    emit unreadCountChanged();
+}
+
+// XXX handling for delivery failure
+void ConversationModel::messageDelivered(MessageId id)
+{
+    int row = indexOfIdentifier(id, true);
+    if (row < 0)
+        return;
+
+    MessageData &data = messages[row];
+    data.status = Delivered;
+    emit dataChanged(index(row, 0), index(row, 0));
+}
+#else
 void ConversationModel::receiveMessage(const ChatMessageData &data)
 {
     // If priorMessageID is non-zero, it represents the identifier of the last message
@@ -119,6 +198,7 @@ void ConversationModel::messageReply()
     data.status = Protocol::isSuccess(command->finalReplyState()) ? Delivered : Error;
     emit dataChanged(index(row, 0), index(row, 0));
 }
+#endif
 
 void ConversationModel::clear()
 {
@@ -196,7 +276,7 @@ QVariant ConversationModel::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
-int ConversationModel::indexOfIdentifier(quint16 identifier, bool isOutgoing) const
+int ConversationModel::indexOfIdentifier(MessageId identifier, bool isOutgoing) const
 {
     for (int i = 0; i < messages.size(); i++) {
         if (messages[i].identifier == identifier && (messages[i].status != Received) == isOutgoing)
