@@ -37,6 +37,7 @@
 #include <QDebug>
 
 #include "AuthHiddenServiceChannel.h"
+#include "ChatChannel.h"
 
 using namespace Protocol;
 
@@ -47,6 +48,8 @@ Channel *Channel::create(const QString &type, Direction direction, Connection *c
 
     if (type == QStringLiteral("im.ricochet.auth.hidden-service")) {
         return new AuthHiddenServiceChannel(direction, connection);
+    } else if (type == QStringLiteral("im.ricochet.chat")) {
+        return new ChatChannel(direction, connection);
     } else {
         return 0;
     }
