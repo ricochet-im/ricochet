@@ -302,21 +302,19 @@ bool ConnectionPrivate::writePacket(int channelId, const QByteArray &data)
 
 int ConnectionPrivate::availableOutboundChannelId()
 {
-    int minId, maxId;
-    if (direction == Connection::ClientSide) {
-        minId = 1;
-        maxId = 0x7fff;
-    } else {
-        minId = 0x8000;
-        maxId = 0xffff;
-    }
+    // Server opens even-nubmered channels, client opens odd-numbered
+    bool evenNumbered = (direction == Connection::ServerSide);
+    const int minId = evenNumbered ? 2 : 1;
+    const int maxId = evenNumbered ? (UINT16_MAX-1) : UINT16_MAX;
 
     if (nextOutboundChannelId < minId || nextOutboundChannelId > maxId)
         nextOutboundChannelId = minId;
 
-    // Find an unused id, trying a maximum of 100 times
+    // Find an unused id, trying a maximum of 100 times, using a random step to avoid collision
     for (int i = 0; i < 100 && channels.contains(nextOutboundChannelId); i++) {
-        nextOutboundChannelId += qrand() % 200;
+        nextOutboundChannelId += 1 + (qrand() % 200);
+        if (evenNumbered)
+            nextOutboundChannelId += nextOutboundChannelId % 2;
         if (nextOutboundChannelId > maxId)
             nextOutboundChannelId = minId;
     }
@@ -333,23 +331,23 @@ int ConnectionPrivate::availableOutboundChannelId()
         return -1;
     }
 
+    if (evenNumbered == bool(nextOutboundChannelId % 2)) {
+        BUG() << "Selected a channel id that isn't valid for this side of the connection";
+        return -1;
+    }
+
     int re = nextOutboundChannelId;
-    nextOutboundChannelId++;
+    nextOutboundChannelId += 2;
     return re;
 }
 
 bool ConnectionPrivate::isValidAvailableChannelId(int id, Connection::Direction side)
 {
-    int minId, maxId;
-    if (side == Connection::ClientSide) {
-        minId = 1;
-        maxId = 0x7fff;
-    } else {
-        minId = 0x8000;
-        maxId = 0xffff;
-    }
+    if (id < 1 || id > UINT16_MAX)
+        return false;
 
-    if (id < minId || id > maxId)
+    bool evenNumbered = bool(id % 2);
+    if (evenNumbered == (side == Connection::ServerSide))
         return false;
 
     if (channels.contains(id))
