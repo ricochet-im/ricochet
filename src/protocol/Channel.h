@@ -91,6 +91,20 @@ public:
     Connection *connection();
     bool isOpened() const;
 
+    /* Send the OpenChannel request for this channel
+     *
+     * Only valid when the channel hasn't been opened yet. If successful,
+     * identifier() will be set and this function returns true. The channel
+     * isn't open until the response arrives, signalled by the channelOpened
+     * or channelRejected signals.
+     *
+     * If the channel is rejected, it will be invalidated and deleted.
+     *
+     * If this function returns false, the request wasn't sent due to a local
+     * error. In that case, only the invalidated signal is sent.
+     */
+    bool openChannel();
+
 signals:
     void channelOpened();
     void channelRejected(Data::Control::ChannelResult::CommonError error, const QString &errorMessage);

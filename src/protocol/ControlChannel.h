@@ -47,7 +47,7 @@ class ControlChannel : public Channel
     friend class ConnectionPrivate;
 
 public:
-    bool openChannel(Channel *channel);
+    bool sendOpenChannel(Channel *channel);
     void keepAlive();
 
 signals:

@@ -32,6 +32,7 @@
 
 #include "Channel_p.h"
 #include "Connection_p.h"
+#include "ControlChannel.h"
 #include "utils/Useful.h"
 #include <QDebug>
 
@@ -97,6 +98,16 @@ bool Channel::isOpened() const
     if (d->isOpened && d->identifier < 0)
         BUG() << "Channel is marked as open, but has no identifier";
     return d->isOpened;
+}
+
+bool Channel::openChannel()
+{
+    if (direction() != Channel::Outbound || isOpened() || identifier() >= 0) {
+        BUG() << "Cannot send request to open" << type() << "channel in an incorrect state";
+        return false;
+    }
+
+    return connection()->findChannel<ControlChannel>()->sendOpenChannel(this);
 }
 
 void Channel::closeChannel()

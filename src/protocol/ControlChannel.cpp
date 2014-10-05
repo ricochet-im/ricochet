@@ -50,7 +50,7 @@ ControlChannel::ControlChannel(Direction direction, Connection *connection)
     d->identifier = 0;
 }
 
-bool ControlChannel::openChannel(Channel *channel)
+bool ControlChannel::sendOpenChannel(Channel *channel)
 {
     if (channel->isOpened() || channel->direction() != Outbound || channel->identifier() >= 0) {
         BUG() << "openChannel called for a" << channel->type() << "channel in an unexpected state";
