@@ -57,7 +57,7 @@ Column {
         Rectangle {
             anchors.fill: parent
             anchors.margins: 1
-            opacity: (model.status === ConversationModel.Sending || model.status === ConversationModel.Error) ? 1 : 0
+            opacity: (model.status === ConversationModel.Sending || model.status === ConversationModel.Queued || model.status === ConversationModel.Error) ? 1 : 0
             visible: opacity > 0
             color: Qt.lighter(parent.color, 1.15)
 

@@ -35,7 +35,6 @@
 #ifdef PROTOCOL_NEW
 # include "protocol/Connection.h"
 # include "protocol/ChatChannel.h"
-# include "protocol/ControlChannel.h"
 #else
 # include "protocol/ChatMessageCommand.h"
 #endif
@@ -63,20 +62,27 @@ void ConversationModel::setContact(ContactUser *contact)
     m_contact = contact;
     if (m_contact) {
 #ifdef PROTOCOL_NEW
-        // XXX Find a way to avoid signal spaghetti
-        // XXX Also connect if we're already connected or already have channel
-        connect(m_contact, &ContactUser::connected, this,
-            [this]() {
-                connect(m_contact->connection(), &Protocol::Connection::channelOpened, this,
-                    [this](Protocol::Channel *channel) {
-                        if (Protocol::ChatChannel *chat = qobject_cast<Protocol::ChatChannel*>(channel)) {
-                            connect(chat, &Protocol::ChatChannel::messageReceived, this, &ConversationModel::messageReceived);
-                            connect(chat, &Protocol::ChatChannel::messageDelivered, this, &ConversationModel::messageDelivered);
-                        }
-                    }
-                );
+        auto connectChannel = [this](Protocol::Channel *channel) {
+            if (Protocol::ChatChannel *chat = qobject_cast<Protocol::ChatChannel*>(channel)) {
+                connect(chat, &Protocol::ChatChannel::messageReceived, this, &ConversationModel::messageReceived);
+                connect(chat, &Protocol::ChatChannel::messageAcknowledged, this, &ConversationModel::messageAcknowledged);
+
+                if (chat->direction() == Protocol::Channel::Outbound)
+                    sendQueuedMessages();
             }
-        );
+        };
+
+        auto connectConnection = [this,connectChannel]() {
+            if (m_contact->connection()) {
+                connect(m_contact->connection(), &Protocol::Connection::channelOpened, this, connectChannel);
+                foreach (auto channel, m_contact->connection()->findChannels<Protocol::ChatChannel>())
+                    connectChannel(channel);
+                sendQueuedMessages();
+            }
+        };
+
+        connect(m_contact, &ContactUser::connected, this, connectConnection);
+        connectConnection();
 #else
         connect(m_contact, SIGNAL(incomingChatMessage(ChatMessageData)), this,
                 SLOT(receiveMessage(ChatMessageData)));
@@ -95,29 +101,29 @@ void ConversationModel::sendMessage(const QString &text)
         return;
 
 #ifdef PROTOCOL_NEW
-    // XXX Ugh, API.
-    if (!m_contact->connection()) {
-        // XXX save
-        return;
-    }
-    Protocol::ChatChannel *channel = m_contact->connection()->findChannel<Protocol::ChatChannel>(Protocol::Channel::Outbound);
-    if (!channel) {
-        channel = new Protocol::ChatChannel(Protocol::Channel::Outbound, m_contact->connection());
-        // XXX return value
-        m_contact->connection()->findChannel<Protocol::ControlChannel>()->openChannel(channel);
-    }
-    if (!channel->isOpened()) {
-        // XXX save
-        return;
+    MessageData message = { text, QDateTime::currentDateTime(), 0, Queued };
+
+    if (m_contact->connection()) {
+        auto channel = m_contact->connection()->findChannel<Protocol::ChatChannel>(Protocol::Channel::Outbound);
+        if (!channel) {
+            channel = new Protocol::ChatChannel(Protocol::Channel::Outbound, m_contact->connection());
+            if (!channel->openChannel()) {
+                message.status = Error;
+                delete channel;
+                channel = 0;
+            }
+        }
+
+        if (channel && channel->isOpened()) {
+            MessageId id = 0;
+            if (channel->sendChatMessage(text, QDateTime(), id))
+                message.status = Sending;
+            else
+                message.status = Error;
+            message.identifier = id;
+        }
     }
 
-    MessageId id = 0;
-    if (!channel->sendChatMessage(text, QDateTime(), id)) {
-        // XXX error
-        return;
-    }
-
-    MessageData message = { text, QDateTime::currentDateTime(), id, Sending };
 #else
     ChatMessageCommand *command = new ChatMessageCommand;
     connect(command, SIGNAL(commandFinished()), this, SLOT(messageReply()));
@@ -132,28 +138,84 @@ void ConversationModel::sendMessage(const QString &text)
 }
 
 #ifdef PROTOCOL_NEW
+void ConversationModel::sendQueuedMessages()
+{
+    if (!m_contact->connection())
+        return;
+
+    // Quickly scan to see if we have any queued messages
+    bool haveQueued = false;
+    foreach (const MessageData &data, messages) {
+        if (data.status == Queued) {
+            haveQueued = true;
+            break;
+        }
+    }
+
+    if (!haveQueued)
+        return;
+
+    auto channel = m_contact->connection()->findChannel<Protocol::ChatChannel>(Protocol::Channel::Outbound);
+    if (!channel) {
+        channel = new Protocol::ChatChannel(Protocol::Channel::Outbound, m_contact->connection());
+        if (!channel->openChannel()) {
+            delete channel;
+            return;
+        }
+    }
+
+    // sendQueuedMessages is called at channelOpened
+    if (!channel->isOpened())
+        return;
+
+    // Iterate backwards, from oldest to newest messages
+    for (int i = messages.size() - 1; i >= 0; i--) {
+        if (messages[i].status == Queued) {
+            qDebug() << "Sending queued chat message";
+            bool ok = false;
+            if (messages[i].identifier)
+                ok = channel->sendChatMessageWithId(messages[i].text, messages[i].time, messages[i].identifier);
+            else
+                ok = channel->sendChatMessage(messages[i].text, messages[i].time, messages[i].identifier);
+            if (ok)
+                messages[i].status = Sending;
+            else
+                messages[i].status = Error;
+            emit dataChanged(index(i, 0), index(i, 0));
+        }
+    }
+}
+
 void ConversationModel::messageReceived(const QString &text, const QDateTime &time, MessageId id)
 {
-    // XXX reposition by most recent acknowledged
+    // To preserve conversation flow despite potentially high latency, incoming messages
+    // are positioned above the last unacknowledged messages to the peer. We assume that
+    // the peer hadn't seen any unacknowledged message when this message was sent.
+    int row = 0;
+    for (int i = 0; i < messages.size() && i < 5; i++) {
+        if (messages[i].status != Sending && messages[i].status != Queued) {
+            row = i;
+            break;
+        }
+    }
 
-    beginInsertRows(QModelIndex(), 0, 0);
-    MessageData message = { text, time, id, Received };
-    messages.prepend(message);
+    beginInsertRows(QModelIndex(), row, row);
+    MessageData message(text, time, id, Received);
+    messages.insert(row, message);
     endInsertRows();
 
     m_unreadCount++;
     emit unreadCountChanged();
 }
 
-// XXX handling for delivery failure
-void ConversationModel::messageDelivered(MessageId id)
+void ConversationModel::messageAcknowledged(MessageId id, bool accepted)
 {
     int row = indexOfIdentifier(id, true);
     if (row < 0)
         return;
 
     MessageData &data = messages[row];
-    data.status = Delivered;
+    data.status = accepted ? Delivered : Error;
     emit dataChanged(index(row, 0), index(row, 0));
 }
 #else

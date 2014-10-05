@@ -65,6 +65,7 @@ public:
 
     enum MessageStatus {
         Received,
+        Queued,
         Sending,
         Delivered,
         Error
@@ -93,7 +94,8 @@ signals:
 private slots:
 #ifdef PROTOCOL_NEW
     void messageReceived(const QString &text, const QDateTime &time, MessageId id);
-    void messageDelivered(MessageId id);
+    void messageAcknowledged(MessageId id, bool accepted);
+    void sendQueuedMessages();
 #else
     void receiveMessage(const ChatMessageData &message);
     void messageReply();
