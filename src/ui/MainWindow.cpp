@@ -50,6 +50,8 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include <QQuickItem>
+#include <QGuiApplication>
+#include <QScreen>
 
 MainWindow *uiMain = 0;
 
@@ -106,6 +108,18 @@ QString MainWindow::aboutText() const
     file.open(QIODevice::ReadOnly);
     QString text = QString::fromUtf8(file.readAll());
     return text;
+}
+
+QVariantList MainWindow::screens() const
+{
+    QVariantList lstScreenSizes;
+    foreach (QScreen *screen, QGuiApplication::screens()) {
+        QVariantMap screenObj;
+        screenObj.insert(QString::fromUtf8("width"), screen->availableSize().width());
+        screenObj.insert(QString::fromUtf8("height"), screen->availableSize().height());
+        lstScreenSizes.append(screenObj);
+    }
+    return lstScreenSizes;
 }
 
 /* QMessageBox implementation for Qt <5.2 */

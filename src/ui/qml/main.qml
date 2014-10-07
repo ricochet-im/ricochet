@@ -39,6 +39,21 @@ QtObject {
             var re = createDialog("ChatWindow.qml", { 'contact': user })
             re.x = mainWindow.x + mainWindow.width + 10
             re.y = mainWindow.y + (mainWindow.height / 2) - (re.height / 2)
+
+            var screens = uiMain.screens
+            if (screens.length > 0) {
+                var mainWinRelX = mainWindow.x
+                var screenIndx = 0
+                var offsetX = 0
+                while ((screenIndx < screens.length) && (mainWinRelX - screens[screenIndx].width > 0)) {
+                    mainWinRelX -= screens[screenIndx].width
+                    offsetX += screens[screenIndx].width
+                    screenIndx++;
+                }
+                re.x = re.x + re.width - offsetX <= screens[screenIndx].width ? re.x : mainWindow.x - re.width - 10
+                re.y = re.y + re.height <= screens[screenIndx].height ? re.y : screens[screenIndx].height - re.height - 10
+            }
+
             re.visible = true
             return re
         }
