@@ -110,16 +110,18 @@ QString MainWindow::aboutText() const
     return text;
 }
 
-QVariantList MainWindow::screens() const
+QVariantMap MainWindow::screens() const
 {
-    QVariantList lstScreenSizes;
+    QVariantMap mapScreenSizes;
     foreach (QScreen *screen, QGuiApplication::screens()) {
         QVariantMap screenObj;
         screenObj.insert(QString::fromUtf8("width"), screen->availableSize().width());
         screenObj.insert(QString::fromUtf8("height"), screen->availableSize().height());
-        lstScreenSizes.append(screenObj);
+        screenObj.insert(QString::fromUtf8("left"), screen->geometry().left());
+        screenObj.insert(QString::fromUtf8("top"), screen->geometry().top());
+        mapScreenSizes.insert(screen->name(), screenObj);
     }
-    return lstScreenSizes;
+    return mapScreenSizes;
 }
 
 /* QMessageBox implementation for Qt <5.2 */
