@@ -69,7 +69,6 @@ ApplicationWindow {
                         if (contact.status === ContactUser.RequestPending || contact.status === ContactUser.RequestRejected) {
                             actions.openPreferences()
                         } else if (!uiSettings.data.combinedChatWindow) {
-                            ContactWindow.currentScreenName = Screen.name
                             actions.openWindow()
                         }
                     }

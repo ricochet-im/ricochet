@@ -1,7 +1,6 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.0
 import QtQuick.Dialogs 1.1
-import QtQuick.Window 2.0
 import "ContactWindow.js" as ContactWindow
 
 Item {
@@ -10,7 +9,6 @@ Item {
     property QtObject contact
 
     function openWindow() {
-        ContactWindow.currentScreenName = Screen.name
         var window = ContactWindow.getWindow(contact)
         window.requestActivate()
     }

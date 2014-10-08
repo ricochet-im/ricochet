@@ -2,7 +2,6 @@
 
 var windows = { }
 var createWindow = function() { console.log("BUG!") }
-var currentScreenName = ""
 
 function getWindow(user) {
     var id = user.uniqueID

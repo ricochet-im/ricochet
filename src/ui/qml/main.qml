@@ -1,6 +1,7 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.0
 import QtQuick.Layouts 1.0
+import QtQuick.Window 2.0
 import im.ricochet 1.0
 import "ContactWindow.js" as ContactWindow
 
@@ -41,8 +42,8 @@ QtObject {
             re.y = mainWindow.y + (mainWindow.height / 2) - (re.height / 2)
 
             var screens = uiMain.screens
-            if (ContactWindow.currentScreenName in screens) {
-                var currentScreen = screens[ContactWindow.currentScreenName]
+            if ((mainWindow.Screen !== undefined) && (mainWindow.Screen.name in screens)) {
+                var currentScreen = screens[mainWindow.Screen.name]
                 var offsetX = currentScreen.left
                 var offsetY = currentScreen.top
                 re.x = re.x - offsetX + re.width <= currentScreen.width ? re.x : mainWindow.x - re.width - 10
