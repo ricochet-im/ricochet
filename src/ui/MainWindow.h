@@ -34,6 +34,7 @@
 #define MAINWINDOW_H
 
 #include <QObject>
+#include <QVariantMap>
 
 class ContactUser;
 class UserIdentity;
@@ -50,6 +51,7 @@ class MainWindow : public QObject
 
     Q_PROPERTY(QString version READ version CONSTANT)
     Q_PROPERTY(QString aboutText READ aboutText CONSTANT)
+    Q_PROPERTY(QVariantMap screens READ screens CONSTANT)
 
 public:
     explicit MainWindow(QObject *parent = 0);
@@ -57,6 +59,7 @@ public:
 
     QString aboutText() const;
     QString version() const;
+    QVariantMap screens() const;
 
     Q_INVOKABLE bool showRemoveContactDialog(ContactUser *user);
 
