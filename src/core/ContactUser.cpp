@@ -34,6 +34,7 @@
 #include "UserIdentity.h"
 #include "ContactsManager.h"
 #include "utils/SecureRNG.h"
+#include "utils/Useful.h"
 #include "core/ContactIDValidator.h"
 #include "core/OutgoingContactRequest.h"
 #include "core/ConversationModel.h"
@@ -256,6 +257,7 @@ void ContactUser::onConnected()
 {
     m_settings->write("lastConnected", QDateTime::currentDateTime());
 
+#ifndef PROTOCOL_NEW
     if (m_contactRequest) {
         qDebug() << "Implicitly accepting outgoing contact request for" << uniqueID << "from primary connection";
 
@@ -263,6 +265,7 @@ void ContactUser::onConnected()
         updateStatus();
         Q_ASSERT(status() != RequestPending);
     }
+#endif
 
 #ifndef PROTOCOL_NEW
     if (m_settings->read("remoteSecret") == QJsonValue::Undefined)
@@ -274,7 +277,8 @@ void ContactUser::onConnected()
 #endif
 
     updateStatus();
-    emit connected();
+    if (isConnected())
+        emit connected();
 }
 
 void ContactUser::onDisconnected()
@@ -523,11 +527,21 @@ void ContactUser::assignConnection(Protocol::Connection *connection)
     }
 
     qDebug() << "Assigned" << (isOutbound ? "outbound" : "inbound") << "connection to contact" << uniqueID;
-    if (!connection->setPurpose(Protocol::Connection::Purpose::KnownContact)) {
-        qWarning() << "BUG: Failed setting connection purpose";
-        connection->close();
-        connection->deleteLater();
-        return;
+
+    if (m_contactRequest && isOutbound) {
+        // XXX try deliver request
+    } else {
+        if (m_contactRequest && !isOutbound) {
+            qDebug() << "Implicitly accepting outgoing contact request for" << uniqueID << "due to incoming connection";
+            m_contactRequest->accept();
+        }
+
+        if (!connection->setPurpose(Protocol::Connection::Purpose::KnownContact)) {
+            qWarning() << "BUG: Failed setting connection purpose";
+            connection->close();
+            connection->deleteLater();
+            return;
+        }
     }
 
     m_connection = connection;
