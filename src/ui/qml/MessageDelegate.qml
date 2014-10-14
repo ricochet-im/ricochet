@@ -6,6 +6,15 @@ Column {
     id: delegate
     width: parent.width
 
+    function localDateTime(date, includeDate) {
+        var str = ""
+        if (includeDate)
+            str = date.toLocaleDateString() + " "
+        //Workaround to remove timezone name, which is included on Xubuntu 14.04 but not on Windows 8.1
+        str += date.toLocaleTimeString().replace(/ [A-Z]{3,}| CT| NT| Z| ChST/g, "")
+        return str
+    }
+
     Loader {
         active: model.section === "offline"
         sourceComponent: Label {
@@ -87,7 +96,12 @@ Column {
             wrapMode: TextEdit.Wrap
             readOnly: true
             selectByMouse: true
-            text: LinkedText.parsed(model.text)
+            text: {
+                var timeStamp = ""
+                if (uiSettings.data.alwaysShowTimestamps)
+                        timeStamp = '<span style="color: #333333; font-size: 6.5pt">' + localDateTime(model.timestamp) + '</span><br />'
+                return timeStamp + LinkedText.parsed(model.text)
+            }
 
             onLinkActivated: delegate.showContextMenu(link)
 
