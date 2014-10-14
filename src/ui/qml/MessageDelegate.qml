@@ -75,13 +75,18 @@ Column {
 
         MouseArea {
             anchors.fill: parent
-            acceptedButtons: Qt.RightButton
+            acceptedButtons: Qt.LeftButton | Qt.RightButton
 
-            onClicked: delegate.showContextMenu()
+            onClicked: {
+                if (mouse.button === Qt.RightButton)
+                    delegate.showContextMenu()
+            }
+            onDoubleClicked: textField.showTimeStamp = !textField.showTimeStamp
         }
 
         TextEdit {
             id: textField
+            property bool showTimeStamp: false
             width: Math.min(implicitWidth, background.__maxWidth)
             height: contentHeight
             x: Math.round((parent.width - width) / 2)
@@ -98,7 +103,7 @@ Column {
             selectByMouse: true
             text: {
                 var timeStamp = ""
-                if (uiSettings.data.alwaysShowTimestamps)
+                if ((uiSettings.data.alwaysShowTimestamps) || (textField.showTimeStamp))
                         timeStamp = '<span style="color: #333333; font-size: 6.5pt">' + localDateTime(model.timestamp) + '</span><br />'
                 return timeStamp + LinkedText.parsed(model.text)
             }
