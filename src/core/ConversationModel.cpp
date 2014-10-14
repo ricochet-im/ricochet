@@ -122,6 +122,7 @@ QHash<int,QByteArray> ConversationModel::roleNames() const
     roles[IsOutgoingRole] = "isOutgoing";
     roles[StatusRole] = "status";
     roles[SectionRole] = "section";
+    roles[TimespanRole] = "timespan";
     return roles;
 }
 
@@ -144,6 +145,7 @@ QVariant ConversationModel::data(const QModelIndex &index, int role) const
         case TimestampRole: return message.time;
         case IsOutgoingRole: return message.status != Received;
         case StatusRole: return message.status;
+        case TimespanRole: return index.row() < messages.size()-1 ? messages[index.row()+1].time.msecsTo(messages[index.row()].time) : -1;
 
         case SectionRole: {
             if (m_contact->status() == ContactUser::Online)

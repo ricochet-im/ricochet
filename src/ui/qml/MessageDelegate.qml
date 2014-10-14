@@ -16,10 +16,16 @@ Column {
     }
 
     Loader {
-        active: model.section === "offline"
+        active: model.section === "offline" || ((model.timespan === -1 || model.timespan > 3600000) && (!uiSettings.data.alwaysShowTimestamps))
         sourceComponent: Label {
             //: %1 nickname
-            text: qsTr("%1 is offline").arg(contact !== null ? contact.nickname : "")
+            text: {
+                if (model.section === "offline") {
+                    qsTr("%1 is offline").arg(contact !== null ? contact.nickname : "")
+                } else {
+                    localDateTime(model.timestamp, true)
+                }
+            }
             width: background.parent.width
             elide: Text.ElideRight
             horizontalAlignment: Qt.AlignHCenter

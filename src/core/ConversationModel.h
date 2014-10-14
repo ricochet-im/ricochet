@@ -18,7 +18,8 @@ public:
         TimestampRole = Qt::UserRole,
         IsOutgoingRole,
         StatusRole,
-        SectionRole
+        SectionRole,
+        TimespanRole
     };
 
     enum MessageStatus {
