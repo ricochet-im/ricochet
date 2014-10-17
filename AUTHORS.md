@@ -1,5 +1,8 @@
 ### Development
-* John Brooks (@special) `<john.brooks+ricochet@dereferenced.net>`
+* John Brooks (@special) `<john.brooks@dereferenced.net>`
+
+### Sponsors
+* Blueprint for Free Speech - https://blueprintforfreespeech.net/
 
 ### Translations
 * HostFat - Italian
@@ -13,3 +16,7 @@
 * Helder Ribeiro (@obvio171) - "Ricochet"
 * Robin Burchell (@rburchell)
 * prof7bit (TorChat) - Inspiration
+* Patrick Gray - invisible.im
+* Suelette Dreyfus
+* HD Moore
+* The Grugq
