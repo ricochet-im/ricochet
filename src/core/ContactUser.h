@@ -167,6 +167,7 @@ private slots:
     void onConnected();
     void onDisconnected();
     void requestRemoved();
+    void requestAccepted();
     void onSettingsModified(const QString &key, const QJsonValue &value);
 
 private:
