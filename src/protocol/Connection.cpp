@@ -585,14 +585,37 @@ bool Connection::setPurpose(Purpose value)
     if (d->purpose == value)
         return true;
 
-    if (value == Purpose::Unknown) {
-        qWarning() << "BUG: A connection can't reset to unknown purpose";
-        return false;
-    } else if (value == Purpose::KnownContact) {
-        if (!hasAuthenticated(HiddenServiceAuth)) {
-            BUG() << "Connection purpose cannot be KnownContact without authenticating a service";
+    switch (value) {
+        case Purpose::Unknown:
+            BUG() << "A connection can't reset to unknown purpose";
             return false;
-        }
+        case Purpose::KnownContact:
+            if (!hasAuthenticated(HiddenServiceAuth)) {
+                BUG() << "Connection purpose cannot be KnownContact without authenticating a service";
+                return false;
+            }
+            break;
+        case Purpose::OutboundRequest:
+            if (d->direction != ClientSide) {
+                BUG() << "Connection purpose cannot be OutboundRequest on an inbound connection";
+                return false;
+            } else if (d->purpose != Purpose::Unknown) {
+                BUG() << "Connection purpose cannot change from" << int(d->purpose) << "to OutboundRequest";
+                return false;
+            }
+            break;
+        case Purpose::InboundRequest:
+            if (d->direction != ServerSide) {
+                BUG() << "Connection purpose cannot be InboundRequest on an outbound connection";
+                return false;
+            } else if (d->purpose != Purpose::Unknown) {
+                BUG() << "Connection purpose cannot change from" << int(d->purpose) << "to InboundRequest";
+                return false;
+            }
+            break;
+        default:
+            BUG() << "Purpose type" << int(value) << "is not defined";
+            return false;
     }
 
     Purpose old = d->purpose;

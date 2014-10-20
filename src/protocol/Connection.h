@@ -125,7 +125,9 @@ public:
      */
     enum class Purpose {
         Unknown,
-        KnownContact
+        KnownContact,
+        OutboundRequest,
+        InboundRequest
     };
 
     Purpose purpose() const;
