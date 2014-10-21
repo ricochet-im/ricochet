@@ -144,6 +144,11 @@ bool ChannelPrivate::openChannelInbound(const Data::Control::OpenChannel *reques
         return false;
     }
 
+    // The Connection::channelCreated signal must emit once, after the Channel
+    // is fully constructed, but before it's used. This is that moment: just
+    // before we check whether to allow an inbound/outbound request.
+    emit connection->channelCreated(q);
+
     if (!q->allowInboundChannelRequest(request, result))
         return false;
 
@@ -167,6 +172,11 @@ bool ChannelPrivate::openChannelOutbound(Data::Control::OpenChannel *request)
         BUG() << "Handling outbound open channel request on a channel in an unexpected state; rejecting";
         return false;
     }
+
+    // The Connection::channelCreated signal must emit once, after the Channel
+    // is fully constructed, but before it's used. This is that moment: just
+    // before we check whether to allow an inbound/outbound request.
+    emit connection->channelCreated(q);
 
     if (!q->allowOutboundChannelRequest(request))
         return false;

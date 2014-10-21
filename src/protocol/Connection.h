@@ -128,6 +128,8 @@ signals:
     void closed();
     void authenticated(AuthenticationType type, const QString &identity);
     void purposeChanged(Purpose after, Purpose before);
+    // XXX describe difference
+    void channelCreated(Channel *channel);
     void channelOpened(Channel *channel);
 
 private:
