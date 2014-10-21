@@ -221,6 +221,8 @@ void UserIdentity::onIncomingConnection()
                     handleIncomingAuthedConnection(conn);
             }
         );
+
+        emit incomingConnection(conn);
     }
 }
 

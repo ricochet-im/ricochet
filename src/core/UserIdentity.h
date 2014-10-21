@@ -106,6 +106,9 @@ signals:
     void contactIDChanged(); // only possible during creation
     void nicknameChanged();
     void settingsChanged(const QString &key);
+#ifdef PROTOCOL_NEW
+    void incomingConnection(Protocol::Connection *connection);
+#endif
 
 private slots:
     void onStatusChanged(int newStatus, int oldStatus);
