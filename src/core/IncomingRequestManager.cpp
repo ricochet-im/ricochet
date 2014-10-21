@@ -34,6 +34,7 @@
 #include "IncomingRequestManager.h"
 #include "ContactsManager.h"
 #include "OutgoingContactRequest.h"
+#include "ContactIDValidator.h"
 #include "protocol/ContactRequestServer.h"
 #include <QDebug>
 
@@ -214,6 +215,11 @@ void IncomingContactRequest::removeRequest()
 {
     SettingsObject settings(QStringLiteral("contactRequests.%1").arg(QLatin1String(m_hostname)));
     settings.undefine();
+}
+
+QString IncomingContactRequest::contactId() const
+{
+    return ContactIDValidator::idFromHostname(hostname());
 }
 
 void IncomingContactRequest::setRemoteSecret(const QByteArray &remoteSecret)

@@ -47,6 +47,7 @@ class IncomingContactRequest : public QObject
     Q_DISABLE_COPY(IncomingContactRequest)
 
     Q_PROPERTY(QByteArray hostname READ hostname CONSTANT)
+    Q_PROPERTY(QString contactId READ contactId CONSTANT)
     Q_PROPERTY(QString message READ message CONSTANT)
     Q_PROPERTY(QString nickname READ nickname WRITE setNickname NOTIFY nicknameChanged)
     Q_PROPERTY(bool hasActiveConnection READ hasActiveConnection NOTIFY hasActiveConnectionChanged)
@@ -60,6 +61,7 @@ public:
                            ContactRequestServer *connection = 0);
 
     QByteArray hostname() const { return m_hostname; }
+    QString contactId() const;
 
     QByteArray remoteSecret() const { return m_remoteSecret; }
     void setRemoteSecret(const QByteArray &remoteSecret);
