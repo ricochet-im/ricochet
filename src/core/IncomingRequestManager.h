@@ -36,10 +36,19 @@
 #include <QObject>
 #include <QPointer>
 #include <QDateTime>
-#include "protocol/ContactRequestServer.h"
 
 class IncomingRequestManager;
 class ContactsManager;
+class ContactUser;
+
+#ifdef PROTOCOL_NEW
+#include "protocol/Connection.h"
+namespace Protocol {
+    class ContactRequestChannel;
+}
+#else
+#include "protocol/ContactRequestServer.h"
+#endif
 
 class IncomingContactRequest : public QObject
 {
@@ -57,8 +66,12 @@ class IncomingContactRequest : public QObject
 public:
     IncomingRequestManager * const manager;
 
+#ifdef PROTOCOL_NEW
+    IncomingContactRequest(IncomingRequestManager *manager, const QByteArray &hostname);
+#else
     IncomingContactRequest(IncomingRequestManager *manager, const QByteArray &hostname,
                            ContactRequestServer *connection = 0);
+#endif
 
     QByteArray hostname() const { return m_hostname; }
     QString contactId() const;
@@ -73,7 +86,11 @@ public:
     void setNickname(const QString &nickname);
 
     bool hasActiveConnection() const { return connection != 0; }
+#ifdef PROTOCOL_NEW
+    void setChannel(Protocol::ContactRequestChannel *channel);
+#else
     void setConnection(ContactRequestServer *connection);
+#endif
 
     QDateTime requestDate() const { return m_requestDate; }
     QDateTime lastRequestDate() const { return m_lastRequestDate; }
@@ -93,7 +110,11 @@ signals:
     void hasActiveConnectionChanged();
 
 private:
+#ifdef PROTOCOL_NEW
+    QPointer<Protocol::Connection> connection;
+#else
     QPointer<ContactRequestServer> connection;
+#endif
     QByteArray m_hostname;
     QByteArray m_remoteSecret;
     QString m_message, m_nickname;
@@ -102,6 +123,16 @@ private:
     void removeRequest();
 };
 
+/* IncomingRequestManager handles all incoming contact requests under a
+ * UserIdentity. It receives incoming requests from connections, stores them,
+ * interacts with the UI, and handles approval or rejection.
+ *
+ * Existing requests are loaded at initialization from the configuration file,
+ * and new requests are added via inbound ContactRequestChannel instances.
+ *
+ * Each request has an IncomingContactRequest instance. This manager handles
+ * those instances.
+ */
 class IncomingRequestManager : public QObject
 {
     Q_OBJECT
@@ -118,13 +149,19 @@ public:
 
     QList<QObject*> requestObjects() const;
     QList<IncomingContactRequest*> requests() const { return m_requests; }
+
+    /* Hostname is an onion address, including the '.onion' suffix */
     IncomingContactRequest *requestFromHostname(const QByteArray &hostname);
 
+    /* Called by ContactsManager to trigger loading past requests from the
+     * configuration. */
     void loadRequests();
 
+#ifndef PROTOCOL_NEW
     /* Input from ContactRequestServer */
     void addRequest(const QByteArray &hostname, const QByteArray &connSecret, ContactRequestServer *connection,
                     const QString &nickname, const QString &message);
+#endif
 
     /* Blacklist a host for immediate rejection in the future */
     void addRejectedHost(const QByteArray &hostname);
@@ -134,6 +171,11 @@ signals:
     void requestAdded(IncomingContactRequest *request);
     void requestRemoved(IncomingContactRequest *request);
     void requestsChanged();
+
+#ifdef PROTOCOL_NEW
+private slots:
+    void requestReceived();
+#endif
 
 private:
     QList<IncomingContactRequest*> m_requests;

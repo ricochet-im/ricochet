@@ -60,6 +60,10 @@ public:
     void setResponseStatus(Status status, const QString &message = QString());
 
 signals:
+    /* Emitted during the inbound channel request handler, when a new request
+     * arrives. A handler is expected to synchronously call setResponseStatus
+     * if it claims this request; otherwise, it will be closed.
+     */
     void requestReceived();
     void requestStatusChanged(Status status, const QString &message);
 
