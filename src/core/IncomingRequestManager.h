@@ -80,6 +80,7 @@ public:
 
     void renew();
 
+    QString settingsKey() const;
     void load();
     void save();
 

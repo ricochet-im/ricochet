@@ -119,7 +119,11 @@ void OutgoingContactRequest::attemptAutoAccept()
 {
     /* Check if there is an existing incoming request that matches this one; if so, treat this as accepted
      * automatically and accept that incoming request for this user */
+#ifdef PROTOCOL_NEW
+    QByteArray hostname = user->hostname().toLatin1();
+#else
     QByteArray hostname = user->hostname().left(16).toLatin1();
+#endif
 
     IncomingContactRequest *incomingReq = user->identity->contacts.incomingRequests.requestFromHostname(hostname);
     if (incomingReq)

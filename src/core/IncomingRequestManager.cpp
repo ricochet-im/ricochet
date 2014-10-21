@@ -49,9 +49,17 @@ void IncomingRequestManager::loadRequests()
 {
     SettingsObject settings(QStringLiteral("contactRequests"));
 
-    foreach (const QString &host, settings.data().keys())
-    {
-        IncomingContactRequest *request = new IncomingContactRequest(this, host.toLatin1());
+    foreach (const QString &hostStr, settings.data().keys()) {
+        QByteArray host = hostStr.toLatin1();
+#ifdef PROTOCOL_NEW
+        if (!host.endsWith(".onion"))
+            host.append(".onion");
+#else
+        if (host.endsWith(".onion"))
+            host.chop(6);
+#endif
+
+        IncomingContactRequest *request = new IncomingContactRequest(this, host);
         request->load();
 
         m_requests.append(request);
@@ -70,7 +78,12 @@ QList<QObject*> IncomingRequestManager::requestObjects() const
 
 IncomingContactRequest *IncomingRequestManager::requestFromHostname(const QByteArray &hostname)
 {
+#ifdef PROTOCOL_NEW
+    Q_ASSERT(hostname.endsWith(".onion"));
+#else
     Q_ASSERT(!hostname.endsWith(".onion"));
+#endif
+
     Q_ASSERT(hostname == hostname.toLower());
 
     for (QList<IncomingContactRequest*>::ConstIterator it = m_requests.begin(); it != m_requests.end(); ++it)
@@ -174,14 +187,27 @@ IncomingContactRequest::IncomingContactRequest(IncomingRequestManager *m, const 
     : QObject(m), manager(m), connection(c), m_hostname(h)
 {
     Q_ASSERT(manager);
+#ifdef PROTOCOL_NEW
+    Q_ASSERT(m_hostname.endsWith(".onion"));
+#else
     Q_ASSERT(m_hostname.size() == 16);
+#endif
 
     qDebug() << "Created contact request from" << m_hostname << (connection ? "with" : "without") << "connection";
 }
 
+QString IncomingContactRequest::settingsKey() const
+{
+    QString key = QString(QLatin1String(m_hostname));
+#ifdef PROTOCOL_NEW
+    key.chop(QStringLiteral(".onion").size());
+#endif
+    return QStringLiteral("contactRequests.%1").arg(key);
+}
+
 void IncomingContactRequest::load()
 {
-    SettingsObject settings(QStringLiteral("contactRequests.%1").arg(QLatin1String(m_hostname)));
+    SettingsObject settings(settingsKey());
 
     setRemoteSecret(settings.read<Base64Encode>("remoteSecret"));
     setNickname(settings.read("nickname").toString());
@@ -193,7 +219,7 @@ void IncomingContactRequest::load()
 
 void IncomingContactRequest::save()
 {
-    SettingsObject settings(QStringLiteral("contactRequests.%1").arg(QLatin1String(m_hostname)));
+    SettingsObject settings(settingsKey());
 
     settings.write("remoteSecret", Base64Encode(remoteSecret()));
     settings.write("nickname", nickname());
@@ -213,8 +239,7 @@ void IncomingContactRequest::renew()
 
 void IncomingContactRequest::removeRequest()
 {
-    SettingsObject settings(QStringLiteral("contactRequests.%1").arg(QLatin1String(m_hostname)));
-    settings.undefine();
+    SettingsObject(settingsKey()).undefine();
 }
 
 QString IncomingContactRequest::contactId() const
