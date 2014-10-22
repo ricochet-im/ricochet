@@ -70,6 +70,7 @@ class Channel : public QObject
     Q_DECLARE_PRIVATE(Channel)
 
     friend class ControlChannel;
+    friend class Connection;
     friend class ConnectionPrivate;
 
 public:

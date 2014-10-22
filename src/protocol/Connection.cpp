@@ -72,6 +72,32 @@ ConnectionPrivate::ConnectionPrivate(Connection *qq)
     timeout->start();
 }
 
+Connection::~Connection()
+{
+    // When we call closeImemdiately, the list of channels will be cleared.
+    // In the normal case, they will all use deleteLater to be freed at the
+    // next event loop. Since the connection is being destructed immediately,
+    // and we want to be certain that channels don't outlive it, copy the
+    // list before it's cleared and delete them immediately afterwards.
+    auto channels = d->channels;
+    d->closeImmediately();
+
+    // These would be deleted by QObject ownership as well, but we want to
+    // give them a chance to destruct before the connection d pointer is reset.
+    foreach (Channel *c, channels)
+        delete c;
+
+    // Reset d pointer, so we'll crash nicely if anything tries to call
+    // into Connection after this.
+    d = 0;
+}
+
+ConnectionPrivate::~ConnectionPrivate()
+{
+    // Reset q pointer, for the same reason as above
+    q = 0;
+}
+
 Connection::Direction Connection::direction() const
 {
     return d->direction;
@@ -151,6 +177,18 @@ void Connection::close()
     // XXX this might not be good, e.g. for "auth rejected, go away" messages.
     if (d->socket)
         d->socket->abort();
+}
+
+void ConnectionPrivate::closeImmediately()
+{
+    if (socket)
+        socket->abort();
+
+    if (!channels.isEmpty()) {
+        foreach (Channel *c, channels)
+            qDebug() << "Open channel:" << c << c->type() << c->connection();
+        BUG() << "Channels remain open after forcefully closing connection socket";
+    }
 }
 
 void ConnectionPrivate::socketDisconnected()

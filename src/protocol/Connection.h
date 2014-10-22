@@ -71,6 +71,7 @@ public:
      * the socket has disconnected.
      */
     explicit Connection(QTcpSocket *socket, Direction direction, QObject *parent);
+    virtual ~Connection();
 
     Direction direction() const;
     bool isConnected() const;

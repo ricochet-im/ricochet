@@ -53,6 +53,7 @@ public:
     static const int UnknownPurposeTimeout = 15;
 
     explicit ConnectionPrivate(Connection *q);
+    virtual ~ConnectionPrivate();
 
     Connection *q;
     QTcpSocket *socket;
@@ -63,6 +64,7 @@ public:
     Connection::Purpose purpose;
 
     void setSocket(QTcpSocket *socket, Connection::Direction direction);
+    void closeImmediately();
 
     int availableOutboundChannelId();
     bool isValidAvailableChannelId(int channelId, Connection::Direction idDirection);

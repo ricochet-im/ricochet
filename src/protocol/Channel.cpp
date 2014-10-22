@@ -61,7 +61,7 @@ Channel::Channel(ChannelPrivate *d_ptr)
 Channel::~Channel()
 {
     Q_D(Channel);
-    if (d->identifier >= 0)
+    if (d->identifier >= 0 && !d->isInvalidated)
         d->connection->d->removeChannel(this);
 }
 
