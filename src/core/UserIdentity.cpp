@@ -33,10 +33,20 @@
 #include "UserIdentity.h"
 #include "tor/TorControl.h"
 #include "tor/HiddenService.h"
-#include "protocol/IncomingSocket.h"
 #include "core/ContactIDValidator.h"
 #include <QBuffer>
 #include <QDir>
+
+#ifdef PROTOCOL_NEW
+#include "protocol/Connection.h"
+#include "utils/Useful.h"
+#include <QTcpServer>
+#include <QTcpSocket>
+
+using namespace Protocol;
+#else
+#include "protocol/IncomingSocket.h"
+#endif
 
 UserIdentity::UserIdentity(int id, QObject *parent)
     : QObject(parent)
@@ -44,7 +54,11 @@ UserIdentity::UserIdentity(int id, QObject *parent)
     , contacts(this)
     , m_settings(0)
     , m_hiddenService(0)
+#ifdef PROTOCOL_NEW
+    , m_incomingServer(0)
+#else
     , incomingSocket(0)
+#endif
 {
     m_settings = new SettingsObject(QStringLiteral("identity"), this);
     connect(m_settings, &SettingsObject::modified, this, &UserIdentity::onSettingsModified);
@@ -69,6 +83,17 @@ UserIdentity::UserIdentity(int id, QObject *parent)
     }
     else
     {
+#ifdef PROTOCOL_NEW
+        m_incomingServer = new QTcpServer(this);
+        if (!m_incomingServer->listen(address, port)) {
+            qWarning() << "Failed to open incoming socket:" << m_incomingServer->errorString();
+            return;
+        }
+
+        connect(m_incomingServer, &QTcpServer::newConnection, this, &UserIdentity::onIncomingConnection);
+
+        m_hiddenService->addTarget(9878, m_incomingServer->serverAddress(), m_incomingServer->serverPort());
+#else
         incomingSocket = new IncomingSocket(this, this);
         if (!incomingSocket->listen(address, port))
         {
@@ -77,6 +102,7 @@ UserIdentity::UserIdentity(int id, QObject *parent)
         }
 
         m_hiddenService->addTarget(9878, incomingSocket->serverAddress(), incomingSocket->serverPort());
+#endif
         torControl->addHiddenService(m_hiddenService);
     }
 
@@ -151,4 +177,79 @@ bool UserIdentity::isServicePublished() const
 {
     return m_hiddenService && m_hiddenService->status() >= Tor::HiddenService::Published;
 }
+
+#ifdef PROTOCOL_NEW
+/* Handle an incoming connection to this service
+ *
+ * A Protocol::Connection is created to handle this socket. The
+ * connection initially has a purpose of Unknown. It times out
+ * and automatically closes after ConnectionPrivate::UnknownPurposeTimeout
+ * seconds, unless the purpose is changed.
+ *
+ * If the connection successfully completes authentication,
+ * handleIncomingAuthedConnection is called to link it to a ContactUser
+ * (if applicable) and set the purpose.
+ */
+void UserIdentity::onIncomingConnection()
+{
+    while (m_incomingServer->hasPendingConnections()) {
+        QTcpSocket *socket = m_incomingServer->nextPendingConnection();
+
+        /* The localHostname property is used by Connection to determine the
+         * server onion hostname that this socket is connected to, which is
+         * used by the serverHostname() method.
+         */
+        socket->setProperty("localHostname", m_hiddenService->hostname());
+
+        qDebug() << "Accepted new incoming connection";
+        Connection *conn = new Connection(socket, Connection::ServerSide, this);
+        Q_ASSERT(socket->parent());
+
+        // Delete connection when closed, if it's still owned by this object
+        connect(conn, &Connection::closed, this,
+            [this,conn]() {
+                if (conn->parent() == this) {
+                    qDebug() << "Deleting closed incoming connection that was never claimed by an owner";
+                    conn->deleteLater();
+                }
+            }
+        );
+
+        connect(conn, &Connection::authenticated, this,
+            [this,conn](Connection::AuthenticationType type) {
+                if (type == Connection::HiddenServiceAuth)
+                    handleIncomingAuthedConnection(conn);
+            }
+        );
+    }
+}
+
+void UserIdentity::handleIncomingAuthedConnection(Connection *conn)
+{
+    if (conn->purpose() != Connection::Purpose::Unknown)
+        return;
+
+    QString clientName = conn->authenticatedIdentity(Connection::HiddenServiceAuth);
+    if (clientName.isEmpty()) {
+        BUG() << "Called to handle incoming authed connection without any authed name";
+        return;
+    }
+
+    ContactUser *user = contacts.lookupHostname(clientName);
+    if (!user) {
+        // This client can start a contact request, for example. The purpose stays unknown, and the
+        // connection will be killed if the purpose isn't changed before the timeout.
+        qDebug() << "Have an incoming connection authenticated as unknown client" << clientName;
+        return;
+    }
+
+    qDebug() << "Incoming connection authenticated as contact" << user->uniqueID << "with hostname" << clientName;
+    user->assignConnection(conn);
+
+    if (conn->parent() != user) {
+        BUG() << "Connection wasn't claimed after authentication";
+        conn->close();
+    }
+}
+#endif
 
