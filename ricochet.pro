@@ -122,30 +122,19 @@ SOURCES += src/main.cpp \
     src/utils/StringUtil.cpp \
     src/core/ContactsManager.cpp \
     src/core/ContactUser.cpp \
-    src/protocol/ProtocolCommand.cpp \
-    src/protocol/PingCommand.cpp \
-    src/protocol/IncomingSocket.cpp \
-    src/protocol/ChatMessageCommand.cpp \
-    src/protocol/CommandHandler.cpp \
-    src/protocol/CommandDataParser.cpp \
     src/tor/GetConfCommand.cpp \
     src/tor/HiddenService.cpp \
-    src/protocol/ProtocolSocket.cpp \
     src/utils/CryptoKey.cpp \
     src/utils/SecureRNG.cpp \
-    src/protocol/ContactRequestClient.cpp \
-    src/protocol/ContactRequestServer.cpp \
     src/core/OutgoingContactRequest.cpp \
     src/core/IncomingRequestManager.cpp \
     src/core/ContactIDValidator.cpp \
-    src/protocol/GetSecretCommand.cpp \
     src/core/UserIdentity.cpp \
     src/core/IdentityManager.cpp \
     src/core/ConversationModel.cpp \
     src/tor/TorProcess.cpp \
     src/tor/TorManager.cpp \
     src/tor/TorSocket.cpp \
-    src/protocol/OutgoingContactSocket.cpp \
     src/ui/LinkedText.cpp \
     src/utils/Settings.cpp \
     src/utils/PendingOperation.cpp
@@ -161,23 +150,13 @@ HEADERS += src/ui/MainWindow.h \
     src/utils/StringUtil.h \
     src/core/ContactsManager.h \
     src/core/ContactUser.h \
-    src/protocol/ProtocolCommand.h \
-    src/protocol/PingCommand.h \
-    src/protocol/IncomingSocket.h \
-    src/protocol/ChatMessageCommand.h \
-    src/protocol/CommandHandler.h \
-    src/protocol/CommandDataParser.h \
     src/tor/GetConfCommand.h \
     src/tor/HiddenService.h \
-    src/protocol/ProtocolSocket.h \
     src/utils/CryptoKey.h \
     src/utils/SecureRNG.h \
-    src/protocol/ContactRequestClient.h \
-    src/protocol/ContactRequestServer.h \
     src/core/OutgoingContactRequest.h \
     src/core/IncomingRequestManager.h \
     src/core/ContactIDValidator.h \
-    src/protocol/GetSecretCommand.h \
     src/core/UserIdentity.h \
     src/core/IdentityManager.h \
     src/core/ConversationModel.h \
@@ -185,7 +164,6 @@ HEADERS += src/ui/MainWindow.h \
     src/tor/TorProcess_p.h \
     src/tor/TorManager.h \
     src/tor/TorSocket.h \
-    src/protocol/OutgoingContactSocket.h \
     src/ui/LinkedText.h \
     src/utils/Settings.h \
     src/utils/PendingOperation.h
@@ -208,6 +186,30 @@ contains(DEFINES,PROTOCOL_NEW) {
     include(protobuf.pri)
     PROTOS += src/protocol/ControlChannel.proto \
         src/protocol/AuthHiddenService.proto
+} else {
+    SOURCES += src/protocol/ProtocolCommand.cpp \
+        src/protocol/PingCommand.cpp \
+        src/protocol/IncomingSocket.cpp \
+        src/protocol/ChatMessageCommand.cpp \
+        src/protocol/CommandHandler.cpp \
+        src/protocol/CommandDataParser.cpp \
+        src/protocol/ProtocolSocket.cpp \
+        src/protocol/ContactRequestClient.cpp \
+        src/protocol/ContactRequestServer.cpp \
+        src/protocol/GetSecretCommand.cpp \
+        src/protocol/OutgoingContactSocket.cpp
+
+    HEADERS += src/protocol/ProtocolCommand.h \
+        src/protocol/PingCommand.h \
+        src/protocol/IncomingSocket.h \
+        src/protocol/ChatMessageCommand.h \
+        src/protocol/CommandHandler.h \
+        src/protocol/CommandDataParser.h \
+        src/protocol/ProtocolSocket.h \
+        src/protocol/ContactRequestClient.h \
+        src/protocol/ContactRequestServer.h \
+        src/protocol/GetSecretCommand.h \
+        src/protocol/OutgoingContactSocket.h
 }
 
 # QML
