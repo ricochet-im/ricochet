@@ -11,6 +11,15 @@ PROTOC = protoc
 unix {
     CONFIG += link_pkgconfig
     PKGCONFIG += protobuf
+
+    gcc|clang {
+        # Add -isystem for protobuf includes to suppress some loud compiler warnings in their headers
+        PKG_CONFIG = $$pkgConfigExecutable()
+        PROTOBUF_CFLAGS = $$system($$PKG_CONFIG --cflags protobuf)
+        PROTOBUF_CFLAGS ~= s/^(?!-I).*//g
+        PROTOBUF_CFLAGS ~= s/^-I(.*)/-isystem \\1/g
+        QMAKE_CXXFLAGS += $$PROTOBUF_CFLAGS
+    }
 }
 
 win32 {
