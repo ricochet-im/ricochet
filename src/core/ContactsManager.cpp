@@ -89,8 +89,10 @@ ContactUser *ContactsManager::addContact(const QString &nickname)
 void ContactsManager::connectSignals(ContactUser *user)
 {
     connect(user, SIGNAL(contactDeleted(ContactUser*)), SLOT(contactDeleted(ContactUser*)));
-    connect(user, SIGNAL(prepareInteractiveHandler()), SLOT(onPrepareInteractiveHandler()));
     connect(user->conversation(), &ConversationModel::unreadCountChanged, this, &ContactsManager::onUnreadCountChanged);
+
+#ifndef PROTOCOL_NEW
+    connect(user, SIGNAL(prepareInteractiveHandler()), SLOT(onPrepareInteractiveHandler()));
 }
 
 void ContactsManager::onPrepareInteractiveHandler()
@@ -98,6 +100,7 @@ void ContactsManager::onPrepareInteractiveHandler()
     ContactUser *user = qobject_cast<ContactUser*>(sender());
     if (user)
         emit prepareInteractiveHandler(user);
+#endif
 }
 
 ContactUser *ContactsManager::createContactRequest(const QString &contactid, const QString &nickname,
