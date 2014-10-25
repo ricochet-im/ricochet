@@ -223,6 +223,20 @@ void ContactUser::onDisconnected()
     qDebug() << "Contact" << uniqueID << "disconnected";
     m_settings->write("lastConnected", QDateTime::currentDateTime());
 
+#ifdef PROTOCOL_NEW
+    if (m_connection) {
+        if (m_connection->isConnected()) {
+            BUG() << "onDisconnected called, but connection is still connected";
+            return;
+        }
+
+        m_connection->deleteLater();
+        m_connection = 0;
+    } else {
+        BUG() << "onDisconnected called without a connection";
+    }
+#endif
+
     updateStatus();
     emit disconnected();
 }
@@ -398,13 +412,17 @@ void ContactUser::assignConnection(Protocol::Connection *connection)
         m_outgoingSocket = 0;
     }
 
+    if (m_connection && !m_connection->isConnected()) {
+        qDebug() << "Replacing dead connection with new connection";
+        clearConnection();
+    }
+
     /* If the existing connection is in the same direction as the new one,
      * always use the new one.
      */
     if (m_connection && connection->direction() == m_connection->direction()) {
         qDebug() << "Replacing existing connection with contact because the new one goes the same direction";
-        // XXX things
-        m_connection = 0;
+        clearConnection();
     }
 
     /* If the existing connection is more than 30 seconds old, measured from
@@ -412,8 +430,7 @@ void ContactUser::assignConnection(Protocol::Connection *connection)
      */
     if (m_connection && m_connection->age() > 30) {
         qDebug() << "Replacing existing connection with contact because it's more than 30 seconds old";
-        // XXX do things to get rid of the existing connection
-        m_connection = 0;
+        clearConnection();
     }
 
     /* Otherwise, close the connection for which the server's onion-formatted
@@ -423,8 +440,7 @@ void ContactUser::assignConnection(Protocol::Connection *connection)
     if (m_connection) {
         if (isOutbound == preferOutbound) {
             // New connection wins
-            // XXX do things to get rid of existing connection
-            m_connection = 0;
+            clearConnection();
         } else {
             // Old connection wins
             qDebug() << "Closing new connection with contact because the old connection won comparison";
@@ -443,7 +459,7 @@ void ContactUser::assignConnection(Protocol::Connection *connection)
             return;
         } else {
             // Inbound connection wins
-            qDebug() << "Aborting outbound conncetion attempt because an inbound connection won comparison";
+            qDebug() << "Aborting outbound connection attempt because an inbound connection won comparison";
             m_outgoingSocket->abort();
             // XXX what to do with this
             m_outgoingSocket->deleteLater();
@@ -467,9 +483,31 @@ void ContactUser::assignConnection(Protocol::Connection *connection)
     }
 
     m_connection = connection;
-    connect(m_connection, &Protocol::Connection::closed, this, &ContactUser::onDisconnected);
+
+    /* Use a queued connection to onDisconnected, because it clears m_connection.
+     * If we cleared that immediately, it would be possible for the value to change
+     * effectively any time we call into protocol code, which would be dangerous.
+     */
+    connect(m_connection, &Protocol::Connection::closed, this, &ContactUser::onDisconnected, Qt::QueuedConnection);
     onConnected();
 
     // XXX check what happens to m_outgoingSocket after it completes
 }
+
+void ContactUser::clearConnection()
+{
+    if (!m_connection)
+        return;
+
+    disconnect(m_connection, 0, this, 0);
+    if (m_connection->isConnected()) {
+        connect(m_connection, &Protocol::Connection::closed, m_connection, &QObject::deleteLater);
+        m_connection->close();
+    } else {
+        m_connection->deleteLater();
+    }
+
+    m_connection = 0;
+}
+
 #endif
