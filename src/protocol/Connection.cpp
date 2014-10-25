@@ -53,6 +53,7 @@ ConnectionPrivate::ConnectionPrivate(Connection *qq)
     , socket(0)
     , direction(Connection::ClientSide)
     , purpose(Connection::Purpose::Unknown)
+    , wasClosed(false)
     , nextOutboundChannelId(-1)
 {
     ageTimer.start();
@@ -105,7 +106,11 @@ Connection::Direction Connection::direction() const
 
 bool Connection::isConnected() const
 {
-    return d->socket && d->socket->state() == QAbstractSocket::ConnectedState;
+    bool re = d->socket && d->socket->state() == QAbstractSocket::ConnectedState;
+    if (d->wasClosed) {
+        Q_ASSERT(!re);
+    }
+    return re;
 }
 
 QString Connection::serverHostname() const
@@ -173,16 +178,29 @@ void ConnectionPrivate::setSocket(QTcpSocket *s, Connection::Direction d)
 
 void Connection::close()
 {
-    // abort() will discard the contents of the write buffer and close immediately
-    // XXX this might not be good, e.g. for "auth rejected, go away" messages.
-    if (d->socket)
-        d->socket->abort();
+    if (isConnected()) {
+        Q_ASSERT(!d->wasClosed);
+        qDebug() << "Disconnecting socket for connection" << this;
+        d->socket->disconnectFromHost();
+
+        // If not fully closed in 5 seconds, abort
+        QTimer *timeout = new QTimer(this);
+        timeout->setSingleShot(true);
+        connect(timeout, &QTimer::timeout, d, &ConnectionPrivate::closeImmediately);
+        timeout->start(5000);
+    }
 }
 
 void ConnectionPrivate::closeImmediately()
 {
     if (socket)
         socket->abort();
+
+    if (!wasClosed) {
+        BUG() << "Socket was forcefully closed but never emitted closed signal";
+        wasClosed = true;
+        emit q->closed();
+    }
 
     if (!channels.isEmpty()) {
         foreach (Channel *c, channels)
@@ -193,8 +211,13 @@ void ConnectionPrivate::closeImmediately()
 
 void ConnectionPrivate::socketDisconnected()
 {
+    qDebug() << "Connection" << this << "disconnected";
     closeAllChannels();
-    emit q->closed();
+
+    if (!wasClosed) {
+        wasClosed = true;
+        emit q->closed();
+    }
 }
 
 void ConnectionPrivate::socketReadable()

@@ -62,9 +62,9 @@ public:
     QElapsedTimer ageTimer;
     Connection::Direction direction;
     Connection::Purpose purpose;
+    bool wasClosed;
 
     void setSocket(QTcpSocket *socket, Connection::Direction direction);
-    void closeImmediately();
 
     int availableOutboundChannelId();
     bool isValidAvailableChannelId(int channelId, Connection::Direction idDirection);
@@ -76,6 +76,9 @@ public:
 
     bool writePacket(Channel *channel, const QByteArray &data);
     bool writePacket(int channelId, const QByteArray &data);
+
+public slots:
+    void closeImmediately();
 
 private slots:
     void socketReadable();
