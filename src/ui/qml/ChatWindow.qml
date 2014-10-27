@@ -43,7 +43,8 @@ ApplicationWindow {
     Connections {
         target: contact
         onIncomingChatMessage: {
-            chatWindow.alert(0)
+            if (!chatPage.activeFocus)
+                chatWindow.alert(0)
         }
     }
 
