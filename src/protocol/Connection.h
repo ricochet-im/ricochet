@@ -44,6 +44,29 @@ namespace Protocol
 
 class ConnectionPrivate;
 
+/* Represents a protocol connection associated with a socket
+ *
+ * Connection is created to handle protocol communication over a socket. It
+ * handles reading, writing, creating channels, and all protocol behavior. A
+ * connection instance is created for a specific socket and cannot be changed.
+ * When the socket is closed, the Connection closes all channels and cannot be
+ * used again.
+ *
+ * All protocol behavior takes place by creating and using channels, represented
+ * by subclasses of Channel. The channelCreated and channelOpened signals can be
+ * used to attach to new channels. A new channel can be created by instantiating
+ * it and calling its openChannel method.
+ *
+ * The socket and all channels are owned by the Connection instance. In
+ * particular, channel instances will be deleted automatically after being
+ * closed. Avoid storing pointers to channels, or use a safe pointer to do so.
+ *
+ * The channel's functionality is controlled by authentication grants and by its
+ * assigned purpose. The purpose declares the current use of the channel (e.g.
+ * for a known contact or an incoming contact request). Higher level classes
+ * assign and change the connection's purpose. Connections with an Unknown
+ * purpose are closed automatically after a short timeout.
+ */
 class Connection : public QObject
 {
     Q_OBJECT
@@ -123,14 +146,39 @@ public:
     void grantAuthentication(AuthenticationType type, const QString &identity = QString());
 
 public slots:
+    /* Close this connection and the underlying socket
+     *
+     * All pending data to write will be sent, and the socket will be
+     * asynchronously closed. If data hasn't been written after 5 seconds, the
+     * socket will timeout and close anyway.
+     *
+     * isConnected will return false immediately after this function is called.
+     * The closed signal is emitted when the socket and all channels have closed.
+     */
     void close();
 
 signals:
+    /* Emitted when the socket is closed. All channels will be closed
+     * automatically. It is not possible to re-use the same Connection instance,
+     * or to reconnect the socket.
+     */
     void closed();
     void authenticated(AuthenticationType type, const QString &identity);
     void purposeChanged(Purpose after, Purpose before);
-    // XXX describe difference
+    /* Emitted when a new Channel instance is created, before it has opened
+     *
+     * This signal can be used to attach to signals on a channel before it's
+     * opened. This signal is emitted for both inbound and outbound channels,
+     * before the request is approved. If a request is rejected or fails, the
+     * channel may be deleted shortly afterwards, without emitting its
+     * channelClosed signal.
+     */
     void channelCreated(Channel *channel);
+    /* Emitted when a channel is opened
+     *
+     * This signal is emitted after an inbound or outbound channel has been
+     * opened. At this point, the channel can be used or closed normally.
+     */
     void channelOpened(Channel *channel);
 
 private:
