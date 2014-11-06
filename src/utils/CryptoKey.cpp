@@ -123,6 +123,11 @@ bool CryptoKey::isPrivate() const
     return isLoaded() && d->key->p != 0;
 }
 
+int CryptoKey::bits() const
+{
+    return isLoaded() ? BN_num_bits(d->key->n) : 0;
+}
+
 QByteArray CryptoKey::publicKeyDigest() const
 {
     if (!isLoaded())

@@ -64,6 +64,7 @@ public:
     QByteArray publicKeyDigest() const;
     QByteArray encodedPublicKey(KeyFormat format = PEM) const;
     QString torServiceID() const;
+    int bits() const;
 
     // Calculate and sign SHA-256 digest of data using this key and PKCS #1 v2.0 padding
     QByteArray signData(const QByteArray &data) const;

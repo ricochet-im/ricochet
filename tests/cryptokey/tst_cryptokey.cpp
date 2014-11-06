@@ -83,6 +83,7 @@ void TestCryptoKey::load()
     QVERIFY(key.loadFromData(alice, CryptoKey::PrivateKey));
     QVERIFY(key.isLoaded());
     QVERIFY(key.isPrivate());
+    QCOMPARE(key.bits(), 1024);
     key.clear();
     QVERIFY(!key.isLoaded());
 
@@ -90,6 +91,7 @@ void TestCryptoKey::load()
     QVERIFY(key.loadFromData(bob, CryptoKey::PublicKey));
     QVERIFY(key.isLoaded());
     QVERIFY(!key.isPrivate());
+    QCOMPARE(key.bits(), 1024);
 
     // DER public key
     QByteArray derEncoded = key.encodedPublicKey(CryptoKey::DER);
