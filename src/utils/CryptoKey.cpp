@@ -191,28 +191,28 @@ QString CryptoKey::torServiceID() const
 
 QByteArray CryptoKey::signData(const QByteArray &data) const
 {
-    if (!isPrivate())
-        return QByteArray();
-
-    QByteArray digest;
-    digest.resize(32);
+    QByteArray digest(32, 0);
     bool ok = SHA256(reinterpret_cast<const unsigned char*>(data.constData()), data.size(),
                    reinterpret_cast<unsigned char*>(digest.data())) != NULL;
-    if (!ok)
-    {
+    if (!ok) {
         qWarning() << "Digest for RSA signature failed";
         return QByteArray();
     }
 
-    QByteArray re;
-    re.resize(RSA_size(d->key));
+    return signSHA256(digest);
+}
 
+QByteArray CryptoKey::signSHA256(const QByteArray &digest) const
+{
+    if (!isPrivate())
+        return QByteArray();
+
+    QByteArray re(RSA_size(d->key), 0);
     unsigned sigsize = 0;
     int r = RSA_sign(NID_sha256, reinterpret_cast<const unsigned char*>(digest.constData()), digest.size(),
                      reinterpret_cast<unsigned char*>(re.data()), &sigsize, d->key);
 
-    if (r != 1)
-    {
+    if (r != 1) {
         qWarning() << "RSA encryption failed when generating signature";
         return QByteArray();
     }
@@ -221,20 +221,24 @@ QByteArray CryptoKey::signData(const QByteArray &data) const
     return re;
 }
 
-bool CryptoKey::verifySignature(const QByteArray &data, QByteArray signature) const
+bool CryptoKey::verifyData(const QByteArray &data, QByteArray signature) const
 {
-    if (!isLoaded())
-        return false;
-
-    QByteArray digest;
-    digest.resize(32);
+    QByteArray digest(32, 0);
     bool ok = SHA256(reinterpret_cast<const unsigned char*>(data.constData()), data.size(),
-                   reinterpret_cast<unsigned char*>(digest.data())) != NULL;
-    if (!ok)
-    {
+                     reinterpret_cast<unsigned char*>(digest.data())) != NULL;
+
+    if (!ok) {
         qWarning() << "Digest for RSA verify failed";
         return false;
     }
+
+    return verifySHA256(digest, signature);
+}
+
+bool CryptoKey::verifySHA256(const QByteArray &digest, QByteArray signature) const
+{
+    if (!isLoaded())
+        return false;
 
     int r = RSA_verify(NID_sha256, reinterpret_cast<const uchar*>(digest.constData()), digest.size(),
                        reinterpret_cast<uchar*>(signature.data()), signature.size(), d->key);
