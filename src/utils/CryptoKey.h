@@ -60,9 +60,15 @@ public:
     QByteArray encodedPublicKey() const;
     QString torServiceID() const;
 
-    /* Raw signatures; no digest */
+    // Calculate and sign SHA-256 digest of data using this key and PKCS #1 v2.0 padding
     QByteArray signData(const QByteArray &data) const;
-    bool verifySignature(const QByteArray &data, QByteArray signature) const;
+    // Verify a signature as per signData
+    bool verifyData(const QByteArray &data, QByteArray signature) const;
+
+    // Sign the input SHA-256 digest using this key and PKCS #1 v2.0 padding
+    QByteArray signSHA256(const QByteArray &digest) const;
+    // Verify a signature as per signSHA256
+    bool verifySHA256(const QByteArray &digest, QByteArray signature) const;
 
 private:
     struct Data : public QSharedData

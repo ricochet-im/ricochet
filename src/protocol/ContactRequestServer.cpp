@@ -209,7 +209,7 @@ void ContactRequestServer::handleRequest(const QByteArray &data)
     }
 
     /* Verify the signature */
-    if (!key.verifySignature(data.mid(2, signaturePos - 2), signature)) {
+    if (!key.verifyData(data.mid(2, signaturePos - 2), signature)) {
         qDebug() << "Incoming contact request has an invalid signature; rejecting";
         sendResponse(0x81);
         return;

@@ -63,6 +63,7 @@ const char *alice =
     "-----END RSA PRIVATE KEY-----";
 const char *aliceDigest = "623a1ffc94d8f8edcd5e47fbd45e08deb911d1bc";
 const char *aliceTorID = "mi5b77eu3d4o3tk6";
+const char *aliceSignedTestData = "23fdcd5c7d40b44a7e49619d9048c81931166a0adb80c8981cc8f9a9e02c3923d5fba6d92ea03dc672d009a5fe1be2b582fb935076f880d9aa55511c33620d2aa23336b579dd7ccd1dbf4c845e4100a114d8ac20dd47229e876444f79d5152456a8e26fefa67a12436b3c33728a2ff7cb12250c486f786647574e48bb9208f64";
 
 const char *bob =
     "-----BEGIN RSA PUBLIC KEY-----\n"
@@ -140,25 +141,40 @@ void TestCryptoKey::sign()
     CryptoKey key;
     QVERIFY(key.loadFromData(alice, CryptoKey::PrivateKey));
 
-    QByteArray data = QCryptographicHash::hash("test data", QCryptographicHash::Sha1);
-    QByteArray data2 = QCryptographicHash::hash("different", QCryptographicHash::Sha1);
-    QCOMPARE(data.size(), 20);
+    QByteArray data = "test data";
+    QByteArray data2 = "different";
 
     // Good signature
     QByteArray signature = key.signData(data);
     QVERIFY(!signature.isEmpty());
-    QVERIFY(key.verifySignature(data, signature));
+    QVERIFY(key.verifyData(data, signature));
 
     // Bad signature
-    QVERIFY(!key.verifySignature(data2, signature));
+    QVERIFY(!key.verifyData(data2, signature));
 
     // Corrupt signature
-    QVERIFY(!key.verifySignature(data, signature.mid(0, signature.size() - 10)));
+    QVERIFY(!key.verifyData(data, signature.mid(0, signature.size() - 10)));
 
     // Wrong public key
     CryptoKey key2;
     QVERIFY(key2.loadFromData(bob, CryptoKey::PublicKey));
-    QVERIFY(!key2.verifySignature(data, signature));
+    QVERIFY(!key2.verifyData(data, signature));
+
+    // Compare to signSHA256
+    QByteArray dataDigest = QCryptographicHash::hash(data, QCryptographicHash::Sha256);
+    QByteArray signature2 = key.signSHA256(dataDigest);
+    QVERIFY(!signature2.isEmpty());
+    // signSHA256 and verifySHA256
+    QVERIFY(key.verifySHA256(dataDigest, signature2));
+    // signSHA256 and verifyData
+    QVERIFY(key.verifyData(data, signature2));
+    // signData and verifySHA256
+    QVERIFY(key.verifySHA256(dataDigest, signature));
+
+    // Compare to precomputed signature
+    QByteArray signaturep = QByteArray::fromHex(aliceSignedTestData);
+    QVERIFY(key.verifyData(data, signaturep));
+    QVERIFY(key.verifySHA256(dataDigest, signaturep));
 }
 
 QTEST_MAIN(TestCryptoKey)
