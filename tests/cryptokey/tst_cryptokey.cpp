@@ -90,10 +90,24 @@ void TestCryptoKey::load()
     QVERIFY(key.loadFromData(bob, CryptoKey::PublicKey));
     QVERIFY(key.isLoaded());
     QVERIFY(!key.isPrivate());
+
+    // DER public key
+    QByteArray derEncoded = key.encodedPublicKey(CryptoKey::DER);
+    key.clear();
+    QVERIFY(key.loadFromData(derEncoded, CryptoKey::PublicKey, CryptoKey::DER));
+    QCOMPARE(key.encodedPublicKey(CryptoKey::DER), derEncoded);
     key.clear();
 
     // Invalid key
     QVERIFY(!key.loadFromData(QByteArray(alice).mid(0, 150), CryptoKey::PrivateKey));
+    QVERIFY(!key.isLoaded());
+
+    // Invalid DER key
+    QVERIFY(!key.loadFromData(derEncoded.mid(0, derEncoded.size()-2), CryptoKey::PublicKey, CryptoKey::DER));
+    QVERIFY(!key.isLoaded());
+
+    // Empty key
+    QVERIFY(!key.loadFromData("", CryptoKey::PublicKey));
     QVERIFY(!key.isLoaded());
 }
 
@@ -113,17 +127,25 @@ void TestCryptoKey::encodedPublicKey()
     CryptoKey key;
     QVERIFY(key.loadFromData(bob, CryptoKey::PublicKey));
 
-    QByteArray encoded = key.encodedPublicKey();
-    QVERIFY(encoded.contains("PUBLIC KEY"));
+    QByteArray pemEncoded = key.encodedPublicKey(CryptoKey::PEM);
+    QVERIFY(pemEncoded.contains("BEGIN RSA PUBLIC KEY"));
+
+    QByteArray derEncoded = key.encodedPublicKey(CryptoKey::DER);
+    QCOMPARE(derEncoded.size(), 140);
 
     CryptoKey key2;
-    QVERIFY(key2.loadFromData(encoded, CryptoKey::PublicKey));
+    QVERIFY(key2.loadFromData(pemEncoded, CryptoKey::PublicKey));
     QCOMPARE(key.encodedPublicKey(), key2.encodedPublicKey());
     QCOMPARE(key.publicKeyDigest(), key2.publicKeyDigest());
 
-    // Doesn't contain a private key
     CryptoKey key3;
-    QVERIFY(!key3.loadFromData(encoded, CryptoKey::PrivateKey));
+    QVERIFY(key3.loadFromData(derEncoded, CryptoKey::PublicKey, CryptoKey::DER));
+    QCOMPARE(key.encodedPublicKey(), key3.encodedPublicKey());
+    QCOMPARE(key.publicKeyDigest(), key3.publicKeyDigest());
+
+    // Doesn't contain a private key
+    CryptoKey key4;
+    QVERIFY(!key4.loadFromData(pemEncoded, CryptoKey::PrivateKey));
 }
 
 void TestCryptoKey::torServiceID()

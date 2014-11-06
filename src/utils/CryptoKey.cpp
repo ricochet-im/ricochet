@@ -32,6 +32,7 @@
 
 #include "CryptoKey.h"
 #include "SecureRNG.h"
+#include "Useful.h"
 #include <QtDebug>
 #include <QFile>
 #include <openssl/bio.h>
@@ -63,20 +64,36 @@ void CryptoKey::clear()
     d = 0;
 }
 
-bool CryptoKey::loadFromData(const QByteArray &data, KeyType type)
+bool CryptoKey::loadFromData(const QByteArray &data, KeyType type, KeyFormat format)
 {
-    BIO *b = BIO_new_mem_buf((void*)data.constData(), -1);
+    RSA *key = NULL;
+    clear();
 
-    RSA *key;
-    if (type == PrivateKey)
-        key = PEM_read_bio_RSAPrivateKey(b, NULL, NULL, NULL);
-    else
-        key = PEM_read_bio_RSAPublicKey(b, NULL, NULL, NULL);
+    if (data.isEmpty())
+        return false;
 
-    BIO_free(b);
+    if (format == PEM) {
+        BIO *b = BIO_new_mem_buf((void*)data.constData(), -1);
 
-    if (!key)
-    {
+        if (type == PrivateKey)
+            key = PEM_read_bio_RSAPrivateKey(b, NULL, NULL, NULL);
+        else
+            key = PEM_read_bio_RSAPublicKey(b, NULL, NULL, NULL);
+
+        BIO_free(b);
+    } else if (format == DER) {
+        const uchar *dp = reinterpret_cast<const uchar*>(data.constData());
+        if (type == PrivateKey) {
+            BUG() << "Parsing DER-encoded private keys is not implemented";
+            return false;
+        }
+
+        key = d2i_RSAPublicKey(NULL, &dp, data.size());
+    } else {
+        Q_UNREACHABLE();
+    }
+
+    if (!key) {
         qWarning() << "Failed to parse" << (type == PrivateKey ? "private" : "public") << "key from data";
         return false;
     }
@@ -85,7 +102,7 @@ bool CryptoKey::loadFromData(const QByteArray &data, KeyType type)
     return true;
 }
 
-bool CryptoKey::loadFromFile(const QString &path, KeyType type)
+bool CryptoKey::loadFromFile(const QString &path, KeyType type, KeyFormat format)
 {
     QFile file(path);
     if (!file.open(QIODevice::ReadOnly))
@@ -98,7 +115,7 @@ bool CryptoKey::loadFromFile(const QString &path, KeyType type)
     QByteArray data = file.readAll();
     file.close();
 
-    return loadFromData(data, type);
+    return loadFromData(data, type, format);
 }
 
 bool CryptoKey::isPrivate() const
@@ -111,24 +128,9 @@ QByteArray CryptoKey::publicKeyDigest() const
     if (!isLoaded())
         return QByteArray();
 
-    int len = i2d_RSAPublicKey(d->key, NULL);
-    if (len < 0)
-        return QByteArray();
+    QByteArray buf = encodedPublicKey(DER);
 
-    QByteArray buf;
-    buf.resize(len);
-    unsigned char *bufp = reinterpret_cast<unsigned char*>(buf.data());
-
-    len = i2d_RSAPublicKey(d->key, &bufp);
-    if (len < 0)
-    {
-        qWarning() << "Failed to encode public key for digest";
-        return QByteArray();
-    }
-
-    QByteArray re;
-    re.resize(20);
-
+    QByteArray re(20, 0);
     bool ok = SHA1(reinterpret_cast<const unsigned char*>(buf.constData()), buf.size(),
          reinterpret_cast<unsigned char*>(re.data())) != NULL;
 
@@ -141,31 +143,46 @@ QByteArray CryptoKey::publicKeyDigest() const
     return re;
 }
 
-QByteArray CryptoKey::encodedPublicKey() const
+QByteArray CryptoKey::encodedPublicKey(KeyFormat format) const
 {
     if (!isLoaded())
         return QByteArray();
 
-    BIO *b = BIO_new(BIO_s_mem());
+    if (format == PEM) {
+        BIO *b = BIO_new(BIO_s_mem());
 
-    if (!PEM_write_bio_RSAPublicKey(b, d->key))
-    {
-        qWarning() << "Failed to encode public key";
+        if (!PEM_write_bio_RSAPublicKey(b, d->key)) {
+            BUG() << "Failed to encode public key in PEM format";
+            BIO_free(b);
+            return QByteArray();
+        }
+
+        BUF_MEM *buf;
+        BIO_get_mem_ptr(b, &buf);
+
+        /* Close BIO, but don't free buf. */
+        (void)BIO_set_close(b, BIO_NOCLOSE);
         BIO_free(b);
-        return QByteArray();
+
+        QByteArray re((const char *)buf->data, (int)buf->length);
+        BUF_MEM_free(buf);
+        return re;
+    } else if (format == DER) {
+        uchar *buf = NULL;
+        int len = i2d_RSAPublicKey(d->key, &buf);
+        if (len <= 0 || !buf) {
+            BUG() << "Failed to encode public key in DER format";
+            return QByteArray();
+        }
+
+        QByteArray re((const char*)buf, len);
+        OPENSSL_free(buf);
+        return re;
+    } else {
+        Q_UNREACHABLE();
     }
 
-    BUF_MEM *buf;
-    BIO_get_mem_ptr(b, &buf);
-
-    /* Close BIO, but don't free buf. */
-    (void)BIO_set_close(b, BIO_NOCLOSE);
-    BIO_free(b);
-
-    QByteArray re((const char *)buf->data, (int)buf->length);
-    BUF_MEM_free(buf);
-
-    return re;
+    return QByteArray();
 }
 
 QString CryptoKey::torServiceID() const

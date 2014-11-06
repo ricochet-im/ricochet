@@ -45,19 +45,24 @@ public:
         PublicKey
     };
 
+    enum KeyFormat {
+        PEM,
+        DER
+    };
+
     CryptoKey();
     CryptoKey(const CryptoKey &other) : d(other.d) { }
     ~CryptoKey();
 
-    bool loadFromData(const QByteArray &data, KeyType type);
-    bool loadFromFile(const QString &path, KeyType type);
+    bool loadFromData(const QByteArray &data, KeyType type, KeyFormat format = PEM);
+    bool loadFromFile(const QString &path, KeyType type, KeyFormat format = PEM);
     void clear();
 
     bool isLoaded() const { return d.data() && d->key != 0; }
     bool isPrivate() const;
 
     QByteArray publicKeyDigest() const;
-    QByteArray encodedPublicKey() const;
+    QByteArray encodedPublicKey(KeyFormat format = PEM) const;
     QString torServiceID() const;
 
     // Calculate and sign SHA-256 digest of data using this key and PKCS #1 v2.0 padding
