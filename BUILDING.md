@@ -13,8 +13,9 @@ By default, Ricochet will be portable, and configuration is stored in a folder n
 ## Linux
 
 You will need:
- * Qt >= 5.1.0
- * OpenSSL (libcrypto)
+ * [Qt >= 5.1.0](https://qt-project.org/downloads)
+ * [OpenSSL (libcrypto)](https://www.openssl.org/source/)
+ * [Tor](https://www.torproject.org/download/download.html)
 
 #### Fedora
 ```sh
@@ -26,6 +27,15 @@ yum install tor # or build your own
 apt-get install build-essential libssl-dev pkg-config qt5-qmake qt5-default qtbase5-dev qttools5-dev-tools qtdeclarative5-dev qtdeclarative5-controls-plugin
 apt-get install tor # or build your own
 ```
+#### Arch Linux
+Just use [ricochet](https://aur.archlinux.org/packages/ricochet/) package from AUR:
+```sh
+# download via yaourt or cower or via curl+tar(must be exist in any Arch system)
+yaourt -G ricochet || cower -d ricochet || { curl "https://aur.archlinux.org/packages/ri/ricochet/ricochet.tar.gz" | tar -xzv; }  # or ricochet-git if you want lastest
+# and build/install it
+cd ricochet && makepkg -si
+```
+
 #### Qt SDK
 The [Qt SDK](https://qt-project.org/downloads) is available for most Linux systems and includes an IDE as well as all Qt dependencies.
 
