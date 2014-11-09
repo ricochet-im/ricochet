@@ -150,8 +150,22 @@ void ContactUser::onSettingsModified(const QString &key, const QJsonValue &value
 
 void ContactUser::updateOutgoingSocket()
 {
-    if (m_status != Offline)
+    if (m_status != Offline
+#ifdef PROTOCOL_NEW
+        && m_status != RequestPending
+#endif
+        )
+    {
+        if (m_outgoingSocket) {
+#ifdef PROTOCOL_NEW
+            m_outgoingSocket->disconnect(this);
+            m_outgoingSocket->abort();
+#endif
+            m_outgoingSocket->deleteLater();
+            m_outgoingSocket = 0;
+        }
         return;
+    }
 
     // Refuse to make outgoing connections to the local hostname
     if (hostname() == identity->hostname())
@@ -371,12 +385,12 @@ void ContactUser::incomingProtocolSocket(QTcpSocket *socket)
 #else
 void ContactUser::assignConnection(Protocol::Connection *connection)
 {
-    if (connection->parent() == this) {
-        BUG() << "Connection is already owned by this ContactUser";
+    if (connection == m_connection) {
+        BUG() << "Connection is already assigned to this ContactUser";
         return;
     }
 
-    if (qobject_cast<ContactUser*>(connection->parent())) {
+    if (qobject_cast<ContactUser*>(connection->parent()) && connection->parent() != this) {
         BUG() << "Connection is already owned by another ContactUser";
         connection->close();
         return;
@@ -399,25 +413,14 @@ void ContactUser::assignConnection(Protocol::Connection *connection)
         return;
     }
 
-    /* To resolve a race if two contacts try to connect at the same time:
-     *
-     * If an inbound connection arrives and there is no outbound connection,
-     * or the outbound connection hasn't sent authentication yet, use inbound.
-     */
-    if (!isOutbound && m_outgoingSocket && m_outgoingSocket->status() < Protocol::OutboundConnector::Authenticating) {
-        qDebug() << "Aborting outbound connection attempt because we got an inbound connection instead";
-        m_outgoingSocket->abort();
-        // XXX what do we do with this
-        m_outgoingSocket->deleteLater();
-        m_outgoingSocket = 0;
-    }
-
     if (m_connection && !m_connection->isConnected()) {
         qDebug() << "Replacing dead connection with new connection";
         clearConnection();
     }
 
-    /* If the existing connection is in the same direction as the new one,
+    /* To resolve a race if two contacts try to connect at the same time:
+     *
+     * If the existing connection is in the same direction as the new one,
      * always use the new one.
      */
     if (m_connection && connection->direction() == m_connection->direction()) {
@@ -450,20 +453,20 @@ void ContactUser::assignConnection(Protocol::Connection *connection)
         }
     }
 
+     /* If this connection is inbound and we have an outgoing connection attempt,
+      * use the inbound connection if we haven't sent authentication yet, or if
+      * we would lose the strcmp comparison above.
+      */
     if (!isOutbound && m_outgoingSocket) {
-        if (preferOutbound) {
+        if (m_outgoingSocket->status() != Protocol::OutboundConnector::Authenticating || !preferOutbound) {
+            // Inbound connection wins; outbound connection attempt will abort when status changes
+            qDebug() << "Aborting outbound connection attempt because we got an inbound connection instead";
+        } else {
             // Outbound attempt wins
-            qDebug() << "Closing new connection with contact because the pending outbound connection won comparison";
+            qDebug() << "Closing inbound connection with contact because the pending outbound connection won comparison";
             connection->close();
             connection->deleteLater();
             return;
-        } else {
-            // Inbound connection wins
-            qDebug() << "Aborting outbound connection attempt because an inbound connection won comparison";
-            m_outgoingSocket->abort();
-            // XXX what to do with this
-            m_outgoingSocket->deleteLater();
-            m_outgoingSocket = 0;
         }
     }
 
@@ -490,8 +493,6 @@ void ContactUser::assignConnection(Protocol::Connection *connection)
      */
     connect(m_connection, &Protocol::Connection::closed, this, &ContactUser::onDisconnected, Qt::QueuedConnection);
     onConnected();
-
-    // XXX check what happens to m_outgoingSocket after it completes
 }
 
 void ContactUser::clearConnection()
