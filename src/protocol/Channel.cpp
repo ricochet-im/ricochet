@@ -102,12 +102,23 @@ bool Channel::isOpened() const
 
 bool Channel::openChannel()
 {
+    Q_D(Channel);
     if (direction() != Channel::Outbound || isOpened() || identifier() >= 0) {
         BUG() << "Cannot send request to open" << type() << "channel in an incorrect state";
+        if (isOpened())
+            closeChannel();
+        d->invalidate();
+        return false;
+    } else if (!connection()->findChannel<ControlChannel>()->sendOpenChannel(this)) {
+        if (isOpened()) {
+            BUG() << "Channel somehow opened instantly in an impossible situation";
+            closeChannel();
+        }
+        d->invalidate();
         return false;
     }
 
-    return connection()->findChannel<ControlChannel>()->sendOpenChannel(this);
+    return true;
 }
 
 void Channel::closeChannel()
