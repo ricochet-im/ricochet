@@ -40,14 +40,6 @@ ApplicationWindow {
         interval: 1
     }
 
-    Connections {
-        target: contact
-        onIncomingChatMessage: {
-            if (!chatPage.activeFocus)
-                chatWindow.alert(0)
-        }
-    }
-
     ChatPage {
         id: chatPage
         anchors.fill: parent
