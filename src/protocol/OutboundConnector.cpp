@@ -54,6 +54,8 @@ public:
     OutboundConnector::Status status;
     CryptoKey authPrivateKey;
     QString errorMessage;
+    QTimer errorRetryTimer;
+    int errorRetryCount;
 
     OutboundConnectorPrivate(OutboundConnector *q)
         : QObject(q)
@@ -62,7 +64,9 @@ public:
         , connection(0)
         , port(0)
         , status(OutboundConnector::Inactive)
+        , errorRetryCount(0)
     {
+        connect(&errorRetryTimer, &QTimer::timeout, this, &OutboundConnectorPrivate::retryAfterError);
     }
 
     void setStatus(OutboundConnector::Status status);
@@ -71,6 +75,7 @@ public:
 public slots:
     void onConnected();
     void abort();
+    void retryAfterError();
 };
 
 }
@@ -136,6 +141,8 @@ void OutboundConnector::abort()
     d->abort();
     d->hostname.clear();
     d->port = 0;
+    d->errorRetryCount = 0;
+    d->errorRetryTimer.stop();
     d->errorMessage.clear();
     d->setStatus(Inactive);
 }
@@ -202,10 +209,36 @@ void OutboundConnectorPrivate::setStatus(OutboundConnector::Status value)
 
 void OutboundConnectorPrivate::setError(const QString &message)
 {
-    // XXX We need to retry in error cases
     abort();
     errorMessage = message;
     setStatus(OutboundConnector::Error);
+
+    // XXX This is a bad solution, but it will hold until we can revisit the
+    // reconnecting and connection error behavior as a whole.
+    if (++errorRetryCount > 5) {
+        qDebug() << "Outbound connection attempt has had five errors in a row, stopping attempts";
+        return;
+    }
+
+    errorRetryTimer.setSingleShot(true);
+    errorRetryTimer.start(60 * 1000);
+    qDebug() << "Retrying outbound connection attempt in 60 seconds after an error";
+}
+
+void OutboundConnectorPrivate::retryAfterError()
+{
+    if (status != OutboundConnector::Error) {
+        qDebug() << "Error retry timer triggered, but not in an error state anymore. Ignoring.";
+        return;
+    }
+
+    if (hostname.isEmpty() || port <= 0) {
+        qDebug() << "Connection info cleared during error retry period, stopping OutboundConnector";
+        q->abort();
+        return;
+    }
+
+    q->connectToHost(hostname, port);
 }
 
 void OutboundConnectorPrivate::onConnected()
