@@ -67,8 +67,10 @@ void ConversationModel::setContact(ContactUser *contact)
                 connect(chat, &Protocol::ChatChannel::messageReceived, this, &ConversationModel::messageReceived);
                 connect(chat, &Protocol::ChatChannel::messageAcknowledged, this, &ConversationModel::messageAcknowledged);
 
-                if (chat->direction() == Protocol::Channel::Outbound)
+                if (chat->direction() == Protocol::Channel::Outbound) {
+                    connect(chat, &Protocol::Channel::invalidated, this, &ConversationModel::outboundChannelClosed);
                     sendQueuedMessages();
+                }
             }
         };
 
@@ -101,7 +103,7 @@ void ConversationModel::sendMessage(const QString &text)
         return;
 
 #ifdef PROTOCOL_NEW
-    MessageData message = { text, QDateTime::currentDateTime(), 0, Queued };
+    MessageData message(text, QDateTime::currentDateTime(), 0, Queued);
 
     if (m_contact->connection()) {
         auto channel = m_contact->connection()->findChannel<Protocol::ChatChannel>(Protocol::Channel::Outbound);
@@ -121,6 +123,7 @@ void ConversationModel::sendMessage(const QString &text)
             else
                 message.status = Error;
             message.identifier = id;
+            message.attemptCount++;
         }
     }
 
@@ -129,7 +132,7 @@ void ConversationModel::sendMessage(const QString &text)
     connect(command, SIGNAL(commandFinished()), this, SLOT(messageReply()));
     command->send(m_contact->conn(), QDateTime::currentDateTime(), text, lastReceivedId);
 
-    MessageData message = { text, QDateTime::currentDateTime(), command->identifier(), Sending };
+    MessageData message(text, QDateTime::currentDateTime(), command->identifier(), Sending);
 #endif
 
     beginInsertRows(QModelIndex(), 0, 0);
@@ -181,6 +184,7 @@ void ConversationModel::sendQueuedMessages()
                 messages[i].status = Sending;
             else
                 messages[i].status = Error;
+            messages[i].attemptCount++;
             emit dataChanged(index(i, 0), index(i, 0));
         }
     }
@@ -217,6 +221,29 @@ void ConversationModel::messageAcknowledged(MessageId id, bool accepted)
     MessageData &data = messages[row];
     data.status = accepted ? Delivered : Error;
     emit dataChanged(index(row, 0), index(row, 0));
+}
+
+void ConversationModel::outboundChannelClosed()
+{
+    // Any messages that are Sending are moved back to Queued, so they
+    // will be re-sent when we reconnect.
+    for (int i = 0; i < messages.size(); i++) {
+        if (messages[i].status != Sending)
+            continue;
+        if (messages[i].attemptCount >= 2) {
+            qDebug() << "Outbound chat channel closed, and unacknowledged message has been tried twice already. Marking as error.";
+            messages[i].status = Error;
+        } else {
+            qDebug() << "Outbound chat channel closed, putting unacknowledged chat message back in queue";
+            messages[i].status = Queued;
+        }
+        emit dataChanged(index(i, 0), index(i, 0));
+    }
+
+    // Try to reopen the channel if we're still connected
+    if (m_contact && m_contact->connection() && m_contact->connection()->isConnected()) {
+        metaObject()->invokeMethod(this, "sendQueuedMessages", Qt::QueuedConnection);
+    }
 }
 #else
 void ConversationModel::receiveMessage(const ChatMessageData &data)

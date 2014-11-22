@@ -95,6 +95,7 @@ private slots:
 #ifdef PROTOCOL_NEW
     void messageReceived(const QString &text, const QDateTime &time, MessageId id);
     void messageAcknowledged(MessageId id, bool accepted);
+    void outboundChannelClosed();
     void sendQueuedMessages();
 #else
     void receiveMessage(const ChatMessageData &message);
@@ -108,6 +109,12 @@ private:
         QDateTime time;
         MessageId identifier;
         MessageStatus status;
+        quint8 attemptCount;
+
+        MessageData(const QString &text, const QDateTime &time, MessageId id, MessageStatus status)
+            : text(text), time(time), identifier(id), status(status), attemptCount(0)
+        {
+        }
     };
 
     ContactUser *m_contact;
