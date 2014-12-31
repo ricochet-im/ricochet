@@ -185,16 +185,21 @@ HEADERS += src/ui/MainWindow.h \
 contains(DEFINES,PROTOCOL_NEW) {
     SOURCES += src/protocol/Channel.cpp \
         src/protocol/ControlChannel.cpp \
-        src/protocol/Connection.cpp
+        src/protocol/Connection.cpp \
+        src/protocol/OutboundConnector.cpp \
+        src/protocol/AuthHiddenServiceChannel.cpp
 
     HEADERS += src/protocol/Channel.h \
         src/protocol/Channel_p.h \
         src/protocol/ControlChannel.h \
         src/protocol/Connection.h \
-        src/protocol/Connection_p.h
+        src/protocol/Connection_p.h \
+        src/protocol/OutboundConnector.h \
+        src/protocol/AuthHiddenServiceChannel.h
 
     include(protobuf.pri)
-    PROTOS += src/protocol/ControlChannel.proto
+    PROTOS += src/protocol/ControlChannel.proto \
+        src/protocol/AuthHiddenService.proto
 }
 
 # QML

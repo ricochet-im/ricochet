@@ -99,10 +99,11 @@ public:
      * isn't open until the response arrives, signalled by the channelOpened
      * or channelRejected signals.
      *
-     * If the channel is rejected, it will be invalidated and deleted.
+     * If the channel is rejected, it will asynchronously emit the channelRejected
+     * signal, and will be invalidated and deleted.
      *
      * If this function returns false, the request wasn't sent due to a local
-     * error. In that case, only the invalidated signal is sent.
+     * error. In this case, the channel is also invalidated and will be deleted.
      */
     bool openChannel();
 

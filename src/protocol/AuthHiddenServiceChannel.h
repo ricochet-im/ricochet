@@ -30,65 +30,47 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef CRYPTOKEY_H
-#define CRYPTOKEY_H
+#ifndef PROTOCOL_AUTHHIDDENSERVICECHANNEL_H
+#define PROTOCOL_AUTHHIDDENSERVICECHANNEL_H
 
-#include <QString>
-#include <QSharedData>
-#include <QExplicitlySharedDataPointer>
+#include "Channel.h"
+#include "utils/CryptoKey.h"
+#include "AuthHiddenService.pb.h"
 
-class CryptoKey
+namespace Protocol
 {
+
+class AuthHiddenServiceChannelPrivate;
+
+class AuthHiddenServiceChannel : public Channel
+{
+    Q_OBJECT
+    Q_DISABLE_COPY(AuthHiddenServiceChannel)
+    Q_DECLARE_PRIVATE(AuthHiddenServiceChannel)
+
 public:
-    enum KeyType {
-        PrivateKey,
-        PublicKey
-    };
+    explicit AuthHiddenServiceChannel(Direction direction, Connection *connection);
 
-    enum KeyFormat {
-        PEM,
-        DER
-    };
+    void setPrivateKey(const CryptoKey &key);
 
-    CryptoKey();
-    CryptoKey(const CryptoKey &other) : d(other.d) { }
-    ~CryptoKey();
+signals:
+    void authSuccessful();
+    void authFailed();
 
-    bool loadFromData(const QByteArray &data, KeyType type, KeyFormat format = PEM);
-    bool loadFromFile(const QString &path, KeyType type, KeyFormat format = PEM);
-    void clear();
+private slots:
+    void sendAuthMessage();
 
-    bool isLoaded() const { return d.data() && d->key != 0; }
-    bool isPrivate() const;
-
-    QByteArray publicKeyDigest() const;
-    QByteArray encodedPublicKey(KeyFormat format = PEM) const;
-    QString torServiceID() const;
-    int bits() const;
-
-    // Calculate and sign SHA-256 digest of data using this key and PKCS #1 v2.0 padding
-    QByteArray signData(const QByteArray &data) const;
-    // Verify a signature as per signData
-    bool verifyData(const QByteArray &data, QByteArray signature) const;
-
-    // Sign the input SHA-256 digest using this key and PKCS #1 v2.0 padding
-    QByteArray signSHA256(const QByteArray &digest) const;
-    // Verify a signature as per signSHA256
-    bool verifySHA256(const QByteArray &digest, QByteArray signature) const;
+protected:
+    virtual bool allowInboundChannelRequest(const Data::Control::OpenChannel *request, Data::Control::ChannelResult *result);
+    virtual bool allowOutboundChannelRequest(Data::Control::OpenChannel *request);
+    virtual bool processChannelOpenResult(const Data::Control::ChannelResult *result);
+    virtual void receivePacket(const QByteArray &packet);
 
 private:
-    struct Data : public QSharedData
-    {
-        typedef struct rsa_st RSA;
-        RSA *key;
-
-        Data(RSA *k = 0) : key(k) { }
-        ~Data();
-    };
-
-    QExplicitlySharedDataPointer<Data> d;
+    void handleProof(const Data::AuthHiddenService::Proof &message);
+    void handleResult(const Data::AuthHiddenService::Result &message);
 };
 
-QByteArray torControlHashedPassword(const QByteArray &password);
+}
 
-#endif // CRYPTOKEY_H
+#endif
