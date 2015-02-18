@@ -125,6 +125,7 @@ void ContactRequestChannel::setNickname(const QString &nickname)
 bool ContactRequestChannel::allowInboundChannelRequest(const Data::Control::OpenChannel *request, Data::Control::ChannelResult *result)
 {
     using namespace Data::ContactRequest;
+    using namespace Data::Control;
 
     // If this connection is already KnownContact, report that the request is accepted
     if (connection()->purpose() == Connection::Purpose::KnownContact) {
@@ -138,27 +139,24 @@ bool ContactRequestChannel::allowInboundChannelRequest(const Data::Control::Open
     if (connection()->direction() != Connection::ServerSide ||
         connection()->purpose() != Connection::Purpose::Unknown)
     {
-        result->set_common_error(Data::Control::ChannelResult::UnauthorizedError);
-        result->set_error_message(QStringLiteral("Only a new client may use this channel").toStdString());
+        result->set_common_error(ChannelResult::BadUsageError);
         return false;
     }
 
     // Only allow one ContactRequestChannel
     if (connection()->findChannel<ContactRequestChannel>()) {
-        result->set_common_error(Data::Control::ChannelResult::UnauthorizedError);
-        result->set_error_message(QStringLiteral("Only one instance of this channel may be created").toStdString());
+        result->set_common_error(ChannelResult::BadUsageError);
         return false;
     }
 
     // Require HiddenServiceAuth
     if (!connection()->hasAuthenticated(Connection::HiddenServiceAuth)) {
-        result->set_common_error(Data::Control::ChannelResult::UnauthorizedError);
-        result->set_error_message(QStringLiteral("Only authenticated clients may use this channel").toStdString());
+        result->set_common_error(ChannelResult::UnauthorizedError);
         return false;
     }
 
     if (!request->HasExtension(Data::ContactRequest::contact_request)) {
-        result->set_error_message(QStringLiteral("Expected a request object").toStdString());
+        result->set_common_error(ChannelResult::BadUsageError);
         return false;
     }
 
@@ -185,8 +183,6 @@ bool ContactRequestChannel::allowInboundChannelRequest(const Data::Control::Open
 
     QScopedPointer<Response> response(new Response);
     response->set_status(m_responseStatus);
-    if (!m_responseErrorMessage.isEmpty())
-        response->set_error_message(m_responseErrorMessage.toStdString());
     result->SetAllocatedExtension(Data::ContactRequest::response, response.take());
 
     // If the response is final, close the channel immediately once it's fully open
@@ -195,7 +191,7 @@ bool ContactRequestChannel::allowInboundChannelRequest(const Data::Control::Open
     return true;
 }
 
-void ContactRequestChannel::setResponseStatus(Status status, const QString &message)
+void ContactRequestChannel::setResponseStatus(Status status)
 {
     if (m_responseStatus == status)
         return;
@@ -210,14 +206,11 @@ void ContactRequestChannel::setResponseStatus(Status status, const QString &mess
         BUG() << "Response status is already a final state" << m_responseStatus << "but was changed to" << status;
 
     m_responseStatus = status;
-    m_responseErrorMessage = message;
 
     // If the channel is already open, the response is sent as a separate packet
     if (isOpened()) {
         Response response;
         response.set_status(m_responseStatus);
-        if (!m_responseErrorMessage.isEmpty())
-            response.set_error_message(m_responseErrorMessage.toStdString());
         sendMessage(response);
 
         if (m_responseStatus > Response::Pending)
@@ -287,14 +280,8 @@ bool ContactRequestChannel::handleResponse(const Data::ContactRequest::Response 
         return false;
     }
 
-    QString message(QString::fromStdString(response->error_message()));
-    if (message.size() > MessageMaxCharacters) {
-        qDebug() << "Received a contact request response with an overly long message of " << message.size() << "characters";
-        message.clear();
-    }
-
     m_responseStatus = response->status();
-    emit requestStatusChanged(m_responseStatus, message);
+    emit requestStatusChanged(m_responseStatus);
     // If the response is final, close the channel. Use a queued invoke to avoid any potential
     // issue when called from processChannelOpenResult
     if (m_responseStatus > Response::Pending)

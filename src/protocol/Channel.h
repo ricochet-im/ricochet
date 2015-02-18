@@ -109,7 +109,7 @@ public:
 
 signals:
     void channelOpened();
-    void channelRejected(Data::Control::ChannelResult::CommonError error, const QString &errorMessage);
+    void channelRejected(Data::Control::ChannelResult::CommonError error);
 
     /* Emitted when the channel has become invalid and will be destroyed
      *

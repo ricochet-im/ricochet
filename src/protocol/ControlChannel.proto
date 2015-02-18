@@ -24,10 +24,11 @@ message ChannelResult {
         GenericError = 0;
         UnknownTypeError = 1;
         UnauthorizedError = 2;
+        BadUsageError = 3;
+        FailedError = 4;
     }
 
     optional CommonError common_error = 3;
-    optional string error_message = 4;
 
     // As with OpenChannel, it is valid to extend this message with fields specific
     // to the channel type.

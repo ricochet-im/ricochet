@@ -57,7 +57,7 @@ public:
     void setNickname(const QString &nickname);
 
     // Inbound
-    void setResponseStatus(Status status, const QString &message = QString());
+    void setResponseStatus(Status status);
 
 signals:
     /* Emitted during the inbound channel request handler, when a new request
@@ -65,7 +65,7 @@ signals:
      * if it claims this request; otherwise, it will be closed.
      */
     void requestReceived();
-    void requestStatusChanged(Status status, const QString &message);
+    void requestStatusChanged(Status status);
 
 protected:
     virtual bool allowInboundChannelRequest(const Data::Control::OpenChannel *request, Data::Control::ChannelResult *result);
@@ -76,7 +76,6 @@ protected:
 private:
     QString m_nickname;
     QString m_message;
-    QString m_responseErrorMessage;
     Status m_responseStatus;
 
     bool handleResponse(const Data::ContactRequest::Response *response);

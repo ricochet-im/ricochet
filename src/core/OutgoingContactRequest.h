@@ -106,7 +106,7 @@ signals:
 
 private slots:
 #ifdef PROTOCOL_NEW
-    void requestStatusChanged(int status, const QString &message);
+    void requestStatusChanged(int status);
 #else
     void requestRejected(int reason);
     void requestAcknowledged();

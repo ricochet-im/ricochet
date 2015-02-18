@@ -97,23 +97,27 @@ void AuthHiddenServiceChannel::setPrivateKey(const CryptoKey &key)
 bool AuthHiddenServiceChannel::allowInboundChannelRequest(const Data::Control::OpenChannel *request, Data::Control::ChannelResult *result)
 {
     Q_D(AuthHiddenServiceChannel);
+
+    using namespace Data::Control;
+
     if (connection()->direction() != Connection::ServerSide) {
         // Hidden service authentication is only allowed from the client-side connection
-        result->set_common_error(Data::Control::ChannelResult::UnauthorizedError);
-        result->set_error_message(QStringLiteral("Only a client may use this channel").toStdString());
+        qDebug() << "Rejecting AuthHiddenServiceChannel from server side";
+        result->set_common_error(ChannelResult::BadUsageError);
         return false;
     }
 
     if (connection()->hasAuthenticated(Connection::HiddenServiceAuth)) {
         // You can only authenticate a connection once
-        result->set_error_message(QStringLiteral("This connection is already authenticated").toStdString());
+        qDebug() << "Rejecting AuthHiddenServiceChannel on authenticated connection";
+        result->set_common_error(ChannelResult::BadUsageError);
         return false;
     }
 
     if (connection()->findChannel<AuthHiddenServiceChannel>()) {
         // Refuse if another channel already exists
-        result->set_common_error(Data::Control::ChannelResult::UnauthorizedError);
-        result->set_error_message(QStringLiteral("Only one instance of this channel may be created").toStdString());
+        qDebug() << "Rejecting instance of AuthHiddenServiceChannel on a connection that already has one";
+        result->set_common_error(ChannelResult::BadUsageError);
         return false;
     }
 
@@ -121,7 +125,7 @@ bool AuthHiddenServiceChannel::allowInboundChannelRequest(const Data::Control::O
     std::string clientCookie = request->GetExtension(Data::AuthHiddenService::client_cookie);
     if (clientCookie.size() != 16) {
         qDebug() << "Received OpenChannel for" << type() << "with no valid client_cookie";
-        result->set_error_message(QStringLiteral("Invalid client_cookie").toStdString());
+        result->set_common_error(ChannelResult::BadUsageError);
         return false;
     }
     d->clientCookie = QByteArray(clientCookie.c_str(), clientCookie.size());
@@ -278,16 +282,12 @@ void AuthHiddenServiceChannel::handleProof(const Data::AuthHiddenService::Proof 
     CryptoKey publicKey;
     if (signature.size() != 128) {
         qWarning() << "Received invalid signature (size" << signature.size() << ") on" << type();
-        result->set_error_message("Invalid signature");
     } else if (publicKeyData.size() > 180) {
         qWarning() << "Received invalid public key (size" << publicKeyData.size() << ") on" << type();
-        result->set_error_message("Invalid public key");
     } else if (!publicKey.loadFromData(publicKeyData, CryptoKey::PublicKey, CryptoKey::DER)) {
         qWarning() << "Unable to parse public key from" << type();
-        result->set_error_message("Invalid public key");
     } else if (publicKey.bits() != 1024) {
         qWarning() << "Received invalid public key (" << publicKey.bits() << "bits) on" << type();
-        result->set_error_message("Invalid public key");
     } else {
         bool ok = false;
         QByteArray proofData = d->getProofData(publicKey.torServiceID());
@@ -300,7 +300,6 @@ void AuthHiddenServiceChannel::handleProof(const Data::AuthHiddenService::Proof 
         if (!ok) {
             qWarning() << "Signature verification failed on" << type();
             result->set_accepted(false);
-            result->set_error_message("Invalid signature");
         } else {
             result->set_accepted(true);
             qDebug() << type() << "accepted inbound authentication for" << publicKey.torServiceID();
@@ -340,7 +339,7 @@ void AuthHiddenServiceChannel::handleResult(const Data::AuthHiddenService::Resul
         qDebug() << "AuthHiddenServiceChannel succeeded";
         d->accepted = true;
     } else {
-        qWarning() << "AuthHiddenServiceChannel rejected:" << QString::fromStdString(message.error_message());
+        qWarning() << "AuthHiddenServiceChannel rejected";
         d->accepted = false;
     }
 

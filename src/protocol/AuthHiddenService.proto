@@ -21,5 +21,4 @@ message Proof {
 
 message Result {
     required bool accepted = 1;
-    optional string error_message = 8;
 }

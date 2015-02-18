@@ -255,6 +255,8 @@ message ChannelResult {
         GenericError = 0;
         UnknownTypeError = 1;
         UnauthorizedError = 2;
+        BadUsageError = 3;
+        FailedError = 4;
     }
 
     optional CommonError common_error = 3;
@@ -498,7 +500,6 @@ The recipient of this message must:
 ```protobuf
 message Result {
     required bool accepted = 1;
-    optional string error_message = 8;
 }
 ```
 

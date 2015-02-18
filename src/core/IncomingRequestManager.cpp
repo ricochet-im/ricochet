@@ -128,7 +128,7 @@ void IncomingRequestManager::requestReceived()
     QString hostname = channel->connection()->authenticatedIdentity(Protocol::Connection::HiddenServiceAuth);
     if (hostname.isEmpty() || !hostname.endsWith(QStringLiteral(".onion"))) {
         BUG() << "Incoming contact request received but connection isn't authenticated";
-        channel->setResponseStatus(Response::Error, QStringLiteral("internal error"));
+        channel->setResponseStatus(Response::Error);
         return;
     }
 
@@ -140,7 +140,7 @@ void IncomingRequestManager::requestReceived()
 
     if (identityManager->lookupHostname(hostname)) {
         qDebug() << "Rejecting contact request from a local identity (which shouldn't have been allowed)";
-        channel->setResponseStatus(Response::Error, QStringLiteral("local identity"));
+        channel->setResponseStatus(Response::Error);
         return;
     }
 

@@ -267,7 +267,7 @@ void OutgoingContactRequest::cancel()
 }
 
 #ifdef PROTOCOL_NEW
-void OutgoingContactRequest::requestStatusChanged(int status, const QString &message)
+void OutgoingContactRequest::requestStatusChanged(int status)
 {
     using namespace Protocol::Data::ContactRequest;
     switch (status) {
@@ -281,7 +281,7 @@ void OutgoingContactRequest::requestStatusChanged(int status, const QString &mes
             reject();
             break;
         case Response::Error:
-            reject(true, message);
+            reject(true);
             break;
         default:
             BUG() << "Unknown ContactRequest response status";
