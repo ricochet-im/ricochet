@@ -69,6 +69,10 @@ macx {
         # Copy the entire tor/ directory, which should contain tor/tor (the binary itself)
         QMAKE_POST_LINK += cp -R $${_PRO_FILE_PWD_}/tor $${OUT_PWD}/$${TARGET}.app/Contents/MacOS/;
     }
+
+    icons.files = icons/Ricochet.icns
+    icons.path = Contents/Resources/
+    QMAKE_BUNDLE_DATA += icons
 }
 
 CONFIG += debug_and_release
