@@ -5,6 +5,8 @@ message Packet {
     optional OpenChannel open_channel = 1;
     optional ChannelResult channel_result = 2;
     optional KeepAlive keep_alive = 3;
+    optional EnableFeatures enable_features = 4;
+    optional FeaturesEnabled features_enabled = 5;
 }
 
 message OpenChannel {
@@ -37,4 +39,14 @@ message ChannelResult {
 
 message KeepAlive {
     required bool response_requested = 1;
+}
+
+message EnableFeatures {
+    repeated string feature = 1;
+    extensions 100 to max;
+}
+
+message FeaturesEnabled {
+    repeated string feature = 1;
+    extensions 100 to max;
 }

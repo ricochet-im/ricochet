@@ -201,6 +201,8 @@ message Packet {
     optional OpenChannel open_channel = 1;
     optional ChannelResult channel_result = 2;
     optional KeepAlive keep_alive = 3;
+    optional EnableFeatures enable_features = 4;
+    optional FeaturesEnabled features_enabled = 5;
 }
 ```
 
@@ -280,6 +282,26 @@ message KeepAlive {
 
 A simple ping message. If *response_requested* is true, a *KeepAlive* message is generated in
 response with *response_requested* as false.
+
+##### EnableFeatures
+```protobuf
+message EnableFeatures {
+    repeated string feature = 1;
+    extensions 100 to max;
+}
+
+message FeaturesEnabled {
+    repeated string feature = 1;
+    extensions 100 to max;
+}
+```
+
+Simple feature negotiation. Either peer may send the *EnableFeatures* message with a list of
+strings representing protocol changes or features. The recipient must respond with *FeaturesEnabled*
+containing the subset of those strings it recognizes and has enabled.
+
+No such feature strings are currently defined, and the current implementation should always respond
+with an empty list.
 
 ### Chat channel
 

@@ -66,6 +66,8 @@ private:
     void handleOpenChannel(const Data::Control::OpenChannel &message);
     void handleChannelResult(const Data::Control::ChannelResult &message);
     void handleKeepAlive(const Data::Control::KeepAlive &message);
+    void handleEnableFeatures(const Data::Control::EnableFeatures &message);
+    void handleFeaturesEnabled(const Data::Control::FeaturesEnabled &message);
 };
 
 }

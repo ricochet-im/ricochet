@@ -142,6 +142,10 @@ void ControlChannel::receivePacket(const QByteArray &packet)
         handleChannelResult(message.channel_result());
     } else if (message.has_keep_alive()) {
         handleKeepAlive(message.keep_alive());
+    } else if (message.has_enable_features()) {
+        handleEnableFeatures(message.enable_features());
+    } else if (message.has_features_enabled()) {
+        handleFeaturesEnabled(message.features_enabled());
     } else {
         qWarning() << "Unrecognized message on control channel; connection will be killed";
         closeChannel();
@@ -261,5 +265,20 @@ void ControlChannel::handleKeepAlive(const Data::Control::KeepAlive &message)
     } else {
         emit keepAliveResponse();
     }
+}
+
+void ControlChannel::handleEnableFeatures(const Data::Control::EnableFeatures &message)
+{
+    // This version does not support any features.
+    Data::Control::Packet responseMessage;
+    responseMessage.mutable_features_enabled();
+    sendMessage(responseMessage);
+}
+
+void ControlChannel::handleFeaturesEnabled(const Data::Control::FeaturesEnabled &message)
+{
+    // This version does not generate EnableFeatures messages, so receiving this is an error.
+    qDebug() << "Unexpectedly received FeaturesEnabled message from peer, but we never send EnableFeatures";
+    closeChannel();
 }
 
