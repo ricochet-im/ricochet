@@ -227,6 +227,10 @@ void ConnectionPrivate::socketDisconnected()
         wasClosed = true;
         emit q->closed();
     }
+
+    // Ensure that we never leak Connection objects by scheduling deletion here.
+    // Everything should be using QPointer on a stored Connection for safety.
+    q->deleteLater();
 }
 
 void ConnectionPrivate::socketReadable()

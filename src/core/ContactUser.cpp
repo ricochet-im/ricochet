@@ -578,7 +578,7 @@ void ContactUser::assignConnection(Protocol::Connection *connection)
      * If we cleared that immediately, it would be possible for the value to change
      * effectively any time we call into protocol code, which would be dangerous.
      */
-    connect(m_connection, &Protocol::Connection::closed, this, &ContactUser::onDisconnected, Qt::QueuedConnection);
+    connect(m_connection.data(), &Protocol::Connection::closed, this, &ContactUser::onDisconnected, Qt::QueuedConnection);
     onConnected();
 }
 
@@ -587,9 +587,9 @@ void ContactUser::clearConnection()
     if (!m_connection)
         return;
 
-    disconnect(m_connection, 0, this, 0);
+    disconnect(m_connection.data(), 0, this, 0);
     if (m_connection->isConnected()) {
-        connect(m_connection, &Protocol::Connection::closed, m_connection, &QObject::deleteLater);
+        connect(m_connection.data(), &Protocol::Connection::closed, m_connection.data(), &QObject::deleteLater);
         m_connection->close();
     } else {
         m_connection->deleteLater();

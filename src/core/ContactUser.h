@@ -37,6 +37,7 @@
 #include <QHash>
 #include <QMetaType>
 #include <QVariant>
+#include <QPointer>
 #include "utils/Settings.h"
 
 class UserIdentity;
@@ -44,10 +45,10 @@ class OutgoingContactRequest;
 class ConversationModel;
 
 #ifdef PROTOCOL_NEW
+#include "protocol/Connection.h"
 namespace Protocol
 {
     class OutboundConnector;
-    class Connection;
 }
 #else
 #include "protocol/ProtocolSocket.h"
@@ -97,7 +98,7 @@ public:
     explicit ContactUser(UserIdentity *identity, int uniqueID, QObject *parent = 0);
 
 #ifdef PROTOCOL_NEW
-    Protocol::Connection *connection() { return m_connection; }
+    Protocol::Connection *connection() { return m_connection.data(); }
 #else
     ProtocolSocket *conn() const { return m_conn; }
 #endif
@@ -172,8 +173,7 @@ private slots:
 
 private:
 #ifdef PROTOCOL_NEW
-    // XXX be paranoid about tracking deletion of m_connection
-    Protocol::Connection *m_connection;
+    QPointer<Protocol::Connection> m_connection;
     Protocol::OutboundConnector *m_outgoingSocket;
 #else
     ProtocolSocket *m_conn;
