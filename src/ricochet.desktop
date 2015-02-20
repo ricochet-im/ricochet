@@ -4,5 +4,6 @@ Type=Application
 Name=Ricochet IM
 Categories=Network;InstantMessaging;Chat;FileTransfer;Qt
 Comment=Anonymous instant messaging
+Icon=ricochet
 Exec=ricochet
 
