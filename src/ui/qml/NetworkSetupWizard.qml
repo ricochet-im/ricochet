@@ -80,7 +80,9 @@ ApplicationWindow {
 
         onHasErrorChanged: {
             if (hasError) {
-                visibleItem.visible = false
+                if (visibleItem)
+                    visibleItem.visible = false
+                pageLoader.visible = false
                 statusPage.visible = true
                 visibleItem = statusPage
             }
@@ -133,6 +135,8 @@ ApplicationWindow {
     }
 
     Behavior on height {
+        // This window animation causes bad graphical behavior on Windows with 5.4.1
+        enabled: Qt.platform.os !== "windows"
         SmoothedAnimation {
             easing.type: Easing.InOutQuad
             velocity: 1500
