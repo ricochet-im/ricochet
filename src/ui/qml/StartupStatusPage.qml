@@ -34,7 +34,7 @@ Column {
     TorLogDisplay {
         id: logDisplay
         width: parent.width
-        height: 300
+        height: text.length > 0 ? 300 : 0
     }
 
     RowLayout {
