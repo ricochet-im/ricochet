@@ -306,16 +306,17 @@ void AuthHiddenServiceChannel::handleProof(const Data::AuthHiddenService::Proof 
         }
     }
 
-    Data::AuthHiddenService::Packet resultMessage;
-    resultMessage.set_allocated_result(result.data());
-    sendMessage(resultMessage);
-
     if (result->accepted()) {
         connection()->grantAuthentication(Connection::HiddenServiceAuth, publicKey.torServiceID() + QStringLiteral(".onion"));
         d->accepted = true;
+        result->set_is_known_contact(connection()->purpose() == Connection::Purpose::KnownContact);
     } else {
         d->accepted = false;
     }
+
+    Data::AuthHiddenService::Packet resultMessage;
+    resultMessage.set_allocated_result(result.data());
+    sendMessage(resultMessage);
 
     // Clear QScopedPointer, value is now owned by the Packet
     result.take();
@@ -336,8 +337,10 @@ void AuthHiddenServiceChannel::handleResult(const Data::AuthHiddenService::Resul
     }
 
     if (message.accepted()) {
-        qDebug() << "AuthHiddenServiceChannel succeeded";
+        qDebug() << "AuthHiddenServiceChannel succeeded as" << (message.is_known_contact() ? "known" : "unknown") << "contact";
         d->accepted = true;
+        if (message.is_known_contact())
+            connection()->grantAuthentication(Connection::KnownToPeer);
     } else {
         qWarning() << "AuthHiddenServiceChannel rejected";
         d->accepted = false;

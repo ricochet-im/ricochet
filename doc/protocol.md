@@ -522,8 +522,14 @@ The recipient of this message must:
 ```protobuf
 message Result {
     required bool accepted = 1;
+    optional bool is_known_contact = 2;
 }
 ```
+
+If authentication is successful as a known contact, whose connection will be allowed to remain open
+without any further purpose, the *is_known_contact* flag must be set as true. If this flag is not
+set, the authenticating client should assume that it is not authorized (except e.g. to send a
+contact request).
 
 After sending *Result*, the channel should be closed.
 

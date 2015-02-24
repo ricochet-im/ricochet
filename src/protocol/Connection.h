@@ -139,7 +139,8 @@ public:
     template<typename T> QList<T*> findChannels(Channel::Direction direction = Channel::Invalid);
 
     enum AuthenticationType {
-        HiddenServiceAuth
+        HiddenServiceAuth,
+        KnownToPeer // For outbound connections, set when the peer indicates we are a known contact
     };
 
     bool hasAuthenticated(AuthenticationType type) const;
