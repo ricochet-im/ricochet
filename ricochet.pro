@@ -213,6 +213,7 @@ contains(DEFINES,PROTOCOL_NEW) {
 # QML
 RESOURCES += src/ui/qml/qml.qrc \
     icons/icons.qrc
+win32:RC_ICONS = icons/ricochet.ico
 OTHER_FILES += src/ui/qml/*
 lupdate_only {
     SOURCES += src/ui/qml/*.qml

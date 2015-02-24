@@ -18,6 +18,7 @@ VersionInfoDescription=Ricochet
 VersionInfoProductName=Ricochet
 WizardImageFile=SetupModern11.bmp
 ShowLanguageDialog=no
+SetupIconFile=..\..\icons\ricochet.ico
 [Files]
 Source: ricochet.exe; DestDir: {app}; DestName: ricochet.exe; Flags: replacesameversion
 Source: ..\..\LICENSE; DestDir: {app}
