@@ -169,7 +169,7 @@ bool ContactRequestChannel::allowInboundChannelRequest(const Data::Control::Open
     if (message.size() > Data::ContactRequest::MessageMaxCharacters ||
         !isAcceptableNickname(nickname))
     {
-        qDebug() << "Rejecting incoming contact request with invalid nickname/message";
+        qWarning() << "Rejecting incoming contact request with invalid nickname/message";
         result->set_error_message(QStringLiteral("Nickname or message is too long").toStdString());
         return false;
     }
@@ -266,6 +266,7 @@ void ContactRequestChannel::receivePacket(const QByteArray &packet)
 {
     Data::ContactRequest::Response response;
     if (!response.ParseFromArray(packet.constData(), packet.size())) {
+        qDebug() << "Invalid message received on contact request channel";
         closeChannel();
         return;
     }

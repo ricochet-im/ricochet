@@ -380,25 +380,40 @@ void IncomingContactRequest::setChannel(Protocol::ContactRequestChannel *channel
             {
                 qDebug() << "Closing connection attached to an IncomingContactRequest because ContactRequestChannel was closed";
                 connection->close();
-                // XXX How is connection cleared on close?
             }
         }
     );
 
+    /* Inbound requests are only valid on connections with an Unknown purpose, meaning
+     * they also haven't been claimed by any parent object other than the default. We're
+     * attaching this channel to the request, so we take ownership of the connection here
+     * and set its purpose to InboundRequest. That implicitly means that the channel is
+     * ours too - channels are always owned by the connection.
+     */
     qDebug() << "Assigning connection to IncomingContactRequest from" << m_hostname;
-    connection = channel->connection();
-    connection->setParent(this);
-    if (!connection->setPurpose(Protocol::Connection::Purpose::InboundRequest)) {
-        qDebug() << "Setting purpose on incoming contact request connection failed; killing connection";
-        connection->close();
-        connection = 0;
+    Protocol::Connection *newConnection = channel->connection();
+    if (!newConnection->setPurpose(Protocol::Connection::Purpose::InboundRequest)) {
+        qWarning() << "Setting purpose on incoming contact request connection failed; killing connection";
+        newConnection->close();
         return;
     }
 
-    emit hasActiveConnectionChanged();
+    newConnection->setParent(this);
+    connect(newConnection, &Protocol::Connection::closed, this,
+        [this,newConnection]() {
+            if (newConnection && !newConnection->isConnected()) {
+                newConnection->deleteLater();
+                if (newConnection == connection)
+                    connection.clear();
+            }
+        }
+    );
+
+    connection = newConnection;
 
     setNickname(channel->nickname());
     setMessage(channel->message());
+    emit hasActiveConnectionChanged();
 }
 #else
 void IncomingContactRequest::setConnection(ContactRequestServer *c)
@@ -441,12 +456,9 @@ void IncomingContactRequest::accept(ContactUser *user)
             if (connection->parent() != user) {
                 BUG() << "ContactUser didn't claim connection from incoming contact request";
                 connection->close();
-                // XXX We really shouldn't be putting Connection::deleteLater everywhere; clarify this behavior.
-                connection->deleteLater();
             }
         } else {
             connection->close();
-            connection->deleteLater();
         }
         connection.clear();
     }
@@ -454,8 +466,8 @@ void IncomingContactRequest::accept(ContactUser *user)
     user->settings()->write("remoteSecret", Base64Encode(remoteSecret()));
 
     if (connection) {
-        connection.data()->sendAccept(user);
-        connection = (ContactRequestServer*)0;
+        connection->sendAccept(user);
+        connection.clear();
     }
 #endif
 
