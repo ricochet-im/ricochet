@@ -63,13 +63,13 @@ QString LinkedText::parsed(const QString &input)
             continue;
 
         if (start > p)
-            re.append(input.mid(p, start - p).toHtmlEscaped());
+            re.append(input.mid(p, start - p).toHtmlEscaped().replace(QLatin1Char('\n'), QStringLiteral("<br/>")));
         re.append(QStringLiteral("<a href=\"%1\">%2</a>").arg(QString::fromLatin1(url.toEncoded()).toHtmlEscaped()).arg(match.capturedRef().toString().toHtmlEscaped()));
         p = match.capturedEnd();
     }
 
     if (p < input.size())
-        re.append(input.mid(p).toHtmlEscaped());
+        re.append(input.mid(p).toHtmlEscaped().replace(QLatin1Char('\n'), QStringLiteral("<br/>")));
 
     return re;
 }
