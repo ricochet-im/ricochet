@@ -20,3 +20,4 @@
 * Suelette Dreyfus
 * HD Moore
 * The Grugq
+* Lawrence Eastland - "R" icon

@@ -49,7 +49,11 @@ contains(DEFINES, RICOCHET_NO_PORTABLE) {
         target.path = /usr/bin
         shortcut.path = /usr/share/applications
         shortcut.files = src/ricochet.desktop
-        INSTALLS += target shortcut
+        icon.path = /usr/share/icons/hicolor/48x48/apps/
+        icon.files = icons/ricochet.png
+        scalable_icon.path = /usr/share/icons/hicolor/scalable/apps/
+        scalable_icon.files = icons/ricochet.svg
+        INSTALLS += target shortcut icon scalable_icon
 
         exists(tor) {
             message(Adding bundled Tor to installations)
@@ -69,6 +73,10 @@ macx {
         # Copy the entire tor/ directory, which should contain tor/tor (the binary itself)
         QMAKE_POST_LINK += cp -R $${_PRO_FILE_PWD_}/tor $${OUT_PWD}/$${TARGET}.app/Contents/MacOS/;
     }
+
+    icons.files = icons/Ricochet.icns
+    icons.path = Contents/Resources/
+    QMAKE_BUNDLE_DATA += icons
 }
 
 CONFIG += debug_and_release
@@ -203,7 +211,9 @@ contains(DEFINES,PROTOCOL_NEW) {
 }
 
 # QML
-RESOURCES += src/ui/qml/qml.qrc
+RESOURCES += src/ui/qml/qml.qrc \
+    icons/icons.qrc
+win32:RC_ICONS = icons/ricochet.ico
 OTHER_FILES += src/ui/qml/*
 lupdate_only {
     SOURCES += src/ui/qml/*.qml

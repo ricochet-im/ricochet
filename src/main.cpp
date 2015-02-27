@@ -38,6 +38,7 @@
 #include "utils/SecureRNG.h"
 #include "utils/Settings.h"
 #include <QApplication>
+#include <QIcon>
 #include <QLibraryInfo>
 #include <QSettings>
 #include <QTime>
@@ -59,6 +60,10 @@ int main(int argc, char *argv[])
     a.setApplicationVersion(QLatin1String("1.0.4"));
     a.setOrganizationName(QStringLiteral("Ricochet"));
     initTranslation();
+
+#if !defined(Q_OS_WIN) && !defined(Q_OS_MAC)
+    a.setWindowIcon(QIcon(QStringLiteral(":/icons/ricochet.svg")));
+#endif
 
     QScopedPointer<SettingsFile> settings(new SettingsFile);
     SettingsObject::setDefaultFile(settings.data());
