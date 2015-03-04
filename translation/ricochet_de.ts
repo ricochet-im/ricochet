@@ -1,4 +1,6 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS language="de" version="2.1">
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
+<TS version="2.1" language="de">
 <context>
     <name>AboutPreferences</name>
     <message>
@@ -307,7 +309,7 @@
     <message>
         <location filename="../src/ui/qml/MessageDialogWrapper.qml" line="10"/>
         <source>This contact will no longer be able to message you, and will be notified about the removal. They may choose to send a new connection request.</source>
-        <translation>Dieser Kontakt wird nicht Ihnen nicht mehr schreiben können, und wird über das Entfernen in Kenntnis gesetzt. Eine neue Verbindungsanfrage kann von ihm/ihr gesendet werden.</translation>
+        <translation type="unfinished">Dieser Kontakt wird Ihnen nicht mehr schreiben können, und wird über das Entfernen in Kenntnis gesetzt. Eine neue Verbindungsanfrage kann von ihm/ihr gesendet werden.</translation>
     </message>
 </context>
 <context>
@@ -390,7 +392,7 @@
     <message>
         <location filename="../src/core/OutgoingContactRequest.cpp" line="203"/>
         <source>An error occurred with the contact request (code: %1)</source>
-        <translation>Ein Fehler ist aufgetreten bei der Kontaktanfrage (code: %1)</translation>
+        <translation type="unfinished">Bei der Kontaktanfrage ist ein Fehler aufgetreten (code: %1)</translation>
     </message>
 </context>
 <context>
@@ -476,7 +478,7 @@
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="72"/>
         <source>Does this computer need a proxy to access the internet?</source>
-        <translation>Benötigt dieser Rechner einen Proxy, um sich zum Internet zu verbinden?</translation>
+        <translation type="unfinished">Benötigt der Rechner einen Proxy um sich mit dem Internet zu verbinden?</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="84"/>
