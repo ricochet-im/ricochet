@@ -303,8 +303,10 @@ static void initTranslation()
     QString resPath = QLatin1String(":/lang/");
 
     QLocale locale = QLocale::system();
-    if (!qgetenv("RICOCHET_LOCALE").isEmpty())
+    if (!qgetenv("RICOCHET_LOCALE").isEmpty()) {
         locale = QLocale(QString::fromLatin1(qgetenv("RICOCHET_LOCALE")));
+        qDebug() << "Forcing locale" << locale << "from environment" << locale.uiLanguages();
+    }
 
     ok = translator->load(locale, QStringLiteral("ricochet"), QStringLiteral("_"), appPath);
     if (!ok)
