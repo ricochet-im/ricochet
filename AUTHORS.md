@@ -5,12 +5,20 @@
 * Blueprint for Free Speech - https://blueprintforfreespeech.net/
 
 ### Translations
-* HostFat - Italian
-* GIANNAT - Italian
-* strel - Spanish
-* Mikkel Kroman - Danish
-* swperman - Portuguese (Brazil)
-* Daniel James Smith (@djsmith85) - German
+* Bulgarian - ivopetkovcz
+* Czech - Einfach
+* Danish - Mikkel Kroman
+* Dutch - mijnheer, Meternalf
+* Finnish - reviewjolla
+* French - rike, Creaprog, CrumpyGat, Jordi, franck99
+* German - djsmith85, rike
+* Italian - HostFat, GIANNAT
+* Portuguese (Brazil) - swperman
+* Russian - vla8752, qualte
+* Spanish - strel
+* Tagalog - taskmaster
+* Turkish - cbolat, basarancaner
+* Ukrainian - l3rixon, nergal
 
 ### Thanks
 * Helder Ribeiro (@obvio171) - "Ricochet"
