@@ -11,8 +11,9 @@ ApplicationWindow {
     maximumWidth: width
     minimumHeight: height
     maximumHeight: height
-    flags: Qt.Dialog
+    flags: styleHelper.dialogWindowFlags
     modality: Qt.WindowModal
+    title: mainWindow.title
 
     signal closed
     onVisibleChanged: if (!visible) closed()
