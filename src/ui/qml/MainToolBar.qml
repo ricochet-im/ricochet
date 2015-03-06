@@ -6,6 +6,8 @@ import im.ricochet 1.0
 ToolBar {
     Layout.minimumWidth: 200
     Layout.fillWidth: true
+    // Necessary to avoid oversized toolbars, e.g. OS X with Qt 5.4.1
+    implicitHeight: toolBarLayout.height + __style.padding.top + __style.padding.bottom
 
     property Action addContact: addContactAction
     property Action preferences: preferencesAction
