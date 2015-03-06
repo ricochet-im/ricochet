@@ -9,12 +9,18 @@
 PROTOC = protoc
 
 unix {
-    CONFIG += link_pkgconfig
-    PKGCONFIG += protobuf
+    PKG_CONFIG = $$pkgConfigExecutable()
+
+    !contains(QT_CONFIG, no-pkg-config) {
+        CONFIG += link_pkgconfig
+        PKGCONFIG += protobuf
+    } else {
+        # Some SDK builds (e.g. OS X 5.4.1) are no-pkg-config, so try to hack the linker flags in.
+        QMAKE_LFLAGS += $$system($$PKG_CONFIG --libs protobuf)
+    }
 
     gcc|clang {
         # Add -isystem for protobuf includes to suppress some loud compiler warnings in their headers
-        PKG_CONFIG = $$pkgConfigExecutable()
         PROTOBUF_CFLAGS = $$system($$PKG_CONFIG --cflags protobuf)
         PROTOBUF_CFLAGS ~= s/^(?!-I).*//g
         PROTOBUF_CFLAGS ~= s/^-I(.*)/-isystem \\1/g
