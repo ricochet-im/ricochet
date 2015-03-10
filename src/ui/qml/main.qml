@@ -111,6 +111,7 @@ QtObject {
 
             property int pointSize: (Qt.platform.os === "windows") ? 10 : fakeLabel.font.pointSize
             property int textHeight: fakeLabelSized.height
+            property int dialogWindowFlags: Qt.Dialog | Qt.WindowSystemMenuHint | Qt.WindowTitleHint | Qt.WindowCloseButtonHint
         },
 
         Timer {
