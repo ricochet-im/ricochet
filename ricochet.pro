@@ -66,8 +66,18 @@ contains(DEFINES, RICOCHET_NO_PORTABLE) {
 }
 
 macx {
-    CONFIG += bundle
-    QMAKE_INFO_PLIST = src/Info.plist
+    CONFIG += bundle force_debug_plist
+
+    # Qt 5.4 introduces a bug that breaks QMAKE_INFO_PLIST when qmake has a relative path.
+    # Work around by copying Info.plist directly.
+    greaterThan(QT_MAJOR_VERSION,5)|greaterThan(QT_MINOR_VERSION,4) {
+        QMAKE_INFO_PLIST = src/Info.plist
+    } else:equals(QT_MAJOR_VERSION,5):lessThan(QT_MINOR_VERSION,4) {
+        QMAKE_INFO_PLIST = src/Info.plist
+    } else {
+        CONFIG += no_plist
+        QMAKE_POST_LINK += cp $${_PRO_FILE_PWD_}/src/Info.plist $${OUT_PWD}/$${TARGET}.app/Contents/;
+    }
 
     exists(tor) {
         # Copy the entire tor/ directory, which should contain tor/tor (the binary itself)
