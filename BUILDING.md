@@ -4,6 +4,8 @@ These instructions are intended for people who wish to build or modify Ricochet 
 
 Clone with git from `https://github.com/ricochet-im/ricochet.git`, or download source packages [on github](https://github.com/ricochet-im/ricochet/releases). Then proceed to instructions for your platform.
 
+If you're interested in helping to package Ricochet for common Linux platforms, please get in touch!
+
 ## Hints
 
 Add `CONFIG+=debug` or `CONFIG+=release` to the qmake command for a debug or release build. Debug builds enable logging to standard output, and shouldn't be used in sensitive environments.
@@ -15,6 +17,7 @@ By default, Ricochet will be portable, and configuration is stored in a folder n
 You will need:
  * Qt >= 5.1.0
  * OpenSSL (libcrypto)
+ * pkg-config
  * Protocol Buffers (libprotobuf, protoc)
 
 #### Fedora
@@ -23,7 +26,7 @@ yum install make gcc-c++ protobuf-devel protobuf-compiler openssl-devel
 yum install qt5-qtbase qt5-qttools-devel qt5-qttools qt5-qtquickcontrols qt5-qtdeclarative qt5-qtbase-devel qt5-qtbase-gui qt5-qtdeclarative-devel
 yum install tor # or build your own
 ```
-#### Ubuntu 14.04 or later
+#### Debian & Ubuntu
 ```sh
 apt-get install build-essential libssl-dev pkg-config libprotobuf-dev protobuf-compiler
 apt-get install qt5-qmake qt5-default qtbase5-dev qttools5-dev-tools qtdeclarative5-dev qtdeclarative5-controls-plugin
