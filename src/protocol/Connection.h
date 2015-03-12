@@ -172,6 +172,10 @@ signals:
      * protocol version that both peers will accept. The socket will be closed.
      */
     void versionNegotiationFailed();
+    /* Hack to allow delivering an upgrade message to old clients
+     * XXX: Remove this once enough time has passed for most clients to be upgraded.
+     */
+    void oldVersionNegotiated(QTcpSocket *socket);
 
     void authenticated(AuthenticationType type, const QString &identity);
     void purposeChanged(Purpose after, Purpose before);

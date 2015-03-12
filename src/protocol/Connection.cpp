@@ -176,8 +176,8 @@ void ConnectionPrivate::setSocket(QTcpSocket *s, Connection::Direction d)
         q->grantAuthentication(Connection::HiddenServiceAuth, serverName);
 
         // Send the introduction version handshake message
-        char intro[4] = { 0x49, 0x4D, 0x01, ProtocolVersion };
-        if (socket->write(intro, sizeof(intro)) < 4) {
+        char intro[] = { 0x49, 0x4D, 0x02, ProtocolVersion, 0 };
+        if (socket->write(intro, sizeof(intro)) < (int)sizeof(intro)) {
             qDebug() << "Failed writing introduction message to socket";
             q->close();
             return;
@@ -244,7 +244,12 @@ void ConnectionPrivate::socketReadable()
             }
 
             handshakeDone = true;
-            if (version != ProtocolVersion) {
+            if (version == 0) {
+                qDebug() << "Server in outbound connection is using the version 1.0 protocol";
+                emit q->oldVersionNegotiated(socket);
+                q->close();
+                return;
+            } else if (version != ProtocolVersion) {
                 qDebug() << "Version negotiation failed on outbound connection";
                 emit q->versionNegotiationFailed();
                 socket->abort();

@@ -264,7 +264,7 @@ void OutboundConnectorPrivate::onConnected()
             setError(QStringLiteral("Protocol version negotiation failed with peer"));
         }
     );
-
+    connect(connection, &Connection::oldVersionNegotiated, q, &OutboundConnector::oldVersionNegotiated);
     setStatus(OutboundConnector::Initializing);
 }
 

@@ -95,6 +95,12 @@ signals:
     void statusChanged();
     void isActiveChanged();
 
+    /* Hack to allow sending an upgrade message to peers with old
+     * software versions that don't have a good way to handle this
+     * sort of situation.
+     */
+    void oldVersionNegotiated(QTcpSocket *socket);
+
 private:
     OutboundConnectorPrivate *d;
 };
