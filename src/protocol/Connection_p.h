@@ -47,6 +47,8 @@ class ConnectionPrivate : public QObject
     Q_DISABLE_COPY(ConnectionPrivate)
 
 public:
+    static const quint8 ProtocolVersion = 1;
+    static const quint8 ProtocolVersionFailed = 0xff;
     static const int PacketHeaderSize = 4;
     static const int PacketMaxDataSize = UINT16_MAX - PacketHeaderSize;
     // Time in seconds before a connection with a purpose of Unknown is killed
@@ -63,6 +65,7 @@ public:
     Connection::Direction direction;
     Connection::Purpose purpose;
     bool wasClosed;
+    bool handshakeDone;
 
     void setSocket(QTcpSocket *socket, Connection::Direction direction);
 

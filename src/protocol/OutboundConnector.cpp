@@ -74,6 +74,7 @@ public:
 
 public slots:
     void onConnected();
+    void startAuthentication();
     void abort();
     void retryAfterError();
 };
@@ -256,6 +257,25 @@ void OutboundConnectorPrivate::onConnected()
     socket->setReconnectEnabled(false);
     socket = 0;
 
+    connect(connection, &Connection::ready, this, &OutboundConnectorPrivate::startAuthentication);
+    // XXX Needs special treatment in UI (along with some other error types here)
+    connect(connection, &Connection::versionNegotiationFailed, this,
+        [this]() {
+            setError(QStringLiteral("Protocol version negotiation failed with peer"));
+        }
+    );
+
+    setStatus(OutboundConnector::Initializing);
+}
+
+void OutboundConnectorPrivate::startAuthentication()
+{
+    if (!connection || status != OutboundConnector::Initializing) {
+        BUG() << "OutboundConnector startAuthentication in an unexpected state";
+        setError(QStringLiteral("Connected in an unexpected state"));
+        return;
+    }
+
     if (!authPrivateKey.isLoaded() || !authPrivateKey.isPrivate()) {
         setError(QStringLiteral("Cannot authenticate outbound connection without a valid private key"));
         return;
@@ -286,8 +306,6 @@ void OutboundConnectorPrivate::onConnected()
     authChannel->setPrivateKey(authPrivateKey);
     if (!authChannel->openChannel()) {
         setError(QStringLiteral("Unable to open authentication channel"));
-    } else {
-        setStatus(OutboundConnector::Initializing);
     }
 }
 

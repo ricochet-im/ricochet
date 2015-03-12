@@ -54,6 +54,7 @@ ConnectionPrivate::ConnectionPrivate(Connection *qq)
     , direction(Connection::ClientSide)
     , purpose(Connection::Purpose::Unknown)
     , wasClosed(false)
+    , handshakeDone(false)
     , nextOutboundChannelId(-1)
 {
     ageTimer.start();
@@ -173,6 +174,14 @@ void ConnectionPrivate::setSocket(QTcpSocket *s, Connection::Direction d)
         }
 
         q->grantAuthentication(Connection::HiddenServiceAuth, serverName);
+
+        // Send the introduction version handshake message
+        char intro[4] = { 0x49, 0x4D, 0x01, ProtocolVersion };
+        if (socket->write(intro, sizeof(intro)) < 4) {
+            qDebug() << "Failed writing introduction message to socket";
+            q->close();
+            return;
+        }
     }
 }
 
@@ -222,6 +231,86 @@ void ConnectionPrivate::socketDisconnected()
 
 void ConnectionPrivate::socketReadable()
 {
+    if (!handshakeDone) {
+        qint64 available = socket->bytesAvailable();
+
+        if (direction == Connection::ClientSide && available >= 1) {
+            // Expecting a single byte in response with the chosen version
+            uchar version = ProtocolVersionFailed;
+            if (socket->read(reinterpret_cast<char*>(&version), 1) < 1) {
+                qDebug() << "Connection socket error" << socket->error() << "during read:" << socket->errorString();
+                socket->abort();
+                return;
+            }
+
+            handshakeDone = true;
+            if (version != ProtocolVersion) {
+                qDebug() << "Version negotiation failed on outbound connection";
+                emit q->versionNegotiationFailed();
+                socket->abort();
+                return;
+            } else
+                emit q->ready();
+        } else if (direction == Connection::ServerSide && available >= 3) {
+            // Expecting at least 3 bytes
+            uchar intro[3] = { 0 };
+            qint64 re = socket->peek(reinterpret_cast<char*>(intro), sizeof(intro));
+            if (re < (int)sizeof(intro)) {
+                qDebug() << "Connection socket error" << socket->error() << "during read:" << socket->errorString();
+                socket->abort();
+                return;
+            }
+
+            quint8 nVersions = intro[2];
+            if (intro[0] != 0x49 || intro[1] != 0x4D || nVersions == 0) {
+                qDebug() << "Invalid introduction sequence on inbound connection";
+                socket->abort();
+                return;
+            }
+
+            if (available < (qint64)sizeof(intro) + nVersions)
+                return;
+
+            // Discard intro header
+            re = socket->read(reinterpret_cast<char*>(intro), sizeof(intro));
+
+            QByteArray versions(nVersions, 0);
+            re = socket->read(versions.data(), versions.size());
+            if (re != versions.size()) {
+                qDebug() << "Connection socket error" << socket->error() << "during read:" << socket->errorString();
+                socket->abort();
+                return;
+            }
+
+            quint8 selectedVersion = ProtocolVersionFailed;
+            foreach (quint8 v, versions) {
+                if (v == ProtocolVersion) {
+                    selectedVersion = v;
+                    break;
+                }
+            }
+
+            re = socket->write(reinterpret_cast<char*>(&selectedVersion), 1);
+            if (re != 1) {
+                qDebug() << "Connection socket error" << socket->error() << "during write:" << socket->errorString();
+                socket->abort();
+                return;
+            }
+
+            handshakeDone = true;
+            if (selectedVersion != ProtocolVersion) {
+                qDebug() << "Version negotiation failed on inbound connection";
+                emit q->versionNegotiationFailed();
+                // Close gracefully to allow the response to write
+                q->close();
+                return;
+            } else
+                emit q->ready();
+        } else {
+            return;
+        }
+    }
+
     qint64 available;
     while ((available = socket->bytesAvailable()) >= PacketHeaderSize) {
         uchar header[PacketHeaderSize];
