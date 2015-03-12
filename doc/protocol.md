@@ -129,6 +129,38 @@ document:
 
 ## Specification
 
+### Introduction and version negotiation
+
+Immediately after establishing a connection, the client side must send an introduction message
+identifying versions of the protocol that it is able to use. The server responds with one of
+those versions, or an error indicating that no compatible version exists.
+
+This step exists to enable smoother protocol changes in the future, and for better compatibility
+with old clients.
+
+The client begins the connection by sending the following raw sequence of bytes:
+
+```
+0x49
+0x4D
+nVersions          // One byte, number of supported protocol versions
+nVersions times:
+    version        // One byte, protocol version number
+```
+
+The total size is 3 plus the number of supported versions bytes. The server side of the connection
+must respond with a single byte for the selected version number, or 0xFF if no suitable version
+is found.
+
+This document describes protocol version 1. Known versions are:
+```
+0                  The Ricochet 1.0 protocol
+1                  This document
+```
+
+If the negotiation is successful, the connection can be immediately used to begin exchanging messages
+(the packet layer, below).
+
 ### Packet layer
 
 The base layer on the connection is a trivial packet structure:
