@@ -80,16 +80,21 @@ public:
 signals:
     void contactAdded(ContactUser *user);
     void outgoingRequestAdded(OutgoingContactRequest *request);
+#ifndef PROTOCOL_NEW
     /* Hack to allow creating models/windows/etc to handle other signals before they're
      * emitted; primarily, to allow UI to create models to handle incomingChatMessage */
     void prepareInteractiveHandler(ContactUser *user);
+#endif
 
     void unreadCountChanged(ContactUser *user, int unreadCount);
 
 private slots:
     void contactDeleted(ContactUser *user);
-    void onPrepareInteractiveHandler();
     void onUnreadCountChanged();
+
+#ifndef PROTOCOL_NEW
+    void onPrepareInteractiveHandler();
+#endif
 
 private:
     QList<ContactUser*> pContacts;

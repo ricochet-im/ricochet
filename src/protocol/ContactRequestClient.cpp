@@ -247,7 +247,9 @@ bool ContactRequestClient::handleResponse()
         emit accepted();
 
         socket->disconnect(this);
+#ifndef PROTOCOL_NEW
         user->incomingProtocolSocket(socket);
+#endif
         Q_ASSERT(socket->parent() != this);
         socket = 0;
 

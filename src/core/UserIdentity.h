@@ -42,7 +42,16 @@ namespace Tor
     class HiddenService;
 }
 
+#ifdef PROTOCOL_NEW
+namespace Protocol
+{
+    class Connection;
+}
+
+class QTcpServer;
+#else
 class IncomingSocket;
+#endif
 
 /* UserIdentity represents the local identity offered by the user.
  *
@@ -97,17 +106,31 @@ signals:
     void contactIDChanged(); // only possible during creation
     void nicknameChanged();
     void settingsChanged(const QString &key);
+#ifdef PROTOCOL_NEW
+    void incomingConnection(Protocol::Connection *connection);
+#endif
 
 private slots:
     void onStatusChanged(int newStatus, int oldStatus);
     void onSettingsModified(const QString &key, const QJsonValue &value);
+#ifdef PROTOCOL_NEW
+    void onIncomingConnection();
+#endif
 
 private:
     SettingsObject *m_settings;
     Tor::HiddenService *m_hiddenService;
+#ifdef PROTOCOL_NEW
+    QTcpServer *m_incomingServer;
+#else
     IncomingSocket *incomingSocket;
+#endif
 
     static UserIdentity *createIdentity(int uniqueID, const QString &dataDirectory = QString());
+
+#ifdef PROTOCOL_NEW
+    void handleIncomingAuthedConnection(Protocol::Connection *connection);
+#endif
 };
 
 Q_DECLARE_METATYPE(UserIdentity*)

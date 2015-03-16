@@ -36,8 +36,13 @@ ApplicationWindow {
     Connections {
         target: userIdentity.contacts
         onUnreadCountChanged: {
-            if (unreadCount > 0 && !ContactWindow.windowExists(user))
-                window.alert(0)
+            if (unreadCount > 0) {
+                if (!uiSettings.data.combinedChatWindow) {
+                    var cwindow = ContactWindow.getWindow(user)
+                    cwindow.alert(0)
+                } else if (!ContactWindow.windowExists(user))
+                    window.alert(0)
+            }
         }
     }
 

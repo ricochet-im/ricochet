@@ -34,23 +34,33 @@
 #include "UserIdentity.h"
 #include "ContactsManager.h"
 #include "utils/SecureRNG.h"
-#include "protocol/GetSecretCommand.h"
-#include "protocol/ChatMessageCommand.h"
-#include "protocol/OutgoingContactSocket.h"
-#include "protocol/ProtocolConstants.h"
 #include "core/ContactIDValidator.h"
 #include "core/OutgoingContactRequest.h"
 #include "core/ConversationModel.h"
+#include "tor/HiddenService.h"
 #include <QtDebug>
 #include <QDateTime>
+
+#ifdef PROTOCOL_NEW
+#include "protocol/OutboundConnector.h"
+#include "utils/Useful.h"
+#else
+#include "protocol/GetSecretCommand.h"
+#include "protocol/ChatMessageCommand.h"
+#include "protocol/ProtocolConstants.h"
+#include "protocol/OutgoingContactSocket.h"
+#endif
 
 ContactUser::ContactUser(UserIdentity *ident, int id, QObject *parent)
     : QObject(parent)
     , identity(ident)
     , uniqueID(id)
+#ifdef PROTOCOL_NEW
+    , m_connection(0)
+#endif
+    , m_outgoingSocket(0)
     , m_lastReceivedChatID(0)
     , m_contactRequest(0)
-    , m_outgoingSocket(0)
     , m_settings(0)
     , m_conversation(0)
 {
@@ -62,9 +72,11 @@ ContactUser::ContactUser(UserIdentity *ident, int id, QObject *parent)
     m_conversation = new ConversationModel(this);
     m_conversation->setContact(this);
 
+#ifndef PROTOCOL_NEW
     m_conn = new ProtocolSocket(this);
     connect(m_conn, SIGNAL(connected()), this, SLOT(onConnected()));
     connect(m_conn, SIGNAL(disconnected()), this, SLOT(onDisconnected()));
+#endif
 
     loadContactRequest();
     updateStatus();
@@ -88,8 +100,10 @@ ContactUser *ContactUser::addNewContact(UserIdentity *identity, int id)
     ContactUser *user = new ContactUser(identity, id);
     user->settings()->write("whenCreated", QDateTime::currentDateTime());
 
+#ifndef PROTOCOL_NEW
     /* Generate the local secret and set it */
     user->settings()->write("localSecret", Base64Encode(SecureRNG::random(16)));
+#endif
 
     return user;
 }
@@ -106,7 +120,11 @@ void ContactUser::updateStatus()
             newStatus = RequestPending;
         }
     } else {
+#ifdef PROTOCOL_NEW
+        newStatus = m_connection && m_connection->isConnected() ? Online : Offline;
+#else
         newStatus = m_conn->isConnected() ? Online : Offline;
+#endif
     }
 
     if (newStatus == m_status)
@@ -115,8 +133,12 @@ void ContactUser::updateStatus()
     m_status = newStatus;
     emit statusChanged();
 
+#ifdef PROTOCOL_NEW
+    updateOutgoingSocket();
+#else
     if (m_status == Offline)
-        setupOutgoingSocket();
+        updateOutgoingSocket();
+#endif
 }
 
 void ContactUser::onSettingsModified(const QString &key, const QJsonValue &value)
@@ -126,17 +148,50 @@ void ContactUser::onSettingsModified(const QString &key, const QJsonValue &value
         emit nicknameChanged();
 }
 
-void ContactUser::setupOutgoingSocket()
+void ContactUser::updateOutgoingSocket()
 {
-    if (m_status != Offline)
+    if (m_status != Offline
+#ifdef PROTOCOL_NEW
+        && m_status != RequestPending
+#endif
+        )
+    {
+        if (m_outgoingSocket) {
+#ifdef PROTOCOL_NEW
+            m_outgoingSocket->disconnect(this);
+            m_outgoingSocket->abort();
+#endif
+            m_outgoingSocket->deleteLater();
+            m_outgoingSocket = 0;
+        }
         return;
-
-    QByteArray secret = m_settings->read<Base64Encode>("remoteSecret");
-    if (secret.isEmpty() || hostname().isEmpty() || !port())
-        return;
+    }
 
     // Refuse to make outgoing connections to the local hostname
     if (hostname() == identity->hostname())
+        return;
+
+#ifdef PROTOCOL_NEW
+    if (m_outgoingSocket && m_outgoingSocket->status() == Protocol::OutboundConnector::Ready) {
+        BUG() << "Called updateOutgoingSocket with an existing socket in Ready. This should've been deleted.";
+        m_outgoingSocket->disconnect(this);
+        m_outgoingSocket->deleteLater();
+        m_outgoingSocket = 0;
+    }
+
+    if (!m_outgoingSocket) {
+        m_outgoingSocket = new Protocol::OutboundConnector(this);
+        m_outgoingSocket->setAuthPrivateKey(identity->hiddenService()->cryptoKey());
+        connect(m_outgoingSocket, &Protocol::OutboundConnector::ready, this,
+            [this]() {
+                assignConnection(m_outgoingSocket->takeConnection(this));
+            }
+        );
+    }
+
+#else
+    QByteArray secret = m_settings->read<Base64Encode>("remoteSecret");
+    if (secret.isEmpty() || hostname().isEmpty() || !port())
         return;
 
     if (!m_outgoingSocket) {
@@ -147,6 +202,8 @@ void ContactUser::setupOutgoingSocket()
     }
 
     m_outgoingSocket->setAuthentication(Protocol::PurposePrimary, secret);
+#endif
+
     m_outgoingSocket->connectToHost(hostname(), port());
 }
 
@@ -154,8 +211,7 @@ void ContactUser::onConnected()
 {
     m_settings->write("lastConnected", QDateTime::currentDateTime());
 
-    if (m_contactRequest)
-    {
+    if (m_contactRequest) {
         qDebug() << "Implicitly accepting outgoing contact request for" << uniqueID << "from primary connection";
 
         m_contactRequest->accept();
@@ -163,12 +219,14 @@ void ContactUser::onConnected()
         Q_ASSERT(status() != RequestPending);
     }
 
+#ifndef PROTOCOL_NEW
     if (m_settings->read("remoteSecret") == QJsonValue::Undefined)
     {
         qDebug() << "Requesting remote secret from user" << uniqueID;
         GetSecretCommand *command = new GetSecretCommand(this);
         command->send(conn());
     }
+#endif
 
     updateStatus();
     emit connected();
@@ -178,6 +236,20 @@ void ContactUser::onDisconnected()
 {
     qDebug() << "Contact" << uniqueID << "disconnected";
     m_settings->write("lastConnected", QDateTime::currentDateTime());
+
+#ifdef PROTOCOL_NEW
+    if (m_connection) {
+        if (m_connection->isConnected()) {
+            BUG() << "onDisconnected called, but connection is still connected";
+            return;
+        }
+
+        m_connection->deleteLater();
+        m_connection = 0;
+    } else {
+        BUG() << "onDisconnected called without a connection";
+    }
+#endif
 
     updateStatus();
     emit disconnected();
@@ -221,7 +293,7 @@ void ContactUser::setHostname(const QString &hostname)
         fh.append(QLatin1String(".onion"));
 
     m_settings->write("hostname", fh);
-    setupOutgoingSocket();
+    updateOutgoingSocket();
 }
 
 void ContactUser::deleteContact()
@@ -231,8 +303,7 @@ void ContactUser::deleteContact()
 
     qDebug() << "Deleting contact" << uniqueID;
 
-    if (m_contactRequest)
-    {
+    if (m_contactRequest) {
         qDebug() << "Cancelling request associated with contact to be deleted";
         m_contactRequest->cancel();
         m_contactRequest->deleteLater();
@@ -240,9 +311,11 @@ void ContactUser::deleteContact()
 
     emit contactDeleted(this);
 
+#ifndef PROTOCOL_NEW
     m_conn->disconnect();
     delete m_conn;
     m_conn = 0;
+#endif
 
     m_settings->undefine();
     deleteLater();
@@ -257,6 +330,7 @@ void ContactUser::requestRemoved()
     }
 }
 
+#ifndef PROTOCOL_NEW
 static bool isOutgoing(QTcpSocket *socket)
 {
     return socket->inherits("Tor::TorSocket");
@@ -277,7 +351,8 @@ void ContactUser::incomingProtocolSocket(QTcpSocket *socket)
      *   onion-formatted hostname is considered less by a strcmp function.
      */
 
-    if (!isOutgoing(socket) && m_outgoingSocket && !m_outgoingSocket->isAuthenticationPending()) {
+    if (!isOutgoing(socket) && m_outgoingSocket && !m_outgoingSocket->isAuthenticationPending())
+    {
         // Abort connection attempt and use this socket
         m_outgoingSocket->disconnect();
         m_outgoingSocket->deleteLater();
@@ -307,4 +382,133 @@ void ContactUser::incomingProtocolSocket(QTcpSocket *socket)
         m_outgoingSocket = 0;
     }
 }
+#else
+void ContactUser::assignConnection(Protocol::Connection *connection)
+{
+    if (connection == m_connection) {
+        BUG() << "Connection is already assigned to this ContactUser";
+        return;
+    }
 
+    if (qobject_cast<ContactUser*>(connection->parent()) && connection->parent() != this) {
+        BUG() << "Connection is already owned by another ContactUser";
+        connection->close();
+        return;
+    }
+
+    connection->setParent(this);
+    bool isOutbound = connection->direction() == Protocol::Connection::ClientSide;
+
+    if (!connection->isConnected()) {
+        BUG() << "Connection assigned to contact but isn't connected; discarding";
+        connection->close();
+        connection->deleteLater();
+        return;
+    }
+
+    if (!connection->hasAuthenticatedAs(Protocol::Connection::HiddenServiceAuth, hostname())) {
+        BUG() << "Connection assigned to contact without matching authentication";
+        connection->close();
+        connection->deleteLater();
+        return;
+    }
+
+    if (m_connection && !m_connection->isConnected()) {
+        qDebug() << "Replacing dead connection with new connection";
+        clearConnection();
+    }
+
+    /* To resolve a race if two contacts try to connect at the same time:
+     *
+     * If the existing connection is in the same direction as the new one,
+     * always use the new one.
+     */
+    if (m_connection && connection->direction() == m_connection->direction()) {
+        qDebug() << "Replacing existing connection with contact because the new one goes the same direction";
+        clearConnection();
+    }
+
+    /* If the existing connection is more than 30 seconds old, measured from
+     * when it was successfully established, it's replaced with the new one.
+     */
+    if (m_connection && m_connection->age() > 30) {
+        qDebug() << "Replacing existing connection with contact because it's more than 30 seconds old";
+        clearConnection();
+    }
+
+    /* Otherwise, close the connection for which the server's onion-formatted
+     * hostname compares less with a strcmp function
+     */
+    bool preferOutbound = QString::compare(hostname(), identity->hostname()) < 0;
+    if (m_connection) {
+        if (isOutbound == preferOutbound) {
+            // New connection wins
+            clearConnection();
+        } else {
+            // Old connection wins
+            qDebug() << "Closing new connection with contact because the old connection won comparison";
+            connection->close();
+            connection->deleteLater();
+            return;
+        }
+    }
+
+     /* If this connection is inbound and we have an outgoing connection attempt,
+      * use the inbound connection if we haven't sent authentication yet, or if
+      * we would lose the strcmp comparison above.
+      */
+    if (!isOutbound && m_outgoingSocket) {
+        if (m_outgoingSocket->status() != Protocol::OutboundConnector::Authenticating || !preferOutbound) {
+            // Inbound connection wins; outbound connection attempt will abort when status changes
+            qDebug() << "Aborting outbound connection attempt because we got an inbound connection instead";
+        } else {
+            // Outbound attempt wins
+            qDebug() << "Closing inbound connection with contact because the pending outbound connection won comparison";
+            connection->close();
+            connection->deleteLater();
+            return;
+        }
+    }
+
+    if (m_connection) {
+        BUG() << "After resolving connection races, ContactUser still has two connections";
+        connection->close();
+        connection->deleteLater();
+        return;
+    }
+
+    qDebug() << "Assigned" << (isOutbound ? "outbound" : "inbound") << "connection to contact" << uniqueID;
+    if (!connection->setPurpose(Protocol::Connection::Purpose::KnownContact)) {
+        qWarning() << "BUG: Failed setting connection purpose";
+        connection->close();
+        connection->deleteLater();
+        return;
+    }
+
+    m_connection = connection;
+
+    /* Use a queued connection to onDisconnected, because it clears m_connection.
+     * If we cleared that immediately, it would be possible for the value to change
+     * effectively any time we call into protocol code, which would be dangerous.
+     */
+    connect(m_connection, &Protocol::Connection::closed, this, &ContactUser::onDisconnected, Qt::QueuedConnection);
+    onConnected();
+}
+
+void ContactUser::clearConnection()
+{
+    if (!m_connection)
+        return;
+
+    disconnect(m_connection, 0, this, 0);
+    if (m_connection->isConnected()) {
+        connect(m_connection, &Protocol::Connection::closed, m_connection, &QObject::deleteLater);
+        m_connection->close();
+    } else {
+        m_connection->deleteLater();
+    }
+
+    m_connection = 0;
+}
+
+#endif
