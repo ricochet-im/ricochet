@@ -27,24 +27,62 @@ Item {
             }
         ]
 
-        GridLayout {
+        ColumnLayout {
             id: contactInfo
             visible: contact !== null
-            columns: 2
             Layout.fillHeight: true
             Layout.fillWidth: true
 
             property QtObject contact: contacts.selectedContact
             property QtObject request: (contact !== null) ? contact.contactRequest : null
 
-            Label { text: qsTr("Nickname:") }
-            TextField {
+            Item { height: 1; width: 1 }
+            Label {
+                id: nickname
                 Layout.fillWidth: true
                 text: visible ? contactInfo.contact.nickname : ""
-                onAccepted: contactInfo.contact.nickname = text
-            }
+                horizontalAlignment: Qt.AlignHCenter
+                font.pointSize: styleHelper.pointSize + 1
 
-            Label { text: qsTr("ID:") }
+                property bool renameMode
+                property Item renameItem
+                onRenameModeChanged: {
+                    if (renameMode && renameItem === null) {
+                        renameItem = renameComponent.createObject(nickname)
+                        renameItem.forceActiveFocus()
+                        renameItem.selectAll()
+                    } else if (!renameMode && renameItem !== null) {
+                        renameItem.focus = false
+                        renameItem.visible = false
+                        renameItem.destroy()
+                        renameItem = null
+                    }
+                }
+
+                MouseArea { anchors.fill: parent; onDoubleClicked: nickname.renameMode = true }
+
+                Component {
+                    id: renameComponent
+
+                    TextField {
+                        id: nameField
+                        anchors {
+                            left: parent.left
+                            right: parent.right
+                            verticalCenter: parent.verticalCenter
+                        }
+                        text: contactInfo.contact.nickname
+                        horizontalAlignment: nickname.horizontalAlignment
+                        font.pointSize: nickname.font.pointSize
+                        onEditingFinished: {
+                            contactInfo.contact.nickname = text
+                            nickname.renameMode = false
+                        }
+                    }
+                }
+            }
+            Item { height: 1; width: 1 }
+
             ContactIDField {
                 Layout.fillWidth: true
                 Layout.minimumWidth: 100
@@ -52,52 +90,57 @@ Item {
                 text: visible ? contactInfo.contact.contactID : ""
             }
 
-            Label { text: qsTr("Date added:") }
-            Label {
+            GridLayout {
                 Layout.fillWidth: true
-                elide: Text.ElideRight
-                text: visible ? Qt.formatDate(contactInfo.contact.settings.read("whenCreated"), Qt.DefaultLocaleLongDate) : ""
-            }
+                columns: 2
 
-            Label { text: qsTr("Last seen:"); visible: lastSeen.visible }
-            Label {
-                id: lastSeen
-                Layout.fillWidth: true
-                elide: Text.ElideRight
-                visible: contactInfo.request === null
-                text: visible ? Qt.formatDateTime(contactInfo.contact.settings.read("lastConnected"), Qt.DefaultLocaleLongDate) : ""
-            }
-
-            Label { text: qsTr("Request:"); visible: requestStatus.visible }
-            Label {
-                id: requestStatus
-                visible: contactInfo.request !== null
-                text: {
-                    var re = ""
-                    if (contactInfo.request === null)
-                        return re
-                    switch (contactInfo.request.status) {
-                        case OutgoingContactRequest.Pending: re = qsTr("Pending connection"); break
-                        case OutgoingContactRequest.Acknowledged: re = qsTr("Delivered"); break
-                        case OutgoingContactRequest.Accepted: re = qsTr("Accepted"); break
-                        case OutgoingContactRequest.Error: re = qsTr("Error"); break
-                        case OutgoingContactRequest.Rejected: re = qsTr("Rejected"); break
-                    }
-                    if (contactInfo.request.isConnected) {
-                        //: %1 status, e.g. "Accepted"
-                        re = qsTr("%1 (Connected)").arg(re)
-                    }
-                    return re
+                Label { text: qsTr("Date added:"); Layout.alignment: Qt.AlignRight }
+                Label {
+                    Layout.fillWidth: true
+                    elide: Text.ElideRight
+                    text: visible ? Qt.formatDate(contactInfo.contact.settings.read("whenCreated"), Qt.DefaultLocaleLongDate) : ""
                 }
-            }
 
-            Label { text: qsTr("Response:"); visible: rejectMessage.visible }
-            Label {
-                id: rejectMessage
-                Layout.fillWidth: true
-                elide: Text.ElideRight
-                text: visible ? contactInfo.request.rejectMessage : ""
-                visible: (contactInfo.request !== null) && (contactInfo.request.rejectMessage !== "")
+                Label { text: qsTr("Last seen:"); visible: lastSeen.visible; Layout.alignment: Qt.AlignRight }
+                Label {
+                    id: lastSeen
+                    Layout.fillWidth: true
+                    elide: Text.ElideRight
+                    visible: contactInfo.request === null
+                    text: visible ? Qt.formatDate(contactInfo.contact.settings.read("lastConnected"), Qt.DefaultLocaleLongDate) : ""
+                }
+
+                Label { text: qsTr("Request:"); visible: requestStatus.visible; Layout.alignment: Qt.AlignRight }
+                Label {
+                    id: requestStatus
+                    visible: contactInfo.request !== null
+                    text: {
+                        var re = ""
+                        if (contactInfo.request === null)
+                            return re
+                        switch (contactInfo.request.status) {
+                            case OutgoingContactRequest.Pending: re = qsTr("Pending connection"); break
+                            case OutgoingContactRequest.Acknowledged: re = qsTr("Delivered"); break
+                            case OutgoingContactRequest.Accepted: re = qsTr("Accepted"); break
+                            case OutgoingContactRequest.Error: re = qsTr("Error"); break
+                            case OutgoingContactRequest.Rejected: re = qsTr("Rejected"); break
+                        }
+                        if (contactInfo.request.isConnected) {
+                            //: %1 status, e.g. "Accepted"
+                            re = qsTr("%1 (Connected)").arg(re)
+                        }
+                        return re
+                    }
+                }
+
+                Label { text: qsTr("Response:"); visible: rejectMessage.visible; Layout.alignment: Qt.AlignRight }
+                Label {
+                    id: rejectMessage
+                    Layout.fillWidth: true
+                    elide: Text.ElideRight
+                    text: visible ? contactInfo.request.rejectMessage : ""
+                    visible: (contactInfo.request !== null) && (contactInfo.request.rejectMessage !== "")
+                }
             }
 
             Item { height: 1; width: 1 }
@@ -105,14 +148,23 @@ Item {
                 color: palette.mid
                 height: 1
                 Layout.fillWidth: true
-                Layout.columnSpan: 2
             }
             Item { height: 1; width: 1 }
 
-            Button {
-                text: qsTr("Remove")
-                Layout.columnSpan: 2
-                onClicked: contactActions.removeContact()
+            RowLayout {
+                Layout.fillWidth: true
+
+                Button {
+                    text: qsTr("Rename")
+                    onClicked: nickname.renameMode = !nickname.renameMode
+                }
+
+                Item { Layout.fillWidth: true; height: 1 }
+
+                Button {
+                    text: qsTr("Remove")
+                    onClicked: contactActions.removeContact()
+                }
             }
 
             Item {

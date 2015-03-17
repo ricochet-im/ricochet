@@ -27,10 +27,7 @@ ToolBar {
         Action {
             id: preferencesAction
             text: qsTr("Preferences")
-            onTriggered: {
-                var object = createDialog("PreferencesDialog.qml")
-                object.visible = true
-            }
+            onTriggered: root.openPreferences()
         }
     ]
 
