@@ -6,7 +6,9 @@ import im.ricochet 1.0
 ApplicationWindow {
     id: preferencesWindow
     width: 550
+    minimumWidth: 550
     height: 400
+    minimumHeight: 400
     title: qsTr("Ricochet Preferences")
 
     signal closed
