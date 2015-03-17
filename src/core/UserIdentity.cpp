@@ -173,11 +173,6 @@ bool UserIdentity::isServiceOnline() const
     return m_hiddenService && m_hiddenService->status() == Tor::HiddenService::Online;
 }
 
-bool UserIdentity::isServicePublished() const
-{
-    return m_hiddenService && m_hiddenService->status() >= Tor::HiddenService::Published;
-}
-
 #ifdef PROTOCOL_NEW
 /* Handle an incoming connection to this service
  *

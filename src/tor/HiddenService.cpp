@@ -42,7 +42,7 @@
 using namespace Tor;
 
 HiddenService::HiddenService(const QString &p, QObject *parent)
-    : QObject(parent), dataPath(p), selfTest(0), pStatus(NotCreated)
+    : QObject(parent), dataPath(p), pStatus(NotCreated)
 {
     /* Set the initial status and, if possible, load the hostname */
     QDir dir(dataPath);
@@ -124,28 +124,6 @@ CryptoKey HiddenService::cryptoKey()
     return pCryptoKey;
 }
 
-void HiddenService::startSelfTest()
-{
-    if (pHostname.isEmpty() || pTargets.isEmpty())
-    {
-        if (selfTest)
-        {
-            delete selfTest;
-            selfTest = 0;
-        }
-
-        return;
-    }
-
-    if (!selfTest)
-    {
-        selfTest = new TorSocket(this);
-        connect(selfTest, SIGNAL(connected()), this, SLOT(selfTestSucceeded()));
-    }
-
-    selfTest->connectToHost(hostname(), pTargets[0].servicePort);
-}
-
 void HiddenService::servicePublished()
 {
     readHostname();
@@ -157,26 +135,6 @@ void HiddenService::servicePublished()
     }
 
     qDebug() << "Hidden service published successfully";
-    setStatus(Published);
-
-    startSelfTest();
-}
-
-void HiddenService::selfTestSucceeded()
-{
-    qDebug() << "Hidden service self-test completed successfully";
     setStatus(Online);
-
-    selfTest->deleteLater();
-    selfTest = 0;
-}
-
-void HiddenService::connectivityChanged()
-{
-    if (!torControl->hasConnectivity()) {
-        if (status() == Online)
-            setStatus(Published);
-        startSelfTest();
-    }
 }
 
