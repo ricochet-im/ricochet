@@ -25,14 +25,21 @@ QtObject {
         return object
     }
 
+    property QtObject preferencesDialog
     function openPreferences(page, properties) {
-        var object = createDialog("PreferencesDialog.qml",
-            {
-                'initialPage': page,
-                'initialPageProperties': properties
-            }
-        )
-        object.visible = true
+        if (preferencesDialog == null) {
+            preferencesDialog = createDialog("PreferencesDialog.qml",
+                {
+                    'initialPage': page,
+                    'initialPageProperties': properties
+                }
+            )
+            preferencesDialog.closed.connect(function() { preferencesDialog = null })
+        }
+
+        preferencesDialog.visible = true
+        preferencesDialog.raise()
+        preferencesDialog.requestActivate()
     }
 
     Component.onCompleted: {
