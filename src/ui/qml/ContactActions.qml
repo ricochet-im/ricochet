@@ -10,6 +10,7 @@ Item {
 
     function openWindow() {
         var window = ContactWindow.getWindow(contact)
+        window.raise()
         window.requestActivate()
     }
 
