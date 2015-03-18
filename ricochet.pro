@@ -173,7 +173,8 @@ contains(DEFINES,PROTOCOL_NEW) {
         src/protocol/ControlChannel.cpp \
         src/protocol/Connection.cpp \
         src/protocol/OutboundConnector.cpp \
-        src/protocol/AuthHiddenServiceChannel.cpp
+        src/protocol/AuthHiddenServiceChannel.cpp \
+        src/protocol/ChatChannel.cpp
 
     HEADERS += src/protocol/Channel.h \
         src/protocol/Channel_p.h \
@@ -181,11 +182,13 @@ contains(DEFINES,PROTOCOL_NEW) {
         src/protocol/Connection.h \
         src/protocol/Connection_p.h \
         src/protocol/OutboundConnector.h \
-        src/protocol/AuthHiddenServiceChannel.h
+        src/protocol/AuthHiddenServiceChannel.h \
+        src/protocol/ChatChannel.h
 
     include(protobuf.pri)
     PROTOS += src/protocol/ControlChannel.proto \
-        src/protocol/AuthHiddenService.proto
+        src/protocol/AuthHiddenService.proto \
+        src/protocol/ChatChannel.proto
 } else {
     SOURCES += src/protocol/ProtocolCommand.cpp \
         src/protocol/PingCommand.cpp \
