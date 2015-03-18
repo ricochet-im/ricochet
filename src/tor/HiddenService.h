@@ -61,8 +61,7 @@ public:
     {
         NotCreated = -1, /* Service has not been created yet */
         Offline = 0, /* Data exists, but service is not published */
-        Published, /* Published, but not confirmed to be accessible */
-        Online /* Published and accessible */
+        Online /* Published */
     };
 
     const QString dataPath;
@@ -78,22 +77,16 @@ public:
     void addTarget(const Target &target);
     void addTarget(quint16 servicePort, QHostAddress targetAddress, quint16 targetPort);
 
-public slots:
-    void startSelfTest();
-
 signals:
     void statusChanged(int newStatus, int oldStatus);
     void serviceOnline();
 
 private slots:
     void servicePublished();
-    void selfTestSucceeded();
-    void connectivityChanged();
 
 private:
     QList<Target> pTargets;
     QString pHostname;
-    TorSocket *selfTest;
     Status pStatus;
     CryptoKey pCryptoKey;
 

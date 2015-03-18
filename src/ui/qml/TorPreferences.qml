@@ -28,7 +28,7 @@ Item {
             Label { text: qsTr("Circuits established:") }
             Label { font.bold: true; text: ((torInstance.control.torStatus == TorControl.TorReady) ? qsTr("Yes") : qsTr("No")) }
             Label { text: qsTr("Hidden service:") }
-            Label { font.bold: true; text: (userIdentity.isOnline ? qsTr("Online") : (userIdentity.isPublished ? qsTr("Published") : qsTr("Offline"))) }
+            Label { font.bold: true; text: (userIdentity.isOnline ? qsTr("Online") : qsTr("Offline")) }
             Label { text: qsTr("Version:") }
             Label { font.bold: true; text: torControl.torVersion }
             //Label { text: "Recommended:" }
