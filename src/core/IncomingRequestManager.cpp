@@ -157,16 +157,11 @@ void IncomingRequestManager::requestReceived()
         request->setChannel(channel);
     }
 
-    // Check if this request matches any existing users, including any outgoing requests
-    ContactUser *existingUser = contacts->lookupHostname(hostname);
-    if (existingUser) {
-        // Implicitly accept a matching outgoing request
-        if (existingUser->contactRequest())
-            existingUser->contactRequest()->accept();
-
-        // Implicitly accept this request
-        // XXX Test this case to make sure response status gets handled correctly
-        request->accept(existingUser);
+    /* It shouldn't be possible to get an incoming contact request for a known
+     * contact, including an outgoing request. Those are implicitly accepted at
+     * a different level. */
+    if (contacts->lookupHostname(hostname)) {
+        BUG() << "Created an inbound contact request matching a known contact; this shouldn't be allowed";
         return;
     }
 
