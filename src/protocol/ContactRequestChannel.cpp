@@ -166,22 +166,21 @@ bool ContactRequestChannel::allowInboundChannelRequest(const Data::Control::Open
     QString nickname = QString::fromStdString(contactData.nickname());
     QString message = QString::fromStdString(contactData.message_text());
 
+    m_responseStatus = Response::Undefined;
     if (message.size() > Data::ContactRequest::MessageMaxCharacters ||
         !isAcceptableNickname(nickname))
     {
         qWarning() << "Rejecting incoming contact request with invalid nickname/message";
-        result->set_error_message(QStringLiteral("Nickname or message is too long").toStdString());
-        return false;
-    }
+        setResponseStatus(Response::Error, QStringLiteral("invalid nickname/message"));
+    } else {
+        m_nickname = nickname;
+        m_message = message;
+        emit requestReceived();
 
-    m_nickname = nickname;
-    m_message = message;
-
-    m_responseStatus = Response::Undefined;
-    emit requestReceived();
-    if (m_responseStatus == Response::Undefined) {
-        BUG() << "No response to incoming contact request after requestReceived signal";
-        setResponseStatus(Response::Error, QStringLiteral("internal error"));
+        if (m_responseStatus == Response::Undefined) {
+            BUG() << "No response to incoming contact request after requestReceived signal";
+            setResponseStatus(Response::Error, QStringLiteral("internal error"));
+        }
     }
 
     QScopedPointer<Response> response(new Response);
