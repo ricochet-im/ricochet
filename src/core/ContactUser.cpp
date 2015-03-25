@@ -125,14 +125,18 @@ void ContactUser::updateStatus()
         }
     } else if (settings()->read("rejected").toBool()) {
         newStatus = RequestRejected;
-    } else {
 #ifdef PROTOCOL_NEW
-        newStatus = m_connection && m_connection->isConnected() ? Online : Offline;
+    } else if (m_connection && m_connection->isConnected()) {
+        newStatus = Online;
+    } else if (settings()->read("sentUpgradeNotification").toBool()) {
+        newStatus = Outdated;
 #else
-        newStatus = m_conn->isConnected() ? Online : Offline;
+    } else if (m_conn->isConnected()) {
+        newStatus = Online;
 #endif
+    } else {
+        newStatus = Offline;
     }
-
 
     if (newStatus == m_status)
         return;
@@ -235,6 +239,7 @@ void ContactUser::updateOutgoingSocket()
                 socket->write(data);
 
                 m_settings->write("sentUpgradeNotification", true);
+                updateStatus();
             }
         );
     }
@@ -266,6 +271,9 @@ void ContactUser::onConnected()
         qDebug() << "Sending contact request for" << uniqueID << nickname();
         m_contactRequest->sendRequest(m_connection);
     }
+
+    if (!m_settings->read("sentUpgradeNotification").isNull())
+        m_settings->write("sentUpgradeNotification", QJsonValue());
 #else
     if (m_contactRequest) {
         qDebug() << "Implicitly accepting outgoing contact request for" << uniqueID << "from primary connection";
