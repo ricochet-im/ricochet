@@ -226,7 +226,9 @@ void ContactRequestServer::handleRequest(const QByteArray &data)
     qDebug() << "  Message:" << message;
     qDebug() << "  Cookie:" << cookie.toHex();
 
+#ifndef PROTOCOL_NEW
     identity->contacts.incomingRequests.addRequest(remoteHostname, connSecret, this, nickname, message);
+#endif
 
     /* addRequest() can automatically accept or reject in certain situations; account for that */
     if (state == SentResponse)

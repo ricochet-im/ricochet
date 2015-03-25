@@ -35,7 +35,12 @@
 #include "ContactUser.h"
 #include "UserIdentity.h"
 #include "IncomingRequestManager.h"
+#include "utils/Useful.h"
+#ifdef PROTOCOL_NEW
+#include "protocol/ContactRequestChannel.h"
+#else
 #include "protocol/ContactRequestClient.h"
+#endif
 #include <QDebug>
 
 OutgoingContactRequest *OutgoingContactRequest::createNewRequest(ContactUser *user, const QString &myNickname,
@@ -54,22 +59,29 @@ OutgoingContactRequest *OutgoingContactRequest::createNewRequest(ContactUser *us
 }
 
 OutgoingContactRequest::OutgoingContactRequest(ContactUser *u)
-    : QObject(u), user(u), m_client(0)
+    : QObject(u), user(u)
+#ifndef PROTOCOL_NEW
+    , m_client(0)
+#endif
     , m_settings(new SettingsObject(u->settings(), QStringLiteral("request"), this))
 {
     emit user->identity->contacts.outgoingRequestAdded(this);
 
     attemptAutoAccept();
 
+#ifndef PROTOCOL_NEW
     if (status() < FirstResult)
     {
         startConnection();
     }
+#endif
 }
 
 OutgoingContactRequest::~OutgoingContactRequest()
 {
+#ifndef PROTOCOL_NEW
     Q_ASSERT(!m_client);
+#endif
     user->setProperty("contactRequest", QVariant());
 }
 
@@ -107,7 +119,11 @@ void OutgoingContactRequest::attemptAutoAccept()
 {
     /* Check if there is an existing incoming request that matches this one; if so, treat this as accepted
      * automatically and accept that incoming request for this user */
+#ifdef PROTOCOL_NEW
+    QByteArray hostname = user->hostname().toLatin1();
+#else
     QByteArray hostname = user->hostname().left(16).toLatin1();
+#endif
 
     IncomingContactRequest *incomingReq = user->identity->contacts.incomingRequests.requestFromHostname(hostname);
     if (incomingReq)
@@ -119,6 +135,49 @@ void OutgoingContactRequest::attemptAutoAccept()
     }
 }
 
+#ifdef PROTOCOL_NEW
+void OutgoingContactRequest::sendRequest(Protocol::Connection *connection)
+{
+    if (connection != user->connection()) {
+        BUG() << "OutgoingContactRequest connection doesn't match the assigned user";
+        return;
+    }
+
+    if (connection->purpose() != Protocol::Connection::Purpose::OutboundRequest) {
+        BUG() << "OutgoingContactRequest told to use a connection of invalid purpose" << int(connection->purpose());
+        return;
+    }
+
+    // XXX timeouts
+    Protocol::ContactRequestChannel *channel = new Protocol::ContactRequestChannel(Protocol::Channel::Outbound, connection);
+    connect(channel, &Protocol::ContactRequestChannel::requestStatusChanged,
+            this, &OutgoingContactRequest::requestStatusChanged);
+
+    // On any final response, the channel will be closed. Unless the purpose has been
+    // changed (to KnownContact, on accept), close the connection at that time. That
+    // will eventually trigger a retry via ContactUser if the request is still valid.
+    connect(channel, &Protocol::Channel::invalidated, this,
+        [this,connection]() {
+            if (connection->isConnected() &&
+                connection->purpose() == Protocol::Connection::Purpose::OutboundRequest)
+            {
+                qDebug() << "Closing connection attached to an OutgoingContactRequest because ContactRequestChannel was closed";
+                connection->close();
+            }
+        }
+    );
+
+    if (!message().isEmpty())
+        channel->setMessage(message());
+    if (!myNickname().isEmpty())
+        channel->setNickname(myNickname());
+
+    if (!channel->openChannel()) {
+        BUG() << "Channel for outgoing contact request failed";
+        return;
+    }
+}
+#else
 void OutgoingContactRequest::startConnection()
 {
     if (m_client)
@@ -142,9 +201,11 @@ bool OutgoingContactRequest::isConnected() const
 {
     return m_client && m_client->response() == ContactRequestClient::Acknowledged;
 }
+#endif
 
 void OutgoingContactRequest::removeRequest()
 {
+#ifndef PROTOCOL_NEW
     if (m_client)
     {
         m_client->disconnect(this);
@@ -156,6 +217,13 @@ void OutgoingContactRequest::removeRequest()
         m_client->deleteLater();
         m_client = 0;
     }
+#else
+    if (user->connection()) {
+        Protocol::Channel *channel = user->connection()->findChannel<Protocol::ContactRequestChannel>();
+        if (channel)
+            channel->closeChannel();
+    }
+#endif
 
     /* Clear the request settings */
     m_settings->undefine();
@@ -165,8 +233,8 @@ void OutgoingContactRequest::removeRequest()
 void OutgoingContactRequest::accept()
 {
     setStatus(Accepted);
-    removeRequest();
     emit accepted();
+    removeRequest();
 }
 
 void OutgoingContactRequest::reject(bool error, const QString &reason)
@@ -174,6 +242,7 @@ void OutgoingContactRequest::reject(bool error, const QString &reason)
     m_settings->write("rejectMessage", reason);
     setStatus(error ? Error : Rejected);
 
+#ifndef PROTOCOL_NEW
     if (m_client)
     {
         m_client->disconnect(this);
@@ -181,6 +250,13 @@ void OutgoingContactRequest::reject(bool error, const QString &reason)
         m_client->deleteLater();
         m_client = 0;
     }
+#else
+    if (user->connection()) {
+        Protocol::Channel *channel = user->connection()->findChannel<Protocol::ContactRequestChannel>();
+        if (channel)
+            channel->closeChannel();
+    }
+#endif
 
     emit rejected(reason);
 }
@@ -190,6 +266,29 @@ void OutgoingContactRequest::cancel()
     removeRequest();
 }
 
+#ifdef PROTOCOL_NEW
+void OutgoingContactRequest::requestStatusChanged(int status, const QString &message)
+{
+    using namespace Protocol::Data::ContactRequest;
+    switch (status) {
+        case Response::Pending:
+            setStatus(Acknowledged);
+            break;
+        case Response::Accepted:
+            accept();
+            break;
+        case Response::Rejected:
+            reject();
+            break;
+        case Response::Error:
+            reject(true, message);
+            break;
+        default:
+            BUG() << "Unknown ContactRequest response status";
+            break;
+    }
+}
+#else
 void OutgoingContactRequest::requestAcknowledged()
 {
     setStatus(Acknowledged);
@@ -202,3 +301,4 @@ void OutgoingContactRequest::requestRejected(int reason)
     else
         reject(true, tr("An error occurred with the contact request (code: %1)").arg(reason, 0, 16));
 }
+#endif

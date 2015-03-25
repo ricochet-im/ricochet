@@ -34,6 +34,7 @@
 #include "UserIdentity.h"
 #include "ContactsManager.h"
 #include "utils/SecureRNG.h"
+#include "utils/Useful.h"
 #include "core/ContactIDValidator.h"
 #include "core/OutgoingContactRequest.h"
 #include "core/ConversationModel.h"
@@ -91,8 +92,9 @@ void ContactUser::loadContactRequest()
 
     if (m_settings->read("request.status") != QJsonValue::Undefined) {
         m_contactRequest = new OutgoingContactRequest(this);
-        connect(m_contactRequest, SIGNAL(statusChanged(int,int)), SLOT(updateStatus()));
-        connect(m_contactRequest, SIGNAL(removed()), SLOT(requestRemoved()));
+        connect(m_contactRequest, &OutgoingContactRequest::statusChanged, this, &ContactUser::updateStatus);
+        connect(m_contactRequest, &OutgoingContactRequest::removed, this, &ContactUser::requestRemoved);
+        connect(m_contactRequest, &OutgoingContactRequest::accepted, this, &ContactUser::requestAccepted);
         updateStatus();
     }
 }
@@ -256,6 +258,12 @@ void ContactUser::onConnected()
 {
     m_settings->write("lastConnected", QDateTime::currentDateTime());
 
+#ifdef PROTOCOL_NEW
+    if (m_contactRequest && m_connection->purpose() == Protocol::Connection::Purpose::OutboundRequest) {
+        qDebug() << "Sending contact request for" << uniqueID << nickname();
+        m_contactRequest->sendRequest(m_connection);
+    }
+#else
     if (m_contactRequest) {
         qDebug() << "Implicitly accepting outgoing contact request for" << uniqueID << "from primary connection";
 
@@ -263,6 +271,7 @@ void ContactUser::onConnected()
         updateStatus();
         Q_ASSERT(status() != RequestPending);
     }
+#endif
 
 #ifndef PROTOCOL_NEW
     if (m_settings->read("remoteSecret") == QJsonValue::Undefined)
@@ -274,7 +283,8 @@ void ContactUser::onConnected()
 #endif
 
     updateStatus();
-    emit connected();
+    if (isConnected())
+        emit connected();
 }
 
 void ContactUser::onDisconnected()
@@ -364,6 +374,23 @@ void ContactUser::deleteContact()
 
     m_settings->undefine();
     deleteLater();
+}
+
+void ContactUser::requestAccepted()
+{
+    if (!m_contactRequest) {
+        BUG() << "Request accepted but ContactUser doesn't know an active request";
+        return;
+    }
+
+#ifdef PROTOCOL_NEW
+    if (m_connection) {
+        m_connection->setPurpose(Protocol::Connection::Purpose::KnownContact);
+        emit connected();
+    }
+#endif
+
+    requestRemoved();
 }
 
 void ContactUser::requestRemoved()
@@ -523,11 +550,26 @@ void ContactUser::assignConnection(Protocol::Connection *connection)
     }
 
     qDebug() << "Assigned" << (isOutbound ? "outbound" : "inbound") << "connection to contact" << uniqueID;
-    if (!connection->setPurpose(Protocol::Connection::Purpose::KnownContact)) {
-        qWarning() << "BUG: Failed setting connection purpose";
-        connection->close();
-        connection->deleteLater();
-        return;
+
+    if (m_contactRequest && isOutbound) {
+        if (!connection->setPurpose(Protocol::Connection::Purpose::OutboundRequest)) {
+            qWarning() << "BUG: Failed setting connection purpose for request";
+            connection->close();
+            connection->deleteLater();
+            return;
+        }
+    } else {
+        if (m_contactRequest && !isOutbound) {
+            qDebug() << "Implicitly accepting outgoing contact request for" << uniqueID << "due to incoming connection";
+            m_contactRequest->accept();
+        }
+
+        if (!connection->setPurpose(Protocol::Connection::Purpose::KnownContact)) {
+            qWarning() << "BUG: Failed setting connection purpose";
+            connection->close();
+            connection->deleteLater();
+            return;
+        }
     }
 
     m_connection = connection;
