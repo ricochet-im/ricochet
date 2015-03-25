@@ -163,6 +163,20 @@ signals:
      * or to reconnect the socket.
      */
     void closed();
+    /* Emitted once, after version negotiation has finished and the connection
+     * is ready to use. If negotiation fails, the versionNegotiationFailed
+     * signal is emitted instead, and the socket is closed.
+     */
+    void ready();
+    /* Emitted once when version negotiation has failed; meaning, there is no
+     * protocol version that both peers will accept. The socket will be closed.
+     */
+    void versionNegotiationFailed();
+    /* Hack to allow delivering an upgrade message to old clients
+     * XXX: Remove this once enough time has passed for most clients to be upgraded.
+     */
+    void oldVersionNegotiated(QTcpSocket *socket);
+
     void authenticated(AuthenticationType type, const QString &identity);
     void purposeChanged(Purpose after, Purpose before);
     /* Emitted when a new Channel instance is created, before it has opened
