@@ -29,6 +29,7 @@ cd build
 
 qmake CONFIG+=release ${QMAKEOPTS} ..
 make
+strip ricochet
 
 mkdir -p staging/ricochet
 # Copy binaries to staging area
