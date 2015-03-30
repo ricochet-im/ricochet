@@ -178,55 +178,29 @@ HEADERS += src/ui/MainWindow.h \
     src/utils/Settings.h \
     src/utils/PendingOperation.h
 
-contains(DEFINES,PROTOCOL_NEW) {
-    SOURCES += src/protocol/Channel.cpp \
-        src/protocol/ControlChannel.cpp \
-        src/protocol/Connection.cpp \
-        src/protocol/OutboundConnector.cpp \
-        src/protocol/AuthHiddenServiceChannel.cpp \
-        src/protocol/ChatChannel.cpp \
-        src/protocol/ContactRequestChannel.cpp
+SOURCES += src/protocol/Channel.cpp \
+    src/protocol/ControlChannel.cpp \
+    src/protocol/Connection.cpp \
+    src/protocol/OutboundConnector.cpp \
+    src/protocol/AuthHiddenServiceChannel.cpp \
+    src/protocol/ChatChannel.cpp \
+    src/protocol/ContactRequestChannel.cpp
 
-    HEADERS += src/protocol/Channel.h \
-        src/protocol/Channel_p.h \
-        src/protocol/ControlChannel.h \
-        src/protocol/Connection.h \
-        src/protocol/Connection_p.h \
-        src/protocol/OutboundConnector.h \
-        src/protocol/AuthHiddenServiceChannel.h \
-        src/protocol/ChatChannel.h \
-        src/protocol/ContactRequestChannel.h
+HEADERS += src/protocol/Channel.h \
+    src/protocol/Channel_p.h \
+    src/protocol/ControlChannel.h \
+    src/protocol/Connection.h \
+    src/protocol/Connection_p.h \
+    src/protocol/OutboundConnector.h \
+    src/protocol/AuthHiddenServiceChannel.h \
+    src/protocol/ChatChannel.h \
+    src/protocol/ContactRequestChannel.h
 
-    include(protobuf.pri)
-    PROTOS += src/protocol/ControlChannel.proto \
-        src/protocol/AuthHiddenService.proto \
-        src/protocol/ChatChannel.proto \
-        src/protocol/ContactRequestChannel.proto
-} else {
-    SOURCES += src/protocol/ProtocolCommand.cpp \
-        src/protocol/PingCommand.cpp \
-        src/protocol/IncomingSocket.cpp \
-        src/protocol/ChatMessageCommand.cpp \
-        src/protocol/CommandHandler.cpp \
-        src/protocol/CommandDataParser.cpp \
-        src/protocol/ProtocolSocket.cpp \
-        src/protocol/ContactRequestClient.cpp \
-        src/protocol/ContactRequestServer.cpp \
-        src/protocol/GetSecretCommand.cpp \
-        src/protocol/OutgoingContactSocket.cpp
-
-    HEADERS += src/protocol/ProtocolCommand.h \
-        src/protocol/PingCommand.h \
-        src/protocol/IncomingSocket.h \
-        src/protocol/ChatMessageCommand.h \
-        src/protocol/CommandHandler.h \
-        src/protocol/CommandDataParser.h \
-        src/protocol/ProtocolSocket.h \
-        src/protocol/ContactRequestClient.h \
-        src/protocol/ContactRequestServer.h \
-        src/protocol/GetSecretCommand.h \
-        src/protocol/OutgoingContactSocket.h
-}
+include(protobuf.pri)
+PROTOS += src/protocol/ControlChannel.proto \
+    src/protocol/AuthHiddenService.proto \
+    src/protocol/ChatChannel.proto \
+    src/protocol/ContactRequestChannel.proto
 
 # QML
 RESOURCES += src/ui/qml/qml.qrc \

@@ -36,19 +36,15 @@
 #include <QObject>
 #include <QPointer>
 #include <QDateTime>
+#include "protocol/Connection.h"
 
 class IncomingRequestManager;
 class ContactsManager;
 class ContactUser;
 
-#ifdef PROTOCOL_NEW
-#include "protocol/Connection.h"
 namespace Protocol {
     class ContactRequestChannel;
 }
-#else
-#include "protocol/ContactRequestServer.h"
-#endif
 
 class IncomingContactRequest : public QObject
 {
@@ -66,12 +62,7 @@ class IncomingContactRequest : public QObject
 public:
     IncomingRequestManager * const manager;
 
-#ifdef PROTOCOL_NEW
     IncomingContactRequest(IncomingRequestManager *manager, const QByteArray &hostname);
-#else
-    IncomingContactRequest(IncomingRequestManager *manager, const QByteArray &hostname,
-                           ContactRequestServer *connection = 0);
-#endif
 
     QByteArray hostname() const { return m_hostname; }
     QString contactId() const;
@@ -86,11 +77,7 @@ public:
     void setNickname(const QString &nickname);
 
     bool hasActiveConnection() const { return connection != 0; }
-#ifdef PROTOCOL_NEW
     void setChannel(Protocol::ContactRequestChannel *channel);
-#else
-    void setConnection(ContactRequestServer *connection);
-#endif
 
     QDateTime requestDate() const { return m_requestDate; }
     QDateTime lastRequestDate() const { return m_lastRequestDate; }
@@ -110,11 +97,7 @@ signals:
     void hasActiveConnectionChanged();
 
 private:
-#ifdef PROTOCOL_NEW
     QPointer<Protocol::Connection> connection;
-#else
-    QPointer<ContactRequestServer> connection;
-#endif
     QByteArray m_hostname;
     QByteArray m_remoteSecret;
     QString m_message, m_nickname;
@@ -157,12 +140,6 @@ public:
      * configuration. */
     void loadRequests();
 
-#ifndef PROTOCOL_NEW
-    /* Input from ContactRequestServer */
-    void addRequest(const QByteArray &hostname, const QByteArray &connSecret, ContactRequestServer *connection,
-                    const QString &nickname, const QString &message);
-#endif
-
     /* Blacklist a host for immediate rejection in the future */
     void addRejectedHost(const QByteArray &hostname);
     bool isHostnameRejected(const QByteArray &hostname) const;
@@ -172,10 +149,8 @@ signals:
     void requestRemoved(IncomingContactRequest *request);
     void requestsChanged();
 
-#ifdef PROTOCOL_NEW
 private slots:
     void requestReceived();
-#endif
 
 private:
     QList<IncomingContactRequest*> m_requests;

@@ -53,9 +53,6 @@ class OutgoingContactRequest : public QObject
     Q_PROPERTY(QString myNickname READ myNickname CONSTANT)
     Q_PROPERTY(QString message READ message CONSTANT)
     Q_PROPERTY(QString rejectMessage READ rejectMessage NOTIFY rejected)
-#ifndef PROTOCOL_NEW
-    Q_PROPERTY(bool isConnected READ isConnected NOTIFY connectedChanged)
-#endif
 
 public:
     enum Status
@@ -80,19 +77,12 @@ public:
     Status status() const;
     QString rejectMessage() const;
 
-#ifndef PROTOCOL_NEW
-    bool isConnected() const;
-    ContactRequestClient *client() const { return m_client; }
-#endif
-
 public slots:
     void accept();
     void reject(bool error = false, const QString &reason = QString());
     void cancel();
 
-#ifdef PROTOCOL_NEW
     void sendRequest(Protocol::Connection *connection);
-#endif
 
 signals:
     void statusChanged(int newStatus, int oldStatus);
@@ -100,24 +90,10 @@ signals:
     void rejected(const QString &reason);
     void removed();
 
-#ifndef PROTOCOL_NEW
-    void connectedChanged();
-#endif
-
 private slots:
-#ifdef PROTOCOL_NEW
     void requestStatusChanged(int status);
-#else
-    void requestRejected(int reason);
-    void requestAcknowledged();
-
-    void startConnection();
-#endif
 
 private:
-#ifndef PROTOCOL_NEW
-    ContactRequestClient *m_client;
-#endif
     SettingsObject *m_settings;
 
     void setStatus(Status newStatus);

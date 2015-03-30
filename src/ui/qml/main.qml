@@ -83,15 +83,6 @@ QtObject {
         },
 
         Connections {
-            target: userIdentity.contacts
-            // XXX Remove with old protocol code
-            onPrepareInteractiveHandler: {
-                if (!uiSettings.data.combinedChatWindow)
-                    ContactWindow.getWindow(user)
-            }
-        },
-
-        Connections {
             target: torInstance
             onConfigurationNeededChanged: {
                 if (torInstance.configurationNeeded) {
