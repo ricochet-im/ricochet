@@ -89,7 +89,8 @@ public:
         Online,
         Offline,
         RequestPending,
-        RequestRejected
+        RequestRejected,
+        Outdated
     };
 
     UserIdentity * const identity;

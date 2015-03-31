@@ -55,6 +55,7 @@ ScrollView {
                     case ContactUser.Offline: return qsTr("Offline")
                     case ContactUser.RequestPending: return qsTr("Requests")
                     case ContactUser.RequestRejected: return qsTr("Rejected")
+                    case ContactUser.Outdated: return qsTr("Outdated")
                 }
             }
             font.bold: true
