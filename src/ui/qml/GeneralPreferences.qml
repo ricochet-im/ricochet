@@ -18,7 +18,7 @@ ColumnLayout {
 
     CheckBox {
         text: qsTr("Open links in default browser without prompting")
-        checked: uiSettings.data.alwaysOpenBrowser
+        checked: uiSettings.data.alwaysOpenBrowser || false
         onCheckedChanged: {
             uiSettings.write("alwaysOpenBrowser", checked)
         }
