@@ -24,6 +24,14 @@ ColumnLayout {
         }
     }
 
+    CheckBox {
+        text: qsTr("Show timestamp on each chat message")
+        checked: uiSettings.data.alwaysShowTimestamps || false
+        onCheckedChanged: {
+            uiSettings.write("alwaysShowTimestamps", checked)
+        }
+    }
+
     Item {
         Layout.fillHeight: true
         Layout.fillWidth: true

@@ -6,11 +6,26 @@ Column {
     id: delegate
     width: parent.width
 
+    function localDateTime(date, includeDate) {
+        var str = ""
+        if (includeDate)
+            str = date.toLocaleDateString() + " "
+        //Workaround to remove timezone name, which is included on Xubuntu 14.04 but not on Windows 8.1
+        str += date.toLocaleTimeString().replace(/ [A-Z]{3,}| CT| NT| Z| ChST/g, "")
+        return str
+    }
+
     Loader {
-        active: model.section === "offline"
+        active: model.section === "offline" || ((model.timespan === -1 || model.timespan > 3600000) && (!uiSettings.data.alwaysShowTimestamps))
         sourceComponent: Label {
             //: %1 nickname
-            text: qsTr("%1 is offline").arg(contact !== null ? contact.nickname : "")
+            text: {
+                if (model.section === "offline") {
+                    qsTr("%1 is offline").arg(contact !== null ? contact.nickname : "")
+                } else {
+                    localDateTime(model.timestamp, true)
+                }
+            }
             width: background.parent.width
             elide: Text.ElideRight
             horizontalAlignment: Qt.AlignHCenter
@@ -66,13 +81,18 @@ Column {
 
         MouseArea {
             anchors.fill: parent
-            acceptedButtons: Qt.RightButton
+            acceptedButtons: Qt.LeftButton | Qt.RightButton
 
-            onClicked: delegate.showContextMenu()
+            onClicked: {
+                if (mouse.button === Qt.RightButton)
+                    delegate.showContextMenu()
+            }
+            onDoubleClicked: textField.showTimeStamp = !textField.showTimeStamp
         }
 
         TextEdit {
             id: textField
+            property bool showTimeStamp: false
             width: Math.min(implicitWidth, background.__maxWidth)
             height: contentHeight
             x: Math.round((parent.width - width) / 2)
@@ -87,7 +107,12 @@ Column {
             wrapMode: TextEdit.Wrap
             readOnly: true
             selectByMouse: true
-            text: LinkedText.parsed(model.text)
+            text: {
+                var timeStamp = ""
+                if ((uiSettings.data.alwaysShowTimestamps) || (textField.showTimeStamp))
+                        timeStamp = '<span style="color: #333333; font-size: 6.5pt">' + localDateTime(model.timestamp) + '</span><br />'
+                return timeStamp + LinkedText.parsed(model.text)
+            }
 
             onLinkActivated: delegate.showContextMenu(link)
 
