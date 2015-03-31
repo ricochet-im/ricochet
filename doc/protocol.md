@@ -201,6 +201,8 @@ message Packet {
     optional OpenChannel open_channel = 1;
     optional ChannelResult channel_result = 2;
     optional KeepAlive keep_alive = 3;
+    optional EnableFeatures enable_features = 4;
+    optional FeaturesEnabled features_enabled = 5;
 }
 ```
 
@@ -255,6 +257,8 @@ message ChannelResult {
         GenericError = 0;
         UnknownTypeError = 1;
         UnauthorizedError = 2;
+        BadUsageError = 3;
+        FailedError = 4;
     }
 
     optional CommonError common_error = 3;
@@ -278,6 +282,26 @@ message KeepAlive {
 
 A simple ping message. If *response_requested* is true, a *KeepAlive* message is generated in
 response with *response_requested* as false.
+
+##### EnableFeatures
+```protobuf
+message EnableFeatures {
+    repeated string feature = 1;
+    extensions 100 to max;
+}
+
+message FeaturesEnabled {
+    repeated string feature = 1;
+    extensions 100 to max;
+}
+```
+
+Simple feature negotiation. Either peer may send the *EnableFeatures* message with a list of
+strings representing protocol changes or features. The recipient must respond with *FeaturesEnabled*
+containing the subset of those strings it recognizes and has enabled.
+
+No such feature strings are currently defined, and the current implementation should always respond
+with an empty list.
 
 ### Chat channel
 
@@ -498,9 +522,14 @@ The recipient of this message must:
 ```protobuf
 message Result {
     required bool accepted = 1;
-    optional string error_message = 8;
+    optional bool is_known_contact = 2;
 }
 ```
+
+If authentication is successful as a known contact, whose connection will be allowed to remain open
+without any further purpose, the *is_known_contact* flag must be set as true. If this flag is not
+set, the authenticating client should assume that it is not authorized (except e.g. to send a
+contact request).
 
 After sending *Result*, the channel should be closed.
 

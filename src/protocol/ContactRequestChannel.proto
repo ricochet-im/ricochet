@@ -31,6 +31,5 @@ message Response {
     }
 
     required Status status = 1;
-    optional string error_message = 2;
 }
 

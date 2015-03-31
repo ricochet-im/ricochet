@@ -123,6 +123,8 @@ void ContactUser::updateStatus()
         } else {
             newStatus = RequestPending;
         }
+    } else if (settings()->read("rejected").toBool()) {
+        newStatus = RequestRejected;
     } else {
 #ifdef PROTOCOL_NEW
         newStatus = m_connection && m_connection->isConnected() ? Online : Offline;
@@ -130,6 +132,7 @@ void ContactUser::updateStatus()
         newStatus = m_conn->isConnected() ? Online : Offline;
 #endif
     }
+
 
     if (newStatus == m_status)
         return;
@@ -485,6 +488,31 @@ void ContactUser::assignConnection(Protocol::Connection *connection)
         return;
     }
 
+    /* KnownToPeer is set for an outbound connection when the remote end indicates
+     * that it knows us as a contact. If this is set, we can assume that the
+     * connection is fully built and will be kept open.
+     *
+     * If this isn't a request and KnownToPeer is not set, the connection has
+     * effectively failed: it will be timed out and closed without a purpose.
+     * This probably means that peer removed us a contact.
+     */
+    if (isOutbound) {
+        bool knownToPeer = connection->hasAuthenticated(Protocol::Connection::KnownToPeer);
+        if (m_contactRequest && knownToPeer) {
+            m_contactRequest->accept();
+            if (m_contactRequest)
+                BUG() << "Outgoing contact request not unset after implicit accept during connection";
+        } else if (!m_contactRequest && !knownToPeer) {
+            qDebug() << "Contact says we're unknown; marking as rejected";
+            settings()->write("rejected", true);
+            connection->close();
+            connection->deleteLater();
+            updateStatus();
+            updateOutgoingSocket();
+            return;
+        }
+    }
+
     if (m_connection && !m_connection->isConnected()) {
         qDebug() << "Replacing dead connection with new connection";
         clearConnection();
@@ -578,8 +606,13 @@ void ContactUser::assignConnection(Protocol::Connection *connection)
      * If we cleared that immediately, it would be possible for the value to change
      * effectively any time we call into protocol code, which would be dangerous.
      */
-    connect(m_connection, &Protocol::Connection::closed, this, &ContactUser::onDisconnected, Qt::QueuedConnection);
-    onConnected();
+    connect(m_connection.data(), &Protocol::Connection::closed, this, &ContactUser::onDisconnected, Qt::QueuedConnection);
+
+    /* Delay the call to onConnected to allow protocol code to finish before everything
+     * kicks in. In particular, this is important to allow AuthHiddenServiceChannel to
+     * respond before other channels are created. */
+    if (!metaObject()->invokeMethod(this, "onConnected", Qt::QueuedConnection))
+        BUG() << "Failed queuing invocation of onConnected method";
 }
 
 void ContactUser::clearConnection()
@@ -587,9 +620,9 @@ void ContactUser::clearConnection()
     if (!m_connection)
         return;
 
-    disconnect(m_connection, 0, this, 0);
+    disconnect(m_connection.data(), 0, this, 0);
     if (m_connection->isConnected()) {
-        connect(m_connection, &Protocol::Connection::closed, m_connection, &QObject::deleteLater);
+        connect(m_connection.data(), &Protocol::Connection::closed, m_connection.data(), &QObject::deleteLater);
         m_connection->close();
     } else {
         m_connection->deleteLater();

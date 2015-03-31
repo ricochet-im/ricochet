@@ -175,7 +175,7 @@ bool ChannelPrivate::openChannelInbound(const Data::Control::OpenChannel *reques
     if (!q->allowInboundChannelRequest(request, result))
         return false;
 
-    if (result->has_common_error() || result->has_error_message()) {
+    if (result->has_common_error()) {
         BUG() << "Accepted inbound OpenChannel request, but result has error details set. Assuming it's actually an error.";
         result->set_opened(false);
         return false;
@@ -233,7 +233,7 @@ bool ChannelPrivate::openChannelResult(const Data::Control::ChannelResult *resul
         Data::Control::ChannelResult::CommonError error = Data::Control::ChannelResult::GenericError;
         if (result->has_common_error())
             error = result->common_error();
-        emit q->channelRejected(error, QString::fromStdString(result->error_message()));
+        emit q->channelRejected(error);
         invalidate();
     }
 

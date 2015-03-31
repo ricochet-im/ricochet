@@ -21,5 +21,5 @@ message Proof {
 
 message Result {
     required bool accepted = 1;
-    optional string error_message = 8;
+    optional bool is_known_contact = 2;
 }
