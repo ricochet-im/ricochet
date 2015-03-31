@@ -169,7 +169,7 @@ bool ContactRequestChannel::allowInboundChannelRequest(const Data::Control::Open
         !isAcceptableNickname(nickname))
     {
         qWarning() << "Rejecting incoming contact request with invalid nickname/message";
-        setResponseStatus(Response::Error, QStringLiteral("invalid nickname/message"));
+        setResponseStatus(Response::Error);
     } else {
         m_nickname = nickname;
         m_message = message;
@@ -177,7 +177,7 @@ bool ContactRequestChannel::allowInboundChannelRequest(const Data::Control::Open
 
         if (m_responseStatus == Response::Undefined) {
             BUG() << "No response to incoming contact request after requestReceived signal";
-            setResponseStatus(Response::Error, QStringLiteral("internal error"));
+            setResponseStatus(Response::Error);
         }
     }
 
