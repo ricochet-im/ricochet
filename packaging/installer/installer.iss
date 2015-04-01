@@ -24,8 +24,8 @@ Source: ricochet.exe; DestDir: {app}; DestName: ricochet.exe; Flags: replacesame
 Source: ..\..\LICENSE; DestDir: {app}
 Source: tor.exe; DestDir: {app}; Flags: replacesameversion uninsrestartdelete
 Source: Qt\*; DestDir: {app}; Flags: recursesubdirs
-Source: MSVCP120.DLL; DestDir: {app}
-Source: MSVCR120.DLL; DestDir: {app}
+Source: MSVCP120.DLL; DestDir: {app}; Flags: skipifsourcedoesntexist
+Source: MSVCR120.DLL; DestDir: {app}; Flags: skipifsourcedoesntexist
 [Icons]
 Name: {group}\Ricochet; Filename: {app}\ricochet.exe; WorkingDir: {app}; Comment: {cm:AppTitle}; Check: not IsPortableInstall
 Name: {group}\{cm:UninstallShortcut}; Filename: {uninstallexe}; Check: not IsPortableInstall
