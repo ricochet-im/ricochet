@@ -323,6 +323,7 @@ QHash<int,QByteArray> ConversationModel::roleNames() const
     roles[IsOutgoingRole] = "isOutgoing";
     roles[StatusRole] = "status";
     roles[SectionRole] = "section";
+    roles[TimespanRole] = "timespan";
     return roles;
 }
 
@@ -359,6 +360,12 @@ QVariant ConversationModel::data(const QModelIndex &index, int role) const
                     return QString();
             }
             return QStringLiteral("offline");
+        }
+        case TimespanRole: {
+            if (index.row() < messages.size() - 1)
+                return messages[index.row() + 1].time.secsTo(messages[index.row()].time);
+            else
+                return -1;
         }
     }
 

@@ -7,10 +7,26 @@ Column {
     width: parent.width
 
     Loader {
-        active: model.section === "offline"
+        active: {
+            if (model.section === "offline")
+                return true
+
+            // either this is the first message, or the message was a long time ago..
+            if ((model.timespan === -1 ||
+                 model.timespan > 3600 /* one hour */))
+                return true
+
+            return false
+        }
+
         sourceComponent: Label {
             //: %1 nickname
-            text: qsTr("%1 is offline").arg(contact !== null ? contact.nickname : "")
+            text: {
+                if (model.section === "offline")
+                    return qsTr("%1 is offline").arg(contact !== null ? contact.nickname : "")
+                else
+                    return Qt.formatDateTime(model.timestamp, Qt.DefaultLocaleShortDate)
+            }
             width: background.parent.width
             elide: Text.ElideRight
             horizontalAlignment: Qt.AlignHCenter
