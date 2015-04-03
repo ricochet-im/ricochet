@@ -16,6 +16,7 @@
 * Portuguese (Brazil) - swperman
 * Russian - vla8752, qualte
 * Spanish - strel
+* Swedish - rawtaz
 * Tagalog - taskmaster
 * Turkish - cbolat, basarancaner
 * Ukrainian - l3rixon, nergal

@@ -15,5 +15,6 @@
         <file>ricochet_tr.qm</file>
         <file>ricochet_nl_NL.qm</file>
         <file>ricochet_fil_PH.qm</file>
+        <file>ricochet_sv.qm</file>
     </qresource>
 </RCC>
