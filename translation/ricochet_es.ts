@@ -82,7 +82,7 @@
     <message>
         <location filename="../src/ui/qml/ContactList.qml" line="54"/>
         <source>Online</source>
-        <translation>Conectado</translation>
+        <translation>En línea</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactList.qml" line="55"/>
@@ -434,7 +434,7 @@
     <message>
         <location filename="../src/ui/qml/StartupStatusPage.qml" line="18"/>
         <source>The Tor process was not started successfully. This is most likely an installation or system error.</source>
-        <translation>El proceso de Tor no se inició con éxito. Lo más probable es que esto sea un error de instalación o de sistema.</translation>
+        <translation>El proceso Tor no se inició con éxito. Lo más probable es que esto sea un error de instalación o de sistema.</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/StartupStatusPage.qml" line="49"/>
@@ -533,7 +533,7 @@
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="177"/>
         <source>Example: 80,443</source>
-        <translation>Ejemplo: 80, 443</translation>
+        <translation>Ejemplo: 80,443</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="188"/>
@@ -600,7 +600,7 @@
     <message>
         <location filename="../src/ui/qml/TorPreferences.qml" line="31"/>
         <source>Online</source>
-        <translation>Conectado</translation>
+        <translation>En línea</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorPreferences.qml" line="31"/>
@@ -653,7 +653,7 @@
     <message>
         <location filename="../src/ui/qml/TorStateWidget.qml" line="32"/>
         <source>Online</source>
-        <translation>Conectado</translation>
+        <translation>En línea</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorStateWidget.qml" line="34"/>
