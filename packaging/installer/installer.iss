@@ -34,12 +34,19 @@ Name: {app}\config; Type: filesandordirs
 [Run]
 Filename: {app}\ricochet.exe; WorkingDir: {app}; Description: {cm:RunShortcut}; Flags: postinstall nowait
 [Languages]
-Name: "en"; MessagesFile: "compiler:Default.isl,..\..\translation\installer_en.isl"
-Name: "it"; MessagesFile: "compiler:Languages\Italian.isl,..\..\translation\installer_it.isl"
-Name: "es"; MessagesFile: "compiler:Languages\Spanish.isl,..\..\translation\installer_es.isl"
-Name: "pt_BR"; MessagesFile: "compiler:Languages\BrazilianPortuguese.isl,..\..\translation\installer_pt_BR.isl"
+Name: "cs"; MessagesFile: "compiler:Languages\Czech.isl,..\..\translation\installer_cs.isl"
 Name: "da"; MessagesFile: "compiler:Languages\Danish.isl,..\..\translation\installer_da.isl"
 Name: "de"; MessagesFile: "compiler:Languages\German.isl,..\..\translation\installer_de.isl"
+Name: "en"; MessagesFile: "compiler:Default.isl,..\..\translation\installer_en.isl"
+Name: "es"; MessagesFile: "compiler:Languages\Spanish.isl,..\..\translation\installer_es.isl"
+Name: "fi"; MessagesFile: "compiler:Languages\Finnish.isl,..\..\translation\installer_fi.isl"
+Name: "fr"; MessagesFile: "compiler:Languages\French.isl,..\..\translation\installer_fr.isl"
+Name: "it"; MessagesFile: "compiler:Languages\Italian.isl,..\..\translation\installer_it.isl"
+Name: "nl_NL"; MessagesFile: "compiler:Languages\Dutch.isl,..\..\translation\installer_nl_NL.isl"
+Name: "pt_BR"; MessagesFile: "compiler:Languages\BrazilianPortuguese.isl,..\..\translation\installer_pt_BR.isl"
+Name: "ru"; MessagesFile: "compiler:Languages\Russian.isl,..\..\translation\installer_ru.isl"
+Name: "tr"; MessagesFile: "compiler:Languages\Turkish.isl,..\..\translation\installer_tr.isl"
+Name: "uk"; MessagesFile: "compiler:Languages\Ukrainian.isl,..\..\translation\installer_uk.isl"
 
 [Code]
 // http://www.vincenzo.net/isxkb/index.php?title=Obtaining_the_application's_version
