@@ -34,6 +34,7 @@ Name: {app}\config; Type: filesandordirs
 [Run]
 Filename: {app}\ricochet.exe; WorkingDir: {app}; Description: {cm:RunShortcut}; Flags: postinstall nowait
 [Languages]
+Name: "bg"; MessagesFile: "..\..\translation\inno\Bulgarian.isl,..\..\translation\installer_bg.isl"
 Name: "cs"; MessagesFile: "compiler:Languages\Czech.isl,..\..\translation\installer_cs.isl"
 Name: "da"; MessagesFile: "compiler:Languages\Danish.isl,..\..\translation\installer_da.isl"
 Name: "de"; MessagesFile: "compiler:Languages\German.isl,..\..\translation\installer_de.isl"
@@ -45,6 +46,7 @@ Name: "it"; MessagesFile: "compiler:Languages\Italian.isl,..\..\translation\inst
 Name: "nl_NL"; MessagesFile: "compiler:Languages\Dutch.isl,..\..\translation\installer_nl_NL.isl"
 Name: "pt_BR"; MessagesFile: "compiler:Languages\BrazilianPortuguese.isl,..\..\translation\installer_pt_BR.isl"
 Name: "ru"; MessagesFile: "compiler:Languages\Russian.isl,..\..\translation\installer_ru.isl"
+Name: "sv"; MessagesFile: "..\..\translation\inno\Swedish.isl,..\..\translation\installer_sv.isl"
 Name: "tr"; MessagesFile: "compiler:Languages\Turkish.isl,..\..\translation\installer_tr.isl"
 Name: "uk"; MessagesFile: "compiler:Languages\Ukrainian.isl,..\..\translation\installer_uk.isl"
 
