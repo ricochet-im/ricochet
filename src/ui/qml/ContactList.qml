@@ -43,6 +43,14 @@ ScrollView {
             scroll.selectedContact = contactsModel.contact(contactListView.currentIndex)
         }
 
+        data: [
+            MouseArea {
+                anchors.fill: parent
+                z: -100
+                onClicked: contactListView.currentIndex = -1
+            }
+        ]
+
         section.property: "status"
         section.delegate: Label {
             height: implicitHeight + 8
