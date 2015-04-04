@@ -9,6 +9,7 @@ MouseArea {
     visible: opacity > 0
     enabled: visible
     opacity: 0
+    clip: true
 
     Behavior on opacity { NumberAnimation { duration: 500 } }
 
