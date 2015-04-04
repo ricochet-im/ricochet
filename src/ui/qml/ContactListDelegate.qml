@@ -4,7 +4,7 @@ import im.ricochet 1.0
 
 Rectangle {
     id: delegate
-    color: highlighted ? palette.highlight : palette.base
+    color: highlighted ? "#c4e7ff" : "white"
     width: parent.width
     height: nameLabel.height + 8
 
@@ -18,25 +18,26 @@ Rectangle {
         id: presenceIcon
         anchors {
             left: parent.left
-            leftMargin: 8
-            verticalCenter: parent.verticalCenter
+            leftMargin: 20
+            verticalCenter: nameLabel.verticalCenter
         }
         status: model.status
     }
 
     Label {
         id: nameLabel
-        y: 4
         anchors {
             left: presenceIcon.right
-            leftMargin: 8
+            leftMargin: 6
             right: unreadBadge.left
             rightMargin: 8
+            verticalCenter: parent.verticalCenter
         }
         text: model.name
         elide: Text.ElideRight
-        color: highlighted ? palette.highlightedText : palette.text
         font.pointSize: styleHelper.pointSize
+        color: "black"
+        opacity: model.status === ContactUser.Online ? 1 : 0.8
     }
 
     UnreadCountBadge {

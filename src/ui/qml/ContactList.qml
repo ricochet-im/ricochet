@@ -52,21 +52,46 @@ ScrollView {
         ]
 
         section.property: "status"
-        section.delegate: Label {
-            height: implicitHeight + 8
-            width: parent.width
-            verticalAlignment: Qt.AlignVCenter
-            horizontalAlignment: Qt.AlignHCenter
-            text: {
-                switch (parseInt(section)) {
-                    case ContactUser.Online: return qsTr("Online")
-                    case ContactUser.Offline: return qsTr("Offline")
-                    case ContactUser.RequestPending: return qsTr("Requests")
-                    case ContactUser.RequestRejected: return qsTr("Rejected")
-                    case ContactUser.Outdated: return qsTr("Outdated")
+        section.delegate: Row {
+            width: parent.width - x
+            height: label.height + 4
+            x: 8
+            spacing: 6
+
+            Label {
+                id: label
+                y: 2
+
+                font.pointSize: styleHelper.pointSize
+                font.bold: true
+                font.capitalization: Font.SmallCaps
+                color: "#3f454a"
+
+                text: {
+                    // Translation strings are uppercase for legacy reasons, and because they
+                    // should correctly be capitalized. We go lowercase only because it looks
+                    // nicer when using SmallCaps, and that's a display detail.
+                    switch (parseInt(section)) {
+                        case ContactUser.Online: return qsTr("Online").toLowerCase()
+                        case ContactUser.Offline: return qsTr("Offline").toLowerCase()
+                        case ContactUser.RequestPending: return qsTr("Requests").toLowerCase()
+                        case ContactUser.RequestRejected: return qsTr("Rejected").toLowerCase()
+                        case ContactUser.Outdated: return qsTr("Outdated").toLowerCase()
+                    }
                 }
             }
-            font.bold: true
+
+            Rectangle {
+                height: 1
+                width: parent.width - x
+                anchors {
+                    top: label.verticalCenter
+                    topMargin: 1
+                }
+
+                color: "black"
+                opacity: 0.1
+            }
         }
 
         delegate: ContactListDelegate { }
