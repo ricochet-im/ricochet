@@ -34,19 +34,14 @@
 #include "tor/TorControl.h"
 #include "tor/HiddenService.h"
 #include "core/ContactIDValidator.h"
-#include <QBuffer>
-#include <QDir>
-
-#ifdef PROTOCOL_NEW
 #include "protocol/Connection.h"
 #include "utils/Useful.h"
 #include <QTcpServer>
 #include <QTcpSocket>
+#include <QBuffer>
+#include <QDir>
 
 using namespace Protocol;
-#else
-#include "protocol/IncomingSocket.h"
-#endif
 
 UserIdentity::UserIdentity(int id, QObject *parent)
     : QObject(parent)
@@ -54,11 +49,7 @@ UserIdentity::UserIdentity(int id, QObject *parent)
     , contacts(this)
     , m_settings(0)
     , m_hiddenService(0)
-#ifdef PROTOCOL_NEW
     , m_incomingServer(0)
-#else
-    , incomingSocket(0)
-#endif
 {
     m_settings = new SettingsObject(QStringLiteral("identity"), this);
     connect(m_settings, &SettingsObject::modified, this, &UserIdentity::onSettingsModified);
@@ -83,7 +74,6 @@ UserIdentity::UserIdentity(int id, QObject *parent)
     }
     else
     {
-#ifdef PROTOCOL_NEW
         m_incomingServer = new QTcpServer(this);
         if (!m_incomingServer->listen(address, port)) {
             qWarning() << "Failed to open incoming socket:" << m_incomingServer->errorString();
@@ -93,16 +83,6 @@ UserIdentity::UserIdentity(int id, QObject *parent)
         connect(m_incomingServer, &QTcpServer::newConnection, this, &UserIdentity::onIncomingConnection);
 
         m_hiddenService->addTarget(9878, m_incomingServer->serverAddress(), m_incomingServer->serverPort());
-#else
-        incomingSocket = new IncomingSocket(this, this);
-        if (!incomingSocket->listen(address, port))
-        {
-            qWarning("Failed to open incoming socket: %s", qPrintable(incomingSocket->errorString()));
-            return;
-        }
-
-        m_hiddenService->addTarget(9878, incomingSocket->serverAddress(), incomingSocket->serverPort());
-#endif
         torControl->addHiddenService(m_hiddenService);
     }
 
@@ -173,7 +153,6 @@ bool UserIdentity::isServiceOnline() const
     return m_hiddenService && m_hiddenService->status() == Tor::HiddenService::Online;
 }
 
-#ifdef PROTOCOL_NEW
 /* Handle an incoming connection to this service
  *
  * A Protocol::Connection is created to handle this socket. The
@@ -248,5 +227,4 @@ void UserIdentity::handleIncomingAuthedConnection(Connection *conn)
         conn->close();
     }
 }
-#endif
 

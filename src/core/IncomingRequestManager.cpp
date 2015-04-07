@@ -36,13 +36,8 @@
 #include "OutgoingContactRequest.h"
 #include "ContactIDValidator.h"
 #include "utils/Useful.h"
-
-#ifdef PROTOCOL_NEW
 #include "protocol/Connection.h"
 #include "protocol/ContactRequestChannel.h"
-#else
-#include "protocol/ContactRequestServer.h"
-#endif
 
 IncomingRequestManager::IncomingRequestManager(ContactsManager *c)
     : QObject(c), contacts(c)
@@ -50,7 +45,6 @@ IncomingRequestManager::IncomingRequestManager(ContactsManager *c)
     connect(this, SIGNAL(requestAdded(IncomingContactRequest*)), this, SIGNAL(requestsChanged()));
     connect(this, SIGNAL(requestRemoved(IncomingContactRequest*)), this, SIGNAL(requestsChanged()));
 
-#ifdef PROTOCOL_NEW
     auto attachChannel = [this](Protocol::Channel *channel) {
         if (Protocol::ContactRequestChannel *req = qobject_cast<Protocol::ContactRequestChannel*>(channel)) {
             connect(req, &Protocol::ContactRequestChannel::requestReceived, this, &IncomingRequestManager::requestReceived);
@@ -63,7 +57,6 @@ IncomingRequestManager::IncomingRequestManager(ContactsManager *c)
             connect(connection, &Protocol::Connection::channelCreated, this, attachChannel);
         }
     );
-#endif
 }
 
 void IncomingRequestManager::loadRequests()
@@ -72,13 +65,8 @@ void IncomingRequestManager::loadRequests()
 
     foreach (const QString &hostStr, settings.data().keys()) {
         QByteArray host = hostStr.toLatin1();
-#ifdef PROTOCOL_NEW
         if (!host.endsWith(".onion"))
             host.append(".onion");
-#else
-        if (host.endsWith(".onion"))
-            host.chop(6);
-#endif
 
         IncomingContactRequest *request = new IncomingContactRequest(this, host);
         request->load();
@@ -99,11 +87,7 @@ QList<QObject*> IncomingRequestManager::requestObjects() const
 
 IncomingContactRequest *IncomingRequestManager::requestFromHostname(const QByteArray &hostname)
 {
-#ifdef PROTOCOL_NEW
     Q_ASSERT(hostname.endsWith(".onion"));
-#else
-    Q_ASSERT(!hostname.endsWith(".onion"));
-#endif
 
     Q_ASSERT(hostname == hostname.toLower());
 
@@ -114,7 +98,6 @@ IncomingContactRequest *IncomingRequestManager::requestFromHostname(const QByteA
     return 0;
 }
 
-#ifdef PROTOCOL_NEW
 void IncomingRequestManager::requestReceived()
 {
     Protocol::ContactRequestChannel *channel = qobject_cast<Protocol::ContactRequestChannel*>(sender());
@@ -174,72 +157,6 @@ void IncomingRequestManager::requestReceived()
         emit requestAdded(request);
     }
 }
-#else
-void IncomingRequestManager::addRequest(const QByteArray &hostname, const QByteArray &connSecret, ContactRequestServer *connection,
-                                        const QString &nickname, const QString &message)
-{
-    if (isHostnameRejected(hostname))
-    {
-        qDebug() << "Rejecting contact request due to a blacklist match for" << hostname;
-
-        if (connection)
-            connection->sendRejection();
-
-        return;
-    }
-
-    if (identityManager->lookupHostname(QString::fromLatin1(hostname)))
-    {
-        qDebug() << "Rejecting contact request from a local identity (?)";
-        if (connection)
-            connection->sendRejection();
-        return;
-    }
-
-    IncomingContactRequest *request = requestFromHostname(hostname);
-    bool newRequest = false;
-
-    if (request)
-    {
-        /* Update the existing request */
-        request->setConnection(connection);
-        request->setRemoteSecret(connSecret);
-        request->setNickname(nickname);
-        request->setMessage(message);
-        request->renew();
-    }
-    else
-    {
-        /* Create a new request */
-        newRequest = true;
-
-        request = new IncomingContactRequest(this, hostname, connection);
-        request->setRemoteSecret(connSecret);
-        request->setNickname(nickname);
-        request->setMessage(message);
-    }
-
-    /* Check if this request matches any existing users, including any outgoing requests. */
-    ContactUser *existingUser = contacts->lookupHostname(QString::fromLatin1(hostname));
-    if (existingUser)
-    {
-        /* If the existing user is an outgoing contact request, that is considered accepted */
-        if (existingUser->contactRequest())
-            existingUser->contactRequest()->accept();
-
-        /* This request is automatically accepted */
-        request->accept(existingUser);
-        return;
-    }
-
-    request->save();
-    if (newRequest)
-    {
-        m_requests.append(request);
-        emit requestAdded(request);
-    }
-}
-#endif
 
 void IncomingRequestManager::removeRequest(IncomingContactRequest *request)
 {
@@ -266,23 +183,13 @@ bool IncomingRequestManager::isHostnameRejected(const QByteArray &hostname) cons
 }
 
 IncomingContactRequest::IncomingContactRequest(IncomingRequestManager *m, const QByteArray &h
-#ifndef PROTOCOL_NEW
-                                               , ContactRequestServer *c
-#endif
                                               )
     : QObject(m)
     , manager(m)
-#ifndef PROTOCOL_NEW
-    , connection(c)
-#endif
     , m_hostname(h)
 {
     Q_ASSERT(manager);
-#ifdef PROTOCOL_NEW
     Q_ASSERT(m_hostname.endsWith(".onion"));
-#else
-    Q_ASSERT(m_hostname.size() == 16);
-#endif
 
     qDebug() << "Created contact request from" << m_hostname << (connection ? "with" : "without") << "connection";
 }
@@ -290,9 +197,7 @@ IncomingContactRequest::IncomingContactRequest(IncomingRequestManager *m, const 
 QString IncomingContactRequest::settingsKey() const
 {
     QString key = QString(QLatin1String(m_hostname));
-#ifdef PROTOCOL_NEW
     key.chop(QStringLiteral(".onion").size());
-#endif
     return QStringLiteral("contactRequests.%1").arg(key);
 }
 
@@ -300,9 +205,6 @@ void IncomingContactRequest::load()
 {
     SettingsObject settings(settingsKey());
 
-#ifndef PROTOCOL_NEW
-    setRemoteSecret(settings.read<Base64Encode>("remoteSecret"));
-#endif
     setNickname(settings.read("nickname").toString());
     setMessage(settings.read("message").toString());
 
@@ -314,9 +216,6 @@ void IncomingContactRequest::save()
 {
     SettingsObject settings(settingsKey());
 
-#ifndef PROTOCOL_NEW
-    settings.write("remoteSecret", Base64Encode(remoteSecret()));
-#endif
     settings.write("nickname", nickname());
     settings.write("message", message());
 
@@ -359,7 +258,6 @@ void IncomingContactRequest::setNickname(const QString &nickname)
     emit nicknameChanged();
 }
 
-#ifdef PROTOCOL_NEW
 void IncomingContactRequest::setChannel(Protocol::ContactRequestChannel *channel)
 {
     if (connection) {
@@ -410,21 +308,6 @@ void IncomingContactRequest::setChannel(Protocol::ContactRequestChannel *channel
     setMessage(channel->message());
     emit hasActiveConnectionChanged();
 }
-#else
-void IncomingContactRequest::setConnection(ContactRequestServer *c)
-{
-    if (connection)
-    {
-        /* New connections replace old ones.. but this should honestly never
-         * happen, because the redeliver timeout is far longer. */
-        connection.data()->close();
-    }
-
-    qDebug() << "Setting new connection for an existing contact request from" << m_hostname;
-    connection = c;
-    emit hasActiveConnectionChanged();
-}
-#endif
 
 void IncomingContactRequest::accept(ContactUser *user)
 {
@@ -437,7 +320,6 @@ void IncomingContactRequest::accept(ContactUser *user)
         user->setHostname(QString::fromLatin1(m_hostname));
     }
 
-#ifdef PROTOCOL_NEW
     using namespace Protocol::Data::ContactRequest;
 
     // If we have a connection, send the response and pass it to ContactUser
@@ -457,14 +339,6 @@ void IncomingContactRequest::accept(ContactUser *user)
         }
         connection.clear();
     }
-#else
-    user->settings()->write("remoteSecret", Base64Encode(remoteSecret()));
-
-    if (connection) {
-        connection->sendAccept(user);
-        connection.clear();
-    }
-#endif
 
     // Remove the request
     removeRequest();
@@ -477,7 +351,6 @@ void IncomingContactRequest::reject()
 {
     qDebug() << "Rejecting contact request from" << m_hostname;
 
-#ifdef PROTOCOL_NEW
     using namespace Protocol::Data::ContactRequest;
 
     if (connection) {
@@ -487,11 +360,6 @@ void IncomingContactRequest::reject()
         connection->close();
         connection.clear();
     }
-#else
-    // Send a rejection if there is an active connection
-    if (connection)
-        connection.data()->sendRejection();
-#endif
 
     // Remove the request from the config
     removeRequest();

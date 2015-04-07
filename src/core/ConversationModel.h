@@ -36,10 +36,7 @@
 #include <QAbstractListModel>
 #include <QDateTime>
 #include "core/ContactUser.h"
-
-#ifdef PROTOCOL_NEW
 #include "protocol/ChatChannel.h"
-#endif
 
 class ConversationModel : public QAbstractListModel
 {
@@ -50,11 +47,7 @@ class ConversationModel : public QAbstractListModel
     Q_PROPERTY(int unreadCount READ unreadCount RESET resetUnreadCount NOTIFY unreadCountChanged)
 
 public:
-#ifdef PROTOCOL_NEW
     typedef Protocol::ChatChannel::MessageId MessageId;
-#else
-    typedef quint16 MessageId;
-#endif
 
     enum {
         TimestampRole = Qt::UserRole,
@@ -93,15 +86,10 @@ signals:
     void unreadCountChanged();
 
 private slots:
-#ifdef PROTOCOL_NEW
     void messageReceived(const QString &text, const QDateTime &time, MessageId id);
     void messageAcknowledged(MessageId id, bool accepted);
     void outboundChannelClosed();
     void sendQueuedMessages();
-#else
-    void receiveMessage(const ChatMessageData &message);
-    void messageReply();
-#endif
     void onContactStatusChanged();
 
 private:
@@ -120,9 +108,6 @@ private:
 
     ContactUser *m_contact;
     QList<MessageData> messages;
-#ifndef PROTOCOL_NEW
-    MessageId lastReceivedId;
-#endif
     int m_unreadCount;
 
     int indexOfIdentifier(MessageId identifier, bool isOutgoing) const;

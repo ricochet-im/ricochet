@@ -39,23 +39,16 @@
 #include <QVariant>
 #include <QPointer>
 #include "utils/Settings.h"
+#include "protocol/Connection.h"
 
 class UserIdentity;
 class OutgoingContactRequest;
 class ConversationModel;
 
-#ifdef PROTOCOL_NEW
-#include "protocol/Connection.h"
 namespace Protocol
 {
     class OutboundConnector;
 }
-#else
-#include "protocol/ProtocolSocket.h"
-class OutgoingContactSocket;
-struct ChatMessageData;
-class ChatMessageCommand;
-#endif
 
 /* Represents a user on the contact list.
  * All persistent uses of a ContactUser instance must either connect to the
@@ -79,9 +72,6 @@ class ContactUser : public QObject
 
     friend class ContactsManager;
     friend class OutgoingContactRequest;
-#ifndef PROTOCOL_NEW
-    friend class ChatMessageCommand;
-#endif
 
 public:
     enum Status
@@ -98,11 +88,7 @@ public:
 
     explicit ContactUser(UserIdentity *identity, int uniqueID, QObject *parent = 0);
 
-#ifdef PROTOCOL_NEW
     Protocol::Connection *connection() { return m_connection.data(); }
-#else
-    ProtocolSocket *conn() const { return m_conn; }
-#endif
     bool isConnected() const { return status() == Online; }
 
     OutgoingContactRequest *contactRequest() { return m_contactRequest; }
@@ -125,7 +111,6 @@ public:
     Q_INVOKABLE void deleteContact();
 
 public slots:
-#ifdef PROTOCOL_NEW
     /* Assign a connection to this user
      *
      * The connection must be connected, and the peer must be authenticated and
@@ -141,9 +126,6 @@ public slots:
      * be retried at a higher level.
      */
     void assignConnection(Protocol::Connection *connection);
-#else
-    void incomingProtocolSocket(QTcpSocket *socket);
-#endif
 
     void setNickname(const QString &nickname);
     void setHostname(const QString &hostname);
@@ -158,13 +140,6 @@ signals:
     void nicknameChanged();
     void contactDeleted(ContactUser *user);
 
-#ifndef PROTOCOL_NEW
-    /* Hack to allow creating models/windows/etc to handle other signals before they're
-     * emitted; primarily, to allow UI to create models to handle incomingChatMessage */
-    void prepareInteractiveHandler();
-    void incomingChatMessage(const ChatMessageData &message);
-#endif
-
 private slots:
     void onConnected();
     void onDisconnected();
@@ -173,13 +148,8 @@ private slots:
     void onSettingsModified(const QString &key, const QJsonValue &value);
 
 private:
-#ifdef PROTOCOL_NEW
     QPointer<Protocol::Connection> m_connection;
     Protocol::OutboundConnector *m_outgoingSocket;
-#else
-    ProtocolSocket *m_conn;
-    OutgoingContactSocket *m_outgoingSocket;
-#endif
 
     Status m_status;
     quint16 m_lastReceivedChatID;
@@ -193,9 +163,7 @@ private:
     void loadContactRequest();
     void updateOutgoingSocket();
 
-#ifdef PROTOCOL_NEW
     void clearConnection();
-#endif
 };
 
 Q_DECLARE_METATYPE(ContactUser*)
