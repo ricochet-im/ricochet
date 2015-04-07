@@ -38,7 +38,7 @@ TEMPLATE = app
 QT += core gui network quick widgets
 CONFIG += c++11
 
-VERSION = 1.0.4
+VERSION = 1.1.0
 
 # Pass DEFINES+=RICOCHET_NO_PORTABLE for a system-wide installation
 
