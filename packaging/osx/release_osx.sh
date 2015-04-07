@@ -31,6 +31,8 @@ qmake CONFIG+=release ..
 make
 
 cp "$TOR_BINARY" ricochet.app/Contents/MacOS/
+strip ricochet.app/Contents/MacOS/tor
+strip ricochet.app/Contents/MacOS/ricochet
 
 macdeployqt ricochet.app -qmldir=../src/ui/qml/
 mv ricochet.app Ricochet.app
