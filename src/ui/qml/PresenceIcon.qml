@@ -3,9 +3,9 @@ import im.ricochet 1.0
 
 Rectangle {
     id: presenceIcon
-    width: 16
-    height: 4
-    radius: 40
+    width: 10
+    height: 10
+    radius: 360
 
     property int status: -1
 
@@ -13,7 +13,7 @@ Rectangle {
         if (status === ContactUser.Online)
             color = "#3EBB4F"
         else
-            color = "darkGray"
+            color = "#999999"
     }
 
     Behavior on color {
