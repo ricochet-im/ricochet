@@ -1,12 +1,10 @@
-### Anonymous and serverless instant messaging that just works
+### Anonymous metadata-resistant instant messaging that just works
 Ricochet is an experiment with a different kind of instant messaging that **doesn't trust anyone** with your identity, your contact list, or your communications.
 
 * You can chat without exposing your identity (or IP address) to *anyone*
 * Nobody can discover who your contacts are or when you talk (*metadata-free!*)
-* There are no servers to compromise or operators to intimidate for your information
+* There are no servers or operators to compromise that could access your information
 * It's cross-platform and easy for non-technical users
-
-**Note**: This project was recently renamed from *Torsion*. Some references may not yet be updated, and new releases are coming soon.
 
 ### How it works
 Ricochet is a peer-to-peer instant messaging system built on Tor [hidden services](https://www.torproject.org/docs/hidden-services.html.en). Your login is your hidden service address, and contacts connect to you (not an intermediate server) through Tor. The rendezvous system makes it extremely hard for anyone to learn your identity from your address.
