@@ -101,10 +101,10 @@ void ContactUser::updateStatus()
         } else {
             newStatus = RequestPending;
         }
-    } else if (settings()->read("rejected").toBool()) {
-        newStatus = RequestRejected;
     } else if (m_connection && m_connection->isConnected()) {
         newStatus = Online;
+    } else if (settings()->read("rejected").toBool()) {
+        newStatus = RequestRejected;
     } else if (settings()->read("sentUpgradeNotification").toBool()) {
         newStatus = Outdated;
     } else {
@@ -219,9 +219,24 @@ void ContactUser::onConnected()
     if (!m_settings->read("sentUpgradeNotification").isNull())
         m_settings->write("sentUpgradeNotification", QJsonValue());
 
+    /* The 'rejected' mark comes from failed authentication to someone who we thought was a known
+     * contact. Normally, it would mean that you were removed from that person's contacts. It's
+     * possible for this to be undone; for example, if that person sends you a new contact request,
+     * it will be automatically accepted. If this happens, unset the 'rejected' flag for correct UI.
+     */
+    if (m_settings->read("rejected").toBool()) {
+        qDebug() << "Contact had marked us as rejected, but now they've connected again. Re-enabling.";
+        m_settings->write("rejected", QJsonValue());
+    }
+
     updateStatus();
     if (isConnected())
         emit connected();
+
+    if (m_status != Online && m_status != RequestPending) {
+        BUG() << "Contact has a connection while in status" << m_status << "which is not expected.";
+        m_connection->close();
+    }
 }
 
 void ContactUser::onDisconnected()
