@@ -102,6 +102,11 @@ QtObject {
             id: palette
         },
 
+        FontLoader {
+            id: iconFont
+            source: "qrc:/icons/ricochet_icons.ttf"
+        },
+
         Item {
             id: styleHelper
             visible: false

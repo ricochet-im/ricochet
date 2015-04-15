@@ -34,10 +34,6 @@
         <file>UnreadCountBadge.qml</file>
         <file>GeneralPreferences.qml</file>
     </qresource>
-    <qresource prefix="/ui/icons">
-        <file>plus.png</file>
-        <file>gear.png</file>
-    </qresource>
     <qresource prefix="/text">
         <file>../../../LICENSE</file>
     </qresource>

@@ -1,6 +1,7 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.0
 import QtQuick.Layouts 1.0
+import QtQuick.Controls.Styles 1.0
 import im.ricochet 1.0
 
 ToolBar {
@@ -15,8 +16,6 @@ ToolBar {
     data: [
         Action {
             id: addContactAction
-            // CC-BY, Plus by Andre from The Noun Project
-            iconSource: "qrc:/ui/icons/plus.png"
             text: qsTr("Add Contact")
             onTriggered: {
                 var object = createDialog("AddContactDialog.qml", { }, window)
@@ -30,6 +29,22 @@ ToolBar {
             onTriggered: root.openPreferences()
         }
     ]
+
+    Component {
+        id: iconButtonStyle
+
+        ButtonStyle {
+            background: Item { }
+            label: Text {
+                text: control.text
+                font.family: iconFont.name
+                font.pixelSize: height
+                horizontalAlignment: Qt.AlignHCenter
+                renderType: Text.QtRendering
+                color: "black"
+            }
+        }
+    }
 
     RowLayout {
         id: toolBarLayout
@@ -46,9 +61,10 @@ ToolBar {
 
         ToolButton {
             id: addContactButton
-            action: addContactAction
             implicitHeight: 24
-            implicitWidth: 24
+            action: addContactAction
+            style: iconButtonStyle
+            text: "\ue810" // iconFont plus symbol
 
             Loader {
                 id: emptyState
@@ -63,9 +79,9 @@ ToolBar {
 
         ToolButton {
             action: preferencesAction
-            iconSource: "qrc:/ui/icons/gear.png"
             implicitHeight: 24
-            implicitWidth: 24
+            style: iconButtonStyle
+            text: "\ue803" // iconFont gear
         }
     }
 }
