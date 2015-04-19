@@ -96,7 +96,7 @@ bool SecureRNG::seed()
 bool SecureRNG::random(char *buf, int size)
 {
     int r = RAND_bytes(reinterpret_cast<unsigned char*>(buf), size);
-    if (!r)
+    if (r <= 0)
     {
         qWarning() << "RNG failed:" << ERR_get_error();
         return false;
