@@ -217,7 +217,7 @@ void ContactUser::onConnected()
     }
 
     if (!m_settings->read("sentUpgradeNotification").isNull())
-        m_settings->write("sentUpgradeNotification", QJsonValue());
+        m_settings->unset("sentUpgradeNotification");
 
     /* The 'rejected' mark comes from failed authentication to someone who we thought was a known
      * contact. Normally, it would mean that you were removed from that person's contacts. It's
@@ -226,7 +226,7 @@ void ContactUser::onConnected()
      */
     if (m_settings->read("rejected").toBool()) {
         qDebug() << "Contact had marked us as rejected, but now they've connected again. Re-enabling.";
-        m_settings->write("rejected", QJsonValue());
+        m_settings->unset("rejected");
     }
 
     updateStatus();
