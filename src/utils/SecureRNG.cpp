@@ -109,9 +109,9 @@ QByteArray SecureRNG::random(int size)
 
 QByteArray SecureRNG::randomPrintable(int length)
 {
-    QByteArray re = random(length);
+    QByteArray re(length, 0);
     for (int i = 0; i < re.size(); i++)
-        re[i] = (quint8(re[i]) % 95) + 32;
+        re[i] = randomInt(95) + 32;
     return re;
 }
 
