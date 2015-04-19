@@ -131,8 +131,8 @@ FocusScope {
                     switch (event.key) {
                         case Qt.Key_Enter:
                         case Qt.Key_Return:
-                            if (event.modifiers & Qt.ShiftModifier) {
-                                textInput.append("")
+                            if (event.modifiers & Qt.ShiftModifier || event.modifiers & Qt.AltModifier) {
+                                textInput.insert(textInput.cursorPosition, "\n")
                             } else {
                                 send()
                             }
