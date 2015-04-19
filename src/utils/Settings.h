@@ -147,6 +147,7 @@ public:
     template<typename T> T read(const QString &key) const;
     Q_INVOKABLE void write(const QString &key, const QJsonValue &value);
     template<typename T> void write(const QString &key, const T &value);
+    Q_INVOKABLE void unset(const QString &key);
 
     // const char* key overloads
     QJsonValue read(const char *key, const QJsonValue &defaultValue = QJsonValue::Undefined) const
@@ -164,6 +165,10 @@ public:
     template<typename T> void write(const char *key, const T &value)
     {
         write<T>(QString::fromLatin1(key), value);
+    }
+    void unset(const char *key)
+    {
+        unset(QString::fromLatin1(key))
     }
 
     Q_INVOKABLE void undefine();

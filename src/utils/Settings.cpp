@@ -536,6 +536,11 @@ void SettingsObject::write(const QString &key, const QJsonValue &value)
     d->file->d->write(splitKey, value);
 }
 
+void SettingsObject::unset(const QString &key)
+{
+    write(key, QJsonValue());
+}
+
 void SettingsObject::undefine()
 {
     if (d->invalid)
