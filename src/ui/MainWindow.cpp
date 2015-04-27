@@ -83,7 +83,14 @@ MainWindow::MainWindow(QObject *parent)
     qmlRegisterSingletonType<LinkedText>("im.ricochet", 1, 0, "LinkedText", linkedtext_singleton);
 
     qRegisterMetaType<PendingOperation*>();
+}
 
+MainWindow::~MainWindow()
+{
+}
+
+bool MainWindow::showUI()
+{
     Q_ASSERT(!identityManager->identities().isEmpty());
     qml->rootContext()->setContextProperty(QLatin1String("userIdentity"), identityManager->identities()[0]);
     qml->rootContext()->setContextProperty(QLatin1String("torControl"), torControl);
@@ -91,10 +98,17 @@ MainWindow::MainWindow(QObject *parent)
     qml->rootContext()->setContextProperty(QLatin1String("uiMain"), this);
 
     qml->load(QUrl(QLatin1String("qrc:/ui/main.qml")));
-}
 
-MainWindow::~MainWindow()
-{
+    if (qml->rootObjects().isEmpty()) {
+        // Assume this is only applicable to technical users; not worth translating or simplifying.
+        QMessageBox::critical(0, QStringLiteral("Ricochet"),
+            QStringLiteral("An error occurred while loading the Ricochet UI.\n\n"
+                           "You might be missing plugins or dependency packages."));
+        qCritical() << "Failed to load UI. Exiting.";
+        return false;
+    }
+
+    return true;
 }
 
 QString MainWindow::version() const

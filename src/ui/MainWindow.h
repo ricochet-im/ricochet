@@ -57,6 +57,8 @@ public:
     explicit MainWindow(QObject *parent = 0);
     ~MainWindow();
 
+    bool showUI();
+
     QString aboutText() const;
     QString version() const;
     QVariantMap screens() const;

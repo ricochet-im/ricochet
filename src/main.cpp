@@ -95,6 +95,8 @@ int main(int argc, char *argv[])
 
     /* Window */
     MainWindow w;
+    if (!w.showUI())
+        return 1;
 
     return a.exec();
 }
