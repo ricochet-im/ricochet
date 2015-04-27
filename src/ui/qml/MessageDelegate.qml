@@ -105,7 +105,10 @@ Column {
             selectByMouse: true
             text: LinkedText.parsed(model.text)
 
-            onLinkActivated: delegate.showContextMenu(link)
+            onLinkActivated: {
+                textField.deselect()
+                delegate.showContextMenu(link)
+            }
 
             // Workaround an incomplete fix for QTBUG-31646
             Component.onCompleted: {
@@ -158,17 +161,19 @@ Column {
                 visible: hoveredLink.length > 0
             }
             MenuItem {
-                text: qsTr("Copy")
-                shortcut: "Ctrl+C"
+                text: qsTr("Copy Message")
+                visible: textField.selectedText.length == 0
                 onTriggered: {
-                    if (textField.selectedText.length > 0) {
-                        textField.copy()
-                    } else {
-                        textField.selectAll()
-                        textField.copy()
-                        textField.deselect()
-                    }
+                    textField.selectAll()
+                    textField.copy()
+                    textField.deselect()
                 }
+            }
+            MenuItem {
+                text: qsTr("Copy Selection")
+                visible: textField.selectedText.length > 0
+                shortcut: "Ctrl+C"
+                onTriggered: textField.copy()
             }
         }
     }
