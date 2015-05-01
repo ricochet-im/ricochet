@@ -168,7 +168,7 @@ public:
     }
     void unset(const char *key)
     {
-        unset(QString::fromLatin1(key))
+        unset(QString::fromLatin1(key));
     }
 
     Q_INVOKABLE void undefine();
