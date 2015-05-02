@@ -129,6 +129,18 @@ QtObject {
                     object.visible = true
                 }
             }
+        },
+
+        Binding {
+            target: audioNotification
+            property: "enabled"
+            value: uiSettings.data.playAudioNotification
+        },
+
+        Binding {
+            target: audioNotification
+            property: "volume"
+            value: uiSettings.data.notificationVolume
         }
     ]
 }

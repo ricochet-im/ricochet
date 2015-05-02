@@ -83,9 +83,11 @@ signals:
 
     void unreadCountChanged(ContactUser *user, int unreadCount);
 
+    void contactStatusChanged(ContactUser* user, int status);
+
 private slots:
     void contactDeleted(ContactUser *user);
-    void onUnreadCountChanged();
+    void onUnreadCountChanged();    
 
 private:
     QList<ContactUser*> pContacts;
