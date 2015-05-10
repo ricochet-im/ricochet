@@ -25,14 +25,16 @@ ColumnLayout {
     }
 
     CheckBox {
-        text: qsTr("Play audio notifications")
+        text: qsTr("Play Audio Notifications")
         checked: uiSettings.data.playAudioNotification || false
         onCheckedChanged: {
             uiSettings.write("playAudioNotification", checked)
         }
     }
     RowLayout {
-        Label { text: qsTr("volume") }
+        Item { width: 16 }
+
+        Label { text: qsTr("Volume") }
 
         Slider {
             maximumValue: 1.0
