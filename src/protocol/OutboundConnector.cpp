@@ -277,7 +277,9 @@ void OutboundConnectorPrivate::startAuthentication()
     }
 
     if (!authPrivateKey.isLoaded() || !authPrivateKey.isPrivate()) {
-        setError(QStringLiteral("Cannot authenticate outbound connection without a valid private key"));
+        qDebug() << "Skipping authentication for OutboundConnector without a private key";
+        setStatus(OutboundConnector::Ready);
+        emit q->ready();
         return;
     }
 
