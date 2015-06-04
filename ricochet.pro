@@ -153,7 +153,8 @@ SOURCES += src/main.cpp \
     src/tor/TorSocket.cpp \
     src/ui/LinkedText.cpp \
     src/utils/Settings.cpp \
-    src/utils/PendingOperation.cpp
+    src/utils/PendingOperation.cpp \
+    src/ui/LanguagesModel.cpp
 
 HEADERS += src/ui/MainWindow.h \
     src/ui/ContactsModel.h \
@@ -182,7 +183,8 @@ HEADERS += src/ui/MainWindow.h \
     src/tor/TorSocket.h \
     src/ui/LinkedText.h \
     src/utils/Settings.h \
-    src/utils/PendingOperation.h
+    src/utils/PendingOperation.h \
+    src/ui/LanguagesModel.h
 
 SOURCES += src/protocol/Channel.cpp \
     src/protocol/ControlChannel.cpp \
