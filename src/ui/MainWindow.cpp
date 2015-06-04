@@ -45,6 +45,7 @@
 #include "utils/Settings.h"
 #include "utils/PendingOperation.h"
 #include "AudioNotification.h"
+#include "ui/LanguagesModel.h"
 #include <QtQml>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
@@ -82,6 +83,7 @@ MainWindow::MainWindow(QObject *parent)
     qmlRegisterType<ContactIDValidator>("im.ricochet", 1, 0, "ContactIDValidator");
     qmlRegisterType<SettingsObject>("im.ricochet", 1, 0, "Settings");
     qmlRegisterSingletonType<LinkedText>("im.ricochet", 1, 0, "LinkedText", linkedtext_singleton);
+    qmlRegisterType<LanguagesModel>("im.ricochet", 1, 0, "LanguagesModel");
 
     qRegisterMetaType<PendingOperation*>();
 }

@@ -59,7 +59,6 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     a.setApplicationVersion(QLatin1String("1.1.0"));
     a.setOrganizationName(QStringLiteral("Ricochet"));
-    initTranslation();
 
 #if !defined(Q_OS_WIN) && !defined(Q_OS_MAC)
     a.setWindowIcon(QIcon(QStringLiteral(":/icons/ricochet.svg")));
@@ -75,6 +74,8 @@ int main(int argc, char *argv[])
         return 1;
     }
     QScopedPointer<QLockFile> lockFile(lock);
+
+    initTranslation();
 
     /* Initialize OpenSSL's allocator */
     CRYPTO_malloc_init();
@@ -308,6 +309,16 @@ static void initTranslation()
     if (!qgetenv("RICOCHET_LOCALE").isEmpty()) {
         locale = QLocale(QString::fromLatin1(qgetenv("RICOCHET_LOCALE")));
         qDebug() << "Forcing locale" << locale << "from environment" << locale.uiLanguages();
+    }
+
+    SettingsObject settings;
+    QString settingsLanguage(settings.read("ui.language").toString());
+
+    if (!settingsLanguage.isEmpty()) {
+        locale = settingsLanguage;
+    } else {
+        //write an empty string to get "System default" language selected automatically in preferences
+        settings.write(QStringLiteral("ui.language"), QString());
     }
 
     ok = translator->load(locale, QStringLiteral("ricochet"), QStringLiteral("_"), appPath);
