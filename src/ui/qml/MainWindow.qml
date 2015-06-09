@@ -37,12 +37,16 @@ ApplicationWindow {
         target: userIdentity.contacts
         onUnreadCountChanged: {
             if (unreadCount > 0) {
+                audioNotification.playIncomingMessage()
                 if (!uiSettings.data.combinedChatWindow) {
                     var cwindow = ContactWindow.getWindow(user)
                     cwindow.alert(0)
                 } else if (!ContactWindow.windowExists(user))
                     window.alert(0)
             }
+        }
+        onContactStatusChanged: {
+            if (status === ContactUser.Online) audioNotification.playContactOnline()
         }
     }
 
