@@ -194,7 +194,7 @@ void AuthHiddenServiceChannel::sendAuthMessage()
     }
 
     QByteArray publicKey = d->privateKey.encodedPublicKey(CryptoKey::DER);
-    if (publicKey.size() != 140) {
+    if (publicKey.size() > 150) {
         BUG() << "Unexpected size for encoded public key";
         closeChannel();
         return;
@@ -282,7 +282,7 @@ void AuthHiddenServiceChannel::handleProof(const Data::AuthHiddenService::Proof 
     CryptoKey publicKey;
     if (signature.size() != 128) {
         qWarning() << "Received invalid signature (size" << signature.size() << ") on" << type();
-    } else if (publicKeyData.size() > 180) {
+    } else if (publicKeyData.size() > 150) {
         qWarning() << "Received invalid public key (size" << publicKeyData.size() << ") on" << type();
     } else if (!publicKey.loadFromData(publicKeyData, CryptoKey::PublicKey, CryptoKey::DER)) {
         qWarning() << "Unable to parse public key from" << type();

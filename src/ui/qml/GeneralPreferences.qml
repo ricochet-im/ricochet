@@ -24,6 +24,33 @@ ColumnLayout {
         }
     }
 
+    CheckBox {
+        text: qsTr("Play audio notifications")
+        checked: uiSettings.data.playAudioNotification || false
+        onCheckedChanged: {
+            uiSettings.write("playAudioNotification", checked)
+        }
+    }
+    RowLayout {
+        Item { width: 16 }
+
+        Label { text: qsTr("Volume") }
+
+        Slider {
+            maximumValue: 1.0
+            updateValueWhileDragging: false
+            enabled: uiSettings.data.playAudioNotification || false
+            value: uiSetting.data.notificationVolume
+            onValueChanged: {
+                uiSettings.write("notificationVolume", value)
+            }
+            Component.onCompleted: {
+                value = (uiSettings.data.notificationVolume > 0)?
+                            uiSettings.data.notificationVolume : 0.75
+            }
+        }
+    }
+
     Item {
         Layout.fillHeight: true
         Layout.fillWidth: true

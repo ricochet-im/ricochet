@@ -70,6 +70,7 @@ int main(int argc, char *argv[])
     QString error;
     QLockFile *lock = 0;
     if (!initSettings(settings.data(), &lock, error)) {
+        initTranslation();
         QMessageBox::critical(0, qApp->translate("Main", "Ricochet Error"), error);
         return 1;
     }
@@ -315,7 +316,7 @@ static void initTranslation()
     QString settingsLanguage( settings.read("ui.language").toString() );
 
     if (!settingsLanguage.isEmpty())
-    {        
+    {
         locale = settingsLanguage;
     } else {
         settings.write(QStringLiteral("ui.language"), QStringLiteral(""));
