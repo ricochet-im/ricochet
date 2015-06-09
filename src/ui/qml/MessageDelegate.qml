@@ -164,9 +164,7 @@ Column {
                 text: qsTr("Copy Message")
                 visible: textField.selectedText.length == 0
                 onTriggered: {
-                    textField.selectAll()
-                    textField.copy()
-                    textField.deselect()
+                    LinkedText.copyToClipboard(textField.getText(0, textField.length))
                 }
             }
             MenuItem {
