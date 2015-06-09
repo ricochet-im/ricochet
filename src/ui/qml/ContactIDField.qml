@@ -61,9 +61,8 @@ FocusScope {
             }
 
             function copyLoudly() {
-                field.selectAll()
-                field.copy()
-                field.deselect()
+                // The LinkedText helper also copies to the X11 selection clipboard
+                LinkedText.copyToClipboard(field.text)
                 copyBubble.displayed = true
                 bubbleResetTimer.start()
             }
