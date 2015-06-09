@@ -35,7 +35,7 @@ lessThan(QT_MAJOR_VERSION,5)|lessThan(QT_MINOR_VERSION,1) {
 
 TARGET = ricochet
 TEMPLATE = app
-QT += core gui network quick widgets
+QT += core gui network quick widgets multimedia
 CONFIG += c++11
 
 VERSION = 1.1.0
@@ -153,7 +153,9 @@ SOURCES += src/main.cpp \
     src/tor/TorSocket.cpp \
     src/ui/LinkedText.cpp \
     src/utils/Settings.cpp \
-    src/utils/PendingOperation.cpp
+    src/utils/PendingOperation.cpp \
+    src/ui/AudioNotification.cpp \
+    src/utils/AudioPlayer.cpp
 
 HEADERS += src/ui/MainWindow.h \
     src/ui/ContactsModel.h \
@@ -182,7 +184,9 @@ HEADERS += src/ui/MainWindow.h \
     src/tor/TorSocket.h \
     src/ui/LinkedText.h \
     src/utils/Settings.h \
-    src/utils/PendingOperation.h
+    src/utils/PendingOperation.h \
+    src/ui/AudioNotification.h \
+    src/utils/AudioPlayer.h
 
 SOURCES += src/protocol/Channel.cpp \
     src/protocol/ControlChannel.cpp \
@@ -210,7 +214,9 @@ PROTOS += src/protocol/ControlChannel.proto \
 
 # QML
 RESOURCES += src/ui/qml/qml.qrc \
-    icons/icons.qrc
+    icons/icons.qrc \
+    sounds/sounds.qrc
+
 win32:RC_ICONS = icons/ricochet.ico
 OTHER_FILES += src/ui/qml/*
 lupdate_only {

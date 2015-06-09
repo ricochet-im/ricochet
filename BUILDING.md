@@ -23,13 +23,13 @@ You will need:
 #### Fedora
 ```sh
 yum install make gcc-c++ protobuf-devel protobuf-compiler openssl-devel
-yum install qt5-qtbase qt5-qttools-devel qt5-qttools qt5-qtquickcontrols qt5-qtdeclarative qt5-qtbase-devel qt5-qtbase-gui qt5-qtdeclarative-devel
+yum install qt5-qtbase qt5-qttools-devel qt5-qttools qt5-qtquickcontrols qt5-qtdeclarative qt5-qtbase-devel qt5-qtbase-gui qt5-qtdeclarative-devel qt5-qtmultimedia-devel
 yum install tor # or build your own
 ```
 #### Debian & Ubuntu
 ```sh
 apt-get install build-essential libssl-dev pkg-config libprotobuf-dev protobuf-compiler
-apt-get install qt5-qmake qt5-default qtbase5-dev qttools5-dev-tools qtdeclarative5-dev
+apt-get install qt5-qmake qt5-default qtbase5-dev qttools5-dev-tools qtdeclarative5-dev qtmultimedia5-dev
 apt-get install qml-module-qtquick-controls qml-module-qtquick-dialogs
 apt-get install tor # or build your own
 ```

@@ -44,6 +44,7 @@
 #include "ui/LinkedText.h"
 #include "utils/Settings.h"
 #include "utils/PendingOperation.h"
+#include "AudioNotification.h"
 #include <QtQml>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
@@ -96,6 +97,9 @@ bool MainWindow::showUI()
     qml->rootContext()->setContextProperty(QLatin1String("torControl"), torControl);
     qml->rootContext()->setContextProperty(QLatin1String("torInstance"), Tor::TorManager::instance());
     qml->rootContext()->setContextProperty(QLatin1String("uiMain"), this);
+
+    AudioNotification* audioNotification( new AudioNotification(this) );
+    qml->rootContext()->setContextProperty(QLatin1String("audioNotification"), audioNotification);
 
     qml->load(QUrl(QLatin1String("qrc:/ui/main.qml")));
 

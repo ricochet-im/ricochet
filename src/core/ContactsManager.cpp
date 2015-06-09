@@ -90,6 +90,7 @@ void ContactsManager::connectSignals(ContactUser *user)
 {
     connect(user, SIGNAL(contactDeleted(ContactUser*)), SLOT(contactDeleted(ContactUser*)));
     connect(user->conversation(), &ConversationModel::unreadCountChanged, this, &ContactsManager::onUnreadCountChanged);
+    connect(user, &ContactUser::statusChanged, [this,user]() { emit contactStatusChanged(user, user->status()); });
 }
 
 ContactUser *ContactsManager::createContactRequest(const QString &contactid, const QString &nickname,
