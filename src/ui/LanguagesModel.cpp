@@ -40,7 +40,7 @@ LanguagesModel::LanguagesModel(QObject* parent)
 {
     // create the list of languages based on present translation files in ":/lang" folder
     QDir languagesFolder(QStringLiteral(":/lang"));
-    languages.append(LanguageEntry(tr("System"), QStringLiteral("")));
+    languages.append(LanguageEntry(tr("System default"), QStringLiteral("")));
     foreach( QString translationFile, languagesFolder.entryList())
     {
         QString localeID = translationFile.replace(QStringLiteral("ricochet_"), QStringLiteral("")).replace(QStringLiteral(".qm"),QStringLiteral(""));
@@ -56,13 +56,16 @@ int LanguagesModel::rowCount(const QModelIndex &) const
 
 QVariant LanguagesModel::data(const QModelIndex &index, int role) const
 {
-    switch( role )
-    {
-    case NameRole:
-        return languages[index.row()].nativeName;
-    case LocaleIDRole:
-        return languages[index.row()].localeID;
-    default:
+    if (index.row() >= 0 && index.row() < languages.length()) {
+        switch( role ) {
+            case NameRole:
+                return languages[index.row()].nativeName;
+            case LocaleIDRole:
+                return languages[index.row()].localeID;
+            default:
+                return QVariant();
+        }
+    } else {
         return QVariant();
     }
 }

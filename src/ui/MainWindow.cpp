@@ -83,6 +83,7 @@ MainWindow::MainWindow(QObject *parent)
     qmlRegisterType<ContactIDValidator>("im.ricochet", 1, 0, "ContactIDValidator");
     qmlRegisterType<SettingsObject>("im.ricochet", 1, 0, "Settings");
     qmlRegisterSingletonType<LinkedText>("im.ricochet", 1, 0, "LinkedText", linkedtext_singleton);
+    qmlRegisterType<LanguagesModel>("im.ricochet", 1, 0, "LanguagesModel");
 
     qRegisterMetaType<PendingOperation*>();
 }
@@ -98,7 +99,6 @@ bool MainWindow::showUI()
     qml->rootContext()->setContextProperty(QLatin1String("torControl"), torControl);
     qml->rootContext()->setContextProperty(QLatin1String("torInstance"), Tor::TorManager::instance());
     qml->rootContext()->setContextProperty(QLatin1String("uiMain"), this);
-    qml->rootContext()->setContextProperty(QLatin1String("languagesModel"), new LanguagesModel(this));
 
     AudioNotification* audioNotification( new AudioNotification(this) );
     qml->rootContext()->setContextProperty(QLatin1String("audioNotification"), audioNotification);
