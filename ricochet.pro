@@ -40,6 +40,46 @@ CONFIG += c++11
 
 VERSION = 1.1.0
 
+CONFIG(hardening):unix:!macx {
+    message("Using additional compiler flags for hardening purposes.")
+
+    SANITIZER_FLAGS = -fsanitize=address -fsanitize=undefined -fsanitize=integer-divide-by-zero -fvtable-verify=std
+
+    system(which g++-5) | system(g++ --version 2>/dev/null | grep -e "5.[0-9]") {
+        message( "g++ version 5.x found" )
+        QMAKE_CC = $(shell which g++-5)
+        QMAKE_CXX = $(shell which g++-5)
+        SANITIZER_FLAGS += -fsanitize=bounds -fsanitize=vptr -fsanitize=object-size -fsanitize=alignment -fsanitize=float-divide-by-zero -fsanitize=float-cast-overflow
+    }
+
+    # If hardening-wrapper is installed, then use the configured flags
+    exists(/usr/share/man/man1/hardening-wrapper.1.gz) {
+        message("Gathering compiler hardening flags from hardening-wrapper installation.")
+        L_CPPFLAGS = $(shell dpkg-buildflags --get CPPFLAGS)
+        L_CFLAGS   = $(shell dpkg-buildflags --get CFLAGS)
+        L_CXXFLAGS = $(shell dpkg-buildflags --get CXXFLAGS)
+        L_LDFLAGS  = $(shell dpkg-buildflags --get LDFLAGS)
+    }
+    # !exists(/usr/share/man/man1/hardening-wrapper.1.gz) {
+    else {
+        L_CPPFLAGS = -fstackprotector-strong -fPIC -pie -D_FORTIFY_SOURCE=2 -Wformat -Wformat-security -Werror=format-security -dumpmachine -Wall -Wsecurity
+        L_CFLAGS   = $${L_CPPFLAGS} -g -O2
+        L_CXXFLAGS = $${L_CFLAGS}
+        L_LDFLAGS  = $${L_CPPFLAGS} -Wl,-z,relro
+    }
+    L_LDFLAGS *= -Wl,-z,relro,-z,now
+
+    QMAKE_CPPFLAGS *= $${L_CPPFLAGS} $${SANITIZER_FLAGS}
+    QMAKE_CFLAGS   *= $${L_CFLAGS} $${SANITIZER_FLAGS}
+    QMAKE_CXXFLAGS *= $${L_CXXFLAGS} $${SANITIZER_FLAGS}
+    QMAKE_LDFLAGS  *= $${L_LDFLAGS} $${SANITIZER_FLAGS}
+
+    message(QMAKE_CPPFLAGS $$[QMAKE_CPPFLAGS])
+    message(QMAKE_CFLAGS $$[QMAKE_CFLAGS])
+    message(QMAKE_CXXFLAGS $$[QMAKE_CXXFLAGS])
+    message(QMAKE_LDFLAGS $$[QMAKE_LDFLAGS])
+}
+
 # Pass DEFINES+=RICOCHET_NO_PORTABLE for a system-wide installation
 
 CONFIG(release,debug|release):DEFINES += QT_NO_DEBUG_OUTPUT QT_NO_WARNING_OUTPUT
