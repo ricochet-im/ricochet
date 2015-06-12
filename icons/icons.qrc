@@ -2,5 +2,7 @@
     <qresource prefix="/icons">
         <file>ricochet.svg</file>
         <file>ricochet_icons.ttf</file>
+        <file>connection_ok.svg</file>
+        <file>connection_censored.svg</file>
     </qresource>
 </RCC>
