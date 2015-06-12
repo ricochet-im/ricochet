@@ -76,6 +76,10 @@ QString LinkedText::parsed(const QString &input)
 
 void LinkedText::copyToClipboard(const QString &text)
 {
-    qApp->clipboard()->setText(text);
+    QClipboard *clipboard = qApp->clipboard();
+    clipboard->setText(text);
+    // For X11, also copy to the selection clipboard (middle-click)
+    if (clipboard->supportsSelection())
+        clipboard->setText(text, QClipboard::Selection);
 }
 
