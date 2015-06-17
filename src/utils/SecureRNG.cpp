@@ -93,34 +93,25 @@ bool SecureRNG::seed()
     return true;
 }
 
-bool SecureRNG::random(char *buf, int size)
+void SecureRNG::random(char *buf, int size)
 {
     int r = RAND_bytes(reinterpret_cast<unsigned char*>(buf), size);
-    if (!r)
-    {
-        qWarning() << "RNG failed:" << ERR_get_error();
-        return false;
-    }
-
-    return true;
+    if (r <= 0)
+        qFatal("RNG failed: %lu", ERR_get_error());
 }
 
 QByteArray SecureRNG::random(int size)
 {
-    QByteArray re;
-    re.resize(size);
-
-    if (!random(re.data(), size))
-        return QByteArray();
-
+    QByteArray re(size, 0);
+    random(re.data(), size);
     return re;
 }
 
 QByteArray SecureRNG::randomPrintable(int length)
 {
-    QByteArray re = random(length);
+    QByteArray re(length, 0);
     for (int i = 0; i < re.size(); i++)
-        re[i] = (quint8(re[i]) % 95) + 32;
+        re[i] = randomInt(95) + 32;
     return re;
 }
 

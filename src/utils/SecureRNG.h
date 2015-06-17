@@ -40,7 +40,7 @@ class SecureRNG
 public:
     static bool seed();
 
-    static bool random(char *buf, int size);
+    static void random(char *buf, int size);
     static QByteArray random(int size);
 
     static QByteArray randomPrintable(int length);
