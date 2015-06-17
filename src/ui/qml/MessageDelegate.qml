@@ -120,7 +120,8 @@ Column {
 
     function showContextMenu(link) {
         var object = contextMenu.createObject(delegate, (link !== undefined) ? { 'hoveredLink': link } : { })
-        object.visibleChanged.connect(function() { if (!object.visible) object.destroy() })
+        // XXX QtQuickControls private API. The only other option is 'visible', and it is not reliable. See PR#183
+        object.popupVisibleChanged.connect(function() { if (!object.__popupVisible) object.destroy() })
         object.popup()
     }
 
