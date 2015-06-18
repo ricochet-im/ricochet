@@ -313,13 +313,13 @@ static void initTranslation()
     }
 
     SettingsObject settings;
-    QString settingsLanguage( settings.read("ui.language").toString() );
+    QString settingsLanguage(settings.read("ui.language").toString());
 
     if (!settingsLanguage.isEmpty()) {
         locale = settingsLanguage;
     } else {
         //write an empty string to get "System default" language selected automatically in preferences
-        settings.write(QStringLiteral("ui.language"), QStringLiteral(""));
+        settings.write(QStringLiteral("ui.language"), QString());
     }
 
     ok = translator->load(locale, QStringLiteral("ricochet"), QStringLiteral("_"), appPath);

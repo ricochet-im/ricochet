@@ -9,10 +9,7 @@ ColumnLayout {
         margins: 8
     }
 
-    QtObject {
-        id: local
-        property string previousLanguage: uiSettings.data.language
-    }
+    property string previousLanguage: uiSettings.data.language
 
     ExclusiveGroup {
         id: languageGroup
@@ -35,7 +32,7 @@ ColumnLayout {
                 checked: localeID === uiSettings.data.language
                 exclusiveGroup: languageGroup
                 onCheckedChanged: {
-                    if (checked && local.previousLanguage !== localeID) {
+                    if (checked && previousLanguage !== localeID) {
                         restartNotification.visible = true
                         uiSettings.write("language", localeID)
                     }
@@ -44,10 +41,15 @@ ColumnLayout {
         }
     }
 
+    Item { height: 15 }
+
     Label {
         id: restartNotification
         text: qsTr("Restart Ricochet to apply changes!")
+        Layout.fillWidth: true
+        horizontalAlignment: Text.AlignHCenter
         visible: false
+        color: "red"
     }
 
     Item {

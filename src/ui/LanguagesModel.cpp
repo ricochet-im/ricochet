@@ -40,10 +40,10 @@ LanguagesModel::LanguagesModel(QObject* parent)
 {
     // create the list of languages based on present translation files in ":/lang" folder
     QDir languagesFolder(QStringLiteral(":/lang"));
-    languages.append(LanguageEntry(tr("System default"), QStringLiteral("")));
-    foreach( QString translationFile, languagesFolder.entryList())
-    {
-        QString localeID = translationFile.replace(QStringLiteral("ricochet_"), QStringLiteral("")).replace(QStringLiteral(".qm"),QStringLiteral(""));
+    languages.append(LanguageEntry(tr("System default"), QString()));
+    foreach (const QString& translationFile, languagesFolder.entryList()) {
+        QString localeID = translationFile;
+        localeID.remove(QLatin1String("ricochet_")).remove(QLatin1String(".qm"));
         QString nativeName = QLocale(localeID).nativeLanguageName();
         languages.append(LanguageEntry(nativeName, localeID));
     }
