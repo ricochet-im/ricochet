@@ -191,6 +191,17 @@ signals:
      * channelClosed signal.
      */
     void channelCreated(Channel *channel);
+    /* Emitted when an inbound channel needs approval to open
+     *
+     * This signal is emitted for channel types that require approval by
+     * higher-layer functionality before opening, based on the information
+     * in the OpenChannel message. Handlers should use channel-specific methods
+     * to approve the inbound channel.
+     *
+     * This signal is only emitted for channels that specifically invoke the
+     * Channel::requestInboundApproval() method.
+     */
+    void channelRequestingInboundApproval(Channel *channel);
     /* Emitted when a channel is opened
      *
      * This signal is emitted after an inbound or outbound channel has been

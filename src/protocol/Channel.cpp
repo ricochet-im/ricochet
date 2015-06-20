@@ -275,6 +275,16 @@ bool Channel::sendPacket(const QByteArray &packet)
     return connection()->d->writePacket(this, packet);
 }
 
+void Channel::requestInboundApproval()
+{
+    if (direction() != Channel::Inbound || isOpened()) {
+        BUG() << "Called in an unexpected channel state";
+        return;
+    }
+
+    emit connection()->channelRequestingInboundApproval(this);
+}
+
 ChannelPrivate::ChannelPrivate(Channel *q, const QString &type, Channel::Direction direction, Connection *conn)
     : q_ptr(q)
     , connection(conn)
