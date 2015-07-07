@@ -208,6 +208,24 @@ protected:
      */
     template<typename T> bool sendMessage(const T &message);
 
+    /* Get approval for an inbound channel from the Connection's handlers
+     *
+     * Channels that require approval from higher-layer functionality before
+     * opening can use this method to emit the
+     * Connection::channelRequestingInboundApproval signal. For example, this
+     * can be used to look up whether an identifier for a channel is recognized,
+     * and allow higher layers to attach signals and update data before the
+     * channel is fully open.
+     *
+     * Approval should be signaled to the channel by means of some
+     * channel-specific API; in many cases, that might involve setting certain
+     * properties that the channel requires.
+     *
+     * This method may only be called from within the
+     * allowInboundChannelRequest handler.
+     */
+    void requestInboundApproval();
+
     QScopedPointer<ChannelPrivate> d_ptr;
 };
 

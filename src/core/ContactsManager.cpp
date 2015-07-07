@@ -63,9 +63,10 @@ void ContactsManager::loadFromSettings()
             continue;
         }
 
-    	ContactUser *user = new ContactUser(identity, id, this);
+        ContactUser *user = new ContactUser(identity, id, this);
         connectSignals(user);
-    	pContacts.append(user);
+        pContacts.append(user);
+        emit contactAdded(user);
         highestID = qMax(id, highestID);
     }
 

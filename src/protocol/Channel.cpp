@@ -175,6 +175,14 @@ bool ChannelPrivate::openChannelInbound(const Data::Control::OpenChannel *reques
     if (!q->allowInboundChannelRequest(request, result))
         return false;
 
+    if (isInvalidated) {
+        // This can happen as a result of something calling closeChannel under the
+        // allowInboundChannelRequest handler, which can't be easily ruled out due
+        // to signals. Treat is as a generic error and fail the channel.
+        result->set_opened(false);
+        return false;
+    }
+
     if (result->has_common_error()) {
         BUG() << "Accepted inbound OpenChannel request, but result has error details set. Assuming it's actually an error.";
         result->set_opened(false);
@@ -265,6 +273,16 @@ bool Channel::sendPacket(const QByteArray &packet)
     }
 
     return connection()->d->writePacket(this, packet);
+}
+
+void Channel::requestInboundApproval()
+{
+    if (direction() != Channel::Inbound || isOpened()) {
+        BUG() << "Called in an unexpected channel state";
+        return;
+    }
+
+    emit connection()->channelRequestingInboundApproval(this);
 }
 
 ChannelPrivate::ChannelPrivate(Channel *q, const QString &type, Channel::Direction direction, Connection *conn)

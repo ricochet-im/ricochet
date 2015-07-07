@@ -230,8 +230,10 @@ void ContactUser::onConnected()
     }
 
     updateStatus();
-    if (isConnected())
+    if (isConnected()) {
         emit connected();
+        emit connectionChanged(m_connection);
+    }
 
     if (m_status != Online && m_status != RequestPending) {
         BUG() << "Contact has a connection while in status" << m_status << "which is not expected.";
@@ -258,6 +260,7 @@ void ContactUser::onDisconnected()
 
     updateStatus();
     emit disconnected();
+    emit connectionChanged(0);
 }
 
 SettingsObject *ContactUser::settings()
