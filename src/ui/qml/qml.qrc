@@ -33,6 +33,7 @@
         <file>MainToolBar.qml</file>
         <file>UnreadCountBadge.qml</file>
         <file>GeneralPreferences.qml</file>
+        <file>LanguagePreferences.qml</file>
     </qresource>
     <qresource prefix="/text">
         <file>../../../LICENSE</file>

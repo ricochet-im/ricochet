@@ -43,6 +43,11 @@ ApplicationWindow {
         }
 
         Tab {
+            title: qsTr("Language")
+            source: Qt.resolvedUrl("LanguagePreferences.qml")
+        }
+
+        Tab {
             title: qsTr("Contacts")
             source: Qt.resolvedUrl("ContactPreferences.qml")
         }
