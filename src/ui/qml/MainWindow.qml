@@ -38,11 +38,11 @@ ApplicationWindow {
         onUnreadCountChanged: {
             if (unreadCount > 0) {
                 audioNotification.playIncomingMessage()
-                if (!uiSettings.data.combinedChatWindow) {
-                    var cwindow = ContactWindow.getWindow(user)
-                    cwindow.alert(0)
-                } else if (!ContactWindow.windowExists(user))
-                    window.alert(0)
+                var w = window
+                if (!uiSettings.data.combinedChatWindow || ContactWindow.windowExists(user))
+                    w = ContactWindow.getWindow(user)
+                // On OS X, avoid bouncing the dock icon forever
+                w.alert(Qt.platform.os == "osx" ? 1000 : 0)
             }
         }
         onContactStatusChanged: {

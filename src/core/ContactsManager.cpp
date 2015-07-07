@@ -38,6 +38,10 @@
 #include <QStringList>
 #include <QDebug>
 
+#ifdef Q_OS_MAC
+#include <QtMac>
+#endif
+
 ContactsManager *contactsManager = 0;
 
 ContactsManager::ContactsManager(UserIdentity *id)
@@ -184,5 +188,20 @@ void ContactsManager::onUnreadCountChanged()
     ContactUser *user = model->contact();
 
     emit unreadCountChanged(user, model->unreadCount());
+
+#ifdef Q_OS_MAC
+    int unread = globalUnreadCount();
+    QtMac::setBadgeLabelText(unread == 0 ? QString() : QString::number(unread));
+#endif
+}
+
+int ContactsManager::globalUnreadCount() const
+{
+    int re = 0;
+    foreach (ContactUser *u, pContacts) {
+        if (u->conversation())
+            re += u->conversation()->unreadCount();
+    }
+    return re;
 }
 

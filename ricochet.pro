@@ -67,6 +67,7 @@ contains(DEFINES, RICOCHET_NO_PORTABLE) {
 
 macx {
     CONFIG += bundle force_debug_plist
+    QT += macextras
 
     # Qt 5.4 introduces a bug that breaks QMAKE_INFO_PLIST when qmake has a relative path.
     # Work around by copying Info.plist directly.

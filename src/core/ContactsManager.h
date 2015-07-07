@@ -48,6 +48,7 @@ class ContactsManager : public QObject
     Q_DISABLE_COPY(ContactsManager)
 
     Q_PROPERTY(IncomingRequestManager* incomingRequests READ incomingRequestManager CONSTANT)
+    Q_PROPERTY(int globalUnreadCount READ globalUnreadCount NOTIFY unreadCountChanged)
 
     friend class OutgoingContactRequest;
 
@@ -76,6 +77,8 @@ public:
     static QString hostnameFromID(const QString &ID);
 
     void loadFromSettings();
+
+    int globalUnreadCount() const;
 
 signals:
     void contactAdded(ContactUser *user);
