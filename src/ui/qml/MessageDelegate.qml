@@ -24,6 +24,8 @@ Column {
             text: {
                 if (model.section === "offline")
                     return qsTr("%1 is offline").arg(contact !== null ? contact.nickname : "")
+                else if (model.section === "away")
+                    return qsTr("%1 is away").arg(contact !== null ? contact.nickname : "")
                 else
                     return Qt.formatDateTime(model.timestamp, Qt.DefaultLocaleShortDate)
             }
@@ -103,8 +105,20 @@ Column {
             wrapMode: TextEdit.Wrap
             readOnly: true
             selectByMouse: true
-            text: LinkedText.parsed(model.text)
-
+            text: {
+                  if(model.isOutgoing) {
+                      if(model.text === "/away")
+                        return qsTr("You are now <b>Away</b> to %1").arg(contact !== null ? contact.nickname : "");
+                      else if(model.text === "/back")
+                        return qsTr("You are now <b>Online</b> to %1").arg(contact !== null ? contact.nickname : "");
+                  } else {
+                      if(model.text === "/away")
+                        return qsTr("%1 is <b>away</b>").arg(contact !== null ? contact.nickname : "");
+                      else if(model.text === "/back")
+                        return qsTr("%1 has <b>returned</b>").arg(contact !== null ? contact.nickname : "");
+                  }
+                  return LinkedText.parsed(model.text)
+            }
             onLinkActivated: {
                 textField.deselect()
                 delegate.showContextMenu(link)

@@ -12,6 +12,8 @@ Rectangle {
     onStatusChanged: {
         if (status === ContactUser.Online)
             color = "#3EBB4F"
+        else if (status === ContactUser.Away)
+            color = "#EEEE44"
         else
             color = "#999999"
     }
