@@ -1,4 +1,6 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS language="nl_NL" version="2.1">
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
+<TS version="2.1" language="nl_NL">
 <context>
     <name>AboutPreferences</name>
     <message>
@@ -11,17 +13,17 @@
 <context>
     <name>AddContactDialog</name>
     <message>
-        <location filename="../src/ui/qml/AddContactDialog.qml" line="50"/>
+        <location filename="../src/ui/qml/AddContactDialog.qml" line="51"/>
         <source>Share your Ricochet ID to allow connection requests</source>
         <translation>Deel je Ricochet ID om verbindingsverzoeken mogelijk te maken</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/AddContactDialog.qml" line="106"/>
+        <location filename="../src/ui/qml/AddContactDialog.qml" line="107"/>
         <source>Cancel</source>
         <translation>Annuleren</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/AddContactDialog.qml" line="111"/>
+        <location filename="../src/ui/qml/AddContactDialog.qml" line="112"/>
         <source>Add</source>
         <translation>Toevoegen</translation>
     </message>
@@ -29,22 +31,22 @@
 <context>
     <name>ContactActions</name>
     <message>
-        <location filename="../src/ui/qml/ContactActions.qml" line="39"/>
+        <location filename="../src/ui/qml/ContactActions.qml" line="40"/>
         <source>Open Window</source>
         <translation>Open venster</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactActions.qml" line="43"/>
+        <location filename="../src/ui/qml/ContactActions.qml" line="44"/>
         <source>Details...</source>
         <translation>Details...</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactActions.qml" line="47"/>
+        <location filename="../src/ui/qml/ContactActions.qml" line="48"/>
         <source>Rename</source>
         <translation>Hernoemen</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactActions.qml" line="52"/>
+        <location filename="../src/ui/qml/ContactActions.qml" line="53"/>
         <source>Remove</source>
         <translation>Verwijderen</translation>
     </message>
@@ -67,12 +69,12 @@
         <translation>Geef een ID op dat begint met &lt;b&gt;ricochet:&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactIDField.qml" line="80"/>
+        <location filename="../src/ui/qml/ContactIDField.qml" line="79"/>
         <source>Copied to clipboard</source>
         <translation>Gekopieerd naar klembord</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactIDField.qml" line="92"/>
+        <location filename="../src/ui/qml/ContactIDField.qml" line="91"/>
         <source>Copy</source>
         <translation>Kopieer</translation>
     </message>
@@ -80,91 +82,99 @@
 <context>
     <name>ContactList</name>
     <message>
-        <location filename="../src/ui/qml/ContactList.qml" line="54"/>
+        <location filename="../src/ui/qml/ContactList.qml" line="75"/>
         <source>Online</source>
         <translation>Online</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactList.qml" line="55"/>
+        <location filename="../src/ui/qml/ContactList.qml" line="76"/>
         <source>Offline</source>
         <translation>Offline</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactList.qml" line="56"/>
+        <location filename="../src/ui/qml/ContactList.qml" line="77"/>
         <source>Requests</source>
         <translation>Aanvragen</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactList.qml" line="57"/>
+        <location filename="../src/ui/qml/ContactList.qml" line="78"/>
         <source>Rejected</source>
         <translation>Afgewezen</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/qml/ContactList.qml" line="79"/>
+        <source>Outdated</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>ContactPreferences</name>
     <message>
-        <location filename="../src/ui/qml/ContactPreferences.qml" line="40"/>
         <source>Nickname:</source>
-        <translation>Bijnaam:</translation>
+        <translation type="vanished">Bijnaam:</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactPreferences.qml" line="47"/>
         <source>ID:</source>
-        <translation>ID:</translation>
+        <translation type="vanished">ID:</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactPreferences.qml" line="55"/>
+        <location filename="../src/ui/qml/ContactPreferences.qml" line="97"/>
         <source>Date added:</source>
         <translation>Datum toegevoegd:</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactPreferences.qml" line="62"/>
+        <location filename="../src/ui/qml/ContactPreferences.qml" line="104"/>
         <source>Last seen:</source>
         <translation>Laatst gezien:</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactPreferences.qml" line="71"/>
+        <location filename="../src/ui/qml/ContactPreferences.qml" line="113"/>
         <source>Request:</source>
         <translation>Aanvraag:</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactPreferences.qml" line="80"/>
+        <location filename="../src/ui/qml/ContactPreferences.qml" line="122"/>
         <source>Pending connection</source>
         <translation>Verbinding wachtend</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactPreferences.qml" line="81"/>
+        <location filename="../src/ui/qml/ContactPreferences.qml" line="123"/>
         <source>Delivered</source>
         <translation>Afgeleverd</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactPreferences.qml" line="82"/>
+        <location filename="../src/ui/qml/ContactPreferences.qml" line="124"/>
         <source>Accepted</source>
         <translation>Geaccepteerd</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactPreferences.qml" line="83"/>
+        <location filename="../src/ui/qml/ContactPreferences.qml" line="125"/>
         <source>Error</source>
         <translation>Fout</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactPreferences.qml" line="84"/>
+        <location filename="../src/ui/qml/ContactPreferences.qml" line="126"/>
         <source>Rejected</source>
         <translation>Afgewezen</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactPreferences.qml" line="88"/>
+        <location filename="../src/ui/qml/ContactPreferences.qml" line="130"/>
         <source>%1 (Connected)</source>
         <extracomment>%1 status, e.g. &quot;Accepted&quot;</extracomment>
         <translation>%1 (verbonden)</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactPreferences.qml" line="94"/>
+        <location filename="../src/ui/qml/ContactPreferences.qml" line="136"/>
         <source>Response:</source>
         <translation>Antwoord:</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactPreferences.qml" line="113"/>
+        <location filename="../src/ui/qml/ContactPreferences.qml" line="158"/>
+        <source>Rename</source>
+        <translation type="unfinished">Hernoemen</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/qml/ContactPreferences.qml" line="165"/>
         <source>Remove</source>
         <translation>Verwijder</translation>
     </message>
@@ -172,17 +182,17 @@
 <context>
     <name>ContactRequestDialog</name>
     <message>
-        <location filename="../src/ui/qml/ContactRequestDialog.qml" line="54"/>
+        <location filename="../src/ui/qml/ContactRequestDialog.qml" line="55"/>
         <source>Someone new is asking to connect to you</source>
         <translation>Een nieuwe contactpersoon wil met je verbinden</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactRequestDialog.qml" line="101"/>
+        <location filename="../src/ui/qml/ContactRequestDialog.qml" line="102"/>
         <source>Reject</source>
         <translation>Afwijzen</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactRequestDialog.qml" line="106"/>
+        <location filename="../src/ui/qml/ContactRequestDialog.qml" line="107"/>
         <source>Accept</source>
         <translation>Accepteren</translation>
     </message>
@@ -217,11 +227,42 @@
         <source>Open links in default browser without prompting</source>
         <translation>Open links in standaardbrowser zonder te vragen </translation>
     </message>
+    <message>
+        <location filename="../src/ui/qml/GeneralPreferences.qml" line="28"/>
+        <source>Play audio notifications</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/qml/GeneralPreferences.qml" line="37"/>
+        <source>Volume</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>LanguagePreferences</name>
+    <message>
+        <location filename="../src/ui/qml/LanguagePreferences.qml" line="22"/>
+        <source>Select Language</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/qml/LanguagePreferences.qml" line="52"/>
+        <source>Restart Ricochet to apply changes</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>LanguagesModel</name>
+    <message>
+        <location filename="../src/ui/LanguagesModel.cpp" line="43"/>
+        <source>System default</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>Main</name>
     <message>
-        <location filename="../src/main.cpp" line="69"/>
+        <location filename="../src/main.cpp" line="73"/>
         <source>Ricochet Error</source>
         <translation>Ricochet fout</translation>
     </message>
@@ -229,17 +270,17 @@
 <context>
     <name>MainToolBar</name>
     <message>
-        <location filename="../src/ui/qml/MainToolBar.qml" line="18"/>
+        <location filename="../src/ui/qml/MainToolBar.qml" line="19"/>
         <source>Add Contact</source>
         <translation>Toevoegen contact</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/MainToolBar.qml" line="27"/>
+        <location filename="../src/ui/qml/MainToolBar.qml" line="28"/>
         <source>Preferences</source>
         <translation>Voorkeuren</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/MainToolBar.qml" line="60"/>
+        <location filename="../src/ui/qml/MainToolBar.qml" line="75"/>
         <source>Click to add contacts</source>
         <translation>Klikken om contacten toe te voegen</translation>
     </message>
@@ -247,12 +288,12 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../src/ui/MainWindow.cpp" line="114"/>
+        <location filename="../src/ui/MainWindow.cpp" line="153"/>
         <source>Remove %1</source>
         <translation>Verwijder %1</translation>
     </message>
     <message>
-        <location filename="../src/ui/MainWindow.cpp" line="115"/>
+        <location filename="../src/ui/MainWindow.cpp" line="154"/>
         <source>Do you want to permanently remove %1?</source>
         <translation>Wil je %1 permanent verwijderen?</translation>
     </message>
@@ -260,35 +301,44 @@
 <context>
     <name>MessageDelegate</name>
     <message>
-        <location filename="../src/ui/qml/MessageDelegate.qml" line="13"/>
+        <location filename="../src/ui/qml/MessageDelegate.qml" line="26"/>
         <source>%1 is offline</source>
         <extracomment>%1 nickname</extracomment>
         <translation>%1 is offline</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/MessageDelegate.qml" line="114"/>
+        <location filename="../src/ui/qml/MessageDelegate.qml" line="134"/>
         <source>Copy ID</source>
         <translation>Kopieer ID</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/MessageDelegate.qml" line="114"/>
+        <location filename="../src/ui/qml/MessageDelegate.qml" line="134"/>
         <source>Copy Link</source>
         <translation>Kopieer link</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/MessageDelegate.qml" line="119"/>
+        <location filename="../src/ui/qml/MessageDelegate.qml" line="139"/>
         <source>Open with Browser</source>
         <translation>Open met browser</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/MessageDelegate.qml" line="133"/>
+        <location filename="../src/ui/qml/MessageDelegate.qml" line="153"/>
         <source>Add as Contact</source>
         <translation>Toevoegen als contact</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/MessageDelegate.qml" line="145"/>
+        <location filename="../src/ui/qml/MessageDelegate.qml" line="165"/>
+        <source>Copy Message</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/qml/MessageDelegate.qml" line="172"/>
+        <source>Copy Selection</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Copy</source>
-        <translation>Kopieer</translation>
+        <translation type="vanished">Kopieer</translation>
     </message>
 </context>
 <context>
@@ -313,22 +363,22 @@
 <context>
     <name>NetworkSetupWizard</name>
     <message>
-        <location filename="../src/ui/qml/NetworkSetupWizard.qml" line="98"/>
+        <location filename="../src/ui/qml/NetworkSetupWizard.qml" line="100"/>
         <source>This computer&apos;s Internet connection is free of obstacles. I would like to connect directly to the Tor network.</source>
         <translation>De internetverbinding van deze computer kent geen belemmeringen. Ik wil rechtstreeks verbinden met het TOR netwerk.</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/NetworkSetupWizard.qml" line="105"/>
+        <location filename="../src/ui/qml/NetworkSetupWizard.qml" line="107"/>
         <source>Connect</source>
         <translation>Verbinden</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/NetworkSetupWizard.qml" line="122"/>
+        <location filename="../src/ui/qml/NetworkSetupWizard.qml" line="124"/>
         <source>This computer&apos;s Internet connection is censored, filtered, or proxied. I need to configure network settings.</source>
         <translation>De internetverbinding van deze computer is gecensureerd, gefilterd of geproxied. Ik moet de netwerkinstellingen configureren.</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/NetworkSetupWizard.qml" line="129"/>
+        <location filename="../src/ui/qml/NetworkSetupWizard.qml" line="131"/>
         <source>Configure</source>
         <translation>Configureren</translation>
     </message>
@@ -336,22 +386,22 @@
 <context>
     <name>OfflineStateItem</name>
     <message>
-        <location filename="../src/ui/qml/OfflineStateItem.qml" line="106"/>
+        <location filename="../src/ui/qml/OfflineStateItem.qml" line="107"/>
         <source>Configure</source>
         <translation>Configureren</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/OfflineStateItem.qml" line="114"/>
+        <location filename="../src/ui/qml/OfflineStateItem.qml" line="115"/>
         <source>Details</source>
         <translation>Details</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/OfflineStateItem.qml" line="142"/>
+        <location filename="../src/ui/qml/OfflineStateItem.qml" line="143"/>
         <source>Connection failed</source>
         <translation>Verbinding mislukt</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/OfflineStateItem.qml" line="168"/>
+        <location filename="../src/ui/qml/OfflineStateItem.qml" line="169"/>
         <source>Connecting…</source>
         <extracomment>\u2026 is ellipsis</extracomment>
         <translation>Verbinden...</translation>
@@ -360,27 +410,27 @@
 <context>
     <name>OpenBrowserDialog</name>
     <message>
-        <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="38"/>
+        <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="39"/>
         <source>&lt;b&gt;Warning!&lt;/b&gt; Opening links with your default browser will harm your security and anonymity.&lt;br&gt;&lt;br&gt;You can &lt;a href=&apos;.&apos;&gt;copy to the clipboard&lt;/a&gt; instead.</source>
         <translation>&lt;b&gt;Waarschuwing!&lt;/b&gt; Het openen van links met je standaard browser schaadt je beveliging en anonimiteit.&lt;br&gt;&lt;br&gt;Je kunt in plaats daarvan &lt;a href=&apos;.&apos;&gt;kopiëren maar het klembord&lt;/a&gt;.</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="57"/>
+        <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="58"/>
         <source>Don&apos;t ask again for links from %1</source>
         <translation>Vraag niet opnieuw om links van %1</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="63"/>
+        <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="64"/>
         <source>Don&apos;t ask again for any links (not recommended!)</source>
         <translation>Vraag niet meer naar links (niet aanbevolen!)</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="70"/>
+        <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="71"/>
         <source>Open Browser</source>
         <translation>Open Browser</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="82"/>
+        <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="83"/>
         <source>Cancel</source>
         <translation>Annuleren</translation>
     </message>
@@ -388,35 +438,39 @@
 <context>
     <name>OutgoingContactRequest</name>
     <message>
-        <location filename="../src/core/OutgoingContactRequest.cpp" line="203"/>
         <source>An error occurred with the contact request (code: %1)</source>
-        <translation>Er trad een fout op bij de verbindingsaanvraag (code: %1)</translation>
+        <translation type="vanished">Er trad een fout op bij de verbindingsaanvraag (code: %1)</translation>
     </message>
 </context>
 <context>
     <name>PreferencesDialog</name>
     <message>
-        <location filename="../src/ui/qml/PreferencesDialog.qml" line="10"/>
+        <location filename="../src/ui/qml/PreferencesDialog.qml" line="12"/>
         <source>Ricochet Preferences</source>
         <translation>Ricochet voorkeuren</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/PreferencesDialog.qml" line="39"/>
+        <location filename="../src/ui/qml/PreferencesDialog.qml" line="41"/>
         <source>General</source>
         <translation>Algemeen</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/PreferencesDialog.qml" line="44"/>
+        <location filename="../src/ui/qml/PreferencesDialog.qml" line="46"/>
+        <source>Language</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/qml/PreferencesDialog.qml" line="51"/>
         <source>Contacts</source>
         <translation>Contacten</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/PreferencesDialog.qml" line="49"/>
+        <location filename="../src/ui/qml/PreferencesDialog.qml" line="56"/>
         <source>Tor</source>
         <translation>Tor</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/PreferencesDialog.qml" line="54"/>
+        <location filename="../src/ui/qml/PreferencesDialog.qml" line="61"/>
         <source>About</source>
         <translation>Over</translation>
     </message>
@@ -603,9 +657,8 @@
         <translation>Online</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/TorPreferences.qml" line="31"/>
         <source>Published</source>
-        <translation>Gepubliceerd</translation>
+        <translation type="vanished">Gepubliceerd</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorPreferences.qml" line="31"/>
