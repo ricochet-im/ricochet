@@ -650,7 +650,7 @@ private slots:
                 continue;
 
             file.write(line);
-            file.write("\r\n");
+            file.write("\n");
         }
 
         if (!file.commit()) {
