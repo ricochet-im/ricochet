@@ -13,6 +13,7 @@
 * French - rike, Creaprog, CrumpyGat, Jordi, franck99
 * German - djsmith85, rike
 * Italian - HostFat, GIANNAT
+* Polish - Kacper Kołodziej - kacperkolodziej.com
 * Portuguese (Brazil) - swperman
 * Russian - vla8752, qualte
 * Spanish - strel

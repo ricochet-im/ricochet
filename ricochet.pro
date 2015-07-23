@@ -232,6 +232,7 @@ TRANSLATIONS += \
     translation/ricochet_it.ts \
     translation/ricochet_es.ts \
     translation/ricochet_da.ts \
+    translation/ricochet_pl.ts \
     translation/ricochet_pt_BR.ts \
     translation/ricochet_de.ts \
     translation/ricochet_bg.ts \
