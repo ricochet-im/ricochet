@@ -38,7 +38,7 @@
     <message>
         <location filename="../src/ui/qml/ContactActions.qml" line="44"/>
         <source>Details...</source>
-        <translation>Szczegóły....</translation>
+        <translation>Szczegóły...</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactActions.qml" line="48"/>
@@ -84,17 +84,17 @@
     <message>
         <location filename="../src/ui/qml/ContactList.qml" line="75"/>
         <source>Online</source>
-        <translation>Połączony</translation>
+        <translation>Połączeni</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactList.qml" line="76"/>
         <source>Offline</source>
-        <translation>Rozłączony</translation>
+        <translation>Rozłączeni</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactList.qml" line="77"/>
         <source>Requests</source>
-        <translation>Prośby</translation>
+        <translation>Prośby o dodanie</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactList.qml" line="78"/>
@@ -112,7 +112,7 @@
     <message>
         <location filename="../src/ui/qml/ContactPreferences.qml" line="97"/>
         <source>Date added:</source>
-        <translation>Dołączył/a:</translation>
+        <translation>Dołączył:</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactPreferences.qml" line="104"/>
@@ -122,12 +122,12 @@
     <message>
         <location filename="../src/ui/qml/ContactPreferences.qml" line="113"/>
         <source>Request:</source>
-        <translation>Prośba:</translation>
+        <translation>Prośba o dodanie:</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactPreferences.qml" line="122"/>
         <source>Pending connection</source>
-        <translation>Oczekujące połączenie</translation>
+        <translation>Oczekuje na połączenie</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactPreferences.qml" line="123"/>
@@ -158,7 +158,7 @@
     <message>
         <location filename="../src/ui/qml/ContactPreferences.qml" line="136"/>
         <source>Response:</source>
-        <translation>Odpowiedź</translation>
+        <translation>Odpowiedź:</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactPreferences.qml" line="158"/>
@@ -186,7 +186,7 @@
     <message>
         <location filename="../src/ui/qml/ContactRequestDialog.qml" line="107"/>
         <source>Accept</source>
-        <translation>Zaakceptuj</translation>
+        <translation>Akceptuj</translation>
     </message>
 </context>
 <context>
@@ -326,7 +326,7 @@
     <message>
         <location filename="../src/ui/qml/MessageDelegate.qml" line="172"/>
         <source>Copy Selection</source>
-        <translation>Skopiuj zaznaczenie</translation>
+        <translation>Kopiuj zaznaczenie</translation>
     </message>
 </context>
 <context>
@@ -353,7 +353,7 @@
     <message>
         <location filename="../src/ui/qml/NetworkSetupWizard.qml" line="100"/>
         <source>This computer&apos;s Internet connection is free of obstacles. I would like to connect directly to the Tor network.</source>
-        <translation type="unfinished"></translation>
+        <translation>Połączenie internetowe tego kompuera jest wolne od przeszkód. Chcę połączyć się bezpośrednio z siecią Tor.</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/NetworkSetupWizard.qml" line="107"/>
@@ -363,7 +363,7 @@
     <message>
         <location filename="../src/ui/qml/NetworkSetupWizard.qml" line="124"/>
         <source>This computer&apos;s Internet connection is censored, filtered, or proxied. I need to configure network settings.</source>
-        <translation>Połączenie internetowe tego komputera jest cenzorowane, filtrowane lub przesyłane przez serwer proxy. Musisz skonfigurować ustawienia sieciowe.</translation>
+        <translation>Połączenie internetowe tego komputera jest cenzorowane, filtrowane lub trasowane przez serwer proxy. Musisz skonfigurować ustawienia sieciowe.</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/NetworkSetupWizard.qml" line="131"/>
@@ -410,7 +410,7 @@
     <message>
         <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="64"/>
         <source>Don&apos;t ask again for any links (not recommended!)</source>
-        <translation>Nie pytaj ponownie dla jakichkolwiek linków (niezalecane!)</translation>
+        <translation>Nigdy nie pytaj ponownie (niezalecane!)</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="71"/>
@@ -573,12 +573,12 @@
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="188"/>
         <source>If this computer&apos;s Internet connection is censored, you will need to obtain and use bridge relays.</source>
-        <translation>Jeżeli połączenie internetowe tego komputera jest cenzorowane, będziesz musiał uzyskać dostęp do 'bridge relay'</translation>
+        <translation>Jeżeli połączenie internetowe tego komputera jest cenzorowane, będziesz musiał uzyskać dostęp do węzeł mostkowy.</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="197"/>
         <source>Enter one or more bridge relays (one per line):</source>
-        <translation>Podaj jeden lub więcej węzeł mostowany (bridge relay) (jeden w linii):</translation>
+        <translation>Podaj jeden lub więcej węzłów mostkowych (jeden w linii):</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="212"/>
@@ -620,12 +620,12 @@
     <message>
         <location filename="../src/ui/qml/TorPreferences.qml" line="26"/>
         <source>Control connected:</source>
-        <translation>Połączony z kontrolą:</translation>
+        <translation>Połączony z portem kontrolnym:</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorPreferences.qml" line="28"/>
         <source>Circuits established:</source>
-        <translation>Utworzone obwody:</translation>
+        <translation>Obwody utworzone:</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorPreferences.qml" line="30"/>
@@ -683,7 +683,7 @@
     <message>
         <location filename="../src/ui/qml/TorStateWidget.qml" line="32"/>
         <source>Online</source>
-        <translation>Online</translation>
+        <translation>Połączony</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorStateWidget.qml" line="34"/>
