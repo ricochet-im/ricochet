@@ -106,7 +106,7 @@ TorControlPrivate::TorControlPrivate(TorControl *parent)
     : QObject(parent), q(parent), controlPort(0), socksPort(0),
       status(TorControl::NotConnected), torStatus(TorControl::TorUnknown)
 {
-    socket = new TorControlSocket;
+    socket = new TorControlSocket(this);
     QObject::connect(socket, SIGNAL(connected()), this, SLOT(socketConnected()));
     QObject::connect(socket, SIGNAL(disconnected()), this, SLOT(socketDisconnected()));
     QObject::connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(socketError()));
