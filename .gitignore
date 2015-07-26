@@ -25,5 +25,8 @@ packaging/installer/Output
 translation/*.qm
 config
 config.ricochet
+config.tests/*/*
+!config.tests/*/*.pro
+!config.tests/*/*.cpp
+!config.tests/*/*.h
 ricochet
-
