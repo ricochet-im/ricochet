@@ -42,6 +42,8 @@ QtObject {
         preferencesDialog.requestActivate()
     }
 
+    property QtObject audioNotifications: audioNotificationLoader.item
+
     Component.onCompleted: {
         ContactWindow.createWindow = function(user) {
             var re = createDialog("ChatWindow.qml", { 'contact': user })
@@ -131,16 +133,10 @@ QtObject {
             }
         },
 
-        Binding {
-            target: audioNotification
-            property: "enabled"
-            value: uiSettings.data.playAudioNotification
-        },
-
-        Binding {
-            target: audioNotification
-            property: "volume"
-            value: uiSettings.data.notificationVolume
+        Loader {
+            id: audioNotificationLoader
+            active: uiSettings.data.playAudioNotification || false
+            source: "AudioNotifications.qml"
         }
     ]
 }
