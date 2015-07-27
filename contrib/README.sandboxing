@@ -1,0 +1,49 @@
+This document explains some of the sandboxing contributions available for
+Ricochet.
+
+Debian GNU/Linux sandboxing:
+
+usr.bin.ricochet-apparmor is a basic AppArmor policy to be installed in
+/etc/apparmor.d/; it may be enabled like so:
+
+  cp usr.bin.ricochet-apparmor /etc/apparmor.d/usr.bin.ricochet-apparmor
+  aa-enforce /etc/apparmor.d/usr.bin.ricochet-apparmor
+
+the minijail tool originally from the ChromeOS project is an easy way to
+use seccomp as a generic wrapper around any program. We use it to add seccomp
+support to ricochet without using the more useful or privileged modes. If
+minijail is supported for your platform, congratulations. If not, it may be
+built and used like so:
+
+  apt-get install libcap-dev
+  git clone https://chromium.googlesource.com/chromiumos/platform/minijail
+  export CC=gcc
+  make
+  ./minijail0 -h
+
+ricochet-seccomp-amd64.policy is a loose seccomp filter policy to be used
+with the minijail tool originally from the ChromeOS project:
+
+  minijail0 -n -S ricochet-seccomp-amd64.policy /usr/bin/ricochet
+
+ricochet-seccomp-x86.policy and ricochet-seccomp-arm.policy are the base
+policies for the x86 and arm architectures. They may need tweaking before
+they are useful. They need testing - only the amd64 code has been used
+extensively.
+
+It is also possible to run Ricochet inside of xpra like so:
+
+  xpra start :23 --start-child ricochet --exit-with-children \
+  --no-pulseaudio \
+  --no-microphone \
+  --no-sharing \
+  --no-xsettings \
+  --no-mdns \
+  --no-notifications \
+  --no-bell \
+  --no-opengl=no \
+  --no-daemon && xpra attach :23 --no-tray --title=@title@
+
+It is also possible to combine the AppArmor protection as well as the xpra and
+minijail commands. This allows for a reasonable start for sandboxing Ricochet
+from the host system where it is running on Debian GNU/Linux.
