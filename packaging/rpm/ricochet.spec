@@ -4,11 +4,9 @@ Release:	1%{?dist}
 Summary:	Anonymous peer-to-peer instant messaging
 
 License:	BSD
-URL:		https://github.com/ricochet-im/ricochet
-Source0:	https://github.com/ricochet-im/ricochet/archive/v1.1.0.tar.gz
+URL:		https://ricochet.im/
+Source0:	https://ricochet.im/releases/%{version}/ricochet-%{version}-src.tar.bz2
 
-BuildRequires:	gcc-c++
-BuildRequires:	make
 BuildRequires:	openssl-devel
 BuildRequires:	protobuf-compiler
 BuildRequires:	protobuf-devel
@@ -18,16 +16,13 @@ BuildRequires:	qt5-qtdeclarative-devel
 BuildRequires:	qt5-qtmultimedia-devel
 BuildRequires:	qt5-qtquickcontrols
 BuildRequires:	qt5-qttools-devel
-BuildRequires:	tor
 Requires:	openssl-libs
-Requires:	glibc
-Requires:	libgcc
-Requires:	libstdc++
-Requires:	mesa-libGL
 Requires:	protobuf
 Requires:	qt5-qtbase
 Requires:	qt5-qtbase-gui
 Requires:	qt5-qtdeclarative
+Requires:	qt5-qtquickcontrols
+Requires:	qt5-qtmultimedia
 Requires:	tor
 
 %description
@@ -43,7 +38,7 @@ Ricochet is an experiment with a different kind of instant messaging that doesn'
 
 
 %build
-qmake-qt5 DEFINES+=RICOCHET_NO_PORTABLE  CONFIG+=release
+qmake-qt5 DEFINES+=RICOCHET_NO_PORTABLE CONFIG+=release
 make -f Makefile.Release %{?_smp_mflags}
 
 
