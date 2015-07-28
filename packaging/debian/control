@@ -7,7 +7,7 @@ Build-Depends: debhelper (>=9), libssl-dev (>=1.0.0), pkg-config, gcc (>=4.9) | 
 
 Package: ricochet
 Architecture: any
-Depends: libssl (>=1.0.0), tor (>=0.2.5.12), ${shlibs:Depends}, ${misc:Depends}
+Depends: libssl1.0.0 (>=1.0.0), tor (>=0.2.5.12), ${shlibs:Depends}, ${misc:Depends}
 Description: Anonymous peer-to-peer instant messaging
  Ricochet is an experiment with a different kind of instant messaging that
  doesn't trust anyone with your identity, your contact list, or your
