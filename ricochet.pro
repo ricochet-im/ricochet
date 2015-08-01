@@ -40,6 +40,12 @@ CONFIG += c++11
 
 VERSION = 1.1.0
 
+# Use CONFIG+=no-hardened to disable compiler hardening options
+!CONFIG(no-hardened) {
+    CONFIG += hardened
+    include(hardened.pri)
+}
+
 # Pass DEFINES+=RICOCHET_NO_PORTABLE for a system-wide installation
 
 CONFIG(release,debug|release):DEFINES += QT_NO_DEBUG_OUTPUT QT_NO_WARNING_OUTPUT
