@@ -4,9 +4,11 @@ load(configure)
 # Supported in gcc 4.8+
 HARDENED_SANITIZE_FLAGS = -fsanitize=address
 # Supported in gcc 4.9+
-HARDENED_SANITIZE_UBSAN_FLAGS = -fsanitize=undefined -fsanitize=integer-divide-by-zero -fvtable-verify=std -fsanitize=bounds -fsanitize=alignment -fsanitize=float-divide-by-zero -fsanitize=float-cast-overflow
+HARDENED_SANITIZE_UBSAN_FLAGS = -fsanitize=undefined -fsanitize=integer-divide-by-zero -fsanitize=bounds -fsanitize=alignment -fsanitize=float-divide-by-zero -fsanitize=float-cast-overflow -fno-sanitize-recover
 # Supported in gcc 5.0+
 HARDENED_SANITIZE_UBSAN_MORE_FLAGS = -fsanitize=vptr -fsanitize=object-size
+# vtable-verify requires some OS support; see https://bugzilla.novell.com/show_bug.cgi?id=877239
+HARDENED_VTABLE_VERIFY_FLAGS = -fvtable-verify=std
 
 HARDENED_STACK_PROTECTOR_STRONG_FLAGS = -fstack-protector-strong
 HARDENED_STACK_PROTECTOR_FLAGS = -fstack-protector --param=ssp-buffer-size=4
@@ -18,6 +20,7 @@ CONFIG(hardened) {
     qtCompileTest(sanitize):HARDEN_FLAGS += $$HARDENED_SANITIZE_FLAGS
     qtCompileTest(sanitize-ubsan):HARDEN_FLAGS += $$HARDENED_SANITIZE_UBSAN_FLAGS
     qtCompileTest(sanitize-ubsan-more):HARDEN_FLAGS += $$HARDENED_SANITIZE_UBSAN_MORE_FLAGS
+    qtCompileTest(vtable-verify):HARDEN_FLAGS += $$HARDENED_VTABLE_VERIFY_FLAGS
 
     qtCompileTest(stack-protector-strong) {
         HARDEN_FLAGS += $$HARDENED_STACK_PROTECTOR_STRONG_FLAGS
