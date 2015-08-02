@@ -51,6 +51,7 @@ ContactUser::ContactUser(UserIdentity *ident, int id, QObject *parent)
     , uniqueID(id)
     , m_connection(0)
     , m_outgoingSocket(0)
+    , m_status(Offline)
     , m_lastReceivedChatID(0)
     , m_contactRequest(0)
     , m_settings(0)
@@ -66,6 +67,7 @@ ContactUser::ContactUser(UserIdentity *ident, int id, QObject *parent)
 
     loadContactRequest();
     updateStatus();
+    updateOutgoingSocket();
 }
 
 void ContactUser::loadContactRequest()
