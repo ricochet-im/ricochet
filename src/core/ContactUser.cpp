@@ -70,6 +70,11 @@ ContactUser::ContactUser(UserIdentity *ident, int id, QObject *parent)
     updateOutgoingSocket();
 }
 
+ContactUser::~ContactUser()
+{
+    delete m_settings;
+}
+
 void ContactUser::loadContactRequest()
 {
     if (m_contactRequest)

@@ -87,6 +87,7 @@ public:
     const int uniqueID;
 
     explicit ContactUser(UserIdentity *identity, int uniqueID, QObject *parent = 0);
+    virtual ~ContactUser();
 
     Protocol::Connection *connection() { return m_connection.data(); }
     bool isConnected() const { return status() == Online; }
