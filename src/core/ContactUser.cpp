@@ -216,6 +216,13 @@ void ContactUser::updateOutgoingSocket()
 
 void ContactUser::onConnected()
 {
+    if (!m_connection || !m_connection->isConnected()) {
+        /* This case can happen if disconnected very quickly after connecting,
+         * before the (queued) slot has been called. Ignore the signal.
+         */
+        return;
+    }
+
     m_settings->write("lastConnected", QDateTime::currentDateTime());
 
     if (m_contactRequest && m_connection->purpose() == Protocol::Connection::Purpose::OutboundRequest) {
