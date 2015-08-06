@@ -40,6 +40,12 @@ CONFIG += c++11
 
 VERSION = 1.1.0
 
+# Use CONFIG+=no-hardened to disable compiler hardening options
+!CONFIG(no-hardened) {
+    CONFIG += hardened
+    include(hardened.pri)
+}
+
 # Pass DEFINES+=RICOCHET_NO_PORTABLE for a system-wide installation
 
 CONFIG(release,debug|release):DEFINES += QT_NO_DEBUG_OUTPUT QT_NO_WARNING_OUTPUT
@@ -155,8 +161,6 @@ SOURCES += src/main.cpp \
     src/ui/LinkedText.cpp \
     src/utils/Settings.cpp \
     src/utils/PendingOperation.cpp \
-    src/ui/AudioNotification.cpp \
-    src/utils/AudioPlayer.cpp \
     src/ui/LanguagesModel.cpp
 
 HEADERS += src/ui/MainWindow.h \
@@ -187,8 +191,6 @@ HEADERS += src/ui/MainWindow.h \
     src/ui/LinkedText.h \
     src/utils/Settings.h \
     src/utils/PendingOperation.h \
-    src/ui/AudioNotification.h \
-    src/utils/AudioPlayer.h \
     src/ui/LanguagesModel.h
 
 SOURCES += src/protocol/Channel.cpp \

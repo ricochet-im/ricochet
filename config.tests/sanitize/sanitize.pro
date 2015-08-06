@@ -1,0 +1,4 @@
+include(../../hardened.pri)
+QMAKE_CXXFLAGS += $$HARDENED_SANITIZE_FLAGS
+QMAKE_LFLAGS += $$HARDENED_SANITIZE_FLAGS
+SOURCES += test.cpp

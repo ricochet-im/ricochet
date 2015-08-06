@@ -93,10 +93,11 @@ int main(int argc, char *argv[])
 
     /* Identities */
     identityManager = new IdentityManager;
+    QScopedPointer<IdentityManager> scopedIdentityManager(identityManager);
 
     /* Window */
-    MainWindow w;
-    if (!w.showUI())
+    QScopedPointer<MainWindow> w(new MainWindow);
+    if (!w->showUI())
         return 1;
 
     return a.exec();

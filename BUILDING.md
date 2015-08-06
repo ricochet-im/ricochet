@@ -58,6 +58,11 @@ In portable mode (default), all configuration is stored in a folder called `conf
 
 The [buildscripts](https://github.com/ricochet-im/buildscripts) repository contains a set of scripts to build a fully static Ricochet on a clean Debian system. These are used to create the generic linux binary packages.
 
+#### Hardening
+Ricochet will use aggressive compiler hardening flags if available. `qmake` will print the results of these tests on first run, or when run with `CONFIG+=recheck`.
+
+To take full advantage of the sanitizer options, you may need to install `libasan` and `libubsan`.
+
 ## OS X
 
 You will need:
