@@ -157,7 +157,8 @@ SOURCES += src/main.cpp \
     src/utils/PendingOperation.cpp \
     src/ui/AudioNotification.cpp \
     src/utils/AudioPlayer.cpp \
-    src/ui/LanguagesModel.cpp
+    src/ui/LanguagesModel.cpp \
+    src/ui/RicoTray.cpp
 
 HEADERS += src/ui/MainWindow.h \
     src/ui/ContactsModel.h \
@@ -189,7 +190,8 @@ HEADERS += src/ui/MainWindow.h \
     src/utils/PendingOperation.h \
     src/ui/AudioNotification.h \
     src/utils/AudioPlayer.h \
-    src/ui/LanguagesModel.h
+    src/ui/LanguagesModel.h \
+    src/ui/RicoTray.h
 
 SOURCES += src/protocol/Channel.cpp \
     src/protocol/ControlChannel.cpp \
