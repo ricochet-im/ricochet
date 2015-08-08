@@ -5,14 +5,23 @@
 
 class RicoTray : public QSystemTrayIcon
 {
+    Q_OBJECT
+    Q_PROPERTY(bool enabled READ isEnabled WRITE setEnabled NOTIFY enabledChanged)
 public:
-    RicoTray(MainWindow *p_main = nullptr);
+    RicoTray();
 
-private slots:
+signals:
+    void iconTriggered();
+    void enabledChanged(bool);
+
+public slots:
+    bool isEnabled() const;
+    void setEnabled(bool);
+
     void iconActivated(QSystemTrayIcon::ActivationReason reason);
 
 private:
-    MainWindow* main;
+    bool enabled;
 };
 
 #endif // RICOTRAY_HPP

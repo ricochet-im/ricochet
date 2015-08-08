@@ -25,6 +25,14 @@ ColumnLayout {
     }
 
     CheckBox {
+        text: qsTr("Show tray icon")
+        checked: uiSettings.data.showTrayIcon || false
+        onCheckedChanged: {
+            uiSettings.write("showTrayIcon", checked)
+        }
+    }
+
+    CheckBox {
         text: qsTr("Play audio notifications")
         checked: uiSettings.data.playAudioNotification || false
         onCheckedChanged: {

@@ -10,7 +10,8 @@ QtObject {
     id: root
 
     property MainWindow mainWindow: MainWindow {
-        onVisibleChanged: if (!visible) Qt.quit()
+        //onVisibleChanged: if (!visible) Qt.quit()
+        onVisibleChanged: console.log("visibility changed: " + visibility)
     }
 
     function createDialog(component, properties, parent) {
@@ -93,6 +94,11 @@ QtObject {
             }
         },
 
+        Connections {
+            target: trayIcon
+            onIconTriggered: mainWindow.toggleWindow()
+        },
+
         Settings {
             id: uiSettings
             path: "ui"
@@ -141,6 +147,13 @@ QtObject {
             target: audioNotification
             property: "volume"
             value: uiSettings.data.notificationVolume
+        },
+
+        Binding {
+            target: trayIcon
+            property: "enabled"
+            value: uiSettings.data.showTrayIcon
         }
+
     ]
 }

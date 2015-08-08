@@ -7,6 +7,7 @@ import "ContactWindow.js" as ContactWindow
 
 ApplicationWindow {
     id: window
+    objectName: "mainWin"
     title: "Ricochet"
     visibility: Window.AutomaticVisibility
 
@@ -18,6 +19,17 @@ ApplicationWindow {
 
     onMinimumWidthChanged: width = Math.max(width, minimumWidth)
     onMaximumWidthChanged: width = Math.min(width, maximumWidth)
+
+    property int lastVisibility: visibility
+
+    function toggleWindow() {
+        if (visible == false) {
+            visibility = lastVisibility
+        } else {
+            lastVisibility = visibility
+            visibility = Window.Hidden
+        }
+    }
 
     // OS X Menu
     Loader {

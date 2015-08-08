@@ -46,6 +46,7 @@
 #include "utils/PendingOperation.h"
 #include "AudioNotification.h"
 #include "ui/LanguagesModel.h"
+#include "ui/RicoTray.h"
 #include <QtQml>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
@@ -86,6 +87,9 @@ MainWindow::MainWindow(QObject *parent)
     qmlRegisterType<LanguagesModel>("im.ricochet", 1, 0, "LanguagesModel");
 
     qRegisterMetaType<PendingOperation*>();
+
+    QObject* item = qml->findChild<QObject*>(QLatin1String("mainWin"));
+    QMetaObject::invokeMethod(item, "hideWindow");
 }
 
 MainWindow::~MainWindow()
@@ -102,6 +106,9 @@ bool MainWindow::showUI()
 
     AudioNotification* audioNotification( new AudioNotification(this) );
     qml->rootContext()->setContextProperty(QLatin1String("audioNotification"), audioNotification);
+
+    RicoTray *trayIcon = new RicoTray();
+    qml->rootContext()->setContextProperty(QLatin1String("trayIcon"), trayIcon);
 
     qml->load(QUrl(QLatin1String("qrc:/ui/main.qml")));
 
