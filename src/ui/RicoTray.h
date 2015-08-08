@@ -6,22 +6,22 @@
 class RicoTray : public QSystemTrayIcon
 {
     Q_OBJECT
-    Q_PROPERTY(bool enabled READ isEnabled WRITE setEnabled NOTIFY enabledChanged)
+    Q_PROPERTY(bool hidden READ isHidden WRITE setHidden NOTIFY hiddenChanged)
 public:
     RicoTray();
 
 signals:
     void iconTriggered();
-    void enabledChanged(bool);
+    void hiddenChanged(bool);
 
 public slots:
-    bool isEnabled() const;
-    void setEnabled(bool);
+    bool isHidden() const;
+    void setHidden(bool);
 
     void iconActivated(QSystemTrayIcon::ActivationReason reason);
 
 private:
-    bool enabled;
+    bool hidden;
 };
 
 #endif // RICOTRAY_HPP

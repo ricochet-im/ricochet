@@ -221,8 +221,8 @@
     </message>
     <message>
         <location filename="../src/ui/qml/GeneralPreferences.qml" line="28"/>
-        <source>Show tray icon</source>
-        <translation>Pokaż ikonę w zasobniku systemowym</translation>
+        <source>Hide tray icon</source>
+        <translation>Ukryj ikonę z zasobnika systemowego</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/GeneralPreferences.qml" line="36"/>

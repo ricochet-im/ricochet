@@ -140,8 +140,8 @@ QtObject {
 
         Binding {
             target: trayIcon
-            property: "enabled"
-            value: uiSettings.data.showTrayIcon
+            property: "hidden"
+            value: uiSettings.data.hideTrayIcon
         },
 
         Loader {

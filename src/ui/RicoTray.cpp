@@ -7,20 +7,21 @@ RicoTray::RicoTray() :
     QSystemTrayIcon(QIcon(QLatin1String(":/icons/ricochet.svg")), 0)
 {
     connect(this, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(iconActivated(QSystemTrayIcon::ActivationReason)));
+    show();
 }
 
-bool RicoTray::isEnabled() const
+bool RicoTray::isHidden() const
 {
-    return enabled;
+    return hidden;
 }
 
-void RicoTray::setEnabled(bool p_enabled)
+void RicoTray::setHidden(bool p_hidden)
 {
-    if (enabled != p_enabled)
+    if (hidden != p_hidden)
     {
-        enabled = p_enabled;
-        setVisible(enabled);
-        emit enabledChanged(enabled);
+        hidden = p_hidden;
+        setVisible(!hidden);
+        emit hiddenChanged(hidden);
     }
 }
 

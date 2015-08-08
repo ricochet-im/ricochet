@@ -25,10 +25,10 @@ ColumnLayout {
     }
 
     CheckBox {
-        text: qsTr("Show tray icon")
-        checked: uiSettings.data.showTrayIcon || false
+        text: qsTr("Hide tray icon")
+        checked: uiSettings.data.hideTrayIcon || false
         onCheckedChanged: {
-            uiSettings.write("showTrayIcon", checked)
+            uiSettings.write("hideTrayIcon", checked)
         }
     }
 

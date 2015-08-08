@@ -229,7 +229,7 @@
     </message>
     <message>
         <location filename="../src/ui/qml/GeneralPreferences.qml" line="28"/>
-        <source>Show tray icon</source>
+        <source>Hide tray icon</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
