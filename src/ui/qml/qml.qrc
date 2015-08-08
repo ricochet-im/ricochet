@@ -34,6 +34,7 @@
         <file>UnreadCountBadge.qml</file>
         <file>GeneralPreferences.qml</file>
         <file>LanguagePreferences.qml</file>
+        <file>AudioNotifications.qml</file>
     </qresource>
     <qresource prefix="/text">
         <file>../../../LICENSE</file>

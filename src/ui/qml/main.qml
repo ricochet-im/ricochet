@@ -10,8 +10,7 @@ QtObject {
     id: root
 
     property MainWindow mainWindow: MainWindow {
-        //onVisibleChanged: if (!visible) Qt.quit()
-        onVisibleChanged: console.log("visibility changed: " + visibility)
+
     }
 
     function createDialog(component, properties, parent) {
@@ -42,6 +41,8 @@ QtObject {
         preferencesDialog.raise()
         preferencesDialog.requestActivate()
     }
+
+    property QtObject audioNotifications: audioNotificationLoader.item
 
     Component.onCompleted: {
         ContactWindow.createWindow = function(user) {
@@ -138,21 +139,15 @@ QtObject {
         },
 
         Binding {
-            target: audioNotification
-            property: "enabled"
-            value: uiSettings.data.playAudioNotification
-        },
-
-        Binding {
-            target: audioNotification
-            property: "volume"
-            value: uiSettings.data.notificationVolume
-        },
-
-        Binding {
             target: trayIcon
             property: "enabled"
             value: uiSettings.data.showTrayIcon
+        },
+
+        Loader {
+            id: audioNotificationLoader
+            active: uiSettings.data.playAudioNotification || false
+            source: "AudioNotifications.qml"
         }
 
     ]

@@ -48,13 +48,9 @@ ColumnLayout {
             maximumValue: 1.0
             updateValueWhileDragging: false
             enabled: uiSettings.data.playAudioNotification || false
-            value: uiSetting.data.notificationVolume
+            value: uiSettings.read("notificationVolume", 0.75)
             onValueChanged: {
                 uiSettings.write("notificationVolume", value)
-            }
-            Component.onCompleted: {
-                value = (uiSettings.data.notificationVolume > 0)?
-                            uiSettings.data.notificationVolume : 0.75
             }
         }
     }

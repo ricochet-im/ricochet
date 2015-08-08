@@ -51,6 +51,7 @@ ContactUser::ContactUser(UserIdentity *ident, int id, QObject *parent)
     , uniqueID(id)
     , m_connection(0)
     , m_outgoingSocket(0)
+    , m_status(Offline)
     , m_lastReceivedChatID(0)
     , m_contactRequest(0)
     , m_settings(0)
@@ -66,6 +67,12 @@ ContactUser::ContactUser(UserIdentity *ident, int id, QObject *parent)
 
     loadContactRequest();
     updateStatus();
+    updateOutgoingSocket();
+}
+
+ContactUser::~ContactUser()
+{
+    delete m_settings;
 }
 
 void ContactUser::loadContactRequest()
@@ -209,6 +216,13 @@ void ContactUser::updateOutgoingSocket()
 
 void ContactUser::onConnected()
 {
+    if (!m_connection || !m_connection->isConnected()) {
+        /* This case can happen if disconnected very quickly after connecting,
+         * before the (queued) slot has been called. Ignore the signal.
+         */
+        return;
+    }
+
     m_settings->write("lastConnected", QDateTime::currentDateTime());
 
     if (m_contactRequest && m_connection->purpose() == Protocol::Connection::Purpose::OutboundRequest) {
