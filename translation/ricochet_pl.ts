@@ -221,11 +221,16 @@
     </message>
     <message>
         <location filename="../src/ui/qml/GeneralPreferences.qml" line="28"/>
+        <source>Show tray icon</source>
+        <translation>Pokaż ikonę w zasobniku systemowym</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/qml/GeneralPreferences.qml" line="36"/>
         <source>Play audio notifications</source>
         <translation>Włącz powiadomienia dźwiękowe</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/GeneralPreferences.qml" line="37"/>
+        <location filename="../src/ui/qml/GeneralPreferences.qml" line="45"/>
         <source>Volume</source>
         <translation>Głośność</translation>
     </message>
@@ -280,12 +285,12 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../src/ui/MainWindow.cpp" line="153"/>
+        <location filename="../src/ui/MainWindow.cpp" line="156"/>
         <source>Remove %1</source>
         <translation>Usuń %1</translation>
     </message>
     <message>
-        <location filename="../src/ui/MainWindow.cpp" line="154"/>
+        <location filename="../src/ui/MainWindow.cpp" line="157"/>
         <source>Do you want to permanently remove %1?</source>
         <translation>Czy chcesz na stałe usunąć %1?</translation>
     </message>
@@ -459,7 +464,7 @@
 <context>
     <name>QCocoaMenuItem</name>
     <message>
-        <location filename="../src/ui/qml/MainWindow.qml" line="29"/>
+        <location filename="../src/ui/qml/MainWindow.qml" line="40"/>
         <source>Preference</source>
         <translation>Ustawienie</translation>
     </message>
