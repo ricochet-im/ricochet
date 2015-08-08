@@ -98,7 +98,7 @@ QtObject {
             onIconTriggered: mainWindow.toggleWindow()
             onQuitTriggered: Qt.quit()
             onPreferencesTriggered: {
-                showWindow()
+                mainWindow.show()
                 root.openPreferences()
             }
             onAddContactTriggered: {
