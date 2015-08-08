@@ -86,9 +86,6 @@ MainWindow::MainWindow(QObject *parent)
     qmlRegisterType<LanguagesModel>("im.ricochet", 1, 0, "LanguagesModel");
 
     qRegisterMetaType<PendingOperation*>();
-
-    QObject* item = qml->findChild<QObject*>(QLatin1String("mainWin"));
-    QMetaObject::invokeMethod(item, "hideWindow");
 }
 
 MainWindow::~MainWindow()

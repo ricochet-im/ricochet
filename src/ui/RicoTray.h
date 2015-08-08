@@ -12,16 +12,20 @@ public:
 
 signals:
     void iconTriggered();
+    void quitTriggered();
+    void preferencesTriggered();
+    void addContactTriggered();
     void hiddenChanged(bool);
 
 public slots:
     bool isHidden() const;
     void setHidden(bool);
 
-    void iconActivated(QSystemTrayIcon::ActivationReason reason);
+    void quit();
+    void preferences();
+    void addContact();
 
-private:
-    bool hidden;
+    void iconActivated(QSystemTrayIcon::ActivationReason reason);
 };
 
 #endif // RICOTRAY_HPP

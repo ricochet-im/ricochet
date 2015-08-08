@@ -285,12 +285,12 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../src/ui/MainWindow.cpp" line="156"/>
+        <location filename="../src/ui/MainWindow.cpp" line="153"/>
         <source>Remove %1</source>
         <translation>Usuń %1</translation>
     </message>
     <message>
-        <location filename="../src/ui/MainWindow.cpp" line="157"/>
+        <location filename="../src/ui/MainWindow.cpp" line="154"/>
         <source>Do you want to permanently remove %1?</source>
         <translation>Czy chcesz na stałe usunąć %1?</translation>
     </message>
@@ -464,9 +464,27 @@
 <context>
     <name>QCocoaMenuItem</name>
     <message>
-        <location filename="../src/ui/qml/MainWindow.qml" line="40"/>
+        <location filename="../src/ui/qml/MainWindow.qml" line="52"/>
         <source>Preference</source>
         <translation>Ustawienie</translation>
+    </message>
+</context>
+<context>
+    <name>RicoTray</name>
+    <message>
+        <location filename="../src/ui/RicoTray.cpp" line="14"/>
+        <source>Add Contact</source>
+        <translation>Dodaj kontakt</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/RicoTray.cpp" line="17"/>
+        <source>Preferences</source>
+        <translation>Ustawienia</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/RicoTray.cpp" line="22"/>
+        <source>Quit</source>
+        <translation>Zakończ</translation>
     </message>
 </context>
 <context>

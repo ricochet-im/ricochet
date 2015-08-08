@@ -19,15 +19,27 @@ ApplicationWindow {
     onMinimumWidthChanged: width = Math.max(width, minimumWidth)
     onMaximumWidthChanged: width = Math.min(width, maximumWidth)
 
+    onClosing: {
+        close.accepted = false
+        hide()
+    }
+
     property int lastVisibility: visibility
 
+    function show()
+    {
+        visibility = lastVisibility
+    }
+
+    function hide()
+    {
+        lastVisibility = visibility
+        visibility = Window.Hidden
+    }
+
     function toggleWindow() {
-        if (visible == false) {
-            visibility = lastVisibility
-        } else {
-            lastVisibility = visibility
-            visibility = Window.Hidden
-        }
+        if (visible) hide()
+        else show()
     }
 
     // OS X Menu

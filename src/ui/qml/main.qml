@@ -9,9 +9,7 @@ import "ContactWindow.js" as ContactWindow
 QtObject {
     id: root
 
-    property MainWindow mainWindow: MainWindow {
-
-    }
+    property MainWindow mainWindow: MainWindow {}
 
     function createDialog(component, properties, parent) {
         if (typeof(component) === "string")
@@ -98,6 +96,16 @@ QtObject {
         Connections {
             target: trayIcon
             onIconTriggered: mainWindow.toggleWindow()
+            onQuitTriggered: Qt.quit()
+            onPreferencesTriggered: {
+                showWindow()
+                root.openPreferences()
+            }
+            onAddContactTriggered: {
+                mainWindow.show()
+                var object = createDialog("AddContactDialog.qml", { }, mainWindow)
+                object.visible = true
+            }
         },
 
         Settings {
