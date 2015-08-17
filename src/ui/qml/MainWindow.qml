@@ -62,11 +62,17 @@ ApplicationWindow {
             if (unreadCount > 0) {
                 if (audioNotifications !== null)
                     audioNotifications.message.play()
+
+                trayIcon.setUnread(true)
+
                 var w = window
                 if (!uiSettings.data.combinedChatWindow || ContactWindow.windowExists(user))
                     w = ContactWindow.getWindow(user)
                 // On OS X, avoid bouncing the dock icon forever
                 w.alert(Qt.platform.os == "osx" ? 1000 : 0)
+            } else
+            {
+                trayIcon.setUnread(false)
             }
         }
         onContactStatusChanged: {
