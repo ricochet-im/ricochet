@@ -12,7 +12,10 @@ ApplicationWindow {
     title: qsTr("Ricochet Preferences")
 
     signal closed
-    onVisibleChanged: if (!visible) closed()
+    onClosing: {
+        close.accepted = false
+        closed()
+    }
 
     property string initialPage
     property var initialPageProperties: { }

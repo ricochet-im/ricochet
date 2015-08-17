@@ -15,7 +15,10 @@ ApplicationWindow {
     title: mainWindow.title
 
     signal closed
-    onVisibleChanged: if (!visible) closed()
+    onClosing: {
+        close.accepted = false
+        closed()
+    }
 
     property QtObject request
     property bool hasValidContact: request.hostname != "" && fields.name.text.length
