@@ -28,7 +28,10 @@ ApplicationWindow {
 
     function show()
     {
-        visibility = lastVisibility
+        if (uiSettings.data.neverMinimized && lastVisibility == Window.Minimized)
+            visibility = Window.Windowed
+        else
+            visibility = lastVisibility
     }
 
     function hide()

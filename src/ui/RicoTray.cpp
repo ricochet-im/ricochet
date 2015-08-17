@@ -52,7 +52,6 @@ bool RicoTray::isUnread() const
 void RicoTray::setUnread(bool p_unread)
 {
     unread = p_unread;
-    qDebug() << "Setting unread: " << p_unread;
     if (unread) setIcon(unread_icon);
     else setIcon(std_icon);
 

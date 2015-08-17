@@ -19,7 +19,7 @@ QtObject {
         var object = component.createObject(parent ? parent : null, (properties !== undefined) ? properties : { })
         if (!object)
             console.log("openDialog:", component.errorString())
-        object.closed.connect(function() { object.visible = false })
+        object.closed.connect(function() { object.visible = false }) // @TODO: Create Dialog windows on stratup and show and hide them only
         return object
     }
 

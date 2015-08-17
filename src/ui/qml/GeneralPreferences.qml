@@ -8,6 +8,13 @@ ColumnLayout {
         margins: 8
     }
 
+    Label {
+        text: qsTr("Basic")
+        font.pixelSize: 14
+        font.bold: true
+        color: "black"
+    }
+
     CheckBox {
         text: qsTr("Use a single window for conversations")
         checked: uiSettings.data.combinedChatWindow || false
@@ -24,6 +31,13 @@ ColumnLayout {
         }
     }
 
+    Label {
+        text: qsTr("Tray icon")
+        font.pixelSize: 14
+        font.bold: true
+        color: "black"
+    }
+
     CheckBox {
         text: qsTr("Hide tray icon")
         checked: uiSettings.data.hideTrayIcon || false
@@ -33,12 +47,28 @@ ColumnLayout {
     }
 
     CheckBox {
+        text: qsTr("On tray icon click never open window minimized")
+        checked: uiSettings.data.neverMinimized || false
+        onCheckedChanged: {
+            uiSettings.write("neverMinimized", checked)
+        }
+    }
+
+    Label {
+        text: qsTr("Audio notifications")
+        font.pixelSize: 14
+        font.bold: true
+        color: "black"
+    }
+
+    CheckBox {
         text: qsTr("Play audio notifications")
         checked: uiSettings.data.playAudioNotification || false
         onCheckedChanged: {
             uiSettings.write("playAudioNotification", checked)
         }
     }
+
     RowLayout {
         Item { width: 16 }
 
