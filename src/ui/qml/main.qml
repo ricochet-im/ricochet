@@ -26,6 +26,16 @@ QtObject {
         return object
     }
 
+    property QtObject notification
+    function msgNotify()
+    {
+        if (notification === null)
+        {
+            notification = createDialog("MessageNotification.qml")
+        }
+        notification.show()
+    }
+
     property QtObject preferencesDialog
     function openPreferences(page, properties) {
         if (preferencesDialog === null)

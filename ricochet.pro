@@ -262,3 +262,6 @@ updateqm.CONFIG += no_link target_predeps
 QMAKE_EXTRA_COMPILERS += updateqm
 
 RESOURCES += translation/embedded.qrc
+
+DISTFILES += \
+    src/ui/qml/MessageNotification.qml

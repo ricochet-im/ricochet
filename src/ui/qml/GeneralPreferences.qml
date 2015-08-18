@@ -33,6 +33,46 @@ ColumnLayout {
     }
 
     CheckBox {
+        text: qsTr("Show desktop notifications when new message incomes")
+        checked: uiSettings.data.showNotifications || false
+        onCheckedChanged: {
+            uiSettings.write("showNotifications", checked)
+        }
+    }
+
+    CheckBox {
+        text: qsTr("'Movie-style' notification (big, centered on the screen)")
+        checked: uiSettings.data.movieStyleNotification || false
+        enabled: uiSettings.data.showNotifications || false
+        onCheckedChanged: {
+            uiSettings.write("movieStyleNotification", checked)
+        }
+    }
+
+    RowLayout {
+        Item { width: 16 }
+
+        Label { text: qsTr("Duration") }
+
+        Slider {
+            id: notificationDurationValue
+            stepSize: 1.0
+            maximumValue: 10.0
+            updateValueWhileDragging: false
+            enabled: uiSettings.data.showNotifications || false
+            value: uiSettings.read("notificationDuration", 4.0)
+            onValueChanged: uiSettings.write("notificationDuration", value)
+
+            // must be set after loading value from settings, in other case value is set to minimum
+            Component.onCompleted: { minimumValue = 1.0 }
+        }
+
+        Label {
+            text: qsTr("%1 sec").arg(notificationDurationValue.value)
+        }
+    }
+
+    CheckBox {
         text: qsTr("Play audio notifications")
         checked: uiSettings.data.playAudioNotification || false
         onCheckedChanged: {

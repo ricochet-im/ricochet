@@ -29,6 +29,7 @@ ApplicationWindow {
     function show()
     {
         visibility = lastVisibility
+        raise()
     }
 
     function hide()
@@ -67,11 +68,17 @@ ApplicationWindow {
 
                 trayIcon.setUnread(true)
 
-                var w = window
-                if (!uiSettings.data.combinedChatWindow || ContactWindow.windowExists(user))
-                    w = ContactWindow.getWindow(user)
-                // On OS X, avoid bouncing the dock icon forever
-                w.alert(Qt.platform.os == "osx" ? 1000 : 0)
+                if (!uiSettings.data.showNotifications)
+                {
+                    var w = window
+                    if (!uiSettings.data.combinedChatWindow || ContactWindow.windowExists(user))
+                        w = ContactWindow.getWindow(user)
+                    // On OS X, avoid bouncing the dock icon forever
+                    w.alert(Qt.platform.os == "osx" ? 1000 : 0)
+                } else
+                {
+                    root.msgNotify()
+                }
             } else
             {
                 trayIcon.setUnread(false)
