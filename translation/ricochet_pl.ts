@@ -280,12 +280,12 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../src/ui/MainWindow.cpp" line="153"/>
+        <location filename="../src/ui/MainWindow.cpp" line="149"/>
         <source>Remove %1</source>
         <translation>Usuń %1</translation>
     </message>
     <message>
-        <location filename="../src/ui/MainWindow.cpp" line="154"/>
+        <location filename="../src/ui/MainWindow.cpp" line="150"/>
         <source>Do you want to permanently remove %1?</source>
         <translation>Czy chcesz na stałe usunąć %1?</translation>
     </message>
@@ -363,7 +363,7 @@
     <message>
         <location filename="../src/ui/qml/NetworkSetupWizard.qml" line="124"/>
         <source>This computer&apos;s Internet connection is censored, filtered, or proxied. I need to configure network settings.</source>
-        <translation>Połączenie internetowe tego komputera jest cenzorowane, filtrowane lub trasowane przez serwer proxy. Musisz skonfigurować ustawienia sieciowe.</translation>
+        <translation>Połączenie internetowe tego komputera jest cenzurowane, filtrowane lub trasowane przez serwer proxy. Muszę skonfigurować ustawienia sieciowe.</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/NetworkSetupWizard.qml" line="131"/>
