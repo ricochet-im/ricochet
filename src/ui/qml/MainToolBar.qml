@@ -18,7 +18,7 @@ ToolBar {
             id: addContactAction
             text: qsTr("Add Contact")
             onTriggered: {
-                var object = createDialog("AddContactDialog.qml")
+                var object = createDialog("AddContactDialog.qml", {}, window)
                 object.visible = true
             }
         },
