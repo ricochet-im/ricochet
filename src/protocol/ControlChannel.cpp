@@ -269,6 +269,7 @@ void ControlChannel::handleKeepAlive(const Data::Control::KeepAlive &message)
 
 void ControlChannel::handleEnableFeatures(const Data::Control::EnableFeatures &message)
 {
+    Q_UNUSED(message);
     // This version does not support any features.
     Data::Control::Packet responseMessage;
     responseMessage.mutable_features_enabled();
@@ -277,6 +278,7 @@ void ControlChannel::handleEnableFeatures(const Data::Control::EnableFeatures &m
 
 void ControlChannel::handleFeaturesEnabled(const Data::Control::FeaturesEnabled &message)
 {
+    Q_UNUSED(message);
     // This version does not generate EnableFeatures messages, so receiving this is an error.
     qDebug() << "Unexpectedly received FeaturesEnabled message from peer, but we never send EnableFeatures";
     closeChannel();
