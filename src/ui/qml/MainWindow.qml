@@ -66,8 +66,10 @@ ApplicationWindow {
                 if (audioNotifications !== null)
                     audioNotifications.message.play()
 
+                // changes icon in tray
                 trayIcon.setUnread(true)
 
+                // if user has notifications turned on, window will be opened after left clicking on it
                 if (!uiSettings.data.showNotifications)
                 {
                     var w = window

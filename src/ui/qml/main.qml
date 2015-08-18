@@ -9,7 +9,12 @@ import "ContactWindow.js" as ContactWindow
 QtObject {
     id: root
 
-    property MainWindow mainWindow: MainWindow {}
+    property MainWindow mainWindow: MainWindow {
+        onVisibleChanged: {
+            if (uiSettings.data.hideTrayIcon || false)
+                Qt.quit()
+        }
+    }
 
     function createDialog(component, properties, parent) {
         if (typeof(component) === "string")
