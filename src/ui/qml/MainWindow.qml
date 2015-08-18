@@ -24,25 +24,24 @@ ApplicationWindow {
         hide()
     }
 
-    property int lastVisibility: visibility
+    property int lastVisibility: (visibility === Window.Minimized) ? Window.Windowed : visibility
 
     function show()
     {
-        if (uiSettings.data.neverMinimized && lastVisibility == Window.Minimized)
-            visibility = Window.Windowed
-        else
-            visibility = lastVisibility
+        visibility = lastVisibility
     }
 
     function hide()
     {
-        lastVisibility = visibility
+        if (visibility !== Window.Minimized)
+            lastVisibility = visibility
+
         visibility = Window.Hidden
     }
 
     function toggleWindow() {
-        if (visible) hide()
-        else show()
+        if (visibility === Window.Minimized || visible === false) show()
+        else hide()
     }
 
     // OS X Menu

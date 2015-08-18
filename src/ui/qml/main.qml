@@ -14,30 +14,46 @@ QtObject {
     function createDialog(component, properties, parent) {
         if (typeof(component) === "string")
             component = Qt.createComponent(component)
+
         if (component.status !== Component.Ready)
-            console.log("openDialog:", component.errorString())
+            console.log("createDialog:", component.errorString())
+
         var object = component.createObject(parent ? parent : null, (properties !== undefined) ? properties : { })
         if (!object)
-            console.log("openDialog:", component.errorString())
-        object.closed.connect(function() { object.visible = false }) // @TODO: Create Dialog windows on stratup and show and hide them only
+            console.log("createDialog:", component.errorString())
+
+        object.closed.connect(function() { object.visible = false })
         return object
     }
 
     property QtObject preferencesDialog
     function openPreferences(page, properties) {
-        if (preferencesDialog == null) {
+        if (preferencesDialog === null)
+        {
             preferencesDialog = createDialog("PreferencesDialog.qml",
                 {
                     'initialPage': page,
                     'initialPageProperties': properties
                 }
             )
-            preferencesDialog.closed.connect(function() { preferencesDialog = null })
         }
-
         preferencesDialog.visible = true
         preferencesDialog.raise()
         preferencesDialog.requestActivate()
+    }
+
+    property QtObject networkSetupWizard
+    function openNetworkSetupWizard()
+    {
+        if (networkSetupWizard === null)
+        {
+            networkSetupWizard = createDialog("NetworkSetupWizard.qml", { 'modality': Qt.ApplicationModal }, mainWindow)
+            networkSetupWizard.networkReady.connect(function() {
+                mainWindow.visible = true
+                networkSetupWizard.visible = false
+            })
+        }
+        networkSetupWizard.visible = true
     }
 
     property QtObject audioNotifications: audioNotificationLoader.item
@@ -61,16 +77,10 @@ QtObject {
             return re
         }
 
-        if (torInstance.configurationNeeded) {
-            var object = createDialog("NetworkSetupWizard.qml")
-            object.networkReady.connect(function() {
-                mainWindow.visible = true
-                object.visible = false
-            })
-            object.visible = true
-        } else {
+        if (torInstance.configurationNeeded)
+            openNetworkSetupWizard()
+        else
             mainWindow.visible = true
-        }
     }
 
     property list<QtObject> data: [
@@ -86,9 +96,9 @@ QtObject {
             target: torInstance
             onConfigurationNeededChanged: {
                 if (torInstance.configurationNeeded) {
-                    var object = createDialog("NetworkSetupWizard.qml", { 'modality': Qt.ApplicationModal }, mainWindow)
-                    object.networkReady.connect(function() { object.visible = false })
-                    object.visible = true
+                    openNetworkSetupWizard()
+                    networkSetupWizard.networkReady.connect(function() { object.visible = false })
+                    networkSetupWizard.visible = true
                 }
             }
         },
@@ -99,12 +109,11 @@ QtObject {
             onQuitTriggered: Qt.quit()
             onPreferencesTriggered: {
                 mainWindow.show()
-                root.openPreferences()
+                openPreferences()
             }
             onAddContactTriggered: {
                 mainWindow.show()
-                var object = createDialog("AddContactDialog.qml", { }, mainWindow)
-                object.visible = true
+                openAddContact()
             }
         },
 

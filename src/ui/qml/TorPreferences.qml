@@ -73,10 +73,7 @@ Item {
 
         Button {
             text: qsTr("Configure")
-            onClicked: {
-                var object = createDialog("NetworkSetupWizard.qml")
-                object.visible = true
-            }
+            onClicked: openNetworkSetupWizard()
         }
     }
 

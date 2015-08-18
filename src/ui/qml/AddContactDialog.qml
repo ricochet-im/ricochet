@@ -22,10 +22,6 @@ ApplicationWindow {
 
     property string staticContactId: fields.contactId.text
 
-    function close() {
-        visible = false
-    }
-
     function accept() {
         if (!fields.hasValidRequest)
             return
