@@ -280,12 +280,12 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../src/ui/MainWindow.cpp" line="153"/>
+        <location filename="../src/ui/MainWindow.cpp" line="149"/>
         <source>Remove %1</source>
         <translation>Usuń %1</translation>
     </message>
     <message>
-        <location filename="../src/ui/MainWindow.cpp" line="154"/>
+        <location filename="../src/ui/MainWindow.cpp" line="150"/>
         <source>Do you want to permanently remove %1?</source>
         <translation>Czy chcesz na stałe usunąć %1?</translation>
     </message>
@@ -363,7 +363,7 @@
     <message>
         <location filename="../src/ui/qml/NetworkSetupWizard.qml" line="124"/>
         <source>This computer&apos;s Internet connection is censored, filtered, or proxied. I need to configure network settings.</source>
-        <translation>Połączenie internetowe tego komputera jest cenzorowane, filtrowane lub trasowane przez serwer proxy. Musisz skonfigurować ustawienia sieciowe.</translation>
+        <translation>Połączenie internetowe tego komputera jest cenzurowane, filtrowane lub trasowane przez serwer proxy. Muszę skonfigurować ustawienia sieciowe.</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/NetworkSetupWizard.qml" line="131"/>
@@ -558,7 +558,7 @@
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="159"/>
         <source>Does this computer&apos;s Internet connection go through a firewall that only allows connections to certain ports?</source>
-        <translation>Czy połączenie internetowe tego komputera jest kierowane przez firewall, który pozwala tylko na połączeniz konkretnymi portami?</translation>
+        <translation>Czy połączenie internetowe tego komputera jest kierowane przez firewall, który pozwala na łączenie się tylko z wybranymi portami?</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="170"/>
@@ -568,17 +568,17 @@
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="177"/>
         <source>Example: 80,443</source>
-        <translation>Przykład: 80,443</translation>
+        <translation>Na przykład: 80,443</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="188"/>
         <source>If this computer&apos;s Internet connection is censored, you will need to obtain and use bridge relays.</source>
-        <translation>Jeżeli połączenie internetowe tego komputera jest cenzorowane, będziesz musiał uzyskać dostęp do węzeł mostkowy.</translation>
+        <translation>Jeżeli połączenie internetowe tego komputera jest cenzurowane, będziesz musiał uzyskać dostęp do węzła pośredniego (&lt;i&gt;bridge relay&lt;/i&gt;).</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="197"/>
         <source>Enter one or more bridge relays (one per line):</source>
-        <translation>Podaj jeden lub więcej węzłów mostkowych (jeden w linii):</translation>
+        <translation>Podaj jeden lub więcej węzłów pośrednich (jeden w linii):</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="212"/>
@@ -672,7 +672,7 @@
         <location filename="../src/ui/qml/TorStateWidget.qml" line="22"/>
         <source>Connecting…</source>
         <extracomment>\u2026 is ellipsis</extracomment>
-        <translation>Łaczenie…</translation>
+        <translation>Łączenie…</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorStateWidget.qml" line="25"/>
