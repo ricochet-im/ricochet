@@ -513,16 +513,19 @@
 <context>
     <name>RicoTray</name>
     <message>
+        <location filename="../src/ui/RicoTray.cpp" line="17"/>
         <source>Add Contact</source>
-        <translation type="obsolete">Kişi Ekle</translation>
+        <translation type="unfinished">Kişi Ekle</translation>
     </message>
     <message>
+        <location filename="../src/ui/RicoTray.cpp" line="20"/>
         <source>Preferences</source>
-        <translation type="obsolete">Tercihler</translation>
+        <translation type="unfinished">Tercihler</translation>
     </message>
     <message>
+        <location filename="../src/ui/RicoTray.cpp" line="25"/>
         <source>Quit</source>
-        <translation type="obsolete">Çık</translation>
+        <translation type="unfinished">Çık</translation>
     </message>
 </context>
 <context>

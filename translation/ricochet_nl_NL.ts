@@ -520,16 +520,19 @@
 <context>
     <name>RicoTray</name>
     <message>
+        <location filename="../src/ui/RicoTray.cpp" line="17"/>
         <source>Add Contact</source>
-        <translation type="obsolete">Toevoegen contact</translation>
+        <translation type="unfinished">Toevoegen contact</translation>
     </message>
     <message>
+        <location filename="../src/ui/RicoTray.cpp" line="20"/>
         <source>Preferences</source>
-        <translation type="obsolete">Voorkeuren</translation>
+        <translation type="unfinished">Voorkeuren</translation>
     </message>
     <message>
+        <location filename="../src/ui/RicoTray.cpp" line="25"/>
         <source>Quit</source>
-        <translation type="obsolete">Afsluiten</translation>
+        <translation type="unfinished">Afsluiten</translation>
     </message>
 </context>
 <context>

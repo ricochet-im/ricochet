@@ -521,16 +521,19 @@
 <context>
     <name>RicoTray</name>
     <message>
+        <location filename="../src/ui/RicoTray.cpp" line="17"/>
         <source>Add Contact</source>
-        <translation type="obsolete">Magdagdag ng Contact</translation>
+        <translation type="unfinished">Magdagdag ng Contact</translation>
     </message>
     <message>
+        <location filename="../src/ui/RicoTray.cpp" line="20"/>
         <source>Preferences</source>
-        <translation type="obsolete">Kagustuhan</translation>
+        <translation type="unfinished">Kagustuhan</translation>
     </message>
     <message>
+        <location filename="../src/ui/RicoTray.cpp" line="25"/>
         <source>Quit</source>
-        <translation type="obsolete">Mag-quit</translation>
+        <translation type="unfinished">Mag-quit</translation>
     </message>
 </context>
 <context>

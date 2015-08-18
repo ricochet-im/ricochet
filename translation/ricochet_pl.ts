@@ -501,16 +501,19 @@
 <context>
     <name>RicoTray</name>
     <message>
+        <location filename="../src/ui/RicoTray.cpp" line="17"/>
         <source>Add Contact</source>
-        <translation type="vanished">Dodaj kontakt</translation>
+        <translation>Dodaj kontakt</translation>
     </message>
     <message>
+        <location filename="../src/ui/RicoTray.cpp" line="20"/>
         <source>Preferences</source>
-        <translation type="vanished">Ustawienia</translation>
+        <translation>Ustawienia</translation>
     </message>
     <message>
+        <location filename="../src/ui/RicoTray.cpp" line="25"/>
         <source>Quit</source>
-        <translation type="vanished">Zakończ</translation>
+        <translation>Zakończ</translation>
     </message>
 </context>
 <context>
