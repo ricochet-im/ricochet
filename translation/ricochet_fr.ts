@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="fr">
+<?xml version="1.0" ?><!DOCTYPE TS><TS language="fr" version="2.1">
 <context>
     <name>AboutPreferences</name>
     <message>
@@ -104,19 +102,11 @@
     <message>
         <location filename="../src/ui/qml/ContactList.qml" line="79"/>
         <source>Outdated</source>
-        <translation type="unfinished"></translation>
+        <translation>Caduc</translation>
     </message>
 </context>
 <context>
     <name>ContactPreferences</name>
-    <message>
-        <source>Nickname:</source>
-        <translation type="vanished">Pseudo : </translation>
-    </message>
-    <message>
-        <source>ID:</source>
-        <translation type="vanished">ID :</translation>
-    </message>
     <message>
         <location filename="../src/ui/qml/ContactPreferences.qml" line="97"/>
         <source>Date added:</source>
@@ -171,7 +161,7 @@
     <message>
         <location filename="../src/ui/qml/ContactPreferences.qml" line="158"/>
         <source>Rename</source>
-        <translation type="unfinished">Renommer</translation>
+        <translation>Renommer</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactPreferences.qml" line="165"/>
@@ -230,12 +220,12 @@
     <message>
         <location filename="../src/ui/qml/GeneralPreferences.qml" line="28"/>
         <source>Play audio notifications</source>
-        <translation type="unfinished"></translation>
+        <translation>Jouer les notifications sonores</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/GeneralPreferences.qml" line="37"/>
         <source>Volume</source>
-        <translation type="unfinished"></translation>
+        <translation>Volume</translation>
     </message>
 </context>
 <context>
@@ -243,12 +233,12 @@
     <message>
         <location filename="../src/ui/qml/LanguagePreferences.qml" line="22"/>
         <source>Select Language</source>
-        <translation type="unfinished"></translation>
+        <translation>Choisir la langue</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/LanguagePreferences.qml" line="52"/>
         <source>Restart Ricochet to apply changes</source>
-        <translation type="unfinished"></translation>
+        <translation>Redémarrer l&apos;application pour applique les modifications</translation>
     </message>
 </context>
 <context>
@@ -256,7 +246,7 @@
     <message>
         <location filename="../src/ui/LanguagesModel.cpp" line="43"/>
         <source>System default</source>
-        <translation type="unfinished"></translation>
+        <translation>Par défaut du système </translation>
     </message>
 </context>
 <context>
@@ -329,16 +319,12 @@
     <message>
         <location filename="../src/ui/qml/MessageDelegate.qml" line="165"/>
         <source>Copy Message</source>
-        <translation type="unfinished"></translation>
+        <translation>Copier le message</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/MessageDelegate.qml" line="172"/>
         <source>Copy Selection</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Copy</source>
-        <translation type="vanished">Copier</translation>
+        <translation>Copier la sélection</translation>
     </message>
 </context>
 <context>
@@ -436,13 +422,6 @@
     </message>
 </context>
 <context>
-    <name>OutgoingContactRequest</name>
-    <message>
-        <source>An error occurred with the contact request (code: %1)</source>
-        <translation type="vanished">Une erreur est survenue avec la requête de contact (code : %1)</translation>
-    </message>
-</context>
-<context>
     <name>PreferencesDialog</name>
     <message>
         <location filename="../src/ui/qml/PreferencesDialog.qml" line="12"/>
@@ -457,7 +436,7 @@
     <message>
         <location filename="../src/ui/qml/PreferencesDialog.qml" line="46"/>
         <source>Language</source>
-        <translation type="unfinished"></translation>
+        <translation>Langue</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/PreferencesDialog.qml" line="51"/>
@@ -655,10 +634,6 @@
         <location filename="../src/ui/qml/TorPreferences.qml" line="31"/>
         <source>Online</source>
         <translation>En ligne</translation>
-    </message>
-    <message>
-        <source>Published</source>
-        <translation type="vanished">Publié</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorPreferences.qml" line="31"/>

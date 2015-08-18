@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="fi">
+<?xml version="1.0" ?><!DOCTYPE TS><TS language="fi" version="2.1">
 <context>
     <name>AboutPreferences</name>
     <message>
@@ -15,7 +13,7 @@
     <message>
         <location filename="../src/ui/qml/AddContactDialog.qml" line="51"/>
         <source>Share your Ricochet ID to allow connection requests</source>
-        <translation>Jaa Ricochet ID hyväksyäksesi yhteypyynnöt</translation>
+        <translation>Jaa oma ID kontakteillesi, että he voivat lähettää yhteyspyynnön</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/AddContactDialog.qml" line="107"/>
@@ -84,12 +82,12 @@
     <message>
         <location filename="../src/ui/qml/ContactList.qml" line="75"/>
         <source>Online</source>
-        <translation>Online</translation>
+        <translation>Linjoilla</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactList.qml" line="76"/>
         <source>Offline</source>
-        <translation>Offline</translation>
+        <translation>Ei linjoilla</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactList.qml" line="77"/>
@@ -104,19 +102,11 @@
     <message>
         <location filename="../src/ui/qml/ContactList.qml" line="79"/>
         <source>Outdated</source>
-        <translation type="unfinished"></translation>
+        <translation>Vanhentunut</translation>
     </message>
 </context>
 <context>
     <name>ContactPreferences</name>
-    <message>
-        <source>Nickname:</source>
-        <translation type="vanished">Lempinimi:</translation>
-    </message>
-    <message>
-        <source>ID:</source>
-        <translation type="vanished">ID:</translation>
-    </message>
     <message>
         <location filename="../src/ui/qml/ContactPreferences.qml" line="97"/>
         <source>Date added:</source>
@@ -171,7 +161,7 @@
     <message>
         <location filename="../src/ui/qml/ContactPreferences.qml" line="158"/>
         <source>Rename</source>
-        <translation type="unfinished">Nimeä uudelleen</translation>
+        <translation>Nimeä uudelleen</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactPreferences.qml" line="165"/>
@@ -202,7 +192,7 @@
     <message>
         <location filename="../src/ui/qml/ContactRequestFields.qml" line="17"/>
         <source>ID:</source>
-        <translation>ID:</translation>
+        <translation>Saajan ID:</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactRequestFields.qml" line="29"/>
@@ -212,7 +202,7 @@
     <message>
         <location filename="../src/ui/qml/ContactRequestFields.qml" line="40"/>
         <source>Message:</source>
-        <translation>Viesti:</translation>
+        <translation>Viestisi:</translation>
     </message>
 </context>
 <context>
@@ -230,12 +220,12 @@
     <message>
         <location filename="../src/ui/qml/GeneralPreferences.qml" line="28"/>
         <source>Play audio notifications</source>
-        <translation type="unfinished"></translation>
+        <translation>Soita huomioäänimerkkejä</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/GeneralPreferences.qml" line="37"/>
         <source>Volume</source>
-        <translation type="unfinished"></translation>
+        <translation>Äänenvoimakkuus</translation>
     </message>
 </context>
 <context>
@@ -243,12 +233,12 @@
     <message>
         <location filename="../src/ui/qml/LanguagePreferences.qml" line="22"/>
         <source>Select Language</source>
-        <translation type="unfinished"></translation>
+        <translation>Valitse kieli</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/LanguagePreferences.qml" line="52"/>
         <source>Restart Ricochet to apply changes</source>
-        <translation type="unfinished"></translation>
+        <translation>Käynnistä Ricochet uudelleen ottaaksesi tehdyt muutokset käyttöön</translation>
     </message>
 </context>
 <context>
@@ -256,7 +246,7 @@
     <message>
         <location filename="../src/ui/LanguagesModel.cpp" line="43"/>
         <source>System default</source>
-        <translation type="unfinished"></translation>
+        <translation>Systeemin oletus</translation>
     </message>
 </context>
 <context>
@@ -329,16 +319,12 @@
     <message>
         <location filename="../src/ui/qml/MessageDelegate.qml" line="165"/>
         <source>Copy Message</source>
-        <translation type="unfinished"></translation>
+        <translation>Kopioi viesti</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/MessageDelegate.qml" line="172"/>
         <source>Copy Selection</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Copy</source>
-        <translation type="vanished">Kopioi</translation>
+        <translation>Kopioi valinta</translation>
     </message>
 </context>
 <context>
@@ -436,13 +422,6 @@
     </message>
 </context>
 <context>
-    <name>OutgoingContactRequest</name>
-    <message>
-        <source>An error occurred with the contact request (code: %1)</source>
-        <translation type="vanished">Virhe kontaktipyynnön yhteydessä (koodi: %1)</translation>
-    </message>
-</context>
-<context>
     <name>PreferencesDialog</name>
     <message>
         <location filename="../src/ui/qml/PreferencesDialog.qml" line="12"/>
@@ -457,7 +436,7 @@
     <message>
         <location filename="../src/ui/qml/PreferencesDialog.qml" line="46"/>
         <source>Language</source>
-        <translation type="unfinished"></translation>
+        <translation>Kieli</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/PreferencesDialog.qml" line="51"/>
@@ -649,21 +628,17 @@
     <message>
         <location filename="../src/ui/qml/TorPreferences.qml" line="30"/>
         <source>Hidden service:</source>
-        <translation>Palvelu piilotettu:</translation>
+        <translation>Piilotettu palvelu:</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorPreferences.qml" line="31"/>
         <source>Online</source>
-        <translation>Online</translation>
-    </message>
-    <message>
-        <source>Published</source>
-        <translation type="vanished">Julkaistu</translation>
+        <translation>Kyllä - Online</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorPreferences.qml" line="31"/>
         <source>Offline</source>
-        <translation>Offline</translation>
+        <translation>ei - Offline</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorPreferences.qml" line="32"/>
