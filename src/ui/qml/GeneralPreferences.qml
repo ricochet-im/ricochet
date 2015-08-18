@@ -33,7 +33,7 @@ ColumnLayout {
     }
 
     CheckBox {
-        text: qsTr("Show desktop notifications when new message incomes")
+        text: qsTr("Show desktop notifications when new message arrives")
         checked: uiSettings.data.showNotifications || false
         onCheckedChanged: {
             uiSettings.write("showNotifications", checked)
@@ -68,6 +68,7 @@ ColumnLayout {
         }
 
         Label {
+            //: %1 sec e.g. 5 sec (sec is abbreviation for seconds)
             text: qsTr("%1 sec").arg(notificationDurationValue.value)
         }
     }

@@ -13,17 +13,17 @@
 <context>
     <name>AddContactDialog</name>
     <message>
-        <location filename="../src/ui/qml/AddContactDialog.qml" line="51"/>
+        <location filename="../src/ui/qml/AddContactDialog.qml" line="50"/>
         <source>Share your Ricochet ID to allow connection requests</source>
         <translation>Condividi il tuo Ricochet ID per permettere le richieste di connessione</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/AddContactDialog.qml" line="107"/>
+        <location filename="../src/ui/qml/AddContactDialog.qml" line="106"/>
         <source>Cancel</source>
         <translation>Annulla</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/AddContactDialog.qml" line="112"/>
+        <location filename="../src/ui/qml/AddContactDialog.qml" line="111"/>
         <source>Add</source>
         <translation>Aggiungere</translation>
     </message>
@@ -182,17 +182,17 @@
 <context>
     <name>ContactRequestDialog</name>
     <message>
-        <location filename="../src/ui/qml/ContactRequestDialog.qml" line="55"/>
+        <location filename="../src/ui/qml/ContactRequestDialog.qml" line="58"/>
         <source>Someone new is asking to connect to you</source>
         <translation>Qualcuno di nuovo sta chiedendo di connettersi a te</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactRequestDialog.qml" line="102"/>
+        <location filename="../src/ui/qml/ContactRequestDialog.qml" line="105"/>
         <source>Reject</source>
         <translation>Rifiuta</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactRequestDialog.qml" line="107"/>
+        <location filename="../src/ui/qml/ContactRequestDialog.qml" line="110"/>
         <source>Accept</source>
         <translation>Accetta</translation>
     </message>
@@ -234,11 +234,32 @@
     </message>
     <message>
         <location filename="../src/ui/qml/GeneralPreferences.qml" line="36"/>
+        <source>Show desktop notifications when new message arrives</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/qml/GeneralPreferences.qml" line="44"/>
+        <source>&apos;Movie-style&apos; notification (big, centered on the screen)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/qml/GeneralPreferences.qml" line="55"/>
+        <source>Duration</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/qml/GeneralPreferences.qml" line="72"/>
+        <source>%1 sec</source>
+        <extracomment>%1 sec e.g. 5 sec (sec is abbreviation for seconds)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/qml/GeneralPreferences.qml" line="77"/>
         <source>Play audio notifications</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/GeneralPreferences.qml" line="45"/>
+        <location filename="../src/ui/qml/GeneralPreferences.qml" line="87"/>
         <source>Volume</source>
         <translation type="unfinished"></translation>
     </message>
@@ -366,6 +387,14 @@
     </message>
 </context>
 <context>
+    <name>MessageNotification</name>
+    <message>
+        <location filename="../src/ui/qml/MessageNotification.qml" line="54"/>
+        <source>You have a new message!</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>NetworkSetupWizard</name>
     <message>
         <location filename="../src/ui/qml/NetworkSetupWizard.qml" line="100"/>
@@ -415,27 +444,27 @@
 <context>
     <name>OpenBrowserDialog</name>
     <message>
-        <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="39"/>
+        <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="42"/>
         <source>&lt;b&gt;Warning!&lt;/b&gt; Opening links with your default browser will harm your security and anonymity.&lt;br&gt;&lt;br&gt;You can &lt;a href=&apos;.&apos;&gt;copy to the clipboard&lt;/a&gt; instead.</source>
         <translation>&lt;b&gt;Attenzione!&lt;/b&gt; Aprire link con il tuo browser di default danneggerà la tua sicurezza e anonimia.&lt;br&gt;&lt;br&gt;Puoi &lt;a href=&apos;.&apos;&gt;copiare negli appunti&lt;/a&gt; invece.</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="58"/>
+        <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="61"/>
         <source>Don&apos;t ask again for links from %1</source>
         <translation>Non chiedere ancora per link da %1</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="64"/>
+        <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="67"/>
         <source>Don&apos;t ask again for any links (not recommended!)</source>
         <translation>Non chiedere più per ogni link (non raccomandato)</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="71"/>
+        <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="74"/>
         <source>Open Browser</source>
         <translation>Apri Browser</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="83"/>
+        <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="86"/>
         <source>Cancel</source>
         <translation>Annulla</translation>
     </message>
@@ -455,27 +484,27 @@
         <translation>Preferenze Ricochet</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/PreferencesDialog.qml" line="41"/>
+        <location filename="../src/ui/qml/PreferencesDialog.qml" line="44"/>
         <source>General</source>
         <translation>Generali</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/PreferencesDialog.qml" line="46"/>
+        <location filename="../src/ui/qml/PreferencesDialog.qml" line="49"/>
         <source>Language</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/PreferencesDialog.qml" line="51"/>
+        <location filename="../src/ui/qml/PreferencesDialog.qml" line="54"/>
         <source>Contacts</source>
         <translation>Contatti</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/PreferencesDialog.qml" line="56"/>
+        <location filename="../src/ui/qml/PreferencesDialog.qml" line="59"/>
         <source>Tor</source>
         <translation>Tor</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/PreferencesDialog.qml" line="61"/>
+        <location filename="../src/ui/qml/PreferencesDialog.qml" line="64"/>
         <source>About</source>
         <translation>Riguardo a </translation>
     </message>
@@ -483,7 +512,7 @@
 <context>
     <name>QCocoaMenuItem</name>
     <message>
-        <location filename="../src/ui/qml/MainWindow.qml" line="52"/>
+        <location filename="../src/ui/qml/MainWindow.qml" line="55"/>
         <source>Preference</source>
         <translation>Preferenza</translation>
     </message>
@@ -491,19 +520,16 @@
 <context>
     <name>RicoTray</name>
     <message>
-        <location filename="../src/ui/RicoTray.cpp" line="14"/>
         <source>Add Contact</source>
-        <translation type="unfinished">Aggiungere Contatto</translation>
+        <translation type="obsolete">Aggiungere Contatto</translation>
     </message>
     <message>
-        <location filename="../src/ui/RicoTray.cpp" line="17"/>
         <source>Preferences</source>
-        <translation type="unfinished">Preferenze</translation>
+        <translation type="obsolete">Preferenze</translation>
     </message>
     <message>
-        <location filename="../src/ui/RicoTray.cpp" line="22"/>
         <source>Quit</source>
-        <translation type="unfinished">Esci</translation>
+        <translation type="obsolete">Esci</translation>
     </message>
 </context>
 <context>
