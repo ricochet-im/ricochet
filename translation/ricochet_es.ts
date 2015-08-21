@@ -288,12 +288,12 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../src/ui/MainWindow.cpp" line="153"/>
+        <location filename="../src/ui/MainWindow.cpp" line="149"/>
         <source>Remove %1</source>
         <translation>Eliminar %1</translation>
     </message>
     <message>
-        <location filename="../src/ui/MainWindow.cpp" line="154"/>
+        <location filename="../src/ui/MainWindow.cpp" line="150"/>
         <source>Do you want to permanently remove %1?</source>
         <translation>¿Quiere eliminar permanentemente %1?</translation>
     </message>
