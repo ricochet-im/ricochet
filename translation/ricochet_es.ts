@@ -104,7 +104,7 @@
     <message>
         <location filename="../src/ui/qml/ContactList.qml" line="79"/>
         <source>Outdated</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Antiguas</translation>
     </message>
 </context>
 <context>
@@ -230,12 +230,12 @@
     <message>
         <location filename="../src/ui/qml/GeneralPreferences.qml" line="28"/>
         <source>Play audio notifications</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Reproducir notificaciones de audio</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/GeneralPreferences.qml" line="37"/>
         <source>Volume</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Volumen</translation>
     </message>
 </context>
 <context>
@@ -243,12 +243,12 @@
     <message>
         <location filename="../src/ui/qml/LanguagePreferences.qml" line="22"/>
         <source>Select Language</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Seleccionar lenguaje</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/LanguagePreferences.qml" line="52"/>
         <source>Restart Ricochet to apply changes</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Reinicia Ricochet para aplicar los cambios</translation>
     </message>
 </context>
 <context>
@@ -256,7 +256,7 @@
     <message>
         <location filename="../src/ui/LanguagesModel.cpp" line="43"/>
         <source>System default</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Del sistema</translation>
     </message>
 </context>
 <context>
@@ -329,12 +329,12 @@
     <message>
         <location filename="../src/ui/qml/MessageDelegate.qml" line="165"/>
         <source>Copy Message</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Copiar mensaje</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/MessageDelegate.qml" line="172"/>
         <source>Copy Selection</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Copiar selección</translation>
     </message>
     <message>
         <source>Copy</source>
@@ -457,7 +457,7 @@
     <message>
         <location filename="../src/ui/qml/PreferencesDialog.qml" line="46"/>
         <source>Language</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Lenguaje</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/PreferencesDialog.qml" line="51"/>
