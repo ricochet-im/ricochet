@@ -84,7 +84,7 @@
     <message>
         <location filename="../src/ui/qml/ContactList.qml" line="75"/>
         <source>Online</source>
-        <translation>Onlin</translation>
+        <translation>Online</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactList.qml" line="76"/>
@@ -104,19 +104,11 @@
     <message>
         <location filename="../src/ui/qml/ContactList.qml" line="79"/>
         <source>Outdated</source>
-        <translation type="unfinished"></translation>
+        <translation>Uddateret</translation>
     </message>
 </context>
 <context>
     <name>ContactPreferences</name>
-    <message>
-        <source>Nickname:</source>
-        <translation type="vanished">Kaldenavn:</translation>
-    </message>
-    <message>
-        <source>ID:</source>
-        <translation type="vanished">ID:</translation>
-    </message>
     <message>
         <location filename="../src/ui/qml/ContactPreferences.qml" line="97"/>
         <source>Date added:</source>
@@ -171,7 +163,7 @@
     <message>
         <location filename="../src/ui/qml/ContactPreferences.qml" line="158"/>
         <source>Rename</source>
-        <translation type="unfinished">Omdøb</translation>
+        <translation>Omdøb</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactPreferences.qml" line="165"/>
@@ -225,17 +217,17 @@
     <message>
         <location filename="../src/ui/qml/GeneralPreferences.qml" line="20"/>
         <source>Open links in default browser without prompting</source>
-        <translation>Åben links i standardbrowser uden at prompte</translation>
+        <translation>Åben links i browser uden at spørge</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/GeneralPreferences.qml" line="28"/>
         <source>Play audio notifications</source>
-        <translation type="unfinished"></translation>
+        <translation>Afspil lydnotifikationer</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/GeneralPreferences.qml" line="37"/>
         <source>Volume</source>
-        <translation type="unfinished"></translation>
+        <translation>Lydstyrke</translation>
     </message>
 </context>
 <context>
@@ -243,12 +235,12 @@
     <message>
         <location filename="../src/ui/qml/LanguagePreferences.qml" line="22"/>
         <source>Select Language</source>
-        <translation type="unfinished"></translation>
+        <translation>Vælg sprog</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/LanguagePreferences.qml" line="52"/>
         <source>Restart Ricochet to apply changes</source>
-        <translation type="unfinished"></translation>
+        <translation>Genstart Ricochet for at anvende nye indstillinger</translation>
     </message>
 </context>
 <context>
@@ -256,7 +248,7 @@
     <message>
         <location filename="../src/ui/LanguagesModel.cpp" line="43"/>
         <source>System default</source>
-        <translation type="unfinished"></translation>
+        <translation>Standardindstillinger</translation>
     </message>
 </context>
 <context>
@@ -288,12 +280,12 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../src/ui/MainWindow.cpp" line="153"/>
+        <location filename="../src/ui/MainWindow.cpp" line="149"/>
         <source>Remove %1</source>
         <translation>Fjern %1</translation>
     </message>
     <message>
-        <location filename="../src/ui/MainWindow.cpp" line="154"/>
+        <location filename="../src/ui/MainWindow.cpp" line="150"/>
         <source>Do you want to permanently remove %1?</source>
         <translation>Vil du fjerne %1 permanent?</translation>
     </message>
@@ -329,16 +321,12 @@
     <message>
         <location filename="../src/ui/qml/MessageDelegate.qml" line="165"/>
         <source>Copy Message</source>
-        <translation type="unfinished"></translation>
+        <translation>Kopiér besked</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/MessageDelegate.qml" line="172"/>
         <source>Copy Selection</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Copy</source>
-        <translation type="vanished">Kopiér</translation>
+        <translation>Kopiér markeret tekst</translation>
     </message>
 </context>
 <context>
@@ -412,7 +400,7 @@
     <message>
         <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="39"/>
         <source>&lt;b&gt;Warning!&lt;/b&gt; Opening links with your default browser will harm your security and anonymity.&lt;br&gt;&lt;br&gt;You can &lt;a href=&apos;.&apos;&gt;copy to the clipboard&lt;/a&gt; instead.</source>
-        <translation>&lt;b&gt;Advarsel!&lt;/b&gt; Ved at åbne links med din standardbrowser vil du skade din sikkerhed og din anonymitet.&lt;br&gt;&lt;br&gt;Du kan &lt;a href=&apos;.&apos;&gt;kopiere til clipboardet&lt;/a&gt; i stedet.</translation>
+        <translation>&lt;b&gt;Advarsel!&lt;/b&gt; Ved at åbne links med din browser vil du forøge din sikkerhed og anonymitet.&lt;br&gt;&lt;br&gt;Du kan &lt;a href=&apos;.&apos;&gt;kopiere adressen til clipboardet&lt;/a&gt; i stedet.</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="58"/>
@@ -436,18 +424,11 @@
     </message>
 </context>
 <context>
-    <name>OutgoingContactRequest</name>
-    <message>
-        <source>An error occurred with the contact request (code: %1)</source>
-        <translation type="vanished">Der skete en fejl under kontaktanmodningen (kode: %1)</translation>
-    </message>
-</context>
-<context>
     <name>PreferencesDialog</name>
     <message>
         <location filename="../src/ui/qml/PreferencesDialog.qml" line="12"/>
         <source>Ricochet Preferences</source>
-        <translation>Ricochet Indstillinger</translation>
+        <translation>Indstillinger for Ricochet</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/PreferencesDialog.qml" line="41"/>
@@ -457,7 +438,7 @@
     <message>
         <location filename="../src/ui/qml/PreferencesDialog.qml" line="46"/>
         <source>Language</source>
-        <translation type="unfinished"></translation>
+        <translation>Sprog</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/PreferencesDialog.qml" line="51"/>
@@ -655,10 +636,6 @@
         <location filename="../src/ui/qml/TorPreferences.qml" line="31"/>
         <source>Online</source>
         <translation>Online</translation>
-    </message>
-    <message>
-        <source>Published</source>
-        <translation type="vanished">Publiceret</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorPreferences.qml" line="31"/>

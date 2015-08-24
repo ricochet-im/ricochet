@@ -33,7 +33,7 @@
     <message>
         <location filename="../src/ui/qml/ContactActions.qml" line="40"/>
         <source>Open Window</source>
-        <translation>Abrir ventana</translation>
+        <translation>Abrir Ventana</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactActions.qml" line="44"/>
@@ -66,7 +66,7 @@
     <message>
         <location filename="../src/ui/qml/ContactIDField.qml" line="44"/>
         <source>Enter an ID starting with &lt;b&gt;ricochet:&lt;/b&gt;</source>
-        <translation>Introduzca una identificación de usuario que comience con &lt;b&gt;ricochet:&lt;/b&gt;</translation>
+        <translation>Introduzca un ID comience con &lt;b&gt;ricochet:&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactIDField.qml" line="79"/>
@@ -89,7 +89,7 @@
     <message>
         <location filename="../src/ui/qml/ContactList.qml" line="76"/>
         <source>Offline</source>
-        <translation>Desconectado</translation>
+        <translation>Fuera de línea</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactList.qml" line="77"/>
@@ -99,24 +99,16 @@
     <message>
         <location filename="../src/ui/qml/ContactList.qml" line="78"/>
         <source>Rejected</source>
-        <translation>Rechazadas</translation>
+        <translation>Rechazada</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactList.qml" line="79"/>
         <source>Outdated</source>
-        <translation type="unfinished"></translation>
+        <translation>Caducada</translation>
     </message>
 </context>
 <context>
     <name>ContactPreferences</name>
-    <message>
-        <source>Nickname:</source>
-        <translation type="vanished">Apodo:</translation>
-    </message>
-    <message>
-        <source>ID:</source>
-        <translation type="vanished">ID (identificador):</translation>
-    </message>
     <message>
         <location filename="../src/ui/qml/ContactPreferences.qml" line="97"/>
         <source>Date added:</source>
@@ -161,7 +153,7 @@
         <location filename="../src/ui/qml/ContactPreferences.qml" line="130"/>
         <source>%1 (Connected)</source>
         <extracomment>%1 status, e.g. &quot;Accepted&quot;</extracomment>
-        <translation>% 1 (Conectado)</translation>
+        <translation>%1 (Conectado)</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactPreferences.qml" line="136"/>
@@ -171,7 +163,7 @@
     <message>
         <location filename="../src/ui/qml/ContactPreferences.qml" line="158"/>
         <source>Rename</source>
-        <translation type="unfinished">Renombrar</translation>
+        <translation>Renombrar</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactPreferences.qml" line="165"/>
@@ -230,12 +222,12 @@
     <message>
         <location filename="../src/ui/qml/GeneralPreferences.qml" line="28"/>
         <source>Play audio notifications</source>
-        <translation type="unfinished"></translation>
+        <translation>Reproducir notificaciones de audio</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/GeneralPreferences.qml" line="37"/>
         <source>Volume</source>
-        <translation type="unfinished"></translation>
+        <translation>Volumen</translation>
     </message>
 </context>
 <context>
@@ -243,12 +235,12 @@
     <message>
         <location filename="../src/ui/qml/LanguagePreferences.qml" line="22"/>
         <source>Select Language</source>
-        <translation type="unfinished"></translation>
+        <translation>Seleccionar idioma</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/LanguagePreferences.qml" line="52"/>
         <source>Restart Ricochet to apply changes</source>
-        <translation type="unfinished"></translation>
+        <translation>Reiniciar Ricochet para aplicar los cambios</translation>
     </message>
 </context>
 <context>
@@ -256,7 +248,7 @@
     <message>
         <location filename="../src/ui/LanguagesModel.cpp" line="43"/>
         <source>System default</source>
-        <translation type="unfinished"></translation>
+        <translation>Predeterminado del sistema</translation>
     </message>
 </context>
 <context>
@@ -272,7 +264,7 @@
     <message>
         <location filename="../src/ui/qml/MainToolBar.qml" line="19"/>
         <source>Add Contact</source>
-        <translation>Añadir contacto</translation>
+        <translation>Añadir Contacto</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/MainToolBar.qml" line="28"/>
@@ -288,14 +280,14 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../src/ui/MainWindow.cpp" line="153"/>
+        <location filename="../src/ui/MainWindow.cpp" line="149"/>
         <source>Remove %1</source>
         <translation>Eliminar %1</translation>
     </message>
     <message>
-        <location filename="../src/ui/MainWindow.cpp" line="154"/>
+        <location filename="../src/ui/MainWindow.cpp" line="150"/>
         <source>Do you want to permanently remove %1?</source>
-        <translation>¿Quiere eliminar permanentemente %1?</translation>
+        <translation>¿Quiere eliminar permanentemente a %1?</translation>
     </message>
 </context>
 <context>
@@ -304,7 +296,7 @@
         <location filename="../src/ui/qml/MessageDelegate.qml" line="26"/>
         <source>%1 is offline</source>
         <extracomment>%1 nickname</extracomment>
-        <translation>%1 está desconectado</translation>
+        <translation>%1 está fuera de línea</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/MessageDelegate.qml" line="134"/>
@@ -314,31 +306,27 @@
     <message>
         <location filename="../src/ui/qml/MessageDelegate.qml" line="134"/>
         <source>Copy Link</source>
-        <translation>Copiar enlace</translation>
+        <translation>Copiar Enlace</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/MessageDelegate.qml" line="139"/>
         <source>Open with Browser</source>
-        <translation>Abrir con el navegador</translation>
+        <translation>Abrir con el Navegador</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/MessageDelegate.qml" line="153"/>
         <source>Add as Contact</source>
-        <translation>Añadir como contacto</translation>
+        <translation>Añadir como Contacto</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/MessageDelegate.qml" line="165"/>
         <source>Copy Message</source>
-        <translation type="unfinished"></translation>
+        <translation>Copiar mensaje</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/MessageDelegate.qml" line="172"/>
         <source>Copy Selection</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Copy</source>
-        <translation type="vanished">Copiar</translation>
+        <translation>Copiar selección</translation>
     </message>
 </context>
 <context>
@@ -352,7 +340,7 @@
         <location filename="../src/ui/qml/MessageDialogWrapper.qml" line="9"/>
         <source>Do you want to permanently remove %1?</source>
         <extracomment>%1 nickname</extracomment>
-        <translation>¿Quiere eliminar permanentemente %1?</translation>
+        <translation>¿Quiere eliminar permanentemente a %1?</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/MessageDialogWrapper.qml" line="10"/>
@@ -398,7 +386,7 @@
     <message>
         <location filename="../src/ui/qml/OfflineStateItem.qml" line="143"/>
         <source>Connection failed</source>
-        <translation>Fallo de conexión</translation>
+        <translation>Conexión fallida</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/OfflineStateItem.qml" line="169"/>
@@ -417,29 +405,22 @@
     <message>
         <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="58"/>
         <source>Don&apos;t ask again for links from %1</source>
-        <translation>No realice peticiones a enlaces desde %1 de nuevo</translation>
+        <translation>No volver a preguntar por enlaces desde %1</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="64"/>
         <source>Don&apos;t ask again for any links (not recommended!)</source>
-        <translation>No realice peticiones de ningún enlace de nuevo (¡no recomendado!)</translation>
+        <translation>No volver a preguntar por ningún enlace (¡no recomendado!)</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="71"/>
         <source>Open Browser</source>
-        <translation>Abrir navegador</translation>
+        <translation>Abrir Navegador</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="83"/>
         <source>Cancel</source>
         <translation>Cancelar</translation>
-    </message>
-</context>
-<context>
-    <name>OutgoingContactRequest</name>
-    <message>
-        <source>An error occurred with the contact request (code: %1)</source>
-        <translation type="vanished">Ocurrió un error con la solicitud de contacto (código: %1)</translation>
     </message>
 </context>
 <context>
@@ -457,7 +438,7 @@
     <message>
         <location filename="../src/ui/qml/PreferencesDialog.qml" line="46"/>
         <source>Language</source>
-        <translation type="unfinished"></translation>
+        <translation>Idioma</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/PreferencesDialog.qml" line="51"/>
@@ -657,13 +638,9 @@
         <translation>En línea</translation>
     </message>
     <message>
-        <source>Published</source>
-        <translation type="vanished">Publicado</translation>
-    </message>
-    <message>
         <location filename="../src/ui/qml/TorPreferences.qml" line="31"/>
         <source>Offline</source>
-        <translation>Desconectado</translation>
+        <translation>Fuera de línea</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorPreferences.qml" line="32"/>
@@ -688,7 +665,7 @@
         <location filename="../src/ui/qml/TorStateWidget.qml" line="9"/>
         <location filename="../src/ui/qml/TorStateWidget.qml" line="20"/>
         <source>Connection failed</source>
-        <translation>Fallo de conexión</translation>
+        <translation>Conexión fallida</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorStateWidget.qml" line="12"/>

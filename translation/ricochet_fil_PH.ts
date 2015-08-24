@@ -110,14 +110,6 @@
 <context>
     <name>ContactPreferences</name>
     <message>
-        <source>Nickname:</source>
-        <translation type="vanished">Palayaw:</translation>
-    </message>
-    <message>
-        <source>ID:</source>
-        <translation type="vanished">ID:</translation>
-    </message>
-    <message>
         <location filename="../src/ui/qml/ContactPreferences.qml" line="97"/>
         <source>Date added:</source>
         <translation>Petsa nang idinagdag:</translation>
@@ -288,12 +280,12 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../src/ui/MainWindow.cpp" line="153"/>
+        <location filename="../src/ui/MainWindow.cpp" line="149"/>
         <source>Remove %1</source>
         <translation>Tanggalin si %1</translation>
     </message>
     <message>
-        <location filename="../src/ui/MainWindow.cpp" line="154"/>
+        <location filename="../src/ui/MainWindow.cpp" line="150"/>
         <source>Do you want to permanently remove %1?</source>
         <translation>Gusto mo bang permanenteng tanggalin si %1?</translation>
     </message>
@@ -335,10 +327,6 @@
         <location filename="../src/ui/qml/MessageDelegate.qml" line="172"/>
         <source>Copy Selection</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Copy</source>
-        <translation type="vanished">Kopyahin</translation>
     </message>
 </context>
 <context>
@@ -434,13 +422,6 @@
         <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="83"/>
         <source>Cancel</source>
         <translation>Kanselahin</translation>
-    </message>
-</context>
-<context>
-    <name>OutgoingContactRequest</name>
-    <message>
-        <source>An error occurred with the contact request (code: %1)</source>
-        <translation type="vanished">May naganap na pagkakamali sa paghiling ng contact (code: %1)</translation>
     </message>
 </context>
 <context>
@@ -656,10 +637,6 @@
         <location filename="../src/ui/qml/TorPreferences.qml" line="31"/>
         <source>Online</source>
         <translation>Online</translation>
-    </message>
-    <message>
-        <source>Published</source>
-        <translation type="vanished">Nai-publish</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorPreferences.qml" line="31"/>
