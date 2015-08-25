@@ -2,54 +2,46 @@ import QtQuick 2.0
 import QtQuick.Controls 1.0
 import QtQuick.Layouts 1.0
 
-ScrollView {
+Rectangle {
     id: scroll
+    clip: true
+    color: palette.base
 
     property alias model: messageView.model
 
-    data: [
-        Rectangle {
-            anchors.fill: scroll
-            z: -1
-            color: palette.base
-        },
-        // Workaround to a ScrollView bug causing content to not appear on Linux
-        Binding {
-            target: __verticalScrollBar
-            property: "enabled"
-            value: false
-            when: messageView.contentHeight < messageView.height
-        },
-        // Workaround #76 - Fixed properly by Qt change-id I2a19e4c70096259ef7bbb5a00727ac767c4b8c57
-        Connections {
-            target: scroll.scroller
-            onRecursionGuardChanged: {
-                var scroller = scroll.scroller
-                var flickableItem = scroll.flickableItem
-                var viewport = scroll.viewport
-
-                // Starting layout; update maximumValue manually
-                if (scroller.recursionGuard) {
-                    scroller.verticalScrollBar.maximumValue = flickableItem.contentHeight > viewport.height ? flickableItem.originY + flickableItem.contentHeight - viewport.height + scroll.__viewTopMargin : 0
-                }
-            }
-        }
-    ]
-
-    // Other part of workaround for #76
-    // Will be disabled when Qt change is applied because contentHeight property no longer exists
-    property var scroller: scroll.__scroller && scroll.__scroller.hasOwnProperty('contentHeight') ? scroll.__scroller : null
-    onScrollerChanged: {
-        if (scroller !== null) {
-            // Break binding
-            scroller.verticalScrollBar.maximumValue = 0
-        }
+    /* As of Qt 5.5.0, ScrollView is too buggy to use. It often fails to keep the
+     * view scrolled to the bottom, and moves erratically on wheel events. */
+    Rectangle {
+        id: scrollBar
+        width: 5
+        height: messageView.visibleArea.heightRatio * (messageView.height - 10)
+        y: 5 + messageView.visibleArea.yPosition * (messageView.height - 10)
+        x: parent.width - width - 3
+        z: 1000
+        visible: messageView.visibleArea.heightRatio < 1
+        color: "#bbbbbb"
+        radius: 14
     }
 
     ListView {
         id: messageView
         spacing: 12
         pixelAligned: true
+        boundsBehavior: Flickable.StopAtBounds
+        anchors.fill: parent
+
+        MouseArea {
+            anchors.fill: parent
+            acceptedButtons: Qt.NoButton
+            onWheel: {
+                wheel.accepted = true
+                if (wheel.pixelDelta.y !== 0) {
+                    messageView.contentY = Math.max(messageView.originY, Math.min(messageView.originY + messageView.contentHeight - messageView.height, messageView.contentY - wheel.pixelDelta.y))
+                } else if (wheel.angleDelta.y !== 0) {
+                    messageView.flick(0, wheel.angleDelta.y * 5)
+                }
+            }
+        }
 
         header: Item { width: 1; height: messageView.spacing }
         footer: Item { width: 1; height: messageView.spacing }
