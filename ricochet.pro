@@ -106,10 +106,13 @@ win32-msvc2008|win32-msvc2010 {
 
 INCLUDEPATH += src
 
-unix:!macx {
+unix {
     !isEmpty(OPENSSLDIR) {
         INCLUDEPATH += $${OPENSSLDIR}/include
         LIBS += -L$${OPENSSLDIR}/lib -lcrypto
+    } else:macx:!packagesExist(libcrypto) {
+        # Fall back to the OS-provided 0.9.8 if no other libcrypto is present
+        LIBS += -lcrypto
     } else {
         CONFIG += link_pkgconfig
         PKGCONFIG += libcrypto
@@ -129,7 +132,6 @@ win32 {
     # required by openssl
     LIBS += -lUser32 -lGdi32 -ladvapi32
 }
-macx:LIBS += -lcrypto
 
 DEFINES += QT_NO_CAST_FROM_ASCII QT_NO_CAST_TO_ASCII
 
