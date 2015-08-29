@@ -47,6 +47,14 @@ ColumnLayout {
         }
     }
 
+    CheckBox {
+        text: qsTr("System Tray Icon")
+        checked: uiSettings.data.trayIcon || false
+        onCheckedChanged: {
+            uiSettings.write("trayIcon", checked)
+        }
+    }
+
     Item {
         Layout.fillHeight: true
         Layout.fillWidth: true

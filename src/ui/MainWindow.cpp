@@ -45,6 +45,7 @@
 #include "utils/Settings.h"
 #include "utils/PendingOperation.h"
 #include "ui/LanguagesModel.h"
+#include "ui/TrayIcon.h"
 #include <QtQml>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
@@ -53,6 +54,7 @@
 #include <QQuickItem>
 #include <QGuiApplication>
 #include <QScreen>
+#include <QQuickWindow>
 
 MainWindow *uiMain = 0;
 
@@ -99,6 +101,9 @@ bool MainWindow::showUI()
     qml->rootContext()->setContextProperty(QLatin1String("torInstance"), Tor::TorManager::instance());
     qml->rootContext()->setContextProperty(QLatin1String("uiMain"), this);
 
+    TrayIcon* trayIcon(new TrayIcon(this));
+    qml->rootContext()->setContextProperty(QLatin1String("trayIcon"), trayIcon);
+
     qml->load(QUrl(QLatin1String("qrc:/ui/main.qml")));
 
     if (qml->rootObjects().isEmpty()) {
@@ -109,6 +114,9 @@ bool MainWindow::showUI()
         qCritical() << "Failed to load UI. Exiting.";
         return false;
     }
+
+    //set ApplicationWindow for TrayIcon
+    trayIcon->setWindow(qml->rootObjects().at(0)->findChild<QQuickWindow*>(QLatin1String("mainWindow")));
 
     return true;
 }

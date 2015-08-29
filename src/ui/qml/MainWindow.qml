@@ -39,16 +39,21 @@ ApplicationWindow {
             if (unreadCount > 0) {
                 if (audioNotifications !== null)
                     audioNotifications.message.play()
+                trayIcon.notifyMessage()
+                if (trayIcon.messagesEnabled) trayIcon.showText(qsTr("Event"), qsTr("New Message from")+" "+user.nickname)
                 var w = window
                 if (!uiSettings.data.combinedChatWindow || ContactWindow.windowExists(user))
                     w = ContactWindow.getWindow(user)
                 // On OS X, avoid bouncing the dock icon forever
                 w.alert(Qt.platform.os == "osx" ? 1000 : 0)
+            } else {
+                trayIcon.notificationAcknowledged()
             }
         }
         onContactStatusChanged: {
-            if (status === ContactUser.Online && audioNotifications !== null) {
-                audioNotifications.contactOnline.play()
+            if (status === ContactUser.Online) {
+                if (audioNotifications !== null) audioNotifications.contactOnline.play()
+                if (trayIcon.messagesEnabled) trayIcon.showText(qsTr("Event"), user.nickname+ " "+qsTr("is online"))
             }
         }
     }

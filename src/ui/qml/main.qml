@@ -10,7 +10,8 @@ QtObject {
     id: root
 
     property MainWindow mainWindow: MainWindow {
-        onVisibleChanged: if (!visible) Qt.quit()
+        objectName: "mainWindow"
+        onVisibleChanged: if (!trayIcon.enabled && !visible) Qt.quit()
     }
 
     function createDialog(component, properties, parent) {
@@ -131,6 +132,12 @@ QtObject {
                     object.visible = true
                 }
             }
+        },
+
+	Binding {
+            target: trayIcon
+            property: "enabled"
+            value: uiSettings.data.trayIcon
         },
 
         Loader {
