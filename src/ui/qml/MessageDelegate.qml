@@ -54,7 +54,7 @@ Column {
         id: background
         width: Math.max(30, textField.width + 12)
         height: textField.height + 12
-        x: model.isOutgoing ? parent.width - width - 10 : 10
+        x: model.isOutgoing ? parent.width - width - 11 : 10
 
         property int __maxWidth: parent.width * 0.8
 
