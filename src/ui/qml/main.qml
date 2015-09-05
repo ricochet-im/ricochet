@@ -9,9 +9,8 @@ import "ContactWindow.js" as ContactWindow
 QtObject {
     id: root
 
-    property MainWindow mainWindow: MainWindow {
-        onVisibleChanged: if (!visible) Qt.quit()
-    }
+    property MainWindow mainWindow: MainWindow {}
+    property int lastVisibility: Window.Windowed
 
     function createDialog(component, properties, parent) {
         if (typeof(component) === "string")
@@ -91,6 +90,20 @@ QtObject {
                     var object = createDialog("NetworkSetupWizard.qml", { 'modality': Qt.ApplicationModal }, mainWindow)
                     object.networkReady.connect(function() { object.visible = false })
                     object.visible = true
+                }
+            }
+        },
+
+        Connections {
+            target: trayIcon
+            onToggleWindow: {
+                if (mainWindow.visibility == Window.Hidden)
+                {
+                    mainWindow.visibility = lastVisibility;
+                } else
+                {
+                    lastVisibility = mainWindow.visibility;
+                    mainWindow.visibility = Window.Hidden;
                 }
             }
         },
