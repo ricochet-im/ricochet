@@ -45,6 +45,7 @@
 #include "utils/Settings.h"
 #include "utils/PendingOperation.h"
 #include "ui/LanguagesModel.h"
+#include "ui/TrayIcon.h"
 #include <QtQml>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
@@ -66,6 +67,8 @@ MainWindow::MainWindow(QObject *parent)
 {
     Q_ASSERT(!uiMain);
     uiMain = this;
+
+    trayIcon = new TrayIcon(QIcon(QLatin1String(":/icons/ricochet.svg")), QIcon(QLatin1String(":/icons/ricochet_unread.svg")));
 
     qml = new QQmlApplicationEngine(this);
 
@@ -98,6 +101,7 @@ bool MainWindow::showUI()
     qml->rootContext()->setContextProperty(QLatin1String("torControl"), torControl);
     qml->rootContext()->setContextProperty(QLatin1String("torInstance"), Tor::TorManager::instance());
     qml->rootContext()->setContextProperty(QLatin1String("uiMain"), this);
+    qml->rootContext()->setContextProperty(QLatin1String("trayIcon"), trayIcon);
 
     qml->load(QUrl(QLatin1String("qrc:/ui/main.qml")));
 

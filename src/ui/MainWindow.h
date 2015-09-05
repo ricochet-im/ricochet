@@ -33,6 +33,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include "TrayIcon.h"
 #include <QObject>
 #include <QVariantMap>
 
@@ -70,6 +71,7 @@ public:
 
 private:
     QQmlApplicationEngine *qml;
+    TrayIcon *trayIcon;
 };
 
 extern MainWindow *uiMain;
