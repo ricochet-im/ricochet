@@ -44,6 +44,11 @@ ApplicationWindow {
                     w = ContactWindow.getWindow(user)
                 // On OS X, avoid bouncing the dock icon forever
                 w.alert(Qt.platform.os == "osx" ? 1000 : 0)
+
+                trayIcon.unread = true
+            } else
+            {
+                trayIcon.unread = false
             }
         }
         onContactStatusChanged: {
