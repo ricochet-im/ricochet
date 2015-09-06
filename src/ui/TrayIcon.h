@@ -33,6 +33,7 @@
 #ifndef TRAYICON_H
 #define TRAYICON_H
 #include <QSystemTrayIcon>
+#include <QMenu>
 
 class TrayIcon : public QSystemTrayIcon
 {
@@ -40,6 +41,7 @@ class TrayIcon : public QSystemTrayIcon
     Q_PROPERTY(bool unread WRITE setUnread)
 public:
     TrayIcon(QIcon std_icon, QIcon unread_icon);
+    ~TrayIcon();
 
     void setStdIcon(QIcon std_icon);
     void setUnreadIcon(QIcon unread_icon);
@@ -52,13 +54,23 @@ public:
 
 public slots:
     void activated(QSystemTrayIcon::ActivationReason);
+    void openPreferences();
+    void addContact();
+    void copyMyId();
+    void quitApplication();
 
 signals:
     void toggleWindow();
+    void preferences();
+    void contact();
+    void copyId();
+    void quit();
 
 private:
     QIcon m_std_icon;
     QIcon m_unread_icon;
+
+    QMenu* m_context_menu;
 };
 
 #endif // TRAYICON_H

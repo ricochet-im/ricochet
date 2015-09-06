@@ -106,6 +106,15 @@ QtObject {
                     mainWindow.visibility = Window.Hidden;
                 }
             }
+            onPreferences: openPreferences()
+            onContact: {
+                var addContactDialog = createDialog("AddContactDialog.qml", {}, mainWindow)
+                addContactDialog.visible = true
+            }
+            onCopyId: {
+                LinkedText.copyToClipboard(userIdentity.contactID)
+            }
+            onQuit: Qt.quit()
         },
 
         Settings {

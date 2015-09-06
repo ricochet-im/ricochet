@@ -38,7 +38,21 @@ TrayIcon::TrayIcon(QIcon std_icon, QIcon unread_icon) :
 {
     connect(this, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(activated(QSystemTrayIcon::ActivationReason)));
     setIcon(m_std_icon);
+
+    m_context_menu = new QMenu();
+    m_context_menu->addAction(tr("Preferences"), this, SLOT(openPreferences()));
+    m_context_menu->addAction(tr("Add contact"), this, SLOT(addContact()));
+    m_context_menu->addAction(tr("Copy my ID"), this, SLOT(copyMyId()));
+    m_context_menu->addSeparator();
+    m_context_menu->addAction(tr("Quit"), this, SLOT(quitApplication()));
+    setContextMenu(m_context_menu);
+
     show();
+}
+
+TrayIcon::~TrayIcon()
+{
+    delete m_context_menu;
 }
 
 void TrayIcon::setStdIcon(QIcon std_icon)
@@ -66,4 +80,24 @@ void TrayIcon::activated(QSystemTrayIcon::ActivationReason reason)
 {
     if (reason == QSystemTrayIcon::Trigger)
         emit toggleWindow();
+}
+
+void TrayIcon::openPreferences()
+{
+    emit preferences();
+}
+
+void TrayIcon::addContact()
+{
+    emit contact();
+}
+
+void TrayIcon::copyMyId()
+{
+    emit copyId();
+}
+
+void TrayIcon::quitApplication()
+{
+    emit quit();
 }
