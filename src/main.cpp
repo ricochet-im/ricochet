@@ -57,7 +57,7 @@ static void initTranslation();
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    a.setApplicationVersion(QLatin1String("1.1.0"));
+    a.setApplicationVersion(QLatin1String("1.1.1"));
     a.setOrganizationName(QStringLiteral("Ricochet"));
 
 #if !defined(Q_OS_WIN) && !defined(Q_OS_MAC)
