@@ -109,6 +109,9 @@ QtObject {
             }
             onPreferences: openPreferences()
             onContact: {
+                if (mainWindow.visible == false)
+                    mainWindow.visibility = lastVisibility
+
                 var addContactDialog = createDialog("AddContactDialog.qml", {}, mainWindow)
                 addContactDialog.visible = true
             }
