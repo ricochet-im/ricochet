@@ -97,7 +97,8 @@ QtObject {
         Connections {
             target: trayIcon
             onToggleWindow: {
-                if (mainWindow.visibility == Window.Hidden)
+                if (mainWindow.visibility == Window.Hidden ||
+                    mainWindow.visibility == Window.Minimized)
                 {
                     mainWindow.visibility = lastVisibility;
                 } else
