@@ -79,7 +79,7 @@ QtObject {
         Connections {
             target: userIdentity.contacts.incomingRequests
             onRequestAdded: {
-                var object = createDialog("ContactRequestDialog.qml", { 'request': request }, mainWindow)
+                var object = createDialog("ContactRequestDialog.qml", { 'request': request })
                 object.visible = true
             }
         },
@@ -127,7 +127,7 @@ QtObject {
             onTriggered: {
                 var pendingRequests = userIdentity.contacts.incomingRequests.requests
                 for (var i = 0; i < pendingRequests.length; i++) {
-                    var object = createDialog("ContactRequestDialog.qml", { 'request': pendingRequests[i] }, mainWindow)
+                    var object = createDialog("ContactRequestDialog.qml", { 'request': pendingRequests[i] })
                     object.visible = true
                 }
             }
