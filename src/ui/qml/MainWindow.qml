@@ -19,6 +19,17 @@ ApplicationWindow {
     onMinimumWidthChanged: width = Math.max(width, minimumWidth)
     onMaximumWidthChanged: width = Math.min(width, maximumWidth)
 
+    onClosing: {
+        if (uiSettings.data.hideOnX)
+        {
+            close.accepted = false
+            visibility = Window.Hidden
+        } else
+        {
+            Qt.quit()
+        }
+    }
+
     // OS X Menu
     Loader {
         active: Qt.platform.os == 'osx'

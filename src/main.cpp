@@ -60,6 +60,11 @@ int main(int argc, char *argv[])
     a.setApplicationVersion(QLatin1String("1.1.0"));
     a.setOrganizationName(QStringLiteral("Ricochet"));
 
+    /* avoid closing application when MainWindow is hidden
+     * and user try to close other opened dialogs
+     */
+    a.setQuitOnLastWindowClosed(false);
+
 #if !defined(Q_OS_WIN) && !defined(Q_OS_MAC)
     a.setWindowIcon(QIcon(QStringLiteral(":/icons/ricochet.svg")));
 #endif
