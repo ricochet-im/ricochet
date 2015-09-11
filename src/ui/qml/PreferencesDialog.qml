@@ -1,4 +1,4 @@
-import QtQuick 2.0
+import QtQuick 2.2
 import QtQuick.Controls 1.0
 import QtQuick.Layouts 1.0
 import im.ricochet 1.0
@@ -61,5 +61,15 @@ ApplicationWindow {
             title: qsTr("About")
             source: Qt.resolvedUrl("AboutPreferences.qml")
         }
+    }
+
+    Action {
+        shortcut: StandardKey.Close
+        onTriggered: preferencesWindow.close()
+    }
+
+    Action {
+        shortcut: "Escape"
+        onTriggered: preferencesWindow.close()
     }
 }

@@ -1,4 +1,4 @@
-import QtQuick 2.0
+import QtQuick 2.2
 import QtQuick.Controls 1.0
 import QtQuick.Layouts 1.0
 
@@ -141,5 +141,10 @@ ApplicationWindow {
             easing.type: Easing.InOutQuad
             velocity: 1500
         }
+    }
+
+    Action {
+        shortcut: StandardKey.Close
+        onTriggered: window.close()
     }
 }
