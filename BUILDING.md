@@ -84,7 +84,9 @@ The `packaging/osx/release_osx.sh` script demonstrates how to build a redistribu
 
 ## Windows
 
-Building for Windows is difficult. You will need:
+Building for Windows is difficult. The process and scripts used for release builds are documented in the [buildscripts repository](https://github.com/ricochet-im/buildscripts/tree/master/mingw).
+
+For development builds, you will want:
  * Visual Studio C++ or MinGW
  * Qt 5 - preferably the [Qt SDK](https://qt-project.org/downloads)
  * OpenSSL (including libs and headers)
