@@ -44,6 +44,7 @@
   # Allow Ricochet to load GTK themes
   /usr/share/themes/* r,
   /usr/share/themes/**/* r,
+  owner @{HOME}/.gtkrc-2.0 r,
 
   # Allow Ricochet to look up all your machine's PII
   # Why does it need this stuff? BAD NEWS BEARS
