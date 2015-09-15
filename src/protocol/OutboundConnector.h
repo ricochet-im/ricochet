@@ -34,6 +34,7 @@
 #define PROTOCOL_OUTBOUNDCONNECTOR_H
 
 #include <QObject>
+#include <QSharedPointer>
 #include "Connection.h"
 #include "utils/CryptoKey.h"
 
@@ -80,12 +81,11 @@ public:
 
     /* Take ownership of the Connection object when Ready
      *
-     * This function is only valid in the Ready state. QObject
-     * ownership of the connection is passed to newParent, and
-     * the OutboundConnector is cleared and reset to the inactive
-     * state.
+     * This function is only valid in the Ready state.
+     * OutboundConnector will release ownership of the connection
+     * and reset to the inactive state.
      */
-    Connection *takeConnection(QObject *newParent);
+    QSharedPointer<Connection> takeConnection();
 
 public slots:
     void abort();

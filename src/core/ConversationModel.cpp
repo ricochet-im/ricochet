@@ -68,7 +68,7 @@ void ConversationModel::setContact(ContactUser *contact)
 
         auto connectConnection = [this,connectChannel]() {
             if (m_contact->connection()) {
-                connect(m_contact->connection(), &Protocol::Connection::channelOpened, this, connectChannel);
+                connect(m_contact->connection().data(), &Protocol::Connection::channelOpened, this, connectChannel);
                 foreach (auto channel, m_contact->connection()->findChannels<Protocol::ChatChannel>())
                     connectChannel(channel);
                 sendQueuedMessages();
@@ -95,7 +95,7 @@ void ConversationModel::sendMessage(const QString &text)
     if (m_contact->connection()) {
         auto channel = m_contact->connection()->findChannel<Protocol::ChatChannel>(Protocol::Channel::Outbound);
         if (!channel) {
-            channel = new Protocol::ChatChannel(Protocol::Channel::Outbound, m_contact->connection());
+            channel = new Protocol::ChatChannel(Protocol::Channel::Outbound, m_contact->connection().data());
             if (!channel->openChannel()) {
                 message.status = Error;
                 delete channel;
@@ -138,7 +138,7 @@ void ConversationModel::sendQueuedMessages()
 
     auto channel = m_contact->connection()->findChannel<Protocol::ChatChannel>(Protocol::Channel::Outbound);
     if (!channel) {
-        channel = new Protocol::ChatChannel(Protocol::Channel::Outbound, m_contact->connection());
+        channel = new Protocol::ChatChannel(Protocol::Channel::Outbound, m_contact->connection().data());
         if (!channel->openChannel()) {
             delete channel;
             return;
