@@ -1,4 +1,4 @@
-import QtQuick 2.0
+import QtQuick 2.2
 import QtQuick.Controls 1.0
 import QtQuick.Layouts 1.0
 import im.ricochet 1.0
@@ -43,6 +43,11 @@ ApplicationWindow {
     ChatPage {
         id: chatPage
         anchors.fill: parent
+    }
+
+    Action {
+        shortcut: StandardKey.Close
+        onTriggered: chatWindow.close()
     }
 }
 
