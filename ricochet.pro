@@ -163,7 +163,8 @@ SOURCES += src/main.cpp \
     src/ui/LinkedText.cpp \
     src/utils/Settings.cpp \
     src/utils/PendingOperation.cpp \
-    src/ui/LanguagesModel.cpp
+    src/ui/LanguagesModel.cpp \
+    src/ui/TrayIcon.cpp
 
 HEADERS += src/ui/MainWindow.h \
     src/ui/ContactsModel.h \
@@ -193,7 +194,8 @@ HEADERS += src/ui/MainWindow.h \
     src/ui/LinkedText.h \
     src/utils/Settings.h \
     src/utils/PendingOperation.h \
-    src/ui/LanguagesModel.h
+    src/ui/LanguagesModel.h \
+    src/ui/TrayIcon.h
 
 SOURCES += src/protocol/Channel.cpp \
     src/protocol/ControlChannel.cpp \
