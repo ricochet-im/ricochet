@@ -33,10 +33,10 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "TrayIcon.h"
 #include <QObject>
 #include <QVariantMap>
 
+class TrayIcon;
 class ContactUser;
 class UserIdentity;
 class IncomingContactRequest;

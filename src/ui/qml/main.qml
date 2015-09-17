@@ -108,7 +108,7 @@ QtObject {
                 }
             }
             onPreferences: openPreferences()
-            onContact: {
+            onAddContact: {
                 if (mainWindow.visible == false)
                     mainWindow.visibility = lastVisibility
 
@@ -118,7 +118,6 @@ QtObject {
             onCopyId: {
                 LinkedText.copyToClipboard(userIdentity.contactID)
             }
-            onQuit: Qt.quit()
         },
 
         Settings {

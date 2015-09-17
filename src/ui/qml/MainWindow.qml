@@ -20,12 +20,10 @@ ApplicationWindow {
     onMaximumWidthChanged: width = Math.min(width, maximumWidth)
 
     onClosing: {
-        if (uiSettings.data.hideOnX)
-        {
+        if (uiSettings.data.hideOnX) {
             close.accepted = false
             visibility = Window.Hidden
-        } else
-        {
+        } else {
             Qt.quit()
         }
     }
@@ -57,8 +55,7 @@ ApplicationWindow {
                 w.alert(Qt.platform.os == "osx" ? 1000 : 0)
 
                 trayIcon.unread = true
-            } else
-            {
+            } else {
                 trayIcon.unread = false
             }
         }

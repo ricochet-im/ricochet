@@ -92,6 +92,7 @@ MainWindow::MainWindow(QObject *parent)
 
 MainWindow::~MainWindow()
 {
+    delete trayIcon;
 }
 
 bool MainWindow::showUI()

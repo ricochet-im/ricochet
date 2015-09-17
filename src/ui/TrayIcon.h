@@ -40,7 +40,7 @@ class TrayIcon : public QSystemTrayIcon
     Q_OBJECT
     Q_PROPERTY(bool unread WRITE setUnread)
 public:
-    TrayIcon(QIcon std_icon, QIcon unread_icon);
+    TrayIcon(const QIcon& std_icon, const QIcon& unread_icon);
     ~TrayIcon();
 
     void setStdIcon(QIcon std_icon);
@@ -53,18 +53,13 @@ public:
     void setUnread(bool unread);
 
 public slots:
-    void activated(QSystemTrayIcon::ActivationReason);
-    void openPreferences();
-    void addContact();
-    void copyMyId();
-    void quitApplication();
+    void onActivated(QSystemTrayIcon::ActivationReason);
 
 signals:
     void toggleWindow();
     void preferences();
-    void contact();
+    void addContact();
     void copyId();
-    void quit();
 
 private:
     QIcon m_std_icon;

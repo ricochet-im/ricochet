@@ -32,19 +32,21 @@
 
 #include "TrayIcon.h"
 
-TrayIcon::TrayIcon(QIcon std_icon, QIcon unread_icon) :
+#include <QApplication>
+
+TrayIcon::TrayIcon(const QIcon& std_icon, const QIcon& unread_icon) :
         m_std_icon(std_icon),
         m_unread_icon(unread_icon)
 {
-    connect(this, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(activated(QSystemTrayIcon::ActivationReason)));
+    connect(this, &QSystemTrayIcon::activated, this, &TrayIcon::onActivated);
     setIcon(m_std_icon);
 
     m_context_menu = new QMenu();
-    m_context_menu->addAction(tr("Preferences"), this, SLOT(openPreferences()));
-    m_context_menu->addAction(tr("Add contact"), this, SLOT(addContact()));
-    m_context_menu->addAction(tr("Copy my ID"), this, SLOT(copyMyId()));
+    m_context_menu->addAction(tr("Preferences"), this, SIGNAL(preferences()));
+    m_context_menu->addAction(tr("Add Contact"), this, SIGNAL(addContact()));
+    m_context_menu->addAction(tr("Copy My ID"), this, SIGNAL(copyId()));
     m_context_menu->addSeparator();
-    m_context_menu->addAction(tr("Quit"), this, SLOT(quitApplication()));
+    m_context_menu->addAction(tr("Quit"), qApp, SLOT(quit()));
     setContextMenu(m_context_menu);
 
     show();
@@ -76,28 +78,8 @@ void TrayIcon::setUnread(bool unread)
     else resetIcon();
 }
 
-void TrayIcon::activated(QSystemTrayIcon::ActivationReason reason)
+void TrayIcon::onActivated(QSystemTrayIcon::ActivationReason reason)
 {
     if (reason == QSystemTrayIcon::Trigger)
         emit toggleWindow();
-}
-
-void TrayIcon::openPreferences()
-{
-    emit preferences();
-}
-
-void TrayIcon::addContact()
-{
-    emit contact();
-}
-
-void TrayIcon::copyMyId()
-{
-    emit copyId();
-}
-
-void TrayIcon::quitApplication()
-{
-    emit quit();
 }
