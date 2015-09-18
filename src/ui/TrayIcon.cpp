@@ -57,16 +57,6 @@ TrayIcon::~TrayIcon()
     delete m_context_menu;
 }
 
-void TrayIcon::setStdIcon(QIcon std_icon)
-{
-    m_std_icon = std_icon;
-}
-
-void TrayIcon::setUnreadIcon(QIcon unread_icon)
-{
-    m_unread_icon = unread_icon;
-}
-
 void TrayIcon::resetIcon()
 {
     setIcon(m_std_icon);
@@ -74,8 +64,10 @@ void TrayIcon::resetIcon()
 
 void TrayIcon::setUnread(bool unread)
 {
-    if (unread) setIcon(m_unread_icon);
-    else resetIcon();
+    if (unread)
+        setIcon(m_unread_icon);
+    else
+        resetIcon();
 }
 
 void TrayIcon::onActivated(QSystemTrayIcon::ActivationReason reason)

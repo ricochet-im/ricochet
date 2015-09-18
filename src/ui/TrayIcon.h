@@ -43,9 +43,6 @@ public:
     TrayIcon(const QIcon& std_icon, const QIcon& unread_icon);
     ~TrayIcon();
 
-    void setStdIcon(QIcon std_icon);
-    void setUnreadIcon(QIcon unread_icon);
-
     // changes icon to m_std_icon
     void resetIcon();
 

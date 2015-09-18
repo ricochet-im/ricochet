@@ -98,11 +98,9 @@ QtObject {
             target: trayIcon
             onToggleWindow: {
                 if (mainWindow.visibility == Window.Hidden ||
-                    mainWindow.visibility == Window.Minimized)
-                {
+                    mainWindow.visibility == Window.Minimized) {
                     mainWindow.visibility = lastVisibility;
-                } else
-                {
+                } else {
                     lastVisibility = mainWindow.visibility;
                     mainWindow.visibility = Window.Hidden;
                 }
