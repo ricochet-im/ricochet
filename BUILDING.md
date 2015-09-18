@@ -30,7 +30,7 @@ yum install tor # or build your own
 ```sh
 apt-get install build-essential libssl-dev pkg-config libprotobuf-dev protobuf-compiler
 apt-get install qt5-qmake qt5-default qtbase5-dev qttools5-dev-tools qtdeclarative5-dev qtmultimedia5-dev
-apt-get install qml-module-qtquick-controls qml-module-qtquick-dialogs
+apt-get install qml-module-qtquick-controls qml-module-qtquick-dialogs qml-module-qtmultimedia
 apt-get install tor # or build your own
 ```
 
