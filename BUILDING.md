@@ -37,7 +37,7 @@ apt-get install tor # or build your own
 If the `qml-module-qtquick` packages aren't available, try `qtdeclarative5-controls-plugin` instead.
 
 #### Qt SDK
-The [Qt SDK](https://qt-project.org/downloads) is available for most Linux systems and includes an IDE as well as all Qt dependencies.
+The [Qt SDK](https://www.qt.io/download/) is available for most Linux systems and includes an IDE as well as all Qt dependencies.
 
 To build, simply run:
 ```sh
