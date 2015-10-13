@@ -41,7 +41,7 @@ LinkedText::LinkedText(QObject *parent)
     : QObject(parent)
 {
     // Select things that look like URLs of some kind and allow QUrl::fromUserInput to validate them
-    linkRegex = QRegularExpression(QStringLiteral("([a-z]{3,9}:|www\\.)([^\\s,.);!>]|[,.);!>](?!\\s|$))+"), QRegularExpression::CaseInsensitiveOption);
+    linkRegex = QRegularExpression(QStringLiteral("([a-z]{3,9}:|www\\.)((([\\p{L}\\p{N}\\?#/~=]+)|([\\-\\._:&%][^\\p{Zs}])+)+)"), QRegularExpression::CaseInsensitiveOption);
 
     allowedSchemes << QStringLiteral("http")
                    << QStringLiteral("https")
