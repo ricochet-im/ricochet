@@ -361,6 +361,11 @@ void ContactUser::requestRemoved()
     }
 }
 
+void ContactUser::setAway() {
+    m_status = Away;
+    emit statusChanged();
+}
+
 void ContactUser::assignConnection(Protocol::Connection *connection)
 {
     if (connection == m_connection) {

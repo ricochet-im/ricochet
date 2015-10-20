@@ -80,7 +80,8 @@ public:
         Offline,
         RequestPending,
         RequestRejected,
-        Outdated
+        Outdated,
+        Away
     };
 
     UserIdentity * const identity;
@@ -132,6 +133,7 @@ public slots:
     void setHostname(const QString &hostname);
 
     void updateStatus();
+    void setAway();
 
 signals:
     void statusChanged();

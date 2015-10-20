@@ -277,14 +277,26 @@ QVariant ConversationModel::data(const QModelIndex &index, int role) const
     const MessageData &message = messages[index.row()];
 
     switch (role) {
-        case Qt::DisplayRole: return message.text;
+        case Qt::DisplayRole:
+            if(message.status == Received) {
+                if (message.text.startsWith(QLatin1String("/away"))) {
+                    m_contact->setAway();
+                } else if (message.text.startsWith(QLatin1String("/back"))) {
+                    m_contact->updateStatus();
+                }
+            }
+            return message.text;
         case TimestampRole: return message.time;
         case IsOutgoingRole: return message.status != Received;
         case StatusRole: return message.status;
 
         case SectionRole: {
-            if (m_contact->status() == ContactUser::Online)
+            if (m_contact->status() == ContactUser::Online) {
                 return QString();
+            }
+            if (m_contact->status() == ContactUser::Away) {
+                return QStringLiteral("away");
+            }
             if (index.row() < messages.size() - 1) {
                 const MessageData &next = messages[index.row()+1];
                 if (next.status != Received && next.status != Delivered)
