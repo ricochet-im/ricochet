@@ -143,12 +143,12 @@ The client begins the connection by sending the following raw sequence of bytes:
 ```
 0x49
 0x4D
-nVersions          // One byte, number of supported protocol versions
+nVersions          // One byte, number of supported protocol versions, must be at least 1
 nVersions times:
     version        // One byte, protocol version number
 ```
 
-The total size is 3 plus the number of supported versions bytes. The server side of the connection
+The total size is 3 plus the number of supported versions bytes. The number of supported versions must be at least 1. The server side of the connection
 must respond with a single byte for the selected version number, or 0xFF if no suitable version
 is found.
 
