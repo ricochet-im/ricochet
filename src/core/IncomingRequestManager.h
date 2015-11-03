@@ -97,7 +97,7 @@ signals:
     void hasActiveConnectionChanged();
 
 private:
-    QPointer<Protocol::Connection> connection;
+    QSharedPointer<Protocol::Connection> connection;
     QByteArray m_hostname;
     QByteArray m_remoteSecret;
     QString m_message, m_nickname;

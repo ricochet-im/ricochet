@@ -93,7 +93,7 @@ public:
      * becomes invalid (but is not automatically deleted) once
      * the socket has disconnected.
      */
-    explicit Connection(QTcpSocket *socket, Direction direction, QObject *parent);
+    explicit Connection(QTcpSocket *socket, Direction direction);
     virtual ~Connection();
 
     Direction direction() const;

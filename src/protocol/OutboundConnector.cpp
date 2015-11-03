@@ -35,6 +35,7 @@
 #include "tor/TorSocket.h"
 #include "ControlChannel.h"
 #include "AuthHiddenServiceChannel.h"
+#include <QSharedPointer>
 
 using namespace Protocol;
 
@@ -48,7 +49,7 @@ class OutboundConnectorPrivate : public QObject
 public:
     OutboundConnector *q;
     Tor::TorSocket *socket;
-    Connection *connection;
+    QSharedPointer<Connection> connection;
     QString hostname;
     quint16 port;
     OutboundConnector::Status status;
@@ -61,7 +62,6 @@ public:
         : QObject(q)
         , q(q)
         , socket(0)
-        , connection(0)
         , port(0)
         , status(OutboundConnector::Inactive)
         , errorRetryCount(0)
@@ -152,8 +152,7 @@ void OutboundConnectorPrivate::abort()
 {
     if (connection) {
         connection->close();
-        connection->deleteLater();
-        connection = 0;
+        connection.clear();
     }
 
     if (socket) {
@@ -178,19 +177,16 @@ QString OutboundConnector::errorMessage() const
     return d->errorMessage;
 }
 
-Connection *OutboundConnector::takeConnection(QObject *newParent)
+QSharedPointer<Connection> OutboundConnector::takeConnection()
 {
-    if (status() != Ready || !d->connection) {
+    QSharedPointer<Connection> c(d->connection);
+    if (status() != Ready || !c) {
         BUG() << "Cannot take connection when not in the Ready state";
-        return 0;
+        return c;
     }
 
-    Q_ASSERT(newParent);
-    Connection *c = d->connection;
-    c->setParent(newParent);
-
     Q_ASSERT(!d->socket);
-    d->connection = 0;
+    d->connection.clear();
     d->setStatus(Inactive);
 
     return c;
@@ -250,21 +246,21 @@ void OutboundConnectorPrivate::onConnected()
         return;
     }
 
-    connection = new Connection(socket, Connection::ClientSide, q);
+    connection = QSharedPointer<Connection>(new Connection(socket, Connection::ClientSide), &QObject::deleteLater);
 
     // Socket is now owned by connection
     Q_ASSERT(socket->parent() == connection);
     socket->setReconnectEnabled(false);
     socket = 0;
 
-    connect(connection, &Connection::ready, this, &OutboundConnectorPrivate::startAuthentication);
+    connect(connection.data(), &Connection::ready, this, &OutboundConnectorPrivate::startAuthentication);
     // XXX Needs special treatment in UI (along with some other error types here)
-    connect(connection, &Connection::versionNegotiationFailed, this,
+    connect(connection.data(), &Connection::versionNegotiationFailed, this,
         [this]() {
             setError(QStringLiteral("Protocol version negotiation failed with peer"));
         }
     );
-    connect(connection, &Connection::oldVersionNegotiated, q, &OutboundConnector::oldVersionNegotiated);
+    connect(connection.data(), &Connection::oldVersionNegotiated, q, &OutboundConnector::oldVersionNegotiated);
     setStatus(OutboundConnector::Initializing);
 }
 
@@ -284,7 +280,7 @@ void OutboundConnectorPrivate::startAuthentication()
     }
 
     // XXX Timeouts and errors and all of that
-    AuthHiddenServiceChannel *authChannel = new AuthHiddenServiceChannel(Channel::Outbound, connection);
+    AuthHiddenServiceChannel *authChannel = new AuthHiddenServiceChannel(Channel::Outbound, connection.data());
     connect(authChannel, &AuthHiddenServiceChannel::authSuccessful, this,
         [this]() {
             setStatus(OutboundConnector::Ready);

@@ -114,7 +114,7 @@ void OutgoingContactRequest::attemptAutoAccept()
     }
 }
 
-void OutgoingContactRequest::sendRequest(Protocol::Connection *connection)
+void OutgoingContactRequest::sendRequest(const QSharedPointer<Protocol::Connection> &connection)
 {
     if (connection != user->connection()) {
         BUG() << "OutgoingContactRequest connection doesn't match the assigned user";
@@ -127,7 +127,7 @@ void OutgoingContactRequest::sendRequest(Protocol::Connection *connection)
     }
 
     // XXX timeouts
-    Protocol::ContactRequestChannel *channel = new Protocol::ContactRequestChannel(Protocol::Channel::Outbound, connection);
+    Protocol::ContactRequestChannel *channel = new Protocol::ContactRequestChannel(Protocol::Channel::Outbound, connection.data());
     connect(channel, &Protocol::ContactRequestChannel::requestStatusChanged,
             this, &OutgoingContactRequest::requestStatusChanged);
 
