@@ -41,7 +41,7 @@ LinkedText::LinkedText(QObject *parent)
     : QObject(parent)
 {
     // Select things that look like URLs of some kind and allow QUrl::fromUserInput to validate them
-    linkRegex = QRegularExpression(QStringLiteral("([a-z]{3,9}:|www\\.)([^\\s,.);!>]|[,.);!>](?!\\s|$))+"), QRegularExpression::CaseInsensitiveOption);
+    linkRegex = QRegularExpression(QStringLiteral("([a-z]{3,9}:|www\\.)([\\p{L}\\p{N}\\-\\._~:=&/%?#]+)"), QRegularExpression::CaseInsensitiveOption);
 
     allowedSchemes << QStringLiteral("http")
                    << QStringLiteral("https")
@@ -64,7 +64,11 @@ QString LinkedText::parsed(const QString &input)
 
         if (start > p)
             re.append(input.mid(p, start - p).toHtmlEscaped().replace(QLatin1Char('\n'), QStringLiteral("<br/>")));
-        re.append(QStringLiteral("<a href=\"%1\">%2</a>").arg(QString::fromLatin1(url.toEncoded()).toHtmlEscaped()).arg(match.capturedRef().toString().toHtmlEscaped()));
+        // Surround link with &#8234; (LEFT-TO-RIGHT EMBEDDING) and &#8236; (POP DIRECTIONAL FORMATTING ) 
+        // this will force URI's to be rendered left to right, while preserving the direction of the overall
+        // text. This prevents phising attacks where the attacker tries obscure the URI by using unicode
+        // bidi control characters. 
+        re.append(QStringLiteral("<a href=\"%1\">&#8234;%2&#8236;</a>").arg(QString::fromLatin1(url.toEncoded()).toHtmlEscaped()).arg(match.capturedRef().toString().toHtmlEscaped()));
         p = match.capturedEnd();
     }
 
