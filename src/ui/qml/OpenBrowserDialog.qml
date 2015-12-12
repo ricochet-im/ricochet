@@ -2,6 +2,7 @@ import QtQuick 2.0
 import QtQuick.Controls 1.0
 import QtQuick.Layouts 1.0
 import im.ricochet 1.0
+import "utils.js" as Utils
 
 ApplicationWindow {
     id: dialog
@@ -55,7 +56,7 @@ ApplicationWindow {
 
         CheckBox {
             id: alwaysOpenContact
-            text: qsTr("Don't ask again for links from %1").arg(contact ? contact.nickname : "???")
+            text: qsTr("Don't ask again for links from %1").arg(contact ? Utils.htmlEscaped(contact.nickname) : "???")
             checked: contact.settings.data.alwaysOpenBrowser || false
         }
 

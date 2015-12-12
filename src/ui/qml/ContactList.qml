@@ -65,6 +65,7 @@ ScrollView {
                 font.pointSize: styleHelper.pointSize
                 font.bold: true
                 font.capitalization: Font.SmallCaps
+                textFormat: Text.PlainText
                 color: "#3f454a"
 
                 text: {

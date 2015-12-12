@@ -27,6 +27,7 @@ Column {
 
     Label {
         text: (bootstrap['warning'] !== undefined ) ? bootstrap['warning'] : bootstrap['summary']
+        textFormat: Text.PlainText
     }
 
     TorLogDisplay {

@@ -2,6 +2,7 @@ import QtQuick 2.0
 import QtQuick.Controls 1.0
 import QtQuick.Layouts 1.0
 import im.ricochet 1.0
+import "utils.js" as Utils
 
 Item {
     anchors.fill: parent
@@ -30,7 +31,7 @@ Item {
             Label { text: qsTr("Hidden service:") }
             Label { font.bold: true; text: (userIdentity.isOnline ? qsTr("Online") : qsTr("Offline")) }
             Label { text: qsTr("Version:") }
-            Label { font.bold: true; text: torControl.torVersion }
+            Label { font.bold: true; text: torControl.torVersion; textFormat: Text.PlainText }
             //Label { text: "Recommended:" }
             //Label { font.bold: true; text: "Unknown" }
         }
@@ -56,7 +57,7 @@ Item {
 
         Label {
             //: %1 is error message
-            text: qsTr("Error: <b>%1</b>").arg(errorMessage)
+            text: qsTr("Error: <b>%1</b>").arg(Utils.htmlEscaped(errorMessage))
             visible: errorMessage != ""
 
             property string errorMessage: {

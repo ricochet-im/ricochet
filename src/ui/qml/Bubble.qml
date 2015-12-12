@@ -19,6 +19,8 @@ Rectangle {
     opacity: displayed ? 1 : 0
     visible: opacity
 
+    property alias textFormat: label.textFormat
+
     property Item target
     property int maximumWidth: target ? target.width : 100
     property int horizontalAlignment: Qt.AlignHCenter
@@ -50,6 +52,7 @@ Rectangle {
         id: label
         wrapMode: Text.Wrap
         width: maximumWidth - 16
+        textFormat: Text.PlainText
         x: 6
         y: 6
     }

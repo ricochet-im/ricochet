@@ -41,6 +41,7 @@ Item {
                 id: nickname
                 Layout.fillWidth: true
                 text: visible ? contactInfo.contact.nickname : ""
+                textFormat: Text.PlainText
                 horizontalAlignment: Qt.AlignHCenter
                 font.pointSize: styleHelper.pointSize + 1
 
@@ -99,6 +100,7 @@ Item {
                     Layout.fillWidth: true
                     elide: Text.ElideRight
                     text: visible ? Qt.formatDate(contactInfo.contact.settings.read("whenCreated"), Qt.DefaultLocaleLongDate) : ""
+                    textFormat: Text.PlainText
                 }
 
                 Label { text: qsTr("Last seen:"); visible: lastSeen.visible; Layout.alignment: Qt.AlignRight }
@@ -108,12 +110,14 @@ Item {
                     elide: Text.ElideRight
                     visible: contactInfo.request === null
                     text: visible ? Qt.formatDate(contactInfo.contact.settings.read("lastConnected"), Qt.DefaultLocaleLongDate) : ""
+                    textFormat: Text.PlainText
                 }
 
                 Label { text: qsTr("Request:"); visible: requestStatus.visible; Layout.alignment: Qt.AlignRight }
                 Label {
                     id: requestStatus
                     visible: contactInfo.request !== null
+                    textFormat: Text.PlainText
                     text: {
                         var re = ""
                         if (contactInfo.request === null)
@@ -139,6 +143,7 @@ Item {
                     Layout.fillWidth: true
                     elide: Text.ElideRight
                     text: visible ? contactInfo.request.rejectMessage : ""
+                    textFormat: Text.PlainText
                     visible: (contactInfo.request !== null) && (contactInfo.request.rejectMessage !== "")
                 }
             }
