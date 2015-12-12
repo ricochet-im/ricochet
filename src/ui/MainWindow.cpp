@@ -44,9 +44,12 @@
 #include "ui/LinkedText.h"
 #include "utils/Settings.h"
 #include "utils/PendingOperation.h"
+#include "utils/Useful.h"
 #include "ui/LanguagesModel.h"
 #include <QtQml>
 #include <QQmlApplicationEngine>
+#include <QQmlNetworkAccessManagerFactory>
+#include <QNetworkAccessManager>
 #include <QQmlContext>
 #include <QMessageBox>
 #include <QPushButton>
@@ -61,6 +64,44 @@ static QObject *linkedtext_singleton(QQmlEngine *, QJSEngine *)
     return new LinkedText;
 }
 
+/* Through the QQmlNetworkAccessManagerFactory below, all network requests
+ * created via QML will be passed to this object; including, for example,
+ * <img> tags parsed in rich Text items.
+ *
+ * Ricochet's UI does not directly cause network requests for any reason. These
+ * are always a potentially deanonymizing bug. This object will block them,
+ * and assert if appropriate.
+ */
+class BlockedNetworkAccessManager : public QNetworkAccessManager
+{
+public:
+    BlockedNetworkAccessManager(QObject *parent)
+        : QNetworkAccessManager(parent)
+    {
+        /* Either of these is sufficient to cause any network request to fail.
+         * Both of them should be redundant, because createRequest below also
+         * blackholes every request (and crashes for assert builds). */
+        setNetworkAccessible(QNetworkAccessManager::NotAccessible);
+        setProxy(QNetworkProxy(QNetworkProxy::Socks5Proxy, QLatin1String("0.0.0.0"), 0));
+    }
+
+protected:
+    virtual QNetworkReply *createRequest(Operation op, const QNetworkRequest &req, QIODevice *outgoingData = 0)
+    {
+        BUG() << "QML attempted to load a network resource from" << req.url() << " - this is potentially an input sanitization flaw.";
+        return QNetworkAccessManager::createRequest(op, QNetworkRequest(), outgoingData);
+    }
+};
+
+class NetworkAccessBlockingFactory : public QQmlNetworkAccessManagerFactory
+{
+public:
+    virtual QNetworkAccessManager *create(QObject *parent)
+    {
+        return new BlockedNetworkAccessManager(parent);
+    }
+};
+
 MainWindow::MainWindow(QObject *parent)
     : QObject(parent)
 {
@@ -68,6 +109,7 @@ MainWindow::MainWindow(QObject *parent)
     uiMain = this;
 
     qml = new QQmlApplicationEngine(this);
+    qml->setNetworkAccessManagerFactory(new NetworkAccessBlockingFactory);
 
     qmlRegisterUncreatableType<ContactUser>("im.ricochet", 1, 0, "ContactUser", QString());
     qmlRegisterUncreatableType<UserIdentity>("im.ricochet", 1, 0, "UserIdentity", QString());
