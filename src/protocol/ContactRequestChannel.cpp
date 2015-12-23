@@ -85,12 +85,17 @@ static bool isAcceptableNickname(const QString &input)
     if (input.size() > Data::ContactRequest::NicknameMaxCharacters)
         return false;
 
+    /* Although nicknames should always be escaped before being displayed
+     * in a HTML-sensitive context, there's little value in allowing these
+     * characters in nicknames, and it could prevent future bugs. */
+    QVector<uint> blacklist = QStringLiteral("\"<>&").toUcs4();
     QVector<uint> chars = input.toUcs4();
     foreach (uint value, chars) {
         QChar c(value);
         if (c.category() == QChar::Other_Format ||
             c.category() == QChar::Other_Control ||
-            c.isNonCharacter())
+            c.isNonCharacter() ||
+            blacklist.contains(value))
             return false;
     }
 
