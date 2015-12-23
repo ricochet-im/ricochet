@@ -143,6 +143,10 @@ void TorSocket::connectToHost(const QHostAddress &address, quint16 port, OpenMod
 
 void TorSocket::onFailed()
 {
+    // Make sure the internal connection to the SOCKS proxy is closed
+    // Otherwise reconnect attempts will fail (#295)
+    close();
+
     if (reconnectEnabled() && !m_connectTimer.isActive()) {
         m_connectAttempts++;
         m_connectTimer.start(reconnectInterval() * 1000);
