@@ -37,7 +37,7 @@ FocusScope {
                 onFailed: {
                     var contact
                     if ((contact = matchingContact(field.text)))
-                        errorBubble.show(qsTr("<b>%1</b> is already your contact").arg(contact.nickname))
+                        errorBubble.show(qsTr("<b>%1</b> is already your contact").arg(Utils.htmlEscaped(contact.nickname)))
                     else if (matchesIdentity(field.text))
                         errorBubble.show(qsTr("You can't add yourself as a contact"))
                     else
@@ -49,6 +49,7 @@ FocusScope {
                 id: errorBubble
                 target: field
                 horizontalAlignment: Qt.AlignLeft
+                textFormat: Text.RichText
 
                 function show(value) {
                     text = value

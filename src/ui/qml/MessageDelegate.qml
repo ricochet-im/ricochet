@@ -27,6 +27,7 @@ Column {
                 else
                     return Qt.formatDateTime(model.timestamp, Qt.DefaultLocaleShortDate)
             }
+            textFormat: Text.PlainText
             width: background.parent.width
             elide: Text.ElideRight
             horizontalAlignment: Qt.AlignHCenter
