@@ -50,6 +50,8 @@ Name: "sv"; MessagesFile: "..\..\translation\inno\Swedish.isl,..\..\translation\
 Name: "tr"; MessagesFile: "compiler:Languages\Turkish.isl,..\..\translation\installer_tr.isl"
 Name: "uk"; MessagesFile: "compiler:Languages\Ukrainian.isl,..\..\translation\installer_uk.isl"
 Name: "pl"; MessagesFile: "compiler:Languages\Polish.isl,..\..\translation\installer_pl.isl"
+Name: "sl"; MessagesFile: "compiler:Languages\Slovenian.isl,..\..\translation\installer_sl.isl"
+Name: "zh"; MessagesFile: "..\..\translation\inno\ChineseSimplified.isl,..\..\translation\installer_zh.isl"
 
 [Code]
 // http://www.vincenzo.net/isxkb/index.php?title=Obtaining_the_application's_version
