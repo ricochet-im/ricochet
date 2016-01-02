@@ -1,0 +1,54 @@
+ricochet(1) -- An anonymous peer-to-peer instant messenger
+=============================================
+
+## SYNOPSIS
+
+`ricochet` [<PROFILE_DIR>]
+
+## DESCRIPTION
+
+Ricochet is an experiment with a different kind of instant messaging
+that doesn't trust anyone with your identity, your contact list, or
+your communications. 
+
+  * You can chat without exposing your identity (or IP address) to
+anyone 
+  * Nobody can discover who your contacts are or when you talk
+(metadata-free) 
+  * There are no servers or operators to compromise that could access
+your information 
+  * It's cross-platform and easy for non-technical users 
+
+Ricochet is a peer-to-peer instant messaging system built on Tor
+hidden services. Your login is your hidden service address, and
+contacts connect to you (not an intermediate server) through Tor.
+The rendezvous system makes it extremely hard for anyone to learn
+your identity from your address. 
+                        
+## OPTIONS
+
+  * <PROFILE_DIR>:
+    Specifies a profile directory. If <PROFILE_DIR> does not
+    exist, a new profile is created at <PROFILE_DIR>. A system-wide
+    installation uses ${HOME}/.local/share/Ricochet/ricochet if 
+    <PROFILE_DIR> is not specified.
+
+## BUGS
+
+Please report bugs on the 
+[issue tracker](https://github.com/ricochet-im/ricochet/issues).
+
+## AUTHOR
+
+Written by Robin Burchell, John Brooks, and 
+[contributors](https://github.com/ricochet-im/ricochet/graphs/contributors).
+
+## SEE ALSO
+
+tor(1)
+
+[ricochet.im](https://ricochet.im)
+
+The development of i3blocks takes place on
+[Github](https://github.com/ricochet-im/ricochet).
+
