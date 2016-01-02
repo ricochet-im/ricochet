@@ -69,12 +69,12 @@
         <translation>Zadejte ID začínající slovem &lt;b&gt;ricochet:&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactIDField.qml" line="79"/>
+        <location filename="../src/ui/qml/ContactIDField.qml" line="80"/>
         <source>Copied to clipboard</source>
         <translation>Zkopírováno do schránky</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactIDField.qml" line="91"/>
+        <location filename="../src/ui/qml/ContactIDField.qml" line="92"/>
         <source>Copy</source>
         <translation>Zkopírovat</translation>
     </message>
@@ -82,27 +82,27 @@
 <context>
     <name>ContactList</name>
     <message>
-        <location filename="../src/ui/qml/ContactList.qml" line="75"/>
+        <location filename="../src/ui/qml/ContactList.qml" line="76"/>
         <source>Online</source>
         <translation>Online</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactList.qml" line="76"/>
+        <location filename="../src/ui/qml/ContactList.qml" line="77"/>
         <source>Offline</source>
         <translation>Offline</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactList.qml" line="77"/>
+        <location filename="../src/ui/qml/ContactList.qml" line="78"/>
         <source>Requests</source>
         <translation>Žádosti</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactList.qml" line="78"/>
+        <location filename="../src/ui/qml/ContactList.qml" line="79"/>
         <source>Rejected</source>
         <translation>Zamítnuto</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactList.qml" line="79"/>
+        <location filename="../src/ui/qml/ContactList.qml" line="80"/>
         <source>Outdated</source>
         <translation type="unfinished"></translation>
     </message>
@@ -110,63 +110,63 @@
 <context>
     <name>ContactPreferences</name>
     <message>
-        <location filename="../src/ui/qml/ContactPreferences.qml" line="97"/>
+        <location filename="../src/ui/qml/ContactPreferences.qml" line="98"/>
         <source>Date added:</source>
         <translation>Přidáno dne:</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactPreferences.qml" line="104"/>
+        <location filename="../src/ui/qml/ContactPreferences.qml" line="106"/>
         <source>Last seen:</source>
         <translation>Naposledy online:</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactPreferences.qml" line="113"/>
+        <location filename="../src/ui/qml/ContactPreferences.qml" line="116"/>
         <source>Request:</source>
         <translation>Žádost:</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactPreferences.qml" line="122"/>
+        <location filename="../src/ui/qml/ContactPreferences.qml" line="126"/>
         <source>Pending connection</source>
         <translation>Čeká se na připojení</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactPreferences.qml" line="123"/>
+        <location filename="../src/ui/qml/ContactPreferences.qml" line="127"/>
         <source>Delivered</source>
         <translation>Doručeno</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactPreferences.qml" line="124"/>
+        <location filename="../src/ui/qml/ContactPreferences.qml" line="128"/>
         <source>Accepted</source>
         <translation>Přijato</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactPreferences.qml" line="125"/>
+        <location filename="../src/ui/qml/ContactPreferences.qml" line="129"/>
         <source>Error</source>
         <translation>Chyba</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactPreferences.qml" line="126"/>
+        <location filename="../src/ui/qml/ContactPreferences.qml" line="130"/>
         <source>Rejected</source>
         <translation>Zamítnuto</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactPreferences.qml" line="130"/>
+        <location filename="../src/ui/qml/ContactPreferences.qml" line="134"/>
         <source>%1 (Connected)</source>
         <extracomment>%1 status, e.g. &quot;Accepted&quot;</extracomment>
         <translation>%1 (Připojeno)</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactPreferences.qml" line="136"/>
+        <location filename="../src/ui/qml/ContactPreferences.qml" line="140"/>
         <source>Response:</source>
         <translation>Odpověď:</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactPreferences.qml" line="158"/>
+        <location filename="../src/ui/qml/ContactPreferences.qml" line="163"/>
         <source>Rename</source>
         <translation type="unfinished">Přejmenovat</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactPreferences.qml" line="165"/>
+        <location filename="../src/ui/qml/ContactPreferences.qml" line="170"/>
         <source>Remove</source>
         <translation>Odstranit</translation>
     </message>
@@ -280,12 +280,12 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../src/ui/MainWindow.cpp" line="149"/>
+        <location filename="../src/ui/MainWindow.cpp" line="191"/>
         <source>Remove %1</source>
         <translation>Odstranit %1</translation>
     </message>
     <message>
-        <location filename="../src/ui/MainWindow.cpp" line="150"/>
+        <location filename="../src/ui/MainWindow.cpp" line="192"/>
         <source>Do you want to permanently remove %1?</source>
         <translation>Chcete trvale odstranit kontakt %1?</translation>
     </message>
@@ -299,32 +299,32 @@
         <translation>%1 je offline</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/MessageDelegate.qml" line="134"/>
+        <location filename="../src/ui/qml/MessageDelegate.qml" line="135"/>
         <source>Copy ID</source>
         <translation>Kopírovat ID</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/MessageDelegate.qml" line="134"/>
+        <location filename="../src/ui/qml/MessageDelegate.qml" line="135"/>
         <source>Copy Link</source>
         <translation>Kopírovat odkaz</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/MessageDelegate.qml" line="139"/>
+        <location filename="../src/ui/qml/MessageDelegate.qml" line="140"/>
         <source>Open with Browser</source>
         <translation>Otevřít v prohlížeči</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/MessageDelegate.qml" line="153"/>
+        <location filename="../src/ui/qml/MessageDelegate.qml" line="154"/>
         <source>Add as Contact</source>
         <translation>Přidat jako kontakt</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/MessageDelegate.qml" line="165"/>
+        <location filename="../src/ui/qml/MessageDelegate.qml" line="166"/>
         <source>Copy Message</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/MessageDelegate.qml" line="172"/>
+        <location filename="../src/ui/qml/MessageDelegate.qml" line="173"/>
         <source>Copy Selection</source>
         <translation type="unfinished"></translation>
     </message>
@@ -332,18 +332,18 @@
 <context>
     <name>MessageDialogWrapper</name>
     <message>
-        <location filename="../src/ui/qml/MessageDialogWrapper.qml" line="7"/>
+        <location filename="../src/ui/qml/MessageDialogWrapper.qml" line="8"/>
         <source>Remove %1</source>
         <translation>Odstranit %1</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/MessageDialogWrapper.qml" line="9"/>
+        <location filename="../src/ui/qml/MessageDialogWrapper.qml" line="10"/>
         <source>Do you want to permanently remove %1?</source>
         <extracomment>%1 nickname</extracomment>
         <translation>Chcete trvale odstranit kontakt %1?</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/MessageDialogWrapper.qml" line="10"/>
+        <location filename="../src/ui/qml/MessageDialogWrapper.qml" line="11"/>
         <source>This contact will no longer be able to message you, and will be notified about the removal. They may choose to send a new connection request.</source>
         <translation>Tento kontakt vám nebude moci posílat zprávy a bude informován o odstranění ze seznamu kontaktů. Může však zaslat novou žádost o spojení.</translation>
     </message>
@@ -398,27 +398,27 @@
 <context>
     <name>OpenBrowserDialog</name>
     <message>
-        <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="39"/>
+        <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="40"/>
         <source>&lt;b&gt;Warning!&lt;/b&gt; Opening links with your default browser will harm your security and anonymity.&lt;br&gt;&lt;br&gt;You can &lt;a href=&apos;.&apos;&gt;copy to the clipboard&lt;/a&gt; instead.</source>
         <translation>&lt;b&gt;-Upozornění!&lt;/b&gt; Otvírání odkazů v defaultním prohlížeči naruší vaši bezpečnost a anonymitu.&lt;br&gt;&lt;br&gt;Můžete místo toho odkaz &lt;a href=&apos;.&apos;&gt;zkopírovat do schránky&lt;/a&gt;.</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="58"/>
+        <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="59"/>
         <source>Don&apos;t ask again for links from %1</source>
         <translation>Znovu nepožadovat odkazy od kontaktu %1</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="64"/>
+        <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="65"/>
         <source>Don&apos;t ask again for any links (not recommended!)</source>
         <translation>Znovu nepožadovat žádné odkazy (nedoporučuje se!)</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="71"/>
+        <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="72"/>
         <source>Open Browser</source>
         <translation>Otevřít prohlížeč</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="83"/>
+        <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="84"/>
         <source>Cancel</source>
         <translation>Zrušit</translation>
     </message>
@@ -486,22 +486,22 @@
         <translation>Připojuje se k síti Tor…</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/TorBootstrapStatus.qml" line="50"/>
+        <location filename="../src/ui/qml/TorBootstrapStatus.qml" line="51"/>
         <source>Back</source>
         <translation>Zpět</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/TorBootstrapStatus.qml" line="57"/>
+        <location filename="../src/ui/qml/TorBootstrapStatus.qml" line="58"/>
         <source>Hide details</source>
         <translation>Skrýt podrobnosti</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/TorBootstrapStatus.qml" line="57"/>
+        <location filename="../src/ui/qml/TorBootstrapStatus.qml" line="58"/>
         <source>Show details</source>
         <translation>Zobrazit podrobnosti</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/TorBootstrapStatus.qml" line="69"/>
+        <location filename="../src/ui/qml/TorBootstrapStatus.qml" line="70"/>
         <source>Done</source>
         <translation>Hotovo</translation>
     </message>
@@ -594,67 +594,67 @@
 <context>
     <name>TorPreferences</name>
     <message>
-        <location filename="../src/ui/qml/TorPreferences.qml" line="24"/>
+        <location filename="../src/ui/qml/TorPreferences.qml" line="25"/>
         <source>Running:</source>
         <translation>Spuštěno:</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/TorPreferences.qml" line="25"/>
-        <location filename="../src/ui/qml/TorPreferences.qml" line="27"/>
-        <location filename="../src/ui/qml/TorPreferences.qml" line="29"/>
+        <location filename="../src/ui/qml/TorPreferences.qml" line="26"/>
+        <location filename="../src/ui/qml/TorPreferences.qml" line="28"/>
+        <location filename="../src/ui/qml/TorPreferences.qml" line="30"/>
         <source>Yes</source>
         <translation>Ano</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/TorPreferences.qml" line="25"/>
-        <location filename="../src/ui/qml/TorPreferences.qml" line="27"/>
-        <location filename="../src/ui/qml/TorPreferences.qml" line="29"/>
+        <location filename="../src/ui/qml/TorPreferences.qml" line="26"/>
+        <location filename="../src/ui/qml/TorPreferences.qml" line="28"/>
+        <location filename="../src/ui/qml/TorPreferences.qml" line="30"/>
         <source>No</source>
         <translation>Ne</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/TorPreferences.qml" line="25"/>
+        <location filename="../src/ui/qml/TorPreferences.qml" line="26"/>
         <source>External</source>
         <translation>Externí</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/TorPreferences.qml" line="26"/>
+        <location filename="../src/ui/qml/TorPreferences.qml" line="27"/>
         <source>Control connected:</source>
         <translation>Kontrola připojena:</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/TorPreferences.qml" line="28"/>
+        <location filename="../src/ui/qml/TorPreferences.qml" line="29"/>
         <source>Circuits established:</source>
         <translation>Okruhy sestaveny:</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/TorPreferences.qml" line="30"/>
+        <location filename="../src/ui/qml/TorPreferences.qml" line="31"/>
         <source>Hidden service:</source>
         <translation>Skrytá služba:</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/TorPreferences.qml" line="31"/>
+        <location filename="../src/ui/qml/TorPreferences.qml" line="32"/>
         <source>Online</source>
         <translation>Online</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/TorPreferences.qml" line="31"/>
+        <location filename="../src/ui/qml/TorPreferences.qml" line="32"/>
         <source>Offline</source>
         <translation>Offline</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/TorPreferences.qml" line="32"/>
+        <location filename="../src/ui/qml/TorPreferences.qml" line="33"/>
         <source>Version:</source>
         <translation>Verze:</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/TorPreferences.qml" line="59"/>
+        <location filename="../src/ui/qml/TorPreferences.qml" line="60"/>
         <source>Error: &lt;b&gt;%1&lt;/b&gt;</source>
         <extracomment>%1 is error message</extracomment>
         <translation>Chyba: &lt;b&gt;%1&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/TorPreferences.qml" line="75"/>
+        <location filename="../src/ui/qml/TorPreferences.qml" line="76"/>
         <source>Configure</source>
         <translation>Nastavit</translation>
     </message>

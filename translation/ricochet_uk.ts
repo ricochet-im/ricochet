@@ -69,12 +69,12 @@
         <translation>Введіть ID який починається з &lt;b&gt;ricochet:&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactIDField.qml" line="79"/>
+        <location filename="../src/ui/qml/ContactIDField.qml" line="80"/>
         <source>Copied to clipboard</source>
         <translation>Скопійовано до  буферу обміну</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactIDField.qml" line="91"/>
+        <location filename="../src/ui/qml/ContactIDField.qml" line="92"/>
         <source>Copy</source>
         <translation>Копіювати</translation>
     </message>
@@ -82,27 +82,27 @@
 <context>
     <name>ContactList</name>
     <message>
-        <location filename="../src/ui/qml/ContactList.qml" line="75"/>
+        <location filename="../src/ui/qml/ContactList.qml" line="76"/>
         <source>Online</source>
         <translation>В мережі</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactList.qml" line="76"/>
+        <location filename="../src/ui/qml/ContactList.qml" line="77"/>
         <source>Offline</source>
         <translation>Не в мережі</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactList.qml" line="77"/>
+        <location filename="../src/ui/qml/ContactList.qml" line="78"/>
         <source>Requests</source>
         <translation>Запити</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactList.qml" line="78"/>
+        <location filename="../src/ui/qml/ContactList.qml" line="79"/>
         <source>Rejected</source>
         <translation>Відхилено</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactList.qml" line="79"/>
+        <location filename="../src/ui/qml/ContactList.qml" line="80"/>
         <source>Outdated</source>
         <translation>Застарілий</translation>
     </message>
@@ -110,63 +110,63 @@
 <context>
     <name>ContactPreferences</name>
     <message>
-        <location filename="../src/ui/qml/ContactPreferences.qml" line="97"/>
+        <location filename="../src/ui/qml/ContactPreferences.qml" line="98"/>
         <source>Date added:</source>
         <translation>Дата додавання:</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactPreferences.qml" line="104"/>
+        <location filename="../src/ui/qml/ContactPreferences.qml" line="106"/>
         <source>Last seen:</source>
         <translation>Останній раз бачили:</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactPreferences.qml" line="113"/>
+        <location filename="../src/ui/qml/ContactPreferences.qml" line="116"/>
         <source>Request:</source>
         <translation>Запит:</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactPreferences.qml" line="122"/>
+        <location filename="../src/ui/qml/ContactPreferences.qml" line="126"/>
         <source>Pending connection</source>
         <translation>Встановлення з&apos;єднання</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactPreferences.qml" line="123"/>
+        <location filename="../src/ui/qml/ContactPreferences.qml" line="127"/>
         <source>Delivered</source>
         <translation>Доставлено</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactPreferences.qml" line="124"/>
+        <location filename="../src/ui/qml/ContactPreferences.qml" line="128"/>
         <source>Accepted</source>
         <translation>Прийнято</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactPreferences.qml" line="125"/>
+        <location filename="../src/ui/qml/ContactPreferences.qml" line="129"/>
         <source>Error</source>
         <translation>Помилка</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactPreferences.qml" line="126"/>
+        <location filename="../src/ui/qml/ContactPreferences.qml" line="130"/>
         <source>Rejected</source>
         <translation>Відхилено</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactPreferences.qml" line="130"/>
+        <location filename="../src/ui/qml/ContactPreferences.qml" line="134"/>
         <source>%1 (Connected)</source>
         <extracomment>%1 status, e.g. &quot;Accepted&quot;</extracomment>
         <translation>%1 (Підключено)</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactPreferences.qml" line="136"/>
+        <location filename="../src/ui/qml/ContactPreferences.qml" line="140"/>
         <source>Response:</source>
         <translation>Відповідь:</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactPreferences.qml" line="158"/>
+        <location filename="../src/ui/qml/ContactPreferences.qml" line="163"/>
         <source>Rename</source>
         <translation>Перейменувати</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactPreferences.qml" line="165"/>
+        <location filename="../src/ui/qml/ContactPreferences.qml" line="170"/>
         <source>Remove</source>
         <translation>Видалити</translation>
     </message>
@@ -280,12 +280,12 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../src/ui/MainWindow.cpp" line="149"/>
+        <location filename="../src/ui/MainWindow.cpp" line="191"/>
         <source>Remove %1</source>
         <translation>Видалити %1</translation>
     </message>
     <message>
-        <location filename="../src/ui/MainWindow.cpp" line="150"/>
+        <location filename="../src/ui/MainWindow.cpp" line="192"/>
         <source>Do you want to permanently remove %1?</source>
         <translation>Бажаєте назавжди видалити %1?</translation>
     </message>
@@ -299,32 +299,32 @@
         <translation>%1 не в мережі</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/MessageDelegate.qml" line="134"/>
+        <location filename="../src/ui/qml/MessageDelegate.qml" line="135"/>
         <source>Copy ID</source>
         <translation>Копіювати ID</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/MessageDelegate.qml" line="134"/>
+        <location filename="../src/ui/qml/MessageDelegate.qml" line="135"/>
         <source>Copy Link</source>
         <translation>Копіювати посилання</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/MessageDelegate.qml" line="139"/>
+        <location filename="../src/ui/qml/MessageDelegate.qml" line="140"/>
         <source>Open with Browser</source>
         <translation>Відкрити браузер</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/MessageDelegate.qml" line="153"/>
+        <location filename="../src/ui/qml/MessageDelegate.qml" line="154"/>
         <source>Add as Contact</source>
         <translation>Додати як контакт</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/MessageDelegate.qml" line="165"/>
+        <location filename="../src/ui/qml/MessageDelegate.qml" line="166"/>
         <source>Copy Message</source>
         <translation>Скопіювати повідомлення</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/MessageDelegate.qml" line="172"/>
+        <location filename="../src/ui/qml/MessageDelegate.qml" line="173"/>
         <source>Copy Selection</source>
         <translation>Скопіювати вибране</translation>
     </message>
@@ -332,18 +332,18 @@
 <context>
     <name>MessageDialogWrapper</name>
     <message>
-        <location filename="../src/ui/qml/MessageDialogWrapper.qml" line="7"/>
+        <location filename="../src/ui/qml/MessageDialogWrapper.qml" line="8"/>
         <source>Remove %1</source>
         <translation>Видалити %1</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/MessageDialogWrapper.qml" line="9"/>
+        <location filename="../src/ui/qml/MessageDialogWrapper.qml" line="10"/>
         <source>Do you want to permanently remove %1?</source>
         <extracomment>%1 nickname</extracomment>
         <translation>Бажаєте назавжди видалити %1?</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/MessageDialogWrapper.qml" line="10"/>
+        <location filename="../src/ui/qml/MessageDialogWrapper.qml" line="11"/>
         <source>This contact will no longer be able to message you, and will be notified about the removal. They may choose to send a new connection request.</source>
         <translation>Цей контакт більше не зможе вам писати і буде проінформований про видалення. Він може послати запит на нове з&apos;єднання. </translation>
     </message>
@@ -398,27 +398,27 @@
 <context>
     <name>OpenBrowserDialog</name>
     <message>
-        <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="39"/>
+        <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="40"/>
         <source>&lt;b&gt;Warning!&lt;/b&gt; Opening links with your default browser will harm your security and anonymity.&lt;br&gt;&lt;br&gt;You can &lt;a href=&apos;.&apos;&gt;copy to the clipboard&lt;/a&gt; instead.</source>
         <translation>&lt;b&gt;Попередження!&lt;/b&gt; Відкриття посилань у браузері за замовчуванням може нашкодити вашій безпеці та анонімності. &lt;br&gt;&lt;br&gt;Замість цього ви можете їх &lt;a href=&apos;.&apos;&gt;скопіювати у буфер обміну&lt;/a&gt; .</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="58"/>
+        <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="59"/>
         <source>Don&apos;t ask again for links from %1</source>
         <translation>Не запитувати знову про посилання від %1</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="64"/>
+        <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="65"/>
         <source>Don&apos;t ask again for any links (not recommended!)</source>
         <translation>Не запитувати знову про будь-які посилання (не рекомендовано!)</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="71"/>
+        <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="72"/>
         <source>Open Browser</source>
         <translation>Відкрити браузер</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="83"/>
+        <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="84"/>
         <source>Cancel</source>
         <translation>Відмінити</translation>
     </message>
@@ -486,22 +486,22 @@
         <translation>З&apos;єднання з мережею Tor...</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/TorBootstrapStatus.qml" line="50"/>
+        <location filename="../src/ui/qml/TorBootstrapStatus.qml" line="51"/>
         <source>Back</source>
         <translation>Назад</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/TorBootstrapStatus.qml" line="57"/>
+        <location filename="../src/ui/qml/TorBootstrapStatus.qml" line="58"/>
         <source>Hide details</source>
         <translation>Сховати деталі</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/TorBootstrapStatus.qml" line="57"/>
+        <location filename="../src/ui/qml/TorBootstrapStatus.qml" line="58"/>
         <source>Show details</source>
         <translation>Показати деталі</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/TorBootstrapStatus.qml" line="69"/>
+        <location filename="../src/ui/qml/TorBootstrapStatus.qml" line="70"/>
         <source>Done</source>
         <translation>Виконано</translation>
     </message>
@@ -594,67 +594,67 @@
 <context>
     <name>TorPreferences</name>
     <message>
-        <location filename="../src/ui/qml/TorPreferences.qml" line="24"/>
+        <location filename="../src/ui/qml/TorPreferences.qml" line="25"/>
         <source>Running:</source>
         <translation>Запущено:</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/TorPreferences.qml" line="25"/>
-        <location filename="../src/ui/qml/TorPreferences.qml" line="27"/>
-        <location filename="../src/ui/qml/TorPreferences.qml" line="29"/>
+        <location filename="../src/ui/qml/TorPreferences.qml" line="26"/>
+        <location filename="../src/ui/qml/TorPreferences.qml" line="28"/>
+        <location filename="../src/ui/qml/TorPreferences.qml" line="30"/>
         <source>Yes</source>
         <translation>Так</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/TorPreferences.qml" line="25"/>
-        <location filename="../src/ui/qml/TorPreferences.qml" line="27"/>
-        <location filename="../src/ui/qml/TorPreferences.qml" line="29"/>
+        <location filename="../src/ui/qml/TorPreferences.qml" line="26"/>
+        <location filename="../src/ui/qml/TorPreferences.qml" line="28"/>
+        <location filename="../src/ui/qml/TorPreferences.qml" line="30"/>
         <source>No</source>
         <translation>Ні</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/TorPreferences.qml" line="25"/>
+        <location filename="../src/ui/qml/TorPreferences.qml" line="26"/>
         <source>External</source>
         <translation>Зовнішній</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/TorPreferences.qml" line="26"/>
+        <location filename="../src/ui/qml/TorPreferences.qml" line="27"/>
         <source>Control connected:</source>
         <translation>Контрольне з&apos;єднання:</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/TorPreferences.qml" line="28"/>
+        <location filename="../src/ui/qml/TorPreferences.qml" line="29"/>
         <source>Circuits established:</source>
         <translation>Схема побудована:</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/TorPreferences.qml" line="30"/>
+        <location filename="../src/ui/qml/TorPreferences.qml" line="31"/>
         <source>Hidden service:</source>
         <translation>Прихований сервіс:</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/TorPreferences.qml" line="31"/>
+        <location filename="../src/ui/qml/TorPreferences.qml" line="32"/>
         <source>Online</source>
         <translation>В мережі</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/TorPreferences.qml" line="31"/>
+        <location filename="../src/ui/qml/TorPreferences.qml" line="32"/>
         <source>Offline</source>
         <translation>Не в мережі</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/TorPreferences.qml" line="32"/>
+        <location filename="../src/ui/qml/TorPreferences.qml" line="33"/>
         <source>Version:</source>
         <translation>Версія:</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/TorPreferences.qml" line="59"/>
+        <location filename="../src/ui/qml/TorPreferences.qml" line="60"/>
         <source>Error: &lt;b&gt;%1&lt;/b&gt;</source>
         <extracomment>%1 is error message</extracomment>
         <translation>Помилка: &lt;b&gt;%1&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/TorPreferences.qml" line="75"/>
+        <location filename="../src/ui/qml/TorPreferences.qml" line="76"/>
         <source>Configure</source>
         <translation>Налаштувати</translation>
     </message>
