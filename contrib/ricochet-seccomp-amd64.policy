@@ -42,12 +42,14 @@ getpeername: 1
 getpgrp: 1
 getpid: 1
 getppid: 1
+getrandom: 1
 getresgid: 1
 getresuid: 1
 getrlimit: 1
 getrusage: 1
 getsockname: 1
 getsockopt: 1
+gettid: 1
 getuid: 1
 ioctl: 1
 kill: 1
@@ -70,6 +72,7 @@ prctl: 1
 pselect6: 1
 read: 1
 readlink: 1
+readlinkat: 1
 recvfrom: 1
 recvmsg: 1
 rename: 1
