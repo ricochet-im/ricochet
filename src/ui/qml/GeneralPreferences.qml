@@ -26,6 +26,7 @@ ColumnLayout {
 
     CheckBox {
         text: qsTr("Close button minimizes window to tray")
+        visible: (Qt.platform.os === "osx") ? false : true
         checked: uiSettings.data.hideOnX || false
         onCheckedChanged: {
             uiSettings.write("hideOnX", checked)

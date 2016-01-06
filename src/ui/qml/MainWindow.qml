@@ -54,9 +54,12 @@ ApplicationWindow {
                 // On OS X, avoid bouncing the dock icon forever
                 w.alert(Qt.platform.os == "osx" ? 1000 : 0)
 
-                trayIcon.unread = true
+                if (Qt.platform.os !== "osx") // tray icon is turned off on OS X
+                    trayIcon.unread = true
             } else {
-                trayIcon.unread = false
+
+                if (Qt.platform.os !== "osx") // tray icon is turned off on OS X
+                    trayIcon.unread = false
             }
         }
         onContactStatusChanged: {

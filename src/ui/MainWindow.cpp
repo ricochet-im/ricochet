@@ -62,13 +62,17 @@ static QObject *linkedtext_singleton(QQmlEngine *, QJSEngine *)
     return new LinkedText;
 }
 
-MainWindow::MainWindow(QObject *parent)
-    : QObject(parent)
+MainWindow::MainWindow(QObject *parent) :
+    QObject(parent),
+    trayIcon(nullptr)
 {
     Q_ASSERT(!uiMain);
     uiMain = this;
 
+    /* tray icon doesn't behave well on Mac OS X */
+#ifndef Q_OS_MAC
     trayIcon = new TrayIcon(QIcon(QLatin1String(":/icons/ricochet.svg")), QIcon(QLatin1String(":/icons/ricochet_unread.svg")));
+#endif
 
     qml = new QQmlApplicationEngine(this);
 
@@ -92,7 +96,8 @@ MainWindow::MainWindow(QObject *parent)
 
 MainWindow::~MainWindow()
 {
-    delete trayIcon;
+    if (trayIcon != nullptr)
+        delete trayIcon;
 }
 
 bool MainWindow::showUI()
