@@ -1,0 +1,51 @@
+.TH RICOCHET 1 "15 FEB 2016"
+.SH NAME
+ricochet \- An anonymous peer-to-peer instant messenger
+.SH SYNOPSIS
+\fBricochet\fP [\fIPROFILE_DIR\fP]
+.SH DESCRIPTION
+.PP
+Ricochet is an experiment with a different kind of instant messaging
+that doesn't trust anyone with your identity, your contact list, or
+your communications. 
+
+.IP \[bu] 2
+You can chat without exposing your identity (or IP address) to anyone 
+.IP \[bu] 2
+Nobody can discover who your contacts are or when you talk (metadata-free) 
+.IP \[bu] 2
+There are no servers or operators to compromise that could access your information 
+.IP \[bu] 2
+It's cross-platform and easy for non-technical users 
+.PP
+Ricochet is a peer-to-peer instant messaging system built on Tor
+hidden services. Your login is your hidden service address, and
+contacts connect to you (not an intermediate server) through Tor.
+The rendezvous system makes it extremely hard for anyone to learn
+your identity from your address. 
+                        
+.SH OPTIONS
+.TP
+\fBPROFILE_DIR\fR
+Specifies a profile directory. If \fIPROFILE_DIR\fP does not
+exist, a new profile is created at \fIPROFILE_DIR\fP. A system-wide
+installation uses \fB${HOME}/.local/share/Ricochet/ricochet\fP if 
+\fIPROFILE_DIR\fP is not specified.
+
+.SH "SEE ALSO"
+
+.BR tor(1)
+.PP
+Ricochet Homepage: <https://ricochet.im>
+.br
+Ricochet on GitHub: <https://github.com/ricochet-im/ricochet>
+
+.SH AUTHOR
+
+Written by Robin Burchell, John Brooks, and 
+contributors <https://github.com/ricochet-im/ricochet/graphs/contributors>.
+
+.SH BUGS
+
+Please report bugs on the 
+issue tracker <https://github.com/ricochet-im/ricochet/issues>.
