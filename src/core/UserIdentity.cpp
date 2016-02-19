@@ -128,7 +128,9 @@ QString UserIdentity::nickname() const
 
 void UserIdentity::setNickname(const QString &nick)
 {
-    m_settings->write("nickname", nick);
+    QString newNick = nick.simplified();
+    newNick.truncate(24);
+    m_settings->write("nickname", newNick);
 }
 
 void UserIdentity::onSettingsModified(const QString &key, const QJsonValue &value)

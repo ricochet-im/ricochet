@@ -288,7 +288,9 @@ QString ContactUser::nickname() const
 
 void ContactUser::setNickname(const QString &nickname)
 {
-    m_settings->write("nickname", nickname);
+    QString newNick = nickname.simplified();
+    newNick.truncate(24);
+    m_settings->write("nickname", newNick);
 }
 
 QString ContactUser::hostname() const
