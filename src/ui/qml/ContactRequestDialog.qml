@@ -1,4 +1,4 @@
-import QtQuick 2.0
+import QtQuick 2.2
 import QtQuick.Controls 1.0
 import QtQuick.Layouts 1.0
 
@@ -108,6 +108,16 @@ ApplicationWindow {
             enabled: hasValidContact
             onClicked: contactRequestDialog.accept()
         }
+    }
+
+    Action {
+        shortcut: StandardKey.Close
+        onTriggered: contactRequestDialog.close()
+    }
+
+    Action {
+        shortcut: "Escape"
+        onTriggered: contactRequestDialog.close()
     }
 }
 

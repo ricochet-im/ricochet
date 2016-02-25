@@ -15,7 +15,7 @@
     <message>
         <location filename="../src/ui/qml/AddContactDialog.qml" line="51"/>
         <source>Share your Ricochet ID to allow connection requests</source>
-        <translation>Dela ditt Ricochet-ID för att tillåta anslutningsförfrågningar</translation>
+        <translation>Dela ditt Ricochet-ID så att du kan ta emot förfrågningar</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/AddContactDialog.qml" line="107"/>
@@ -66,15 +66,15 @@
     <message>
         <location filename="../src/ui/qml/ContactIDField.qml" line="44"/>
         <source>Enter an ID starting with &lt;b&gt;ricochet:&lt;/b&gt;</source>
-        <translation>Ange ett ID som startar med &lt;b&gt;ricochet:&lt;/b&gt;</translation>
+        <translation>Fyll i ett ID som startar med &lt;b&gt;ricochet:&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactIDField.qml" line="79"/>
+        <location filename="../src/ui/qml/ContactIDField.qml" line="80"/>
         <source>Copied to clipboard</source>
-        <translation>Kopierat till urklipp</translation>
+        <translation>Kopierat till Urklipp</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactIDField.qml" line="91"/>
+        <location filename="../src/ui/qml/ContactIDField.qml" line="92"/>
         <source>Copy</source>
         <translation>Kopiera</translation>
     </message>
@@ -82,27 +82,27 @@
 <context>
     <name>ContactList</name>
     <message>
-        <location filename="../src/ui/qml/ContactList.qml" line="75"/>
+        <location filename="../src/ui/qml/ContactList.qml" line="76"/>
         <source>Online</source>
         <translation>Online</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactList.qml" line="76"/>
+        <location filename="../src/ui/qml/ContactList.qml" line="77"/>
         <source>Offline</source>
         <translation>Offline</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactList.qml" line="77"/>
+        <location filename="../src/ui/qml/ContactList.qml" line="78"/>
         <source>Requests</source>
         <translation>Förfrågningar</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactList.qml" line="78"/>
+        <location filename="../src/ui/qml/ContactList.qml" line="79"/>
         <source>Rejected</source>
         <translation>Nekad</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactList.qml" line="79"/>
+        <location filename="../src/ui/qml/ContactList.qml" line="80"/>
         <source>Outdated</source>
         <translation>Inaktuell</translation>
     </message>
@@ -110,63 +110,63 @@
 <context>
     <name>ContactPreferences</name>
     <message>
-        <location filename="../src/ui/qml/ContactPreferences.qml" line="97"/>
+        <location filename="../src/ui/qml/ContactPreferences.qml" line="98"/>
         <source>Date added:</source>
-        <translation>Datum tillagd:</translation>
+        <translation>Tillagd datum:</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactPreferences.qml" line="104"/>
+        <location filename="../src/ui/qml/ContactPreferences.qml" line="106"/>
         <source>Last seen:</source>
         <translation>Sågs senast:</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactPreferences.qml" line="113"/>
+        <location filename="../src/ui/qml/ContactPreferences.qml" line="116"/>
         <source>Request:</source>
         <translation>Förfrågan:</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactPreferences.qml" line="122"/>
+        <location filename="../src/ui/qml/ContactPreferences.qml" line="126"/>
         <source>Pending connection</source>
         <translation>Inväntar anslutning</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactPreferences.qml" line="123"/>
+        <location filename="../src/ui/qml/ContactPreferences.qml" line="127"/>
         <source>Delivered</source>
         <translation>Levererad</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactPreferences.qml" line="124"/>
+        <location filename="../src/ui/qml/ContactPreferences.qml" line="128"/>
         <source>Accepted</source>
-        <translation>Accepterat</translation>
+        <translation>Godkänd</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactPreferences.qml" line="125"/>
+        <location filename="../src/ui/qml/ContactPreferences.qml" line="129"/>
         <source>Error</source>
         <translation>Fel</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactPreferences.qml" line="126"/>
+        <location filename="../src/ui/qml/ContactPreferences.qml" line="130"/>
         <source>Rejected</source>
         <translation>Nekad</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactPreferences.qml" line="130"/>
+        <location filename="../src/ui/qml/ContactPreferences.qml" line="134"/>
         <source>%1 (Connected)</source>
         <extracomment>%1 status, e.g. &quot;Accepted&quot;</extracomment>
         <translation>%1 (Ansluten)</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactPreferences.qml" line="136"/>
+        <location filename="../src/ui/qml/ContactPreferences.qml" line="140"/>
         <source>Response:</source>
         <translation>Svar:</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactPreferences.qml" line="158"/>
+        <location filename="../src/ui/qml/ContactPreferences.qml" line="163"/>
         <source>Rename</source>
         <translation>Ändra namn</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactPreferences.qml" line="165"/>
+        <location filename="../src/ui/qml/ContactPreferences.qml" line="170"/>
         <source>Remove</source>
         <translation>Ta bort</translation>
     </message>
@@ -212,7 +212,7 @@
     <message>
         <location filename="../src/ui/qml/GeneralPreferences.qml" line="12"/>
         <source>Use a single window for conversations</source>
-        <translation>Använd ett enda fönster för konversationer</translation>
+        <translation>Använd bara ett fönster för konversationer</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/GeneralPreferences.qml" line="20"/>
@@ -248,7 +248,7 @@
     <message>
         <location filename="../src/ui/LanguagesModel.cpp" line="43"/>
         <source>System default</source>
-        <translation>Systemets förval</translation>
+        <translation>Systemets standardval</translation>
     </message>
 </context>
 <context>
@@ -280,12 +280,12 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../src/ui/MainWindow.cpp" line="149"/>
+        <location filename="../src/ui/MainWindow.cpp" line="191"/>
         <source>Remove %1</source>
         <translation>Ta bort %1</translation>
     </message>
     <message>
-        <location filename="../src/ui/MainWindow.cpp" line="150"/>
+        <location filename="../src/ui/MainWindow.cpp" line="192"/>
         <source>Do you want to permanently remove %1?</source>
         <translation>Vill du ta bort %1 permanent?</translation>
     </message>
@@ -299,32 +299,32 @@
         <translation>%1 är offline</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/MessageDelegate.qml" line="134"/>
+        <location filename="../src/ui/qml/MessageDelegate.qml" line="135"/>
         <source>Copy ID</source>
         <translation>Kopiera ID</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/MessageDelegate.qml" line="134"/>
+        <location filename="../src/ui/qml/MessageDelegate.qml" line="135"/>
         <source>Copy Link</source>
         <translation>Kopiera länk</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/MessageDelegate.qml" line="139"/>
+        <location filename="../src/ui/qml/MessageDelegate.qml" line="140"/>
         <source>Open with Browser</source>
         <translation>Öppna med webbläsare</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/MessageDelegate.qml" line="153"/>
+        <location filename="../src/ui/qml/MessageDelegate.qml" line="154"/>
         <source>Add as Contact</source>
         <translation>Lägg till som kontakt</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/MessageDelegate.qml" line="165"/>
+        <location filename="../src/ui/qml/MessageDelegate.qml" line="166"/>
         <source>Copy Message</source>
         <translation>Kopiera meddelande</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/MessageDelegate.qml" line="172"/>
+        <location filename="../src/ui/qml/MessageDelegate.qml" line="173"/>
         <source>Copy Selection</source>
         <translation>Kopiera markering</translation>
     </message>
@@ -332,20 +332,20 @@
 <context>
     <name>MessageDialogWrapper</name>
     <message>
-        <location filename="../src/ui/qml/MessageDialogWrapper.qml" line="7"/>
+        <location filename="../src/ui/qml/MessageDialogWrapper.qml" line="8"/>
         <source>Remove %1</source>
         <translation>Ta bort %1</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/MessageDialogWrapper.qml" line="9"/>
+        <location filename="../src/ui/qml/MessageDialogWrapper.qml" line="10"/>
         <source>Do you want to permanently remove %1?</source>
         <extracomment>%1 nickname</extracomment>
         <translation>Vill du ta bort %1 permanent?</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/MessageDialogWrapper.qml" line="10"/>
+        <location filename="../src/ui/qml/MessageDialogWrapper.qml" line="11"/>
         <source>This contact will no longer be able to message you, and will be notified about the removal. They may choose to send a new connection request.</source>
-        <translation>Den här kontakten kommer inte längre att kunna skicka meddelanden till dig, och kommer att bli informerad om borttagningen. De kan välja att skicka en ny kontaktförfrågan.</translation>
+        <translation>Den här kontakten kommer inte längre att kunna skicka meddelanden till dig, och kommer att bli informerad om borttagningen. Kontakten kan välja att skicka en ny förfrågan.</translation>
     </message>
 </context>
 <context>
@@ -398,27 +398,27 @@
 <context>
     <name>OpenBrowserDialog</name>
     <message>
-        <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="39"/>
+        <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="40"/>
         <source>&lt;b&gt;Warning!&lt;/b&gt; Opening links with your default browser will harm your security and anonymity.&lt;br&gt;&lt;br&gt;You can &lt;a href=&apos;.&apos;&gt;copy to the clipboard&lt;/a&gt; instead.</source>
-        <translation>&lt;b&gt;Varning!&lt;/b&gt; Att öppna länkar med din standardwebbläsare skadar din säkerhet och anonymitet.&lt;br&gt;&lt;br&gt;Du kan &lt;a href=&apos;.&apos;&gt;kopiera till urklipp&lt;/a&gt; istället.</translation>
+        <translation>&lt;b&gt;Varning!&lt;/b&gt; Att öppna länkar med din standard&amp;shy;webbläsare skadar din säkerhet och anonymitet.&lt;br&gt;&lt;br&gt;Du kan &lt;a href=&apos;.&apos;&gt;kopiera till Urklipp&lt;/a&gt; istället.</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="58"/>
+        <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="59"/>
         <source>Don&apos;t ask again for links from %1</source>
         <translation>Fråga inte igen för länkar från %1</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="64"/>
+        <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="65"/>
         <source>Don&apos;t ask again for any links (not recommended!)</source>
         <translation>Fråga inte igen för några länkar (rekommenderas inte!)</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="71"/>
+        <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="72"/>
         <source>Open Browser</source>
-        <translation>Öppna webbläsare</translation>
+        <translation>Öppna webbläsaren</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="83"/>
+        <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="84"/>
         <source>Cancel</source>
         <translation>Avbryt</translation>
     </message>
@@ -428,7 +428,7 @@
     <message>
         <location filename="../src/ui/qml/PreferencesDialog.qml" line="12"/>
         <source>Ricochet Preferences</source>
-        <translation>Ricochet inställningar</translation>
+        <translation>Inställningar för Ricochet</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/PreferencesDialog.qml" line="41"/>
@@ -469,7 +469,7 @@
     <message>
         <location filename="../src/ui/qml/StartupStatusPage.qml" line="18"/>
         <source>The Tor process was not started successfully. This is most likely an installation or system error.</source>
-        <translation>Tor-processen startade inte korrekt. Detta är högst sannolikt ett installations- eller systemfel.</translation>
+        <translation>Tor-processen startade inte korrekt. Det beror förmodligen på ett installations- eller systemfel.</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/StartupStatusPage.qml" line="49"/>
@@ -486,22 +486,22 @@
         <translation>Ansluter till Tor-nätverket...</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/TorBootstrapStatus.qml" line="50"/>
+        <location filename="../src/ui/qml/TorBootstrapStatus.qml" line="51"/>
         <source>Back</source>
         <translation>Tillbaka</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/TorBootstrapStatus.qml" line="57"/>
+        <location filename="../src/ui/qml/TorBootstrapStatus.qml" line="58"/>
         <source>Hide details</source>
         <translation>Göm detaljer</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/TorBootstrapStatus.qml" line="57"/>
+        <location filename="../src/ui/qml/TorBootstrapStatus.qml" line="58"/>
         <source>Show details</source>
         <translation>Visa detaljer</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/TorBootstrapStatus.qml" line="69"/>
+        <location filename="../src/ui/qml/TorBootstrapStatus.qml" line="70"/>
         <source>Done</source>
         <translation>Klar</translation>
     </message>
@@ -573,7 +573,7 @@
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="188"/>
         <source>If this computer&apos;s Internet connection is censored, you will need to obtain and use bridge relays.</source>
-        <translation>Om den här datorns Internetanslutning är censurerad måste du skaffa och använda en brygga till Tor (&quot;bridge relay&quot;).</translation>
+        <translation>Om den här datorns Internetanslutning är censurerad måste du skaffa och använda en brygga till Tor, en så kallad ”bridge relay”.</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="197"/>
@@ -594,67 +594,67 @@
 <context>
     <name>TorPreferences</name>
     <message>
-        <location filename="../src/ui/qml/TorPreferences.qml" line="24"/>
+        <location filename="../src/ui/qml/TorPreferences.qml" line="25"/>
         <source>Running:</source>
         <translation>Körs:</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/TorPreferences.qml" line="25"/>
-        <location filename="../src/ui/qml/TorPreferences.qml" line="27"/>
-        <location filename="../src/ui/qml/TorPreferences.qml" line="29"/>
+        <location filename="../src/ui/qml/TorPreferences.qml" line="26"/>
+        <location filename="../src/ui/qml/TorPreferences.qml" line="28"/>
+        <location filename="../src/ui/qml/TorPreferences.qml" line="30"/>
         <source>Yes</source>
         <translation>Ja</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/TorPreferences.qml" line="25"/>
-        <location filename="../src/ui/qml/TorPreferences.qml" line="27"/>
-        <location filename="../src/ui/qml/TorPreferences.qml" line="29"/>
+        <location filename="../src/ui/qml/TorPreferences.qml" line="26"/>
+        <location filename="../src/ui/qml/TorPreferences.qml" line="28"/>
+        <location filename="../src/ui/qml/TorPreferences.qml" line="30"/>
         <source>No</source>
         <translation>Nej</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/TorPreferences.qml" line="25"/>
+        <location filename="../src/ui/qml/TorPreferences.qml" line="26"/>
         <source>External</source>
         <translation>Extern</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/TorPreferences.qml" line="26"/>
+        <location filename="../src/ui/qml/TorPreferences.qml" line="27"/>
         <source>Control connected:</source>
         <translation>Kontroll ansluten:</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/TorPreferences.qml" line="28"/>
+        <location filename="../src/ui/qml/TorPreferences.qml" line="29"/>
         <source>Circuits established:</source>
         <translation>Kretsar etablerade:</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/TorPreferences.qml" line="30"/>
+        <location filename="../src/ui/qml/TorPreferences.qml" line="31"/>
         <source>Hidden service:</source>
         <translation>Dold tjänst:</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/TorPreferences.qml" line="31"/>
+        <location filename="../src/ui/qml/TorPreferences.qml" line="32"/>
         <source>Online</source>
         <translation>Online</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/TorPreferences.qml" line="31"/>
+        <location filename="../src/ui/qml/TorPreferences.qml" line="32"/>
         <source>Offline</source>
         <translation>Offline</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/TorPreferences.qml" line="32"/>
+        <location filename="../src/ui/qml/TorPreferences.qml" line="33"/>
         <source>Version:</source>
         <translation>Version:</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/TorPreferences.qml" line="59"/>
+        <location filename="../src/ui/qml/TorPreferences.qml" line="60"/>
         <source>Error: &lt;b&gt;%1&lt;/b&gt;</source>
         <extracomment>%1 is error message</extracomment>
         <translation>Fel: &lt;b&gt;%1&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/TorPreferences.qml" line="75"/>
+        <location filename="../src/ui/qml/TorPreferences.qml" line="76"/>
         <source>Configure</source>
         <translation>Konfigurera</translation>
     </message>

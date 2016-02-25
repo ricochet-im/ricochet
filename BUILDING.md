@@ -30,14 +30,14 @@ yum install tor # or build your own
 ```sh
 apt-get install build-essential libssl-dev pkg-config libprotobuf-dev protobuf-compiler
 apt-get install qt5-qmake qt5-default qtbase5-dev qttools5-dev-tools qtdeclarative5-dev qtmultimedia5-dev
-apt-get install qml-module-qtquick-controls qml-module-qtquick-dialogs
+apt-get install qml-module-qtquick-controls qml-module-qtquick-dialogs qml-module-qtmultimedia
 apt-get install tor # or build your own
 ```
 
 If the `qml-module-qtquick` packages aren't available, try `qtdeclarative5-controls-plugin` instead.
 
 #### Qt SDK
-The [Qt SDK](https://qt-project.org/downloads) is available for most Linux systems and includes an IDE as well as all Qt dependencies.
+The [Qt SDK](https://www.qt.io/download/) is available for most Linux systems and includes an IDE as well as all Qt dependencies.
 
 To build, simply run:
 ```sh
@@ -84,7 +84,9 @@ The `packaging/osx/release_osx.sh` script demonstrates how to build a redistribu
 
 ## Windows
 
-Building for Windows is difficult. You will need:
+Building for Windows is difficult. The process and scripts used for release builds are documented in the [buildscripts repository](https://github.com/ricochet-im/buildscripts/tree/master/mingw).
+
+For development builds, you will want:
  * Visual Studio C++ or MinGW
  * Qt 5 - preferably the [Qt SDK](https://qt-project.org/downloads)
  * OpenSSL (including libs and headers)

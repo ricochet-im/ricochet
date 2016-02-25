@@ -37,7 +37,7 @@
 #include <QHash>
 #include <QMetaType>
 #include <QVariant>
-#include <QPointer>
+#include <QSharedPointer>
 #include "utils/Settings.h"
 #include "protocol/Connection.h"
 
@@ -89,7 +89,7 @@ public:
     explicit ContactUser(UserIdentity *identity, int uniqueID, QObject *parent = 0);
     virtual ~ContactUser();
 
-    Protocol::Connection *connection() { return m_connection.data(); }
+    const QSharedPointer<Protocol::Connection> &connection() { return m_connection; }
     bool isConnected() const { return status() == Online; }
 
     OutgoingContactRequest *contactRequest() { return m_contactRequest; }
@@ -126,7 +126,7 @@ public slots:
      * and reconnectng immediately - any ongoing operations will fail and need to
      * be retried at a higher level.
      */
-    void assignConnection(Protocol::Connection *connection);
+    void assignConnection(const QSharedPointer<Protocol::Connection> &connection);
 
     void setNickname(const QString &nickname);
     void setHostname(const QString &hostname);
@@ -137,7 +137,7 @@ signals:
     void statusChanged();
     void connected();
     void disconnected();
-    void connectionChanged(Protocol::Connection *connection);
+    void connectionChanged(const QWeakPointer<Protocol::Connection> &connection);
 
     void nicknameChanged();
     void contactDeleted(ContactUser *user);
@@ -150,7 +150,7 @@ private slots:
     void onSettingsModified(const QString &key, const QJsonValue &value);
 
 private:
-    QPointer<Protocol::Connection> m_connection;
+    QSharedPointer<Protocol::Connection> m_connection;
     Protocol::OutboundConnector *m_outgoingSocket;
 
     Status m_status;

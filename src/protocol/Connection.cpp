@@ -40,8 +40,8 @@
 
 using namespace Protocol;
 
-Connection::Connection(QTcpSocket *socket, Direction direction, QObject *parent)
-    : QObject(parent)
+Connection::Connection(QTcpSocket *socket, Direction direction)
+    : QObject()
     , d(new ConnectionPrivate(this))
 {
     d->setSocket(socket, direction);
@@ -76,7 +76,9 @@ ConnectionPrivate::ConnectionPrivate(Connection *qq)
 
 Connection::~Connection()
 {
-    // When we call closeImemdiately, the list of channels will be cleared.
+    qDebug() << this << "Destroying connection";
+
+    // When we call closeImmediately, the list of channels will be cleared.
     // In the normal case, they will all use deleteLater to be freed at the
     // next event loop. Since the connection is being destructed immediately,
     // and we want to be certain that channels don't outlive it, copy the
@@ -227,10 +229,6 @@ void ConnectionPrivate::socketDisconnected()
         wasClosed = true;
         emit q->closed();
     }
-
-    // Ensure that we never leak Connection objects by scheduling deletion here.
-    // Everything should be using QPointer on a stored Connection for safety.
-    q->deleteLater();
 }
 
 void ConnectionPrivate::socketReadable()

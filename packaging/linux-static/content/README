@@ -3,9 +3,10 @@ Ricochet - https://ricochet.im/
 This is a pre-built static distribution of Ricochet intended to run on most
 Linux distributions. For source or other packages, visit the website above.
 
-You do not need to run or configure an instance of 'tor'. It is bundled with
-this software, and will be configured on the first run. There is not currently
-any option to use a system-wide instance of tor.
+You do not need to manually run or configure tor. An unmodified tor binary
+is included with this package, and Ricochet will run it automatically,
+similiar to Tor Browser. There isn't any option to use a system tor daemon,
+but Ricochet will use the tor binary from PATH if the bundled copy is removed.
 
 Once you run Ricochet, configuration will be stored in a 'config' directory
 inside this folder. To upgrade, extract the new version to the same location.

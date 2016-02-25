@@ -45,6 +45,7 @@ GridLayout {
         id: messageField
         Layout.fillWidth: true
         Layout.fillHeight: true
+        textFormat: TextEdit.PlainText
         readOnly: contactFields.readOnly
     }
 }

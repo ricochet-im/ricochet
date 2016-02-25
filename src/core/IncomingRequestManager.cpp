@@ -284,21 +284,23 @@ void IncomingContactRequest::setChannel(Protocol::ContactRequestChannel *channel
      * ours too - channels are always owned by the connection.
      */
     qDebug() << "Assigning connection to IncomingContactRequest from" << m_hostname;
-    Protocol::Connection *newConnection = channel->connection();
+    QSharedPointer<Protocol::Connection> newConnection = manager->contacts->identity->takeIncomingConnection(channel->connection());
+    if (!newConnection) {
+        BUG() << "Failed taking ownership of connection from an incoming request";
+        channel->connection()->close();
+        return;
+    }
+
     if (!newConnection->setPurpose(Protocol::Connection::Purpose::InboundRequest)) {
         qWarning() << "Setting purpose on incoming contact request connection failed; killing connection";
         newConnection->close();
         return;
     }
 
-    newConnection->setParent(this);
-    connect(newConnection, &Protocol::Connection::closed, this,
-        [this,newConnection]() {
-            if (newConnection && !newConnection->isConnected()) {
-                newConnection->deleteLater();
-                if (newConnection == connection)
-                    connection.clear();
-            }
+    connect(newConnection.data(), &Protocol::Connection::closed, this,
+        [this]() {
+            if (connection && !connection->isConnected())
+                connection.clear();
         }
     );
 
@@ -327,13 +329,8 @@ void IncomingContactRequest::accept(ContactUser *user)
         auto channel = connection->findChannel<Protocol::ContactRequestChannel>();
         if (channel) {
             // Channel will close after sending a final response
-            user->assignConnection(connection.data());
+            user->assignConnection(connection);
             channel->setResponseStatus(Response::Accepted);
-
-            if (connection->parent() != user) {
-                BUG() << "ContactUser didn't claim connection from incoming contact request";
-                connection->close();
-            }
         } else {
             connection->close();
         }

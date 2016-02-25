@@ -162,7 +162,7 @@ void ContactUser::updateOutgoingSocket()
         m_outgoingSocket->setAuthPrivateKey(identity->hiddenService()->cryptoKey());
         connect(m_outgoingSocket, &Protocol::OutboundConnector::ready, this,
             [this]() {
-                assignConnection(m_outgoingSocket->takeConnection(this));
+                assignConnection(m_outgoingSocket->takeConnection());
             }
         );
 
@@ -266,15 +266,14 @@ void ContactUser::onDisconnected()
             return;
         }
 
-        m_connection->deleteLater();
-        m_connection = 0;
+        m_connection.clear();
     } else {
         BUG() << "onDisconnected called without a connection";
     }
 
     updateStatus();
     emit disconnected();
-    emit connectionChanged(0);
+    emit connectionChanged(m_connection);
 }
 
 SettingsObject *ContactUser::settings()
@@ -361,33 +360,30 @@ void ContactUser::requestRemoved()
     }
 }
 
-void ContactUser::assignConnection(Protocol::Connection *connection)
+void ContactUser::assignConnection(const QSharedPointer<Protocol::Connection> &connection)
 {
     if (connection == m_connection) {
         BUG() << "Connection is already assigned to this ContactUser";
         return;
     }
 
-    if (qobject_cast<ContactUser*>(connection->parent()) && connection->parent() != this) {
-        BUG() << "Connection is already owned by another ContactUser";
+    if (connection->purpose() == Protocol::Connection::Purpose::KnownContact) {
+        BUG() << "Connection is already assigned to a contact";
         connection->close();
         return;
     }
 
-    connection->setParent(this);
     bool isOutbound = connection->direction() == Protocol::Connection::ClientSide;
 
     if (!connection->isConnected()) {
         BUG() << "Connection assigned to contact but isn't connected; discarding";
         connection->close();
-        connection->deleteLater();
         return;
     }
 
     if (!connection->hasAuthenticatedAs(Protocol::Connection::HiddenServiceAuth, hostname())) {
         BUG() << "Connection assigned to contact without matching authentication";
         connection->close();
-        connection->deleteLater();
         return;
     }
 
@@ -409,7 +405,6 @@ void ContactUser::assignConnection(Protocol::Connection *connection)
             qDebug() << "Contact says we're unknown; marking as rejected";
             settings()->write("rejected", true);
             connection->close();
-            connection->deleteLater();
             updateStatus();
             updateOutgoingSocket();
             return;
@@ -451,7 +446,6 @@ void ContactUser::assignConnection(Protocol::Connection *connection)
             // Old connection wins
             qDebug() << "Closing new connection with contact because the old connection won comparison";
             connection->close();
-            connection->deleteLater();
             return;
         }
     }
@@ -468,7 +462,6 @@ void ContactUser::assignConnection(Protocol::Connection *connection)
             // Outbound attempt wins
             qDebug() << "Closing inbound connection with contact because the pending outbound connection won comparison";
             connection->close();
-            connection->deleteLater();
             return;
         }
     }
@@ -476,7 +469,6 @@ void ContactUser::assignConnection(Protocol::Connection *connection)
     if (m_connection) {
         BUG() << "After resolving connection races, ContactUser still has two connections";
         connection->close();
-        connection->deleteLater();
         return;
     }
 
@@ -486,7 +478,6 @@ void ContactUser::assignConnection(Protocol::Connection *connection)
         if (!connection->setPurpose(Protocol::Connection::Purpose::OutboundRequest)) {
             qWarning() << "BUG: Failed setting connection purpose for request";
             connection->close();
-            connection->deleteLater();
             return;
         }
     } else {
@@ -498,7 +489,6 @@ void ContactUser::assignConnection(Protocol::Connection *connection)
         if (!connection->setPurpose(Protocol::Connection::Purpose::KnownContact)) {
             qWarning() << "BUG: Failed setting connection purpose";
             connection->close();
-            connection->deleteLater();
             return;
         }
     }
@@ -524,13 +514,7 @@ void ContactUser::clearConnection()
         return;
 
     disconnect(m_connection.data(), 0, this, 0);
-    if (m_connection->isConnected()) {
-        connect(m_connection.data(), &Protocol::Connection::closed, m_connection.data(), &QObject::deleteLater);
-        m_connection->close();
-    } else {
-        m_connection->deleteLater();
-    }
-
-    m_connection = 0;
+    m_connection->close();
+    m_connection.clear();
 }
 

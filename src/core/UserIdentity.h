@@ -36,6 +36,8 @@
 #include "ContactsManager.h"
 #include <QObject>
 #include <QMetaType>
+#include <QVector>
+#include <QSharedPointer>
 
 namespace Tor
 {
@@ -95,6 +97,10 @@ public:
 
     SettingsObject *settings();
 
+    /* Take ownership of an inbound connection. Returns the shared pointer to
+     * the connection, and releases the reference held by UserIdentity. */
+    QSharedPointer<Protocol::Connection> takeIncomingConnection(Protocol::Connection *connection);
+
 signals:
     void statusChanged();
     void contactIDChanged(); // only possible during creation
@@ -111,6 +117,7 @@ private:
     SettingsObject *m_settings;
     Tor::HiddenService *m_hiddenService;
     QTcpServer *m_incomingServer;
+    QVector<QSharedPointer<Protocol::Connection>> m_incomingConnections;
 
     static UserIdentity *createIdentity(int uniqueID, const QString &dataDirectory = QString());
 

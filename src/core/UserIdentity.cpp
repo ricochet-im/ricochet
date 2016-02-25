@@ -176,27 +176,31 @@ void UserIdentity::onIncomingConnection()
         socket->setProperty("localHostname", m_hiddenService->hostname());
 
         qDebug() << "Accepted new incoming connection";
-        Connection *conn = new Connection(socket, Connection::ServerSide, this);
+        QSharedPointer<Connection> conn(new Connection(socket, Connection::ServerSide), &QObject::deleteLater);
         Q_ASSERT(socket->parent());
 
-        // Delete connection when closed, if it's still owned by this object
-        connect(conn, &Connection::closed, this,
-            [this,conn]() {
-                if (conn->parent() == this) {
+        m_incomingConnections.append(conn);
+        Connection *connPtr = conn.data();
+
+        /* When the connection is closed, if it's not claimed, take it out of the
+         * incoming connection list and destroy the reference
+         */
+        connect(connPtr, &Connection::closed, this,
+            [this,connPtr]() {
+                QSharedPointer<Connection> conn(takeIncomingConnection(connPtr));
+                if (conn)
                     qDebug() << "Deleting closed incoming connection that was never claimed by an owner";
-                    conn->deleteLater();
-                }
             }
         );
 
-        connect(conn, &Connection::authenticated, this,
-            [this,conn](Connection::AuthenticationType type) {
+        connect(connPtr, &Connection::authenticated, this,
+            [this,connPtr](Connection::AuthenticationType type) {
                 if (type == Connection::HiddenServiceAuth)
-                    handleIncomingAuthedConnection(conn);
+                    handleIncomingAuthedConnection(connPtr);
             }
         );
 
-        emit incomingConnection(conn);
+        emit incomingConnection(connPtr);
     }
 }
 
@@ -219,12 +223,25 @@ void UserIdentity::handleIncomingAuthedConnection(Connection *conn)
         return;
     }
 
-    qDebug() << "Incoming connection authenticated as contact" << user->uniqueID << "with hostname" << clientName;
-    user->assignConnection(conn);
-
-    if (conn->parent() != user) {
-        BUG() << "Connection wasn't claimed after authentication";
-        conn->close();
+    QSharedPointer<Connection> connPtr(takeIncomingConnection(conn));
+    if (!connPtr) {
+        BUG() << "Called to handle incoming authed connection, but the connection is already out of the incoming list";
+        return;
     }
+
+    qDebug() << "Incoming connection authenticated as contact" << user->uniqueID << "with hostname" << clientName;
+    user->assignConnection(connPtr);
 }
 
+QSharedPointer<Connection> UserIdentity::takeIncomingConnection(Connection *match)
+{
+    for (auto it = m_incomingConnections.begin(); it != m_incomingConnections.end(); it++) {
+        if (it->data() == match) {
+            QSharedPointer<Connection> re = *it;
+            m_incomingConnections.erase(it);
+            return re;
+        }
+    }
+
+    return QSharedPointer<Connection>();
+}

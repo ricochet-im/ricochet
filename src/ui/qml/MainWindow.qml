@@ -1,4 +1,4 @@
-import QtQuick 2.0
+import QtQuick 2.2
 import QtQuick.Window 2.0
 import QtQuick.Controls 1.0
 import QtQuick.Layouts 1.0
@@ -154,6 +154,11 @@ ApplicationWindow {
             if (combinedChatView.currentPage !== null)
                 combinedChatView.currentPage.forceActiveFocus()
         }
+    }
+
+    Action {
+        shortcut: StandardKey.Close
+        onTriggered: window.close()
     }
 }
 

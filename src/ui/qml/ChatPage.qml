@@ -45,6 +45,7 @@ FocusScope {
 
         Label {
             text: contact.nickname
+            textFormat: Text.PlainText
             font.pointSize: styleHelper.pointSize
         }
 
@@ -110,6 +111,7 @@ FocusScope {
                 Layout.maximumHeight: (styleHelper.textHeight * 4) + (2 * edit.textMargin)
                 textMargin: 3
                 wrapMode: TextEdit.Wrap
+                textFormat: TextEdit.PlainText
                 font.pointSize: styleHelper.pointSize
                 focus: true
 

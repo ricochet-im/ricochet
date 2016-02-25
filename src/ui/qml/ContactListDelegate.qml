@@ -34,6 +34,7 @@ Rectangle {
             verticalCenter: parent.verticalCenter
         }
         text: model.name
+        textFormat: Text.PlainText
         elide: Text.ElideRight
         font.pointSize: styleHelper.pointSize
         color: "black"

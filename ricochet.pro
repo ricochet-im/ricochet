@@ -38,7 +38,7 @@ TEMPLATE = app
 QT += core gui network quick widgets multimedia
 CONFIG += c++11
 
-VERSION = 1.1.0
+VERSION = 1.1.2
 
 # Use CONFIG+=no-hardened to disable compiler hardening options
 !CONFIG(no-hardened) {
@@ -250,7 +250,10 @@ TRANSLATIONS += \
     translation/ricochet_tr.ts \
     translation/ricochet_nl_NL.ts \
     translation/ricochet_fil_PH.ts \
-    translation/ricochet_sv.ts
+    translation/ricochet_sv.ts \
+    translation/ricochet_he.ts \
+    translation/ricochet_sl.ts \
+    translation/ricochet_zh.ts
 
 isEmpty(QMAKE_LRELEASE) {
     win32:QMAKE_LRELEASE = $$[QT_INSTALL_BINS]\lrelease.exe

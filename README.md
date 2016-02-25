@@ -1,20 +1,20 @@
-### Anonymous metadata-resistant instant messaging that just works
-Ricochet is an experiment with a different kind of instant messaging that **doesn't trust anyone** with your identity, your contact list, or your communications.
+### Anonymous metadata-resistant instant messaging that just works.
+Ricochet is an experimental kind of instant messaging that **doesn't trust anyone** with your identity, your contact list, or your communications.
 
 * You can chat without exposing your identity (or IP address) to *anyone*
 * Nobody can discover who your contacts are or when you talk (*metadata-free!*)
-* There are no servers or operators to compromise that could access your information
-* It's cross-platform and easy for non-technical users
+* There are no servers or operators that could be compromised, exposing your information.
+* It's cross-platform and easy for non-technical users.
 
 ### How it works
-Ricochet is a peer-to-peer instant messaging system built on Tor [hidden services](https://www.torproject.org/docs/hidden-services.html.en). Your login is your hidden service address, and contacts connect to you (not an intermediate server) through Tor. The rendezvous system makes it extremely hard for anyone to learn your identity from your address.
+Ricochet is a peer-to-peer instant messaging system built on the Tor Network [hidden services](https://www.torproject.org/docs/hidden-services.html.en). Your login is your hidden service address, and contacts connect to you (not an intermediate server) through Tor. The rendezvous system makes it extremely hard for anyone to learn your identity from your address.
 
 Ricochet is not affiliated with or endorsed by The Tor Project.
 
 For more information, you can [read about Tor](https://www.torproject.org/about/overview.html.en) and [learn about Ricochet's design](https://github.com/ricochet-im/ricochet/blob/master/doc/design.md) or [protocol](https://github.com/ricochet-im/ricochet/blob/master/doc/protocol.md) (or the [old protocol](https://github.com/ricochet-im/ricochet/blob/master/doc/deprecated/protocol-1.0.txt)). Everything is [open-source](https://github.com/ricochet-im/ricochet/blob/master/LICENSE) and open to contribution.
 
 ### Experimental
-This software is an experiment. It hasn't been audited or formally reviewed by anyone. Security and anonymity are difficult topics, and you should carefully evaluate your risks and exposure with any software. *Do not rely on Ricochet for your safety* unless you have more trust in my work than it deserves. That said, I believe it does more to try to protect your privacy than any similar software.
+This software is an experiment. It hasn't been audited or formally reviewed by anyone. Security and anonymity are difficult topics, and you should carefully evaluate your risks and exposure with any software. *Do not rely on Ricochet for your safety* unless you have more trust in my work than it deserves. That said, I believe it does more to try to protect your privacy than any similar software, and is the best chance you have of witholding your personal information.
 
 ### Downloads
 
