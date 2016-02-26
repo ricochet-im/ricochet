@@ -33,7 +33,7 @@
     <message>
         <location filename="../src/ui/qml/ContactActions.qml" line="40"/>
         <source>Open Window</source>
-        <translation>Åben Vindue</translation>
+        <translation>Åbn Vindue</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactActions.qml" line="44"/>
@@ -76,7 +76,7 @@
     <message>
         <location filename="../src/ui/qml/ContactIDField.qml" line="92"/>
         <source>Copy</source>
-        <translation>Kopier</translation>
+        <translation>Kopiér</translation>
     </message>
 </context>
 <context>
@@ -104,7 +104,7 @@
     <message>
         <location filename="../src/ui/qml/ContactList.qml" line="80"/>
         <source>Outdated</source>
-        <translation>Uddateret</translation>
+        <translation>Forældet</translation>
     </message>
 </context>
 <context>
@@ -132,7 +132,7 @@
     <message>
         <location filename="../src/ui/qml/ContactPreferences.qml" line="127"/>
         <source>Delivered</source>
-        <translation>Modtaget</translation>
+        <translation>Afleveret</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactPreferences.qml" line="128"/>
@@ -158,7 +158,7 @@
     <message>
         <location filename="../src/ui/qml/ContactPreferences.qml" line="140"/>
         <source>Response:</source>
-        <translation>Tilbagesvar:</translation>
+        <translation>Svar:</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactPreferences.qml" line="163"/>
@@ -212,12 +212,12 @@
     <message>
         <location filename="../src/ui/qml/GeneralPreferences.qml" line="12"/>
         <source>Use a single window for conversations</source>
-        <translation>Brug et samlet vindue til samtaler</translation>
+        <translation>Hold samtaler i ét vindue</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/GeneralPreferences.qml" line="20"/>
         <source>Open links in default browser without prompting</source>
-        <translation>Åben links i browser uden at spørge</translation>
+        <translation>Åbn links i browser uden at spørge</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/GeneralPreferences.qml" line="28"/>
@@ -311,12 +311,12 @@
     <message>
         <location filename="../src/ui/qml/MessageDelegate.qml" line="140"/>
         <source>Open with Browser</source>
-        <translation>Åben med Browser</translation>
+        <translation>Åbn i browser</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/MessageDelegate.qml" line="154"/>
         <source>Add as Contact</source>
-        <translation>Tilføj som Kontaktperson</translation>
+        <translation>Tilføj som kontaktperson</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/MessageDelegate.qml" line="166"/>
@@ -345,7 +345,7 @@
     <message>
         <location filename="../src/ui/qml/MessageDialogWrapper.qml" line="11"/>
         <source>This contact will no longer be able to message you, and will be notified about the removal. They may choose to send a new connection request.</source>
-        <translation>Denne kontaktperson vil ikke længere være i stand til at sende dig beskeder, og vil blive notificeret om fjernelsen. Kontaktpersonen kan vælge at sende dig en ny anmodning.</translation>
+        <translation>Denne kontaktperson vil ikke længere være i stand til at sende dig beskeder, og vil blive notificeret om fjernelsen. Kontaktpersonen kan vælge at sende dig en ny kontaktanmodning.</translation>
     </message>
 </context>
 <context>
@@ -363,12 +363,12 @@
     <message>
         <location filename="../src/ui/qml/NetworkSetupWizard.qml" line="124"/>
         <source>This computer&apos;s Internet connection is censored, filtered, or proxied. I need to configure network settings.</source>
-        <translation>Denne computers internetadgang er censureret, filtreret eller proxied. Jeg har brug for at konfigurere netværksindstillinger.</translation>
+        <translation>Denne computers internetadgang er censureret, filtreret eller bag en proxy. Jeg har brug for at konfigurere netværksindstillinger.</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/NetworkSetupWizard.qml" line="131"/>
         <source>Configure</source>
-        <translation>Konfigurer</translation>
+        <translation>Konfigurér</translation>
     </message>
 </context>
 <context>
@@ -376,7 +376,7 @@
     <message>
         <location filename="../src/ui/qml/OfflineStateItem.qml" line="107"/>
         <source>Configure</source>
-        <translation>Konfigurer</translation>
+        <translation>Konfigurér</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/OfflineStateItem.qml" line="115"/>
@@ -386,13 +386,13 @@
     <message>
         <location filename="../src/ui/qml/OfflineStateItem.qml" line="143"/>
         <source>Connection failed</source>
-        <translation>Forbindelse mislykkedes</translation>
+        <translation>Forbindelsen mislykkedes</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/OfflineStateItem.qml" line="169"/>
         <source>Connecting…</source>
         <extracomment>\u2026 is ellipsis</extracomment>
-        <translation>Forbinder...</translation>
+        <translation>Forbinder…</translation>
     </message>
 </context>
 <context>
@@ -400,7 +400,7 @@
     <message>
         <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="40"/>
         <source>&lt;b&gt;Warning!&lt;/b&gt; Opening links with your default browser will harm your security and anonymity.&lt;br&gt;&lt;br&gt;You can &lt;a href=&apos;.&apos;&gt;copy to the clipboard&lt;/a&gt; instead.</source>
-        <translation>&lt;b&gt;Advarsel!&lt;/b&gt; Ved at åbne links med din browser vil du forøge din sikkerhed og anonymitet.&lt;br&gt;&lt;br&gt;Du kan &lt;a href=&apos;.&apos;&gt;kopiere adressen til clipboardet&lt;/a&gt; i stedet.</translation>
+        <translation>&lt;b&gt;Advarsel!&lt;/b&gt; Ved at åbne links med din browser kan du forringe din sikkerhed og anonymitet.&lt;br&gt;&lt;br&gt;Du kan &lt;a href=&apos;.&apos;&gt;kopiere adressen til clipboardet&lt;/a&gt; i stedet.</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="59"/>
@@ -415,12 +415,12 @@
     <message>
         <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="72"/>
         <source>Open Browser</source>
-        <translation>Åben Browser</translation>
+        <translation>Åbn Browser</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="84"/>
         <source>Cancel</source>
-        <translation>Annuller</translation>
+        <translation>Annullér</translation>
     </message>
 </context>
 <context>
@@ -483,7 +483,7 @@
         <location filename="../src/ui/qml/TorBootstrapStatus.qml" line="17"/>
         <source>Connecting to the Tor network…</source>
         <extracomment>\u2026 is ellipsis</extracomment>
-        <translation>Forbinder til Tor-netværket...</translation>
+        <translation>Forbinder til Tor-netværket…</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorBootstrapStatus.qml" line="51"/>
@@ -578,7 +578,7 @@
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="197"/>
         <source>Enter one or more bridge relays (one per line):</source>
-        <translation>Indtast et eller flere bridge relæer (et per linje):</translation>
+        <translation>Indsæt én eller flere bridgerelæer (én per linje):</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="212"/>
@@ -672,13 +672,13 @@
         <location filename="../src/ui/qml/TorStateWidget.qml" line="22"/>
         <source>Connecting…</source>
         <extracomment>\u2026 is ellipsis</extracomment>
-        <translation>Forbinder...</translation>
+        <translation>Forbinder…</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorStateWidget.qml" line="25"/>
         <source>Connecting… (%1%)</source>
         <extracomment>%1 is progress percentage, e.g. 100</extracomment>
-        <translation>Forbinder... (%1)</translation>
+        <translation>Forbinder… (%1)</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorStateWidget.qml" line="32"/>
