@@ -31,3 +31,4 @@
 * HD Moore
 * The Grugq
 * Lawrence Eastland - "R" icon
+* Designerz Base (http://finest.graphics) - unread message icon
