@@ -40,6 +40,7 @@ ColumnLayout {
             uiSettings.write("playAudioNotification", checked)
         }
     }
+
     RowLayout {
         Item { width: 16 }
 

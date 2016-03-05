@@ -33,6 +33,7 @@
 #ifndef TRAYICON_H
 #define TRAYICON_H
 #include <QSystemTrayIcon>
+#include <QTimer>
 #include <QMenu>
 
 class TrayIcon : public QSystemTrayIcon
@@ -43,14 +44,16 @@ public:
     TrayIcon(const QIcon& std_icon, const QIcon& unread_icon);
     ~TrayIcon();
 
-    // changes icon to m_std_icon
-    void resetIcon();
+    // changes icon
+    inline void stdIcon();
+    inline void unreadIcon();
 
-    // changes icon to m_unread_icon
+    // changes state of tray icon
     void setUnread(bool unread);
 
 public slots:
     void onActivated(QSystemTrayIcon::ActivationReason);
+    void blinkIcon();
 
 signals:
     void toggleWindow();
@@ -61,6 +64,9 @@ signals:
 private:
     QIcon m_std_icon;
     QIcon m_unread_icon;
+    bool m_blink_state;
+
+    QTimer m_blink_timer;
 
     QMenu* m_context_menu;
 };

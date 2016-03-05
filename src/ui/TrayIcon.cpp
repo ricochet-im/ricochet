@@ -36,10 +36,15 @@
 
 TrayIcon::TrayIcon(const QIcon& std_icon, const QIcon& unread_icon) :
         m_std_icon(std_icon),
-        m_unread_icon(unread_icon)
+        m_unread_icon(unread_icon),
+        m_blink_state(false)
 {
     connect(this, &QSystemTrayIcon::activated, this, &TrayIcon::onActivated);
     setIcon(m_std_icon);
+
+    m_blink_timer.setInterval(750);
+    m_blink_timer.setSingleShot(false);
+    connect(&m_blink_timer, SIGNAL(timeout()), this, SLOT(blinkIcon()));
 
     m_context_menu = new QMenu();
     m_context_menu->addAction(tr("Preferences"), this, SIGNAL(preferences()));
@@ -57,21 +62,39 @@ TrayIcon::~TrayIcon()
     delete m_context_menu;
 }
 
-void TrayIcon::resetIcon()
+void TrayIcon::stdIcon()
 {
     setIcon(m_std_icon);
 }
 
+void TrayIcon::unreadIcon()
+{
+    setIcon(m_unread_icon);
+}
+
 void TrayIcon::setUnread(bool unread)
 {
-    if (unread)
-        setIcon(m_unread_icon);
-    else
-        resetIcon();
+    if (unread) {
+        unreadIcon();
+        m_blink_timer.start();
+    } else {
+        m_blink_timer.stop();
+        stdIcon();
+    }
 }
 
 void TrayIcon::onActivated(QSystemTrayIcon::ActivationReason reason)
 {
     if (reason == QSystemTrayIcon::Trigger)
         emit toggleWindow();
+}
+
+void TrayIcon::blinkIcon()
+{
+    if (m_blink_state)
+        stdIcon();
+    else
+        unreadIcon();
+
+    m_blink_state = !m_blink_state;
 }
