@@ -1,2 +1,2 @@
 TEMPLATE = subdirs
-SUBDIRS += cryptokey
+SUBDIRS += tst_cryptokey

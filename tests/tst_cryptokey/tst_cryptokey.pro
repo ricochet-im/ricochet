@@ -4,7 +4,7 @@ SOURCES += tst_cryptokey.cpp \
     $${SRC}/utils/CryptoKey.cpp \
     $${SRC}/utils/SecureRNG.cpp
 
-unix:!macx {
+unix {
     !isEmpty(OPENSSLDIR) {
         INCLUDEPATH += $${OPENSSLDIR}/include
         LIBS += -L$${OPENSSLDIR}/lib -lcrypto

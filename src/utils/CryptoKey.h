@@ -62,7 +62,8 @@ public:
     bool isPrivate() const;
 
     QByteArray publicKeyDigest() const;
-    QByteArray encodedPublicKey(KeyFormat format = PEM) const;
+    QByteArray encodedPublicKey(KeyFormat format) const;
+    QByteArray encodedPrivateKey(KeyFormat format) const;
     QString torServiceID() const;
     int bits() const;
 

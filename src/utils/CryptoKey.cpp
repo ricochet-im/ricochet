@@ -83,12 +83,11 @@ bool CryptoKey::loadFromData(const QByteArray &data, KeyType type, KeyFormat for
         BIO_free(b);
     } else if (format == DER) {
         const uchar *dp = reinterpret_cast<const uchar*>(data.constData());
-        if (type == PrivateKey) {
-            BUG() << "Parsing DER-encoded private keys is not implemented";
-            return false;
-        }
 
-        key = d2i_RSAPublicKey(NULL, &dp, data.size());
+        if (type == PrivateKey)
+            key = d2i_RSAPrivateKey(NULL, &dp, data.size());
+        else
+            key = d2i_RSAPublicKey(NULL, &dp, data.size());
     } else {
         Q_UNREACHABLE();
     }
@@ -177,6 +176,48 @@ QByteArray CryptoKey::encodedPublicKey(KeyFormat format) const
         int len = i2d_RSAPublicKey(d->key, &buf);
         if (len <= 0 || !buf) {
             BUG() << "Failed to encode public key in DER format";
+            return QByteArray();
+        }
+
+        QByteArray re((const char*)buf, len);
+        OPENSSL_free(buf);
+        return re;
+    } else {
+        Q_UNREACHABLE();
+    }
+
+    return QByteArray();
+}
+
+QByteArray CryptoKey::encodedPrivateKey(KeyFormat format) const
+{
+    if (!isLoaded() || !isPrivate())
+        return QByteArray();
+
+    if (format == PEM) {
+        BIO *b = BIO_new(BIO_s_mem());
+
+        if (!PEM_write_bio_RSAPrivateKey(b, d->key, NULL, NULL, 0, NULL, NULL)) {
+            BUG() << "Failed to encode private key in PEM format";
+            BIO_free(b);
+            return QByteArray();
+        }
+
+        BUF_MEM *buf;
+        BIO_get_mem_ptr(b, &buf);
+
+        /* Close BIO, but don't free buf. */
+        (void)BIO_set_close(b, BIO_NOCLOSE);
+        BIO_free(b);
+
+        QByteArray re((const char *)buf->data, (int)buf->length);
+        BUF_MEM_free(buf);
+        return re;
+    } else if (format == DER) {
+        uchar *buf = NULL;
+        int len = i2d_RSAPrivateKey(d->key, &buf);
+        if (len <= 0 || !buf) {
+            BUG() << "Failed to encode private key in DER format";
             return QByteArray();
         }
 
