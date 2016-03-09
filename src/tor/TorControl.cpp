@@ -485,9 +485,9 @@ void TorControlPrivate::publishServices()
     for (QList<HiddenService*>::Iterator it = services.begin(); it != services.end(); ++it)
     {
         HiddenService *service = *it;
-        QDir dir(service->dataPath);
+        QDir dir(service->dataPath());
 
-        qDebug() << "torctrl: Configuring hidden service at" << service->dataPath;
+        qDebug() << "torctrl: Configuring hidden service at" << service->dataPath();
 
         torConfig.append(qMakePair(QByteArray("HiddenServiceDir"), dir.absolutePath().toLocal8Bit()));
 
