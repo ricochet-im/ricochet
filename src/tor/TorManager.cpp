@@ -148,7 +148,39 @@ void TorManager::start()
     }
 
     SettingsObject settings(QStringLiteral("tor"));
-    if (settings.read("controlPort").isUndefined()) {
+
+    // If a control port is defined by config or environment, skip launching tor
+    if (!settings.read("controlPort").isUndefined() ||
+        !qEnvironmentVariableIsEmpty("TOR_CONTROL_PORT"))
+    {
+        QHostAddress address(settings.read("controlAddress").toString());
+        quint16 port = (quint16)settings.read("controlPort").toInt();
+        QByteArray password = settings.read("controlPassword").toString().toLatin1();
+
+        if (!qEnvironmentVariableIsEmpty("TOR_CONTROL_HOST"))
+            address = QHostAddress(QString::fromLatin1(qgetenv("TOR_CONTROL_HOST")));
+
+        if (!qEnvironmentVariableIsEmpty("TOR_CONTROL_PORT")) {
+            bool ok = false;
+            port = qgetenv("TOR_CONTROL_PORT").toUShort(&ok);
+            if (!ok)
+                port = 0;
+        }
+
+        if (!qEnvironmentVariableIsEmpty("TOR_CONTROL_PASSWD"))
+            password = qgetenv("TOR_CONTROL_PASSWD");
+
+        if (!port) {
+            d->setError(QStringLiteral("Invalid control port settings from environment or configuration"));
+            return;
+        }
+
+        if (address.isNull())
+            address = QHostAddress::LocalHost;
+
+        d->control->setAuthPassword(password);
+        d->control->connect(address, port);
+    } else {
         // Launch a bundled Tor instance
         QString executable = d->torExecutablePath();
         if (executable.isEmpty()) {
@@ -185,14 +217,6 @@ void TorManager::start()
         d->process->setDataDir(d->dataDir);
         d->process->setDefaultTorrc(defaultTorrc);
         d->process->start();
-    } else {
-        QHostAddress address(settings.read("controlAddress").toString());
-        quint16 port = (quint16)settings.read("controlPort").toInt();
-        if (address.isNull())
-            address = QHostAddress::LocalHost;
-
-        d->control->setAuthPassword(settings.read("controlPassword").toString().toLatin1());
-        d->control->connect(address, port);
     }
 }
 
