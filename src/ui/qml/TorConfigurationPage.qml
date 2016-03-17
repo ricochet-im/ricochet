@@ -60,7 +60,8 @@ Column {
         var command = torControl.setConfiguration(conf)
         command.finished.connect(function() {
             if (command.successful) {
-                torControl.saveConfiguration()
+                if (torControl.hasOwnership)
+                    torControl.saveConfiguration()
                 window.openBootstrap()
             } else
                 console.log("SETCONF error:", command.errorMessage)
