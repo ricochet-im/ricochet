@@ -15,12 +15,13 @@ HARDENED_STACK_PROTECTOR_FLAGS = -fstack-protector --param=ssp-buffer-size=4
 
 HARDENED_MINGW_64ASLR_FLAGS = -Wl,--dynamicbase -Wl,--high-entropy-va
 
+
 # Run tests and apply options where possible
 CONFIG(hardened) {
     # mingw is always PIC, and complains about the flag
     !mingw:HARDEN_FLAGS = -fPIC
 
-    qtCompileTest(sanitize):HARDEN_FLAGS += $$HARDENED_SANITIZE_FLAGS
+    CONFIG(debug,debug|release): qtCompileTest(sanitize):HARDEN_FLAGS += $$HARDENED_SANITIZE_FLAGS
     qtCompileTest(sanitize-ubsan):HARDEN_FLAGS += $$HARDENED_SANITIZE_UBSAN_FLAGS
     qtCompileTest(sanitize-ubsan-more):HARDEN_FLAGS += $$HARDENED_SANITIZE_UBSAN_MORE_FLAGS
     qtCompileTest(vtable-verify):HARDEN_FLAGS += $$HARDENED_VTABLE_VERIFY_FLAGS
