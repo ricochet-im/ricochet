@@ -74,6 +74,7 @@ Item {
 
         Button {
             text: qsTr("Configure")
+            visible: torControl.hasOwnership
             onClicked: {
                 var object = createDialog("NetworkSetupWizard.qml")
                 object.visible = true

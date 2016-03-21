@@ -72,6 +72,7 @@ public:
     TorControl::Status status;
     TorControl::TorStatus torStatus;
     QVariantMap bootstrapStatus;
+    bool hasOwnership;
 
     TorControlPrivate(TorControl *parent);
 
@@ -104,7 +105,8 @@ TorControl::TorControl(QObject *parent)
 
 TorControlPrivate::TorControlPrivate(TorControl *parent)
     : QObject(parent), q(parent), controlPort(0), socksPort(0),
-      status(TorControl::NotConnected), torStatus(TorControl::TorUnknown)
+      status(TorControl::NotConnected), torStatus(TorControl::TorUnknown),
+      hasOwnership(false)
 {
     socket = new TorControlSocket(this);
     QObject::connect(socket, SIGNAL(connected()), this, SLOT(socketConnected()));
@@ -272,7 +274,8 @@ void TorControlPrivate::authenticateReply()
 
     // XXX Fix old configurations that would store unwanted options in torrc.
     // This can be removed some suitable amount of time after 1.0.4.
-    q->saveConfiguration();
+    if (hasOwnership)
+        q->saveConfiguration();
 }
 
 void TorControlPrivate::socketConnected()
@@ -508,11 +511,21 @@ void TorControlPrivate::publishServices()
 
 void TorControl::shutdown()
 {
+    if (!hasOwnership()) {
+        qWarning() << "torctrl: Ignoring shutdown command for a tor instance I don't own";
+        return;
+    }
+
     d->socket->sendCommand("SIGNAL SHUTDOWN\r\n");
 }
 
 void TorControl::shutdownSync()
 {
+    if (!hasOwnership()) {
+        qWarning() << "torctrl: Ignoring shutdown command for a tor instance I don't own";
+        return;
+    }
+
     shutdown();
     while (d->socket->bytesToWrite())
     {
@@ -670,14 +683,27 @@ private:
 
 PendingOperation *TorControl::saveConfiguration()
 {
+    if (!hasOwnership()) {
+        qWarning() << "torctrl: Ignoring save configuration command for a tor instance I don't own";
+        return 0;
+    }
+
     SaveConfigOperation *operation = new SaveConfigOperation(this);
     QObject::connect(operation, &PendingOperation::finished, operation, &QObject::deleteLater);
     operation->start(d->socket);
+
+    QQmlEngine::setObjectOwnership(operation, QQmlEngine::CppOwnership);
     return operation;
+}
+
+bool TorControl::hasOwnership() const
+{
+    return d->hasOwnership;
 }
 
 void TorControl::takeOwnership()
 {
+    d->hasOwnership = true;
     d->socket->sendCommand("TAKEOWNERSHIP\r\n");
 
     // Reset PID-based polling
