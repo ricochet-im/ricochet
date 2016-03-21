@@ -41,6 +41,7 @@ private slots:
     void load();
     void publicKeyDigest();
     void encodedPublicKey();
+    void encodedPrivateKey();
     void torServiceID();
     void sign();
 };
@@ -137,17 +138,39 @@ void TestCryptoKey::encodedPublicKey()
 
     CryptoKey key2;
     QVERIFY(key2.loadFromData(pemEncoded, CryptoKey::PublicKey));
-    QCOMPARE(key.encodedPublicKey(), key2.encodedPublicKey());
+    QCOMPARE(key.encodedPublicKey(CryptoKey::PEM), key2.encodedPublicKey(CryptoKey::PEM));
     QCOMPARE(key.publicKeyDigest(), key2.publicKeyDigest());
 
     CryptoKey key3;
     QVERIFY(key3.loadFromData(derEncoded, CryptoKey::PublicKey, CryptoKey::DER));
-    QCOMPARE(key.encodedPublicKey(), key3.encodedPublicKey());
+    QCOMPARE(key.encodedPublicKey(CryptoKey::DER), key3.encodedPublicKey(CryptoKey::DER));
     QCOMPARE(key.publicKeyDigest(), key3.publicKeyDigest());
 
     // Doesn't contain a private key
     CryptoKey key4;
     QVERIFY(!key4.loadFromData(pemEncoded, CryptoKey::PrivateKey));
+}
+
+void TestCryptoKey::encodedPrivateKey()
+{
+    CryptoKey key;
+    QVERIFY(key.loadFromData(alice, CryptoKey::PrivateKey));
+
+    QByteArray pemEncoded = key.encodedPrivateKey(CryptoKey::PEM);
+    QVERIFY(pemEncoded.contains("BEGIN RSA PRIVATE KEY"));
+
+    QByteArray derEncoded = key.encodedPrivateKey(CryptoKey::DER);
+    QVERIFY(!derEncoded.isEmpty());
+
+    CryptoKey key2;
+    QVERIFY(key2.loadFromData(pemEncoded, CryptoKey::PrivateKey));
+    QCOMPARE(key.encodedPrivateKey(CryptoKey::PEM), key2.encodedPrivateKey(CryptoKey::PEM));
+    QCOMPARE(key.publicKeyDigest(), key2.publicKeyDigest());
+
+    CryptoKey key3;
+    QVERIFY(key3.loadFromData(derEncoded, CryptoKey::PrivateKey, CryptoKey::DER));
+    QCOMPARE(key.encodedPrivateKey(CryptoKey::DER), key3.encodedPrivateKey(CryptoKey::DER));
+    QCOMPARE(key.publicKeyDigest(), key3.publicKeyDigest());
 }
 
 void TestCryptoKey::torServiceID()

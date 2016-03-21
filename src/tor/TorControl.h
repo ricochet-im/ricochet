@@ -84,6 +84,7 @@ public:
     Status status() const;
     TorStatus torStatus() const;
     QString torVersion() const;
+    bool torVersionAsNewAs(const QString &version) const;
     QString errorMessage() const;
 
     bool hasConnectivity() const;

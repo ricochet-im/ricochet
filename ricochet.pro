@@ -144,6 +144,7 @@ SOURCES += src/main.cpp \
     src/tor/ProtocolInfoCommand.cpp \
     src/tor/AuthenticateCommand.cpp \
     src/tor/SetConfCommand.cpp \
+    src/tor/AddOnionCommand.cpp \
     src/utils/StringUtil.cpp \
     src/core/ContactsManager.cpp \
     src/core/ContactUser.cpp \
@@ -173,6 +174,7 @@ HEADERS += src/ui/MainWindow.h \
     src/tor/ProtocolInfoCommand.h \
     src/tor/AuthenticateCommand.h \
     src/tor/SetConfCommand.h \
+    src/tor/AddOnionCommand.h \
     src/utils/StringUtil.h \
     src/core/ContactsManager.h \
     src/core/ContactUser.h \

@@ -122,6 +122,7 @@ private:
     static UserIdentity *createIdentity(int uniqueID, const QString &dataDirectory = QString());
 
     void handleIncomingAuthedConnection(Protocol::Connection *connection);
+    void setupService();
 };
 
 Q_DECLARE_METATYPE(UserIdentity*)

@@ -54,37 +54,7 @@ UserIdentity::UserIdentity(int id, QObject *parent)
     m_settings = new SettingsObject(QStringLiteral("identity"), this);
     connect(m_settings, &SettingsObject::modified, this, &UserIdentity::onSettingsModified);
 
-    QString dir = m_settings->read("dataDirectory", QString::fromLatin1("data-%1").arg(uniqueID)).toString();
-
-    m_hiddenService = new Tor::HiddenService(dir, this);
-    connect(m_hiddenService, SIGNAL(statusChanged(int,int)), SLOT(onStatusChanged(int,int)));
-
-    // Generally, these are not used, and we bind to localhost and port 0
-    // for an automatic (and portable) selection.
-    QHostAddress address(m_settings->read("localListenAddress").toString());
-    if (address.isNull())
-        address = QHostAddress::LocalHost;
-    quint16 port = (quint16)m_settings->read("localListenPort").toInt();
-
-    if (!m_settings->read("initializing").toBool() && m_hiddenService->status() == Tor::HiddenService::NotCreated)
-    {
-        qWarning("Hidden service data for identity %d in %s does not exist", uniqueID, qPrintable(dir));
-        delete m_hiddenService;
-        m_hiddenService = 0;
-    }
-    else
-    {
-        m_incomingServer = new QTcpServer(this);
-        if (!m_incomingServer->listen(address, port)) {
-            qWarning() << "Failed to open incoming socket:" << m_incomingServer->errorString();
-            return;
-        }
-
-        connect(m_incomingServer, &QTcpServer::newConnection, this, &UserIdentity::onIncomingConnection);
-
-        m_hiddenService->addTarget(9878, m_incomingServer->serverAddress(), m_incomingServer->serverPort());
-        torControl->addHiddenService(m_hiddenService);
-    }
+    setupService();
 
     contacts.loadFromSettings();
 }
@@ -104,6 +74,68 @@ UserIdentity *UserIdentity::createIdentity(int uniqueID, const QString &dataDire
         settings.write("dataDirectory", dataDirectory);
 
     return new UserIdentity(uniqueID);
+}
+
+// TODO: Handle the error cases of this function in a useful way
+void UserIdentity::setupService()
+{
+    QString keyData = m_settings->read("serviceKey").toString();
+    QString legacyDir = m_settings->read("dataDirectory").toString();
+
+    if (!keyData.isEmpty()) {
+        CryptoKey key;
+        if (!key.loadFromData(QByteArray::fromBase64(keyData.toLatin1()), CryptoKey::PrivateKey, CryptoKey::DER)) {
+            qWarning() << "Cannot load service key from configuration";
+            return;
+        }
+
+        m_hiddenService = new Tor::HiddenService(key, legacyDir, this);
+    } else if (!legacyDir.isEmpty() && QFile::exists(legacyDir + QLatin1String("/private_key"))) {
+        qDebug() << "Attempting to load key from legacy filesystem format in" << legacyDir;
+
+        CryptoKey key;
+        if (!key.loadFromFile(legacyDir + QLatin1String("/private_key"), CryptoKey::PrivateKey)) {
+            qWarning() << "Cannot load legacy format key from" << legacyDir << "for conversion";
+            return;
+        } else {
+            keyData = QString::fromLatin1(key.encodedPrivateKey(CryptoKey::DER).toBase64());
+            m_settings->write("serviceKey", keyData);
+            m_hiddenService = new Tor::HiddenService(key, legacyDir, this);
+        }
+    } else if (!m_settings->read("initializing").toBool()) {
+        qWarning() << "Missing private key for initialized identity";
+        return;
+    } else {
+        m_hiddenService = new Tor::HiddenService(legacyDir, this);
+        connect(m_hiddenService, &Tor::HiddenService::privateKeyChanged, this,
+            [&]() {
+                QString key = QString::fromLatin1(m_hiddenService->privateKey().encodedPrivateKey(CryptoKey::DER).toBase64());
+                m_settings->write("serviceKey", key);
+            }
+        );
+    }
+
+    Q_ASSERT(m_hiddenService);
+    connect(m_hiddenService, SIGNAL(statusChanged(int,int)), SLOT(onStatusChanged(int,int)));
+
+    // Generally, these are not used, and we bind to localhost and port 0
+    // for an automatic (and portable) selection.
+    QHostAddress address(m_settings->read("localListenAddress").toString());
+    if (address.isNull())
+        address = QHostAddress::LocalHost;
+    quint16 port = (quint16)m_settings->read("localListenPort").toInt();
+
+    m_incomingServer = new QTcpServer(this);
+    if (!m_incomingServer->listen(address, port)) {
+        // XXX error case
+        qWarning() << "Failed to open incoming socket:" << m_incomingServer->errorString();
+        return;
+    }
+
+    connect(m_incomingServer, &QTcpServer::newConnection, this, &UserIdentity::onIncomingConnection);
+
+    m_hiddenService->addTarget(9878, m_incomingServer->serverAddress(), m_incomingServer->serverPort());
+    torControl->addHiddenService(m_hiddenService);
 }
 
 SettingsObject *UserIdentity::settings()

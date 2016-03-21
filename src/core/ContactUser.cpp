@@ -159,7 +159,7 @@ void ContactUser::updateOutgoingSocket()
 
     if (!m_outgoingSocket) {
         m_outgoingSocket = new Protocol::OutboundConnector(this);
-        m_outgoingSocket->setAuthPrivateKey(identity->hiddenService()->cryptoKey());
+        m_outgoingSocket->setAuthPrivateKey(identity->hiddenService()->privateKey());
         connect(m_outgoingSocket, &Protocol::OutboundConnector::ready, this,
             [this]() {
                 assignConnection(m_outgoingSocket->takeConnection());

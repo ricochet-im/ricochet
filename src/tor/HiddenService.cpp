@@ -34,6 +34,7 @@
 #include "TorControl.h"
 #include "TorSocket.h"
 #include "utils/CryptoKey.h"
+#include "utils/Useful.h"
 #include <QDir>
 #include <QFile>
 #include <QTimer>
@@ -41,95 +42,91 @@
 
 using namespace Tor;
 
-HiddenService::HiddenService(const QString &p, QObject *parent)
-    : QObject(parent), dataPath(p), pStatus(NotCreated)
+HiddenService::HiddenService(QObject *parent)
+    : QObject(parent), m_status(NotCreated)
+{
+}
+
+HiddenService::HiddenService(const QString &path, QObject *parent)
+    : QObject(parent), m_dataPath(path), m_status(NotCreated)
 {
     /* Set the initial status and, if possible, load the hostname */
-    QDir dir(dataPath);
-    if (dir.exists(QLatin1String("hostname")) && dir.exists(QLatin1String("private_key")))
-    {
-        readHostname();
-        if (!pHostname.isEmpty())
-            pStatus = Offline;
+    if (QDir(m_dataPath).exists(QLatin1String("private_key"))) {
+        loadPrivateKey();
+        if (!m_hostname.isEmpty())
+            m_status = Offline;
     }
+}
+
+HiddenService::HiddenService(const CryptoKey &privateKey, const QString &path, QObject *parent)
+    : QObject(parent), m_dataPath(path), m_status(NotCreated)
+{
+    setPrivateKey(privateKey);
+    m_status = Offline;
 }
 
 void HiddenService::setStatus(Status newStatus)
 {
-    if (pStatus == newStatus)
+    if (m_status == newStatus)
         return;
 
-    Status old = pStatus;
-    pStatus = newStatus;
+    Status old = m_status;
+    m_status = newStatus;
 
-    emit statusChanged(pStatus, old);
+    emit statusChanged(m_status, old);
 
-    if (pStatus == Online)
+    if (m_status == Online)
         emit serviceOnline();
 }
 
 void HiddenService::addTarget(const Target &target)
 {
-    pTargets.append(target);
+    m_targets.append(target);
 }
 
 void HiddenService::addTarget(quint16 servicePort, QHostAddress targetAddress, quint16 targetPort)
 {
     Target t = { targetAddress, servicePort, targetPort };
-    pTargets.append(t);
+    m_targets.append(t);
 }
 
-void HiddenService::readHostname()
+void HiddenService::setPrivateKey(const CryptoKey &key)
 {
-    pHostname.clear();
-
-    QFile file(dataPath + QLatin1String("/hostname"));
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-    {
-        qDebug() << "Failed to open hostname file for hidden service" << dataPath << "-" << file.errorString();
+    if (m_privateKey.isLoaded()) {
+        BUG() << "Cannot change the private key on an existing HiddenService";
         return;
     }
 
-    QByteArray data;
-    data.resize(32);
-
-    int rd = file.readLine(data.data(), data.size());
-    if (rd < 0)
-    {
-        qDebug() << "Failed to read hostname file for hidden service" << dataPath << "-" << file.errorString();
+    if (!key.isPrivate()) {
+        BUG() << "Cannot create a hidden service with a public key";
         return;
     }
 
-    data.resize(rd);
-
-    int sep = data.lastIndexOf('.');
-    if (sep != 16 || data.mid(sep) != ".onion\n")
-    {
-        qDebug() << "Failed to read hostname file for hidden service" << dataPath << "- invalid contents";
-        return;
-    }
-
-    pHostname = QString::fromLatin1(data.constData(), sep) + QLatin1String(".onion");
-    qDebug() << "Hidden service hostname is" << pHostname;
+    m_privateKey = key;
+    m_hostname = m_privateKey.torServiceID() + QStringLiteral(".onion");
+    emit privateKeyChanged();
 }
 
-CryptoKey HiddenService::cryptoKey()
+void HiddenService::loadPrivateKey()
 {
-    if (!pCryptoKey.isLoaded()) {
-        bool ok = pCryptoKey.loadFromFile(dataPath + QLatin1String("/private_key"), CryptoKey::PrivateKey);
-        if (!ok)
-            qWarning() << "Failed to load hidden service key";
+    if (m_privateKey.isLoaded() || m_dataPath.isEmpty())
+        return;
+
+    bool ok = m_privateKey.loadFromFile(m_dataPath + QLatin1String("/private_key"), CryptoKey::PrivateKey);
+    if (!ok) {
+        qWarning() << "Failed to load hidden service key";
+        return;
     }
 
-    return pCryptoKey;
+    m_hostname = m_privateKey.torServiceID();
+    emit privateKeyChanged();
 }
 
 void HiddenService::servicePublished()
 {
-    readHostname();
+    loadPrivateKey();
 
-    if (pHostname.isEmpty())
-    {
+    if (m_hostname.isEmpty()) {
         qDebug() << "Failed to read hidden service hostname";
         return;
     }

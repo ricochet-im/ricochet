@@ -64,34 +64,39 @@ public:
         Online /* Published */
     };
 
-    const QString dataPath;
-
+    HiddenService(QObject *parent = 0);
     HiddenService(const QString &dataPath, QObject *parent = 0);
+    HiddenService(const CryptoKey &privateKey, const QString &dataPath = QString(), QObject *parent = 0);
 
-    Status status() const { return pStatus; }
+    Status status() const { return m_status; }
 
-    const QString &hostname() const { return pHostname; }
-    CryptoKey cryptoKey();
+    const QString &hostname() const { return m_hostname; }
+    const QString &dataPath() const { return m_dataPath; }
 
-    const QList<Target> &targets() const { return pTargets; }
+    CryptoKey privateKey() { return m_privateKey; }
+    void setPrivateKey(const CryptoKey &privateKey);
+
+    const QList<Target> &targets() const { return m_targets; }
     void addTarget(const Target &target);
     void addTarget(quint16 servicePort, QHostAddress targetAddress, quint16 targetPort);
 
 signals:
     void statusChanged(int newStatus, int oldStatus);
     void serviceOnline();
+    void privateKeyChanged();
 
 private slots:
     void servicePublished();
 
 private:
-    QList<Target> pTargets;
-    QString pHostname;
-    Status pStatus;
-    CryptoKey pCryptoKey;
+    QString m_dataPath;
+    QList<Target> m_targets;
+    QString m_hostname;
+    Status m_status;
+    CryptoKey m_privateKey;
 
+    void loadPrivateKey();
     void setStatus(Status newStatus);
-    void readHostname();
 };
 
 }
