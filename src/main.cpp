@@ -133,6 +133,13 @@ static QString appBundlePath()
 }
 #endif
 
+// Writes default settings to settings object. Does not care about any
+// preexisting values, therefore this is best used on a fresh object.
+static void loadDefaultSettings(SettingsFile *settings)
+{
+    settings->root()->write("ui.combinedChatWindow", true);
+}
+
 static bool initSettings(SettingsFile *settings, QLockFile **lockFile, QString &errorMessage)
 {
     /* If built in portable mode (default), configuration is stored in the 'config'
@@ -210,6 +217,10 @@ static bool initSettings(SettingsFile *settings, QLockFile **lockFile, QString &
             filePath = dir.filePath(QStringLiteral("ricochet.ini"));
         if (QFile::exists(filePath))
             importLegacySettings(settings, filePath);
+    }
+    // if still empty, load defaults here
+    if (settings->root()->data().isEmpty()) {
+        loadDefaultSettings(settings);
     }
 
     return true;
