@@ -64,7 +64,7 @@ QString LinkedText::parsed(const QString &input)
 
         if (start > p)
             re.append(input.mid(p, start - p).toHtmlEscaped().replace(QLatin1Char('\n'), QStringLiteral("<br/>")));
-        re.append(QStringLiteral("<a href=\"%1\">%2</a>").arg(QString::fromLatin1(url.toEncoded()).toHtmlEscaped()).arg(match.capturedRef().toString().toHtmlEscaped()));
+        re.append(QStringLiteral("<a href=\"%1\">%2</a>").arg(QString::fromLatin1(url.toEncoded()).toHtmlEscaped(), match.capturedRef().toString().toHtmlEscaped()));
         p = match.capturedEnd();
     }
 
