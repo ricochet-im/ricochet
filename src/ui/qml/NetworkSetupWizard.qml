@@ -134,15 +134,6 @@ ApplicationWindow {
         }
     }
 
-    Behavior on height {
-        // This window animation causes bad graphical behavior on Windows with 5.4.1
-        enabled: Qt.platform.os !== "windows"
-        SmoothedAnimation {
-            easing.type: Easing.InOutQuad
-            velocity: 1500
-        }
-    }
-
     Action {
         shortcut: StandardKey.Close
         onTriggered: window.close()
