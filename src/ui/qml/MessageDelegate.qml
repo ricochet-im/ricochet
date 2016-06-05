@@ -81,13 +81,6 @@ Column {
             Behavior on opacity { NumberAnimation { } }
         }
 
-        MouseArea {
-            anchors.fill: parent
-            acceptedButtons: Qt.RightButton
-
-            onClicked: delegate.showContextMenu()
-        }
-
         TextEdit {
             id: textField
             width: Math.min(implicitWidth, background.__maxWidth)
@@ -115,6 +108,13 @@ Column {
             Component.onCompleted: {
                 if (textField.hasOwnProperty('linkHovered'))
                     textField.linkHovered.connect(function() { })
+            }
+            
+            MouseArea {
+                anchors.fill: parent
+                acceptedButtons: Qt.RightButton
+
+                onClicked: delegate.showContextMenu(parent.hoveredLink)
             }
         }
     }
