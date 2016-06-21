@@ -209,7 +209,7 @@ bool SettingsFilePrivate::readFile()
     }
 
     QJsonParseError parseError;
-    QJsonDocument document = QJsonDocument::fromJson(data);
+    QJsonDocument document = QJsonDocument::fromJson(data, &parseError);
     if (document.isNull()) {
         setError(parseError.errorString());
         return false;
