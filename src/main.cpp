@@ -83,7 +83,11 @@ int main(int argc, char *argv[])
     initTranslation();
 
     /* Initialize OpenSSL's allocator */
+#if OPENSSL_VERSION_NUMBER < 0x10100000L
     CRYPTO_malloc_init();
+#else
+    OPENSSL_malloc_init();
+#endif
 
     /* Seed the OpenSSL RNG */
     if (!SecureRNG::seed())
