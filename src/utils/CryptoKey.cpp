@@ -131,7 +131,7 @@ bool CryptoKey::isPrivate() const
 {
     const BIGNUM *p, *q;
     RSA_get0_factors(d->key, &p, &q);
-    return isLoaded() && !(BN_is_zero(p));
+    return isLoaded() && (p != 0);
 }
 
 int CryptoKey::bits() const
