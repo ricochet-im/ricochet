@@ -82,6 +82,15 @@ Normally, configuration will be stored in a `config.ricochet` folder, in the sam
 
 The `packaging/osx/release_osx.sh` script demonstrates how to build a redistributable app bundle.
 
+Since the openssl header files were removed in El Capitan, have qmake use the openssl that comes with brew (see the OPENSSLDIR var below).
+
+Steps:
+```
+brew install protobuf qt5 tor
+/usr/local/opt/qt5/bin/qmake OPENSSLDIR=/usr/local/opt/openssl/ CONFIG+=debug
+make
+```
+
 ## Windows
 
 Building for Windows is difficult. The process and scripts used for release builds are documented in the [buildscripts repository](https://github.com/ricochet-im/buildscripts/tree/master/mingw).
