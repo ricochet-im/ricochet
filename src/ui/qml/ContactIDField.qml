@@ -3,6 +3,7 @@ import QtQuick.Controls 1.0
 import QtQuick.Controls.Styles 1.0
 import QtQuick.Layouts 1.0
 import im.ricochet 1.0
+import "utils.js" as Utils
 
 FocusScope {
     id: contactId
