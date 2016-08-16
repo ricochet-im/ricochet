@@ -129,9 +129,13 @@ bool CryptoKey::loadFromFile(const QString &path, KeyType type, KeyFormat format
 
 bool CryptoKey::isPrivate() const
 {
-    const BIGNUM *p, *q;
-    RSA_get0_factors(d->key, &p, &q);
-    return isLoaded() && (p != 0);
+    if (!isLoaded()) {
+      return false;
+    } else {
+        const BIGNUM *p, *q;
+        RSA_get0_factors(d->key, &p, &q);
+        return (p != 0);
+    }
 }
 
 int CryptoKey::bits() const
