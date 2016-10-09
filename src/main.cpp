@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
     qputenv("QT_ENABLE_REGEXP_JIT",   "0");
 
     QApplication a(argc, argv);
-    a.setApplicationVersion(QLatin1String("1.1.2"));
+    a.setApplicationVersion(QLatin1String("1.1.3"));
     a.setOrganizationName(QStringLiteral("Ricochet"));
 
 #if !defined(Q_OS_WIN) && !defined(Q_OS_MAC)
