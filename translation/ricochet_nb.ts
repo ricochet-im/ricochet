@@ -1,4 +1,4 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS language="tr" version="2.1">
+<?xml version="1.0" ?><!DOCTYPE TS><TS language="nb" version="2.1">
 <context>
     <name>AboutPreferences</name>
     <message>
@@ -13,17 +13,17 @@
     <message>
         <location filename="../src/ui/qml/AddContactDialog.qml" line="51"/>
         <source>Share your Ricochet ID to allow connection requests</source>
-        <translation>Bağlantı isteklerine izin vermek için Ricochet kimliğinizi paylaşın</translation>
+        <translation>Del din Ricochet-ID for å tillate tilkoblingsforespørsler</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/AddContactDialog.qml" line="107"/>
         <source>Cancel</source>
-        <translation>İptal</translation>
+        <translation>Avbryt</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/AddContactDialog.qml" line="112"/>
         <source>Add</source>
-        <translation>Ekle</translation>
+        <translation>Legg til</translation>
     </message>
 </context>
 <context>
@@ -31,22 +31,22 @@
     <message>
         <location filename="../src/ui/qml/ContactActions.qml" line="40"/>
         <source>Open Window</source>
-        <translation>Yeni Pencere</translation>
+        <translation>Åpne vindu</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactActions.qml" line="44"/>
         <source>Details...</source>
-        <translation>Ayrıntılar...</translation>
+        <translation>Detaljer...</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactActions.qml" line="48"/>
         <source>Rename</source>
-        <translation>Yeniden adlandır</translation>
+        <translation>Endre navn</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactActions.qml" line="53"/>
         <source>Remove</source>
-        <translation>Çıkar</translation>
+        <translation>Fjern</translation>
     </message>
 </context>
 <context>
@@ -54,27 +54,27 @@
     <message>
         <location filename="../src/ui/qml/ContactIDField.qml" line="40"/>
         <source>&lt;b&gt;%1&lt;/b&gt; is already your contact</source>
-        <translation>&lt;b&gt;%1&lt;/b&gt; kişi listenize zaten eklenmiş</translation>
+        <translation>&lt;b&gt;%1&lt;/b&gt; er allerede din kontakt</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactIDField.qml" line="42"/>
         <source>You can&apos;t add yourself as a contact</source>
-        <translation>Kendinizi kişi listesine ekleyemezsiniz</translation>
+        <translation>Du kan ikke legge til deg selv som en kontakt</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactIDField.qml" line="44"/>
         <source>Enter an ID starting with &lt;b&gt;ricochet:&lt;/b&gt;</source>
-        <translation>&lt;b&gt;ricochet:&lt;/b&gt; ile başlayan bir kimlik girin</translation>
+        <translation>Skriv inn en ID som starter med &lt;b&gt;ricochet:&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactIDField.qml" line="79"/>
         <source>Copied to clipboard</source>
-        <translation>Panoya kopyalandı</translation>
+        <translation>Kopiert til utklippstavlen</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactIDField.qml" line="91"/>
         <source>Copy</source>
-        <translation>Kopyala</translation>
+        <translation>Kopier</translation>
     </message>
 </context>
 <context>
@@ -82,27 +82,27 @@
     <message>
         <location filename="../src/ui/qml/ContactList.qml" line="75"/>
         <source>Online</source>
-        <translation>Çevrimiçi</translation>
+        <translation>Tilkoblet</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactList.qml" line="76"/>
         <source>Offline</source>
-        <translation>Çevrimdışı</translation>
+        <translation>Frakoblet</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactList.qml" line="77"/>
         <source>Requests</source>
-        <translation>İstekler</translation>
+        <translation>Forespørsler</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactList.qml" line="78"/>
         <source>Rejected</source>
-        <translation>Reddedildi</translation>
+        <translation>Avvist</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactList.qml" line="79"/>
         <source>Outdated</source>
-        <translation>Güncel Değil</translation>
+        <translation>Utdatert</translation>
     </message>
 </context>
 <context>
@@ -110,63 +110,63 @@
     <message>
         <location filename="../src/ui/qml/ContactPreferences.qml" line="97"/>
         <source>Date added:</source>
-        <translation>Eklenme tarihi:</translation>
+        <translation>Dato lagt til:</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactPreferences.qml" line="104"/>
         <source>Last seen:</source>
-        <translation>Son görülme tarihi:</translation>
+        <translation>Sist sett:</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactPreferences.qml" line="113"/>
         <source>Request:</source>
-        <translation>İstek:</translation>
+        <translation>Forespørsel:</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactPreferences.qml" line="122"/>
         <source>Pending connection</source>
-        <translation>Beklemedeki bağlantı</translation>
+        <translation>I påvente av forbindelse</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactPreferences.qml" line="123"/>
         <source>Delivered</source>
-        <translation>Ulaştırıldı</translation>
+        <translation>Levert</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactPreferences.qml" line="124"/>
         <source>Accepted</source>
-        <translation>Kabul edildi</translation>
+        <translation>Godtatt</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactPreferences.qml" line="125"/>
         <source>Error</source>
-        <translation>Hata</translation>
+        <translation>Feil</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactPreferences.qml" line="126"/>
         <source>Rejected</source>
-        <translation>Reddedildi</translation>
+        <translation>Avvist</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactPreferences.qml" line="130"/>
         <source>%1 (Connected)</source>
         <extracomment>%1 status, e.g. &quot;Accepted&quot;</extracomment>
-        <translation>%1 (Bağlandı)</translation>
+        <translation>%1 (tilkoblet)</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactPreferences.qml" line="136"/>
         <source>Response:</source>
-        <translation>Cevap:</translation>
+        <translation>Respons:</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactPreferences.qml" line="158"/>
         <source>Rename</source>
-        <translation>Yeniden adlandır</translation>
+        <translation>Endre navn</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactPreferences.qml" line="165"/>
         <source>Remove</source>
-        <translation>Çıkar</translation>
+        <translation>Fjern</translation>
     </message>
 </context>
 <context>
@@ -174,17 +174,17 @@
     <message>
         <location filename="../src/ui/qml/ContactRequestDialog.qml" line="55"/>
         <source>Someone new is asking to connect to you</source>
-        <translation>Yeni bir kişi sizinle bağlantı kurmak istiyor</translation>
+        <translation>Noen nye spør om de kan å få koble til</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactRequestDialog.qml" line="102"/>
         <source>Reject</source>
-        <translation>Reddet</translation>
+        <translation>Avvist</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactRequestDialog.qml" line="107"/>
         <source>Accept</source>
-        <translation>Kabul et</translation>
+        <translation>Godta</translation>
     </message>
 </context>
 <context>
@@ -192,17 +192,17 @@
     <message>
         <location filename="../src/ui/qml/ContactRequestFields.qml" line="17"/>
         <source>ID:</source>
-        <translation>Kimlik:</translation>
+        <translation>ID:</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactRequestFields.qml" line="29"/>
         <source>Name:</source>
-        <translation>Ad:</translation>
+        <translation>Navn:</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactRequestFields.qml" line="40"/>
         <source>Message:</source>
-        <translation>Mesaj:</translation>
+        <translation>Melding:</translation>
     </message>
 </context>
 <context>
@@ -210,22 +210,22 @@
     <message>
         <location filename="../src/ui/qml/GeneralPreferences.qml" line="12"/>
         <source>Use a single window for conversations</source>
-        <translation>Görüşmeler için tek pencere kullan</translation>
+        <translation>Bruk ètt vindu for samtaler</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/GeneralPreferences.qml" line="20"/>
         <source>Open links in default browser without prompting</source>
-        <translation>Bağlantıları bana sormadan varsayılan tarayıcıda aç</translation>
+        <translation>Åpne lenker i standardnettleser uten å spørre</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/GeneralPreferences.qml" line="28"/>
         <source>Play audio notifications</source>
-        <translation>Ses bildirimlerini oynat</translation>
+        <translation>Spill av lydvarsler</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/GeneralPreferences.qml" line="37"/>
         <source>Volume</source>
-        <translation>Ses</translation>
+        <translation>Volum</translation>
     </message>
 </context>
 <context>
@@ -233,12 +233,12 @@
     <message>
         <location filename="../src/ui/qml/LanguagePreferences.qml" line="22"/>
         <source>Select Language</source>
-        <translation>Dil Seçin</translation>
+        <translation>Velg språk</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/LanguagePreferences.qml" line="52"/>
         <source>Restart Ricochet to apply changes</source>
-        <translation>Değişikliklerin uygulanması için Ricochet&apos;i yeniden başlatın.</translation>
+        <translation>Ta en omstart av Ricochet for å bruke endringene</translation>
     </message>
 </context>
 <context>
@@ -246,7 +246,7 @@
     <message>
         <location filename="../src/ui/LanguagesModel.cpp" line="43"/>
         <source>System default</source>
-        <translation>Sistem varsayılanı</translation>
+        <translation>Systemstandard</translation>
     </message>
 </context>
 <context>
@@ -254,7 +254,7 @@
     <message>
         <location filename="../src/main.cpp" line="73"/>
         <source>Ricochet Error</source>
-        <translation>Ricochet Hatası</translation>
+        <translation>Ricochet-feil</translation>
     </message>
 </context>
 <context>
@@ -262,17 +262,17 @@
     <message>
         <location filename="../src/ui/qml/MainToolBar.qml" line="19"/>
         <source>Add Contact</source>
-        <translation>Kişi Ekle</translation>
+        <translation>Legg til kontakt</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/MainToolBar.qml" line="28"/>
         <source>Preferences</source>
-        <translation>Ayarlar</translation>
+        <translation>Preferanser</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/MainToolBar.qml" line="75"/>
         <source>Click to add contacts</source>
-        <translation>Kişi eklemek için tıklayın</translation>
+        <translation>Trykk for å legge til kontakter</translation>
     </message>
 </context>
 <context>
@@ -280,12 +280,12 @@
     <message>
         <location filename="../src/ui/MainWindow.cpp" line="153"/>
         <source>Remove %1</source>
-        <translation>%1 isimli kullanıcıyı kişi listesinden çıkar</translation>
+        <translation>Fjern %1</translation>
     </message>
     <message>
         <location filename="../src/ui/MainWindow.cpp" line="154"/>
         <source>Do you want to permanently remove %1?</source>
-        <translation>%1 isimli kullanıcıyı kalıcı olarak silmek istiyor musunuz?</translation>
+        <translation>Ønsker du å slette %1 for alltid?</translation>
     </message>
 </context>
 <context>
@@ -294,37 +294,37 @@
         <location filename="../src/ui/qml/MessageDelegate.qml" line="26"/>
         <source>%1 is offline</source>
         <extracomment>%1 nickname</extracomment>
-        <translation>%1 çevrimdışı</translation>
+        <translation>%1 er frakoblet</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/MessageDelegate.qml" line="134"/>
         <source>Copy ID</source>
-        <translation>Kimliği kopyala</translation>
+        <translation>Kopier ID</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/MessageDelegate.qml" line="134"/>
         <source>Copy Link</source>
-        <translation>Bağlantı Kopyala</translation>
+        <translation>Kopier lenke</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/MessageDelegate.qml" line="139"/>
         <source>Open with Browser</source>
-        <translation>Tarayıcı ile Aç</translation>
+        <translation>Åpne i nettleser</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/MessageDelegate.qml" line="153"/>
         <source>Add as Contact</source>
-        <translation>Kişi olarak Ekle</translation>
+        <translation>Legg til som kontakt</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/MessageDelegate.qml" line="165"/>
         <source>Copy Message</source>
-        <translation>Mesajı Kopyala</translation>
+        <translation>Kopier melding</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/MessageDelegate.qml" line="172"/>
         <source>Copy Selection</source>
-        <translation>Seçileni Kopyala</translation>
+        <translation>Kopier utvalg</translation>
     </message>
 </context>
 <context>
@@ -332,18 +332,18 @@
     <message>
         <location filename="../src/ui/qml/MessageDialogWrapper.qml" line="7"/>
         <source>Remove %1</source>
-        <translation>%1 isimli kullanıcıyı sil</translation>
+        <translation>Fjern %1</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/MessageDialogWrapper.qml" line="9"/>
         <source>Do you want to permanently remove %1?</source>
         <extracomment>%1 nickname</extracomment>
-        <translation>%1 isimli kullanıcıyı kalıcı olarak silmek istiyor musunuz?</translation>
+        <translation>Ønsker du å permanent fjerne %1?</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/MessageDialogWrapper.qml" line="10"/>
         <source>This contact will no longer be able to message you, and will be notified about the removal. They may choose to send a new connection request.</source>
-        <translation>Bu kişi artık size mesaj gönderemeyecek ve silinme işlemiyle ilgili bilgilendirilecek. Kişi isterse size yeni bir bağlantı isteği gönderebilir.</translation>
+        <translation>Denne kontakten vil ikke lengre være i stand til å kunne kontakte deg og er blitt varslet om dette. Vedkommende kan velge å sende ny tilkoblingsforespørsel.</translation>
     </message>
 </context>
 <context>
@@ -351,22 +351,22 @@
     <message>
         <location filename="../src/ui/qml/NetworkSetupWizard.qml" line="100"/>
         <source>This computer&apos;s Internet connection is free of obstacles. I would like to connect directly to the Tor network.</source>
-        <translation>Bu bilgisayarın internete bağlanmasında bir engel yoktur. Doğrudan Tor ağına bağlanmak istiyorum.</translation>
+        <translation>Denne datamaskinens internettforbindelse er fri for hindre. Jeg ønsker å koble direkte til Tor-nettverket.</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/NetworkSetupWizard.qml" line="107"/>
         <source>Connect</source>
-        <translation>Bağlan</translation>
+        <translation>Koble til</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/NetworkSetupWizard.qml" line="124"/>
         <source>This computer&apos;s Internet connection is censored, filtered, or proxied. I need to configure network settings.</source>
-        <translation>Bu bilgisayarın internet bağlantısı sansürlenmiş, filtrelenmiş ya da proxy kullanmaktadır. Ağ ayarlarını yapılandırmam gerekiyor.</translation>
+        <translation>Denne datamaskinens internettforbindelse er sensurert, filtrert, eller bak proxy. Jeg trenger å konfigurere nettverksinnstillinger.</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/NetworkSetupWizard.qml" line="131"/>
         <source>Configure</source>
-        <translation>Yapılandır</translation>
+        <translation>Konfigurer</translation>
     </message>
 </context>
 <context>
@@ -374,23 +374,23 @@
     <message>
         <location filename="../src/ui/qml/OfflineStateItem.qml" line="107"/>
         <source>Configure</source>
-        <translation>Yapılandır</translation>
+        <translation>Konfigurer</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/OfflineStateItem.qml" line="115"/>
         <source>Details</source>
-        <translation>Ayrıntılar</translation>
+        <translation>Detaljer</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/OfflineStateItem.qml" line="143"/>
         <source>Connection failed</source>
-        <translation>Bağlantı başarısız</translation>
+        <translation>Tilkoblingsfeil</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/OfflineStateItem.qml" line="169"/>
         <source>Connecting…</source>
         <extracomment>\u2026 is ellipsis</extracomment>
-        <translation>Bağlanıyor...</translation>
+        <translation>Kobler til...</translation>
     </message>
 </context>
 <context>
@@ -398,27 +398,27 @@
     <message>
         <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="39"/>
         <source>&lt;b&gt;Warning!&lt;/b&gt; Opening links with your default browser will harm your security and anonymity.&lt;br&gt;&lt;br&gt;You can &lt;a href=&apos;.&apos;&gt;copy to the clipboard&lt;/a&gt; instead.</source>
-        <translation>&lt;b&gt;Uyarı!&lt;/b&gt; Varsayılan tarayıcı ile bağlantıları açmak, güvenlik ve anonimliğinize zarar verecektir.&lt;br&gt;&lt;br&gt;Bunun yerine &lt;a href=&apos;.&apos;&gt;panoya kopyala&lt;/a&gt;yabilirsiniz.</translation>
+        <translation>&lt;b&gt;Advarsel!&lt;/b&gt; Åpning av lenker i din standardnettleser vil svekke sikkerheten og minske anonymiteten din.&lt;br&gt;&lt;br&gt;Du kan &lt;a href=&apos;.&apos;&gt;kopiere til utklippstavlen&lt;/a&gt; i stedet for.</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="58"/>
         <source>Don&apos;t ask again for links from %1</source>
-        <translation>%1 isimli kullanıcıdan gelen bağlantılar için tekrar sorma</translation>
+        <translation>Ikke spør igjen for lenker fra %1</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="64"/>
         <source>Don&apos;t ask again for any links (not recommended!)</source>
-        <translation>Bundan sonra bağlantılar için bir daha sorma (tavsiye edilmez!)</translation>
+        <translation>Ikke spør igjen for noen lenker som helst (ikke anbefalt!)</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="71"/>
         <source>Open Browser</source>
-        <translation>Tarayıcıyı Aç</translation>
+        <translation>Åpne nettleser</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="83"/>
         <source>Cancel</source>
-        <translation>İptal</translation>
+        <translation>Avbryt</translation>
     </message>
 </context>
 <context>
@@ -426,22 +426,22 @@
     <message>
         <location filename="../src/ui/qml/PreferencesDialog.qml" line="12"/>
         <source>Ricochet Preferences</source>
-        <translation>Ricochet Ayarları</translation>
+        <translation>Ricochet-preferanser</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/PreferencesDialog.qml" line="41"/>
         <source>General</source>
-        <translation>Genel</translation>
+        <translation>Generelt</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/PreferencesDialog.qml" line="46"/>
         <source>Language</source>
-        <translation>Dil</translation>
+        <translation>Språk</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/PreferencesDialog.qml" line="51"/>
         <source>Contacts</source>
-        <translation>Kişiler</translation>
+        <translation>Kontakter</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/PreferencesDialog.qml" line="56"/>
@@ -451,7 +451,7 @@
     <message>
         <location filename="../src/ui/qml/PreferencesDialog.qml" line="61"/>
         <source>About</source>
-        <translation>Hakkında</translation>
+        <translation>Om</translation>
     </message>
 </context>
 <context>
@@ -459,7 +459,7 @@
     <message>
         <location filename="../src/ui/qml/MainWindow.qml" line="29"/>
         <source>Preference</source>
-        <translation>Tercih</translation>
+        <translation>Preferanse</translation>
     </message>
 </context>
 <context>
@@ -467,12 +467,12 @@
     <message>
         <location filename="../src/ui/qml/StartupStatusPage.qml" line="18"/>
         <source>The Tor process was not started successfully. This is most likely an installation or system error.</source>
-        <translation>Tor başlatılamadı. Büyük olasılıkla kurulum veya sistem hatası.</translation>
+        <translation>Tor-prosessen ble ikke startet vellykket. Dette er mest sannsynlig en installasjons- eller systemfeil.</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/StartupStatusPage.qml" line="49"/>
         <source>Quit</source>
-        <translation>Çık</translation>
+        <translation>Avslutt</translation>
     </message>
 </context>
 <context>
@@ -481,27 +481,27 @@
         <location filename="../src/ui/qml/TorBootstrapStatus.qml" line="17"/>
         <source>Connecting to the Tor network…</source>
         <extracomment>\u2026 is ellipsis</extracomment>
-        <translation>Tor ağına bağlanıyor...</translation>
+        <translation>Kobler til Tor-nettverket</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorBootstrapStatus.qml" line="50"/>
         <source>Back</source>
-        <translation>Geri</translation>
+        <translation>Tilbake</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorBootstrapStatus.qml" line="57"/>
         <source>Hide details</source>
-        <translation>Ayrıntıları gizle</translation>
+        <translation>Gjem detaljer</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorBootstrapStatus.qml" line="57"/>
         <source>Show details</source>
-        <translation>Ayrıntıları göster</translation>
+        <translation>Vis detaljer</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorBootstrapStatus.qml" line="69"/>
         <source>Done</source>
-        <translation>Tamamla</translation>
+        <translation>Ferdig</translation>
     </message>
 </context>
 <context>
@@ -509,28 +509,28 @@
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="72"/>
         <source>Does this computer need a proxy to access the internet?</source>
-        <translation>Bu bilgisayar internete erişmek için bir proxy&apos;e ihtiyaç duyuyor mu?</translation>
+        <translation>Trenger denne datamaskinen proxy for å få tilgang til Internett?</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="84"/>
         <source>Proxy type:</source>
-        <translation>Proxy türü:</translation>
+        <translation>Proxytype:</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="89"/>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="91"/>
         <source>None</source>
-        <translation>Hiçbiri</translation>
+        <translation>Ingen</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="106"/>
         <source>Address:</source>
-        <translation>Adres:</translation>
+        <translation>Adresse:</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="115"/>
         <source>IP address or hostname</source>
-        <translation>IP adresi veya host adı</translation>
+        <translation>IP-adresse eller vertsnavn</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="118"/>
@@ -540,53 +540,53 @@
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="129"/>
         <source>Username:</source>
-        <translation>Kullanıcı adı:</translation>
+        <translation>Brukernavn:</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="139"/>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="149"/>
         <source>Optional</source>
-        <translation>İsteğe bağlı</translation>
+        <translation>Valgfri</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="142"/>
         <source>Password:</source>
-        <translation>Parola:</translation>
+        <translation>Passord:</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="159"/>
         <source>Does this computer&apos;s Internet connection go through a firewall that only allows connections to certain ports?</source>
-        <translation>Bu bilgisayarın internet bağlantısı sadece belli portlara bağlantı izni veren bir güvenlik duvarı üzerinden gidiyor mu?</translation>
+        <translation>Går denne datamaskinens internettforbindelse gjennom en brannmur som kun tillater forbindelser til bestemte porter?</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="170"/>
         <source>Allowed ports:</source>
-        <translation>İzin verilen portlar:</translation>
+        <translation>Tillatte porter:</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="177"/>
         <source>Example: 80,443</source>
-        <translation>Örnek: 80.443</translation>
+        <translation>Eksempel: 80,443</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="188"/>
         <source>If this computer&apos;s Internet connection is censored, you will need to obtain and use bridge relays.</source>
-        <translation>Bu bilgisayarın internet bağlantısı sansürlenmişse, köprü aktarımlarını edinmeniz ve kullanmanız gerekir.</translation>
+        <translation>Hvis denne datamaskinens internettforbindelse er sensurert må du få tak i og bruke broreléer.</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="197"/>
         <source>Enter one or more bridge relays (one per line):</source>
-        <translation>Bir veya birden fazla köprü aktarım adresi girin (satır başına bir tane):</translation>
+        <translation>Skriv inn et eller flere broreléer (et relé per linje):</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="212"/>
         <source>Back</source>
-        <translation>Geri</translation>
+        <translation>Tilbake</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="219"/>
         <source>Connect</source>
-        <translation>Bağlan</translation>
+        <translation>Koble til</translation>
     </message>
 </context>
 <context>
@@ -594,67 +594,67 @@
     <message>
         <location filename="../src/ui/qml/TorPreferences.qml" line="24"/>
         <source>Running:</source>
-        <translation>Çalışıyor:</translation>
+        <translation>Kjører:</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorPreferences.qml" line="25"/>
         <location filename="../src/ui/qml/TorPreferences.qml" line="27"/>
         <location filename="../src/ui/qml/TorPreferences.qml" line="29"/>
         <source>Yes</source>
-        <translation>Evet</translation>
+        <translation>Ja</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorPreferences.qml" line="25"/>
         <location filename="../src/ui/qml/TorPreferences.qml" line="27"/>
         <location filename="../src/ui/qml/TorPreferences.qml" line="29"/>
         <source>No</source>
-        <translation>Hayır</translation>
+        <translation>Nei</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorPreferences.qml" line="25"/>
         <source>External</source>
-        <translation>Harici</translation>
+        <translation>Ekstern</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorPreferences.qml" line="26"/>
         <source>Control connected:</source>
-        <translation>Kontrol bağlantısı:</translation>
+        <translation>Kontroll tilkoblet:</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorPreferences.qml" line="28"/>
         <source>Circuits established:</source>
-        <translation>Devrelere bağlanıldı:</translation>
+        <translation>Etablerte kretser:</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorPreferences.qml" line="30"/>
         <source>Hidden service:</source>
-        <translation>Gizli servis:</translation>
+        <translation>Skjult tjeneste:</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorPreferences.qml" line="31"/>
         <source>Online</source>
-        <translation>Çevrimiçi</translation>
+        <translation>Pålogget</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorPreferences.qml" line="31"/>
         <source>Offline</source>
-        <translation>Çevrimdışı</translation>
+        <translation>Frakoblet</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorPreferences.qml" line="32"/>
         <source>Version:</source>
-        <translation>Sürüm:</translation>
+        <translation>Versjon:</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorPreferences.qml" line="59"/>
         <source>Error: &lt;b&gt;%1&lt;/b&gt;</source>
         <extracomment>%1 is error message</extracomment>
-        <translation>Hata: &lt;b&gt;%1&lt;/b&gt;</translation>
+        <translation>Feil: &lt;b&gt;%1&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorPreferences.qml" line="75"/>
         <source>Configure</source>
-        <translation>Yapılandır</translation>
+        <translation>Konfigurer</translation>
     </message>
 </context>
 <context>
@@ -663,30 +663,30 @@
         <location filename="../src/ui/qml/TorStateWidget.qml" line="9"/>
         <location filename="../src/ui/qml/TorStateWidget.qml" line="20"/>
         <source>Connection failed</source>
-        <translation>Bağlantı başarısız</translation>
+        <translation>Tilkoblingsfeil</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorStateWidget.qml" line="12"/>
         <location filename="../src/ui/qml/TorStateWidget.qml" line="22"/>
         <source>Connecting…</source>
         <extracomment>\u2026 is ellipsis</extracomment>
-        <translation>Bağlanıyor...</translation>
+        <translation>Kobler til...</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorStateWidget.qml" line="25"/>
         <source>Connecting… (%1%)</source>
         <extracomment>%1 is progress percentage, e.g. 100</extracomment>
-        <translation>Bağlanıyor... (%1%)</translation>
+        <translation>Kobler til... (%1%)</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorStateWidget.qml" line="32"/>
         <source>Online</source>
-        <translation>Çevrimiçi</translation>
+        <translation>Pålogget</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorStateWidget.qml" line="34"/>
         <source>Connected</source>
-        <translation>Bağlı</translation>
+        <translation>Tilkoblet</translation>
     </message>
 </context>
 </TS>
