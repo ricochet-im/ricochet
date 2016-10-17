@@ -67,7 +67,7 @@ To take full advantage of the sanitizer options, you may need to install `libasa
 
 You will need:
  * Xcode (for toolchain)
- * Qt 5 - preferably the [Qt SDK](https://qt-project.org/downloads)
+ * Qt 5 - preferably the [Qt SDK](https://www.qt.io/download/)
  * Protocol Buffers (libprotobuf, protoc) - `brew install protobuf`
 
 You can either load `ricochet.pro` in Qt Creator and build normally, or build command-line with:
@@ -97,7 +97,7 @@ Building for Windows is difficult. The process and scripts used for release buil
 
 For development builds, you will want:
  * Visual Studio C++ or MinGW
- * Qt 5 - preferably the [Qt SDK](https://qt-project.org/downloads)
+ * Qt 5 - preferably the [Qt SDK](https://www.qt.io/download/)
  * OpenSSL (including libs and headers)
  * Protocol Buffers >= 2.6.0
 
