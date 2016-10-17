@@ -253,7 +253,14 @@ TRANSLATIONS += \
     translation/ricochet_sv.ts \
     translation/ricochet_he.ts \
     translation/ricochet_sl.ts \
-    translation/ricochet_zh.ts
+    translation/ricochet_zh.ts \
+    translation/ricochet_eo.ts \
+    translation/ricochet_et_EE.ts \
+    translation/ricochet_it_IT.ts \
+    translation/ricochet_nb.ts \
+    translation/ricochet_pt_PT.ts \
+    translation/ricochet_sq.ts \
+    translation/ricochet_zh_HK.ts
 
 isEmpty(QMAKE_LRELEASE) {
     win32:QMAKE_LRELEASE = $$[QT_INSTALL_BINS]\lrelease.exe
