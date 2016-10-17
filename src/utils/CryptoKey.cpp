@@ -35,8 +35,18 @@
 #include "Useful.h"
 #include <QtDebug>
 #include <QFile>
+#include <openssl/bn.h>
 #include <openssl/bio.h>
 #include <openssl/pem.h>
+
+#if OPENSSL_VERSION_NUMBER < 0x10100000L
+void RSA_get0_factors(const RSA *r, const BIGNUM **p, const BIGNUM **q)
+{
+  *p = r->p;
+  *q = r->q;
+}
+#define RSA_bits(o) (BN_num_bits((o)->n))
+#endif
 
 void base32_encode(char *dest, unsigned destlen, const char *src, unsigned srclen);
 bool base32_decode(char *dest, unsigned destlen, const char *src, unsigned srclen);
@@ -119,12 +129,18 @@ bool CryptoKey::loadFromFile(const QString &path, KeyType type, KeyFormat format
 
 bool CryptoKey::isPrivate() const
 {
-    return isLoaded() && d->key->p != 0;
+    if (!isLoaded()) {
+      return false;
+    } else {
+        const BIGNUM *p, *q;
+        RSA_get0_factors(d->key, &p, &q);
+        return (p != 0);
+    }
 }
 
 int CryptoKey::bits() const
 {
-    return isLoaded() ? BN_num_bits(d->key->n) : 0;
+    return isLoaded() ? RSA_bits(d->key) : 0;
 }
 
 QByteArray CryptoKey::publicKeyDigest() const
