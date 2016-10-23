@@ -10,7 +10,6 @@ QtObject {
     id: root
 
     property MainWindow mainWindow: MainWindow {
-        onVisibleChanged: if (!visible) Qt.quit()
     }
 
     function createDialog(component, properties, parent) {
