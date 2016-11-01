@@ -37,7 +37,7 @@
 #include <limits.h>
 
 #ifdef Q_OS_WIN
-#include <Wincrypt.h>
+#include <wincrypt.h>
 #endif
 
 #if QT_VERSION >= 0x040700

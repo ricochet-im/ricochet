@@ -32,7 +32,7 @@ win32 {
     isEmpty(PROTOBUFDIR):error(You must pass PROTOBUFDIR=path/to/protobuf to qmake on this platform)
     INCLUDEPATH += $${PROTOBUFDIR}/include
     LIBS += -L$${PROTOBUFDIR}/lib -lprotobuf
-    PROTOC = $${PROTOBUFDIR}/bin/protoc.exe
+    contains(QMAKE_HOST.os,Windows):PROTOC = $${PROTOBUFDIR}/bin/protoc.exe
 }
 
 protobuf_decl.name = protobuf headers
