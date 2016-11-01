@@ -130,7 +130,7 @@ win32 {
     }
 
     # required by openssl
-    LIBS += -lUser32 -lGdi32 -ladvapi32
+    LIBS += -luser32 -lgdi32 -ladvapi32
 }
 
 DEFINES += QT_NO_CAST_FROM_ASCII QT_NO_CAST_TO_ASCII
@@ -263,7 +263,7 @@ TRANSLATIONS += \
     translation/ricochet_zh_HK.ts
 
 isEmpty(QMAKE_LRELEASE) {
-    win32:QMAKE_LRELEASE = $$[QT_INSTALL_BINS]\lrelease.exe
+    contains(QMAKE_HOST.os,Windows):QMAKE_LRELEASE = $$[QT_INSTALL_BINS]/lrelease.exe
     else:QMAKE_LRELEASE = $$[QT_INSTALL_BINS]/lrelease
 }
 
