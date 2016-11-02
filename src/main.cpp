@@ -60,6 +60,9 @@ int main(int argc, char *argv[])
        This will also ensure full PAX/Grsecurity protections. */
     qputenv("QV4_FORCE_INTERPRETER",  "1");
     qputenv("QT_ENABLE_REGEXP_JIT",   "0");
+    /* Use QtQuick 2D renderer by default; ignored if not available */
+    if (qEnvironmentVariableIsEmpty("QMLSCENE_DEVICE"))
+        qputenv("QMLSCENE_DEVICE", "softwarecontext");
 
     QApplication a(argc, argv);
     a.setApplicationVersion(QLatin1String("1.1.3"));
