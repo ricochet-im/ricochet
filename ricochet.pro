@@ -254,7 +254,6 @@ TRANSLATIONS += \
     translation/ricochet_he.ts \
     translation/ricochet_sl.ts \
     translation/ricochet_zh.ts \
-    translation/ricochet_eo.ts \
     translation/ricochet_et_EE.ts \
     translation/ricochet_it_IT.ts \
     translation/ricochet_nb.ts \
