@@ -37,6 +37,8 @@
 
 class LanguagesModel : public QAbstractListModel
 {
+    Q_OBJECT
+
 public:
     enum {
         NameRole = Qt::UserRole,
@@ -48,6 +50,9 @@ public:
     virtual int rowCount(const QModelIndex &parent) const;
     virtual QVariant data(const QModelIndex &index, int role) const;
     virtual QHash<int,QByteArray> roleNames() const;
+
+    Q_INVOKABLE QString localeID(int index);
+    Q_INVOKABLE int rowForLocaleID(const QString &localeID);
 
 private:
     struct LanguageEntry

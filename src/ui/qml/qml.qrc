@@ -33,7 +33,6 @@
         <file>MainToolBar.qml</file>
         <file>UnreadCountBadge.qml</file>
         <file>GeneralPreferences.qml</file>
-        <file>LanguagePreferences.qml</file>
         <file>AudioNotifications.qml</file>
         <file>utils.js</file>
     </qresource>

@@ -78,3 +78,18 @@ QHash<int, QByteArray> LanguagesModel::roleNames() const
     return roles;
 }
 
+QString LanguagesModel::localeID(int row)
+{
+    if (row >= 0 && row < languages.length())
+        return languages[row].localeID;
+    return QString();
+}
+
+int LanguagesModel::rowForLocaleID(const QString &localeID)
+{
+    for (int i = 0; i < languages.length(); i++) {
+        if (languages[i].localeID == localeID)
+            return i;
+    }
+    return -1;
+}
