@@ -133,6 +133,14 @@ win32 {
     LIBS += -luser32 -lgdi32 -ladvapi32
 }
 
+# Exclude unneeded plugins from static builds
+QTPLUGIN.playlistformats = -
+QTPLUGIN.imageformats = -
+QTPLUGIN.printsupport = -
+QTPLUGIN.mediaservice = -
+# Include Linux input plugins
+unix:!macx:QTPLUGIN.platforminputcontexts = composeplatforminputcontextplugin ibusplatforminputcontextplugin
+
 DEFINES += QT_NO_CAST_FROM_ASCII QT_NO_CAST_TO_ASCII
 
 SOURCES += src/main.cpp \
