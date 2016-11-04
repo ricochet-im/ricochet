@@ -54,27 +54,27 @@
 <context>
     <name>ContactIDField</name>
     <message>
-        <location filename="../src/ui/qml/ContactIDField.qml" line="40"/>
+        <location filename="../src/ui/qml/ContactIDField.qml" line="41"/>
         <source>&lt;b&gt;%1&lt;/b&gt; is already your contact</source>
         <translation>&lt;b&gt;%1&lt;/b&gt; це вже ваш контакт</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactIDField.qml" line="42"/>
+        <location filename="../src/ui/qml/ContactIDField.qml" line="43"/>
         <source>You can&apos;t add yourself as a contact</source>
         <translation>Ви не можете додати самі себе як контакт</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactIDField.qml" line="44"/>
+        <location filename="../src/ui/qml/ContactIDField.qml" line="45"/>
         <source>Enter an ID starting with &lt;b&gt;ricochet:&lt;/b&gt;</source>
         <translation>Введіть ID який починається з &lt;b&gt;ricochet:&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactIDField.qml" line="80"/>
+        <location filename="../src/ui/qml/ContactIDField.qml" line="81"/>
         <source>Copied to clipboard</source>
         <translation>Скопійовано до  буферу обміну</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/ContactIDField.qml" line="92"/>
+        <location filename="../src/ui/qml/ContactIDField.qml" line="93"/>
         <source>Copy</source>
         <translation>Копіювати</translation>
     </message>
@@ -210,37 +210,45 @@
 <context>
     <name>GeneralPreferences</name>
     <message>
-        <location filename="../src/ui/qml/GeneralPreferences.qml" line="12"/>
+        <location filename="../src/ui/qml/GeneralPreferences.qml" line="13"/>
         <source>Use a single window for conversations</source>
         <translation>Використовувати одне вікно для розмов</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/GeneralPreferences.qml" line="20"/>
+        <location filename="../src/ui/qml/GeneralPreferences.qml" line="21"/>
         <source>Open links in default browser without prompting</source>
         <translation>Відкривати посилання в браузері без запитань</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/GeneralPreferences.qml" line="28"/>
+        <location filename="../src/ui/qml/GeneralPreferences.qml" line="29"/>
         <source>Play audio notifications</source>
         <translation>Програти аудіо повідомлення</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/GeneralPreferences.qml" line="37"/>
+        <location filename="../src/ui/qml/GeneralPreferences.qml" line="38"/>
         <source>Volume</source>
         <translation>Гучність</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/qml/GeneralPreferences.qml" line="53"/>
+        <source>Language</source>
+        <translation type="unfinished">Мова</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/qml/GeneralPreferences.qml" line="76"/>
+        <source>Restart Ricochet to apply changes</source>
+        <translation type="unfinished">Перезавантажити Ricochet для збереження змін</translation>
     </message>
 </context>
 <context>
     <name>LanguagePreferences</name>
     <message>
-        <location filename="../src/ui/qml/LanguagePreferences.qml" line="22"/>
         <source>Select Language</source>
-        <translation>Вибір мови</translation>
+        <translation type="vanished">Вибір мови</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/LanguagePreferences.qml" line="52"/>
         <source>Restart Ricochet to apply changes</source>
-        <translation>Перезавантажити Ricochet для збереження змін</translation>
+        <translation type="vanished">Перезавантажити Ricochet для збереження змін</translation>
     </message>
 </context>
 <context>
@@ -254,7 +262,7 @@
 <context>
     <name>Main</name>
     <message>
-        <location filename="../src/main.cpp" line="73"/>
+        <location filename="../src/main.cpp" line="81"/>
         <source>Ricochet Error</source>
         <translation>Помилка Ricochet</translation>
     </message>
@@ -436,22 +444,21 @@
         <translation>Основні</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/PreferencesDialog.qml" line="46"/>
         <source>Language</source>
-        <translation>Мова</translation>
+        <translation type="vanished">Мова</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/PreferencesDialog.qml" line="51"/>
+        <location filename="../src/ui/qml/PreferencesDialog.qml" line="46"/>
         <source>Contacts</source>
         <translation>Контакти</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/PreferencesDialog.qml" line="56"/>
+        <location filename="../src/ui/qml/PreferencesDialog.qml" line="51"/>
         <source>Tor</source>
         <translation>Tor</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/PreferencesDialog.qml" line="61"/>
+        <location filename="../src/ui/qml/PreferencesDialog.qml" line="56"/>
         <source>About</source>
         <translation>Про </translation>
     </message>
@@ -509,84 +516,84 @@
 <context>
     <name>TorConfigurationPage</name>
     <message>
-        <location filename="../src/ui/qml/TorConfigurationPage.qml" line="72"/>
+        <location filename="../src/ui/qml/TorConfigurationPage.qml" line="73"/>
         <source>Does this computer need a proxy to access the internet?</source>
         <translation>Чи потребує цей комп&apos;ютер проксі для доступу до інтернету?</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/TorConfigurationPage.qml" line="84"/>
+        <location filename="../src/ui/qml/TorConfigurationPage.qml" line="85"/>
         <source>Proxy type:</source>
         <translation>Тип проксі:</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/TorConfigurationPage.qml" line="89"/>
-        <location filename="../src/ui/qml/TorConfigurationPage.qml" line="91"/>
+        <location filename="../src/ui/qml/TorConfigurationPage.qml" line="90"/>
+        <location filename="../src/ui/qml/TorConfigurationPage.qml" line="92"/>
         <source>None</source>
         <translation>Ніякого</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/TorConfigurationPage.qml" line="106"/>
+        <location filename="../src/ui/qml/TorConfigurationPage.qml" line="107"/>
         <source>Address:</source>
         <translation>Адреса:</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/TorConfigurationPage.qml" line="115"/>
+        <location filename="../src/ui/qml/TorConfigurationPage.qml" line="116"/>
         <source>IP address or hostname</source>
         <translation>IP адреса чи ім&apos;я сервера</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/TorConfigurationPage.qml" line="118"/>
+        <location filename="../src/ui/qml/TorConfigurationPage.qml" line="119"/>
         <source>Port:</source>
         <translation>Порт:</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/TorConfigurationPage.qml" line="129"/>
+        <location filename="../src/ui/qml/TorConfigurationPage.qml" line="130"/>
         <source>Username:</source>
         <translation>Ім&apos;я:</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/TorConfigurationPage.qml" line="139"/>
-        <location filename="../src/ui/qml/TorConfigurationPage.qml" line="149"/>
+        <location filename="../src/ui/qml/TorConfigurationPage.qml" line="140"/>
+        <location filename="../src/ui/qml/TorConfigurationPage.qml" line="150"/>
         <source>Optional</source>
         <translation>Опції</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/TorConfigurationPage.qml" line="142"/>
+        <location filename="../src/ui/qml/TorConfigurationPage.qml" line="143"/>
         <source>Password:</source>
         <translation>Пароль:</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/TorConfigurationPage.qml" line="159"/>
+        <location filename="../src/ui/qml/TorConfigurationPage.qml" line="160"/>
         <source>Does this computer&apos;s Internet connection go through a firewall that only allows connections to certain ports?</source>
         <translation>З&apos;єднання цього комп&apos;ютеру проходять через firewall який дозволяй з&apos;єднання тільки з певними портами?  </translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/TorConfigurationPage.qml" line="170"/>
+        <location filename="../src/ui/qml/TorConfigurationPage.qml" line="171"/>
         <source>Allowed ports:</source>
         <translation>Дозволені порти:</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/TorConfigurationPage.qml" line="177"/>
+        <location filename="../src/ui/qml/TorConfigurationPage.qml" line="178"/>
         <source>Example: 80,443</source>
         <translation>Наприклад: 80,443</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/TorConfigurationPage.qml" line="188"/>
+        <location filename="../src/ui/qml/TorConfigurationPage.qml" line="189"/>
         <source>If this computer&apos;s Internet connection is censored, you will need to obtain and use bridge relays.</source>
         <translation>Якщо інтернет з&apos;єднання цього комп&apos;ютеру цензуруються, то вам потрібно отримати і використовувати ретранслятори.   </translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/TorConfigurationPage.qml" line="197"/>
+        <location filename="../src/ui/qml/TorConfigurationPage.qml" line="198"/>
         <source>Enter one or more bridge relays (one per line):</source>
         <translation>Введіть один або декілька адрес ретрансляторів (один на лінію)</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/TorConfigurationPage.qml" line="212"/>
+        <location filename="../src/ui/qml/TorConfigurationPage.qml" line="213"/>
         <source>Back</source>
         <translation>Назад</translation>
     </message>
     <message>
-        <location filename="../src/ui/qml/TorConfigurationPage.qml" line="219"/>
+        <location filename="../src/ui/qml/TorConfigurationPage.qml" line="220"/>
         <source>Connect</source>
         <translation>Підключення</translation>
     </message>
