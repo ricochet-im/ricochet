@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
         qputenv("QMLSCENE_DEVICE", "softwarecontext");
 
     QApplication a(argc, argv);
-    a.setApplicationVersion(QLatin1String("1.1.3"));
+    a.setApplicationVersion(QLatin1String("1.1.4"));
     a.setOrganizationName(QStringLiteral("Ricochet"));
 
 #if !defined(Q_OS_WIN) && !defined(Q_OS_MAC)
