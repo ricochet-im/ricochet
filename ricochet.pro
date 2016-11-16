@@ -267,7 +267,8 @@ TRANSLATIONS += \
     translation/ricochet_nb.ts \
     translation/ricochet_pt_PT.ts \
     translation/ricochet_sq.ts \
-    translation/ricochet_zh_HK.ts
+    translation/ricochet_zh_HK.ts \
+    translation/ricochet_ja.ts
 
 isEmpty(QMAKE_LRELEASE) {
     contains(QMAKE_HOST.os,Windows):QMAKE_LRELEASE = $$[QT_INSTALL_BINS]/lrelease.exe

@@ -41,6 +41,7 @@ Name: "es"; MessagesFile: "compiler:Languages\Spanish.isl,translation\installer_
 Name: "et_EE"; MessagesFile: "translation\inno\Estonian.isl,translation\installer_et_EE.isl"
 Name: "fi"; MessagesFile: "compiler:Languages\Finnish.isl,translation\installer_fi.isl"
 Name: "fr"; MessagesFile: "compiler:Languages\French.isl,translation\installer_fr.isl"
+Name: "ja"; MessagesFile: "compiler:Languages\Japanese.isl,translation\installer_ja.isl"
 Name: "it"; MessagesFile: "compiler:Languages\Italian.isl,translation\installer_it.isl"
 Name: "it_IT"; MessagesFile: "compiler:Languages\Italian.isl,translation\installer_it_IT.isl"
 Name: "nb"; MessagesFile: "compiler:Languages\Norwegian.isl,translation\installer_nb.isl"

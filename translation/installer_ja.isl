@@ -1,0 +1,14 @@
+[Messages]
+WelcomeLabel2=この操作によりリコシェイがコンピュータにインストールされます
+[CustomMessages]
+AppTitle=リコシェイ：匿名のインスタントメッセンジャー
+UninstallShortcut=リコシェイをアンインストール
+RunShortcut=リコシェイを開く
+PortableDesc=ポータブル版インストレーションを希望しますか？
+PortableText=リコシェイはあなたのシステムにインストールするか、もしくはポータブルフォルダに取り出すことも可能です。ポータブルインストレーションの場合、異なるのコンピュータ上で動かしたり、暗号化されたハードドラウブ上で保存することが可能です。
+PortableTitle=インストレーションモード
+PortableOptInstall=インストール(推奨)
+PortableOptExtract=取り出す(ポータブル版)
+BtnExtract=取り出す
+ExtractDirText=リコシェイはこのフォルダに展開されます
+ExtractDirDesc=リコシェイをどこに解凍しますか？
