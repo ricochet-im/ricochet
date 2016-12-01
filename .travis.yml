@@ -1,4 +1,6 @@
 language: cpp
+dist: trusty
+sudo: required
 
 os:
   - linux
@@ -6,39 +8,24 @@ os:
 
 env:
   - CONFIG=Debug
-  - CONFIG=Release
+    #  - CONFIG=Release
 
 install:
-  - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
-      sudo apt-add-repository -y ppa:ubuntu-toolchain-r/test
-      && sudo apt-add-repository -y ppa:beineri/opt-qt541
-      && sudo apt-get -qq update
-      && sudo apt-get install -qq build-essential libssl-dev pkg-config
-      && sudo apt-get -qq install g++-4.8 libc6-i386 qt54tools qt54svg qt54multimedia qt54declarative qt54quick1 qt54quickcontrols qt54translations qt54imageformats 
-      && git clone https://github.com/google/protobuf.git
-      && cd protobuf
-      && git checkout v2.6.1
-      && ./autogen.sh
-      && ./configure
-      && make
-      && make check
-      && sudo make install
-      && cd ..
-      && sudo ldconfig
-      && export CXX="g++-4.8"
-      && export CC="gcc-4.8"
-      && sudo apt-get -f install
-      && sudo apt-get install -qq tor
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+         sudo apt-get update
+      && sudo apt-get install -qq libssl-dev libprotobuf-dev protobuf-compiler
+      && sudo apt-get install -qq qt5-qmake qt5-default qtbase5-dev qttools5-dev-tools qtdeclarative5-dev
       ;
-    else
+    fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
          brew update
       && brew install qt5
       && brew install protobuf
-      && chmod -R 755 /usr/local/opt/qt5/*
+      && brew install openssl
       ;
     fi
 
 script:
-  - /opt/qt54/bin/qt54-env.sh 
-  - /opt/qt54/bin/qmake ricochet.pro CONFIG+=$CONFIG
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then qmake -qt=qt5 CONFIG+=$CONFIG; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]];   then /usr/local/opt/qt5/bin/qmake CONFIG+=$CONFIG OPENSSLDIR=/usr/local/opt/openssl PROTOBUFDIR=/usr/local/opt/protobuf; fi
   - make
