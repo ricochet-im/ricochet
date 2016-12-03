@@ -29,8 +29,9 @@ Column {
         var conf = {
             'Socks4Proxy': null, 'Socks5Proxy': null, 'Socks5ProxyUsername': null,
             'Socks5ProxyPassword': null, 'HTTPSProxy': null, 'HTTPSProxyAuthenticator': null,
-            'FirewallPorts': null, 'FascistFirewall': null, 'Bridge': null, 'UseBridges': null,
-            'DisableNetwork': '0'
+            'ReachableAddresses': null, 'Bridge': null, 'UseBridges': null, 'DisableNetwork': '0',
+            // These are not set anymore, but are included here to clear old configurations
+            'FascistFirewall': null, 'FirewallPorts': null
         }
 
         if (proxyType === "socks4") {
@@ -48,8 +49,16 @@ Column {
         }
 
         if (allowedPorts.length > 0) {
-            conf['FirewallPorts'] = allowedPorts
-            conf['FascistFirewall'] = "1"
+            // Prepend *: to port-only fields
+            var ports = allowedPorts.split(',')
+            for (var i = 0; i < ports.length; i++) {
+                ports[i] = ports[i].trim()
+                if (ports[i].indexOf(':') < 0 && ports[i].indexOf('.') < 0) {
+                    ports[i] = "*:" + ports[i]
+                }
+            }
+
+            conf['ReachableAddresses'] = ports.join(', ')
         }
 
         if (bridges.length > 0) {
