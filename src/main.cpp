@@ -184,7 +184,14 @@ static bool initSettings(SettingsFile *settings, QLockFile **lockFile, QString &
 
     QDir dir(configPath);
     if (!dir.exists() && !dir.mkpath(QStringLiteral("."))) {
-        errorMessage = QStringLiteral("Cannot create directory: %1").arg(dir.path());
+#ifdef Q_OS_MAC
+        QString absolutePath = QFileInfo(QLatin1String(".")).absoluteFilePath();
+        if (absolutePath.startsWith(QLatin1String("/private")) ||
+            absolutePath.startsWith(QLatin1String("/Volumes")))
+            errorMessage = QStringLiteral("Please move Ricochet outside of the DMG before attempting to run it.");
+        else
+#endif
+            errorMessage = QStringLiteral("Cannot create directory: %1").arg(dir.path());
         return false;
     }
 
