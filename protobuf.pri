@@ -11,6 +11,13 @@ PROTOC = protoc
 unix {
     PKG_CONFIG = $$pkgConfigExecutable()
 
+    # All our dependency resolution depends on pkg-config. If it isn't
+    # available, the errors we will get subsequently are a lot more cryptic than
+    # this.
+    !system($$PKG_CONFIG --version 2>&1 > /dev/null) {
+        error("pkg-config executable is not available. please install it so I can find dependencies.")
+    }
+
     !contains(QT_CONFIG, no-pkg-config) {
         CONFIG += link_pkgconfig
         PKGCONFIG += protobuf
