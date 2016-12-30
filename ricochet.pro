@@ -106,21 +106,26 @@ win32-msvc2008|win32-msvc2010 {
 
 INCLUDEPATH += src
 
+win32|mac {
+    # For mac, this is necessary because homebrew does not link openssl .pc to
+    # /usr/local/lib/pkgconfig (presumably because it used to be a system
+    # package).
+    #
+    # Unfortunately, it is no longer really a system package, and we really
+    # need to know where it is.
+    isEmpty(OPENSSLDIR): error(You must pass OPENSSLDIR=path/to/openssl to qmake on this platform)
+}
+
 unix {
     !isEmpty(OPENSSLDIR) {
         INCLUDEPATH += $${OPENSSLDIR}/include
         LIBS += -L$${OPENSSLDIR}/lib -lcrypto
-    } else:macx:!packagesExist(libcrypto) {
-        # Fall back to the OS-provided 0.9.8 if no other libcrypto is present
-        LIBS += -lcrypto
     } else {
         CONFIG += link_pkgconfig
         PKGCONFIG += libcrypto
     }
 }
 win32 {
-    isEmpty(OPENSSLDIR):error(You must pass OPENSSLDIR=path/to/openssl to qmake on this platform)
-
     INCLUDEPATH += $${OPENSSLDIR}/include
 
     win32-g++ {
