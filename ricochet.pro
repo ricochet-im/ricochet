@@ -247,43 +247,41 @@ lupdate_only {
 
 # Translations
 TRANSLATIONS += \
-    translation/ricochet_en.ts \
-    translation/ricochet_it.ts \
-    translation/ricochet_es.ts \
-    translation/ricochet_da.ts \
-    translation/ricochet_pl.ts \
-    translation/ricochet_pt_BR.ts \
-    translation/ricochet_de.ts \
-    translation/ricochet_bg.ts \
-    translation/ricochet_cs.ts \
-    translation/ricochet_fi.ts \
-    translation/ricochet_fr.ts \
-    translation/ricochet_ru.ts \
-    translation/ricochet_uk.ts \
-    translation/ricochet_tr.ts \
-    translation/ricochet_nl_NL.ts \
-    translation/ricochet_fil_PH.ts \
-    translation/ricochet_sv.ts \
-    translation/ricochet_he.ts \
-    translation/ricochet_sl.ts \
-    translation/ricochet_zh.ts \
-    translation/ricochet_et_EE.ts \
-    translation/ricochet_it_IT.ts \
-    translation/ricochet_nb.ts \
-    translation/ricochet_pt_PT.ts \
-    translation/ricochet_sq.ts \
-    translation/ricochet_zh_HK.ts \
-    translation/ricochet_ja.ts
+    ricochet_en \
+    ricochet_it \
+    ricochet_es \
+    ricochet_da \
+    ricochet_pl \
+    ricochet_pt_BR \
+    ricochet_de \
+    ricochet_bg \
+    ricochet_cs \
+    ricochet_fi \
+    ricochet_fr \
+    ricochet_ru \
+    ricochet_uk \
+    ricochet_tr \
+    ricochet_nl_NL \
+    ricochet_fil_PH \
+    ricochet_sv \
+    ricochet_he \
+    ricochet_sl \
+    ricochet_zh \
+    ricochet_et_EE \
+    ricochet_it_IT \
+    ricochet_nb \
+    ricochet_pt_PT \
+    ricochet_sq \
+    ricochet_zh_HK \
+    ricochet_ja
 
-isEmpty(QMAKE_LRELEASE) {
+# Only build translations when creating the primary makefile.
+!build_pass: {
     contains(QMAKE_HOST.os,Windows):QMAKE_LRELEASE = $$[QT_INSTALL_BINS]/lrelease.exe
     else:QMAKE_LRELEASE = $$[QT_INSTALL_BINS]/lrelease
+    for (translation, TRANSLATIONS) {
+        system($$QMAKE_LRELEASE translation/$${translation}.ts -qm translation/$${translation}.qm)
+    }
 }
-
-updateqm.input = TRANSLATIONS
-updateqm.output = ${QMAKE_FILE_PATH}/${QMAKE_FILE_BASE}.qm
-updateqm.commands = $$QMAKE_LRELEASE ${QMAKE_FILE_IN} -qm ${QMAKE_FILE_PATH}/${QMAKE_FILE_BASE}.qm
-updateqm.CONFIG += no_link target_predeps
-QMAKE_EXTRA_COMPILERS += updateqm
 
 RESOURCES += translation/embedded.qrc
