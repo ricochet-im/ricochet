@@ -69,6 +69,7 @@ You will need:
  * Xcode (for toolchain)
  * Qt 5 - preferably the [Qt SDK](https://www.qt.io/download/)
  * Protocol Buffers (libprotobuf, protoc) - `brew install protobuf`
+ * pkg-config - `brew install pkg-config`
 
 You can either load `ricochet.pro` in Qt Creator and build normally, or build command-line with:
 ```sh
