@@ -321,10 +321,12 @@ int ConversationModel::indexOfIdentifier(MessageId identifier, bool isOutgoing) 
 void ConversationModel::prune()
 {
     const int history_limit = 1000;
-    while(messages.size() > history_limit)
+    if(messages.size() > history_limit)
     {
-        beginRemoveRows(QModelIndex(), messages.size()-1, messages.size()-1);
-        messages.removeLast();
+        beginRemoveRows(QModelIndex(), history_limit, messages.size()-1);
+        while(messages.size() > history_limit) {
+            messages.removeLast();
+        }
         endRemoveRows();
     }
 }
