@@ -117,6 +117,7 @@ void ConversationModel::sendMessage(const QString &text)
     beginInsertRows(QModelIndex(), 0, 0);
     messages.prepend(message);
     endInsertRows();
+    prune();
 }
 
 void ConversationModel::sendQueuedMessages()
@@ -185,6 +186,7 @@ void ConversationModel::messageReceived(const QString &text, const QDateTime &ti
     MessageData message(text, time, id, Received);
     messages.insert(row, message);
     endInsertRows();
+    prune();
 
     m_unreadCount++;
     emit unreadCountChanged();
@@ -316,3 +318,14 @@ int ConversationModel::indexOfIdentifier(MessageId identifier, bool isOutgoing) 
     return -1;
 }
 
+void ConversationModel::prune()
+{
+    const int history_limit = 1000;
+    if (messages.size() > history_limit) {
+        beginRemoveRows(QModelIndex(), history_limit, messages.size()-1);
+        while (messages.size() > history_limit) {
+            messages.removeLast();
+        }
+        endRemoveRows();
+    }
+}
