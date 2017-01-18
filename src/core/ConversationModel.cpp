@@ -179,7 +179,7 @@ void ConversationModel::messageReceived(const QString &text, const QDateTime &ti
         if (messages[i].status == Delivered) {
             break;
         }
-        if (messages[i].text == text && messages[i].identifier == id) {
+        if (messages[i].identifier == id && messages[i].text == text) {
             qDebug() << "duplicate incoming message" << id;
             return;
         }
