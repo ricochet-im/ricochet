@@ -5,7 +5,7 @@ Linux distributions. For source or other packages, visit the website above.
 
 You do not need to manually run or configure tor. An unmodified tor binary
 is included with this package, and Ricochet will run it automatically,
-similiar to Tor Browser. There isn't any option to use a system tor daemon,
+similar to Tor Browser. There isn't any option to use a system tor daemon,
 but Ricochet will use the tor binary from PATH if the bundled copy is removed.
 
 Once you run Ricochet, configuration will be stored in a 'config' directory
