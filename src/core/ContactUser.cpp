@@ -328,6 +328,7 @@ void ContactUser::deleteContact()
         qDebug() << "Cancelling request associated with contact to be deleted";
         m_contactRequest->cancel();
     }
+    Q_ASSERT(!m_contactRequest);
 
     emit contactDeleted(this);
 
