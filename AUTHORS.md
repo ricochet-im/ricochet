@@ -23,7 +23,7 @@
 * Ukrainian - l3rixon, nergal
 
 ### Thanks
-* Helder Ribeiro (@obvio171) - "Ricochet"
+* Helder S Ribeiro (@hsribei) - "Ricochet"
 * Robin Burchell (@rburchell)
 * prof7bit (TorChat) - Inspiration
 * Patrick Gray - invisible.im
