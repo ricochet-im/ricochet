@@ -365,6 +365,10 @@ message ChatAcknowledge {
 
 Acknowledge receipt of a *ChatMessage*.
 
+The *accepted* parameter indicates whether or not the message is to be
+considered delivered to the client. If it is false, then the message delivery
+should be considered to have failed.
+
 ### Contact request channel
 
 | Channel            | Detail |
