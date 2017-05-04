@@ -262,7 +262,6 @@ message ChannelResult {
     }
 
     optional CommonError common_error = 3;
-    optional string error_message = 4;
 
     // As with OpenChannel, it is valid to extend this message with fields specific
     // to the channel type.
@@ -429,7 +428,6 @@ message Response {
     }
 
     required Status status = 1;
-    optional string error_message = 2;
 }
 ```
 
