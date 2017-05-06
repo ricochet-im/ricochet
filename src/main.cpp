@@ -72,6 +72,10 @@ int main(int argc, char *argv[])
     a.setWindowIcon(QIcon(QStringLiteral(":/icons/ricochet.svg")));
 #endif
 
+#if defined(Q_OS_MAC)
+    a.setQuitOnLastWindowClosed(false);
+#endif
+
     QScopedPointer<SettingsFile> settings(new SettingsFile);
     SettingsObject::setDefaultFile(settings.data());
 
