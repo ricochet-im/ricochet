@@ -161,7 +161,8 @@ bool SettingsFilePrivate::checkDirPermissions(const QString &path)
     QFile file(path);
     if ((file.permissions() & ~ignored) != desired) {
         qDebug() << "Correcting permissions on configuration directory";
-        if (!file.setPermissions(desired)) {
+        if (!file.setPermissions(desired))
+        {
             qWarning() << "Correcting permissions on configuration directory failed";
             return false;
         }
