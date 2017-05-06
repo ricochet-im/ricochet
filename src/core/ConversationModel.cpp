@@ -293,7 +293,11 @@ QVariant ConversationModel::data(const QModelIndex &index, int role) const
     const MessageData &message = messages[index.row()];
 
     switch (role) {
-        case Qt::DisplayRole: return message.text;
+        case Qt::DisplayRole:
+          if (message.text.startsWith(QStringLiteral("/me "))) {
+            return QStringLiteral("* %1 %2").arg(m_contact->nickname(), message.text.mid(4, -1));
+          }
+          return message.text;
         case TimestampRole: return message.time;
         case IsOutgoingRole: return message.status != Received;
         case StatusRole: return message.status;
