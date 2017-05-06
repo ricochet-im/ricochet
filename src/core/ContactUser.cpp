@@ -288,7 +288,7 @@ QString ContactUser::nickname() const
 
 void ContactUser::setNickname(const QString &nickname)
 {
-    m_settings->write("nickname", nickname);
+    m_settings->write("nickname", nickname.toHtmlEscaped());
 }
 
 QString ContactUser::hostname() const
