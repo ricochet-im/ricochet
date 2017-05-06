@@ -1,0 +1,20 @@
+Source: ricochet
+Maintainer: Peter Ludikovsky <peter@ludikovsky.name>
+Section: misc
+Priority: optional
+Standards-Version: 3.9.6
+Build-Depends: debhelper (>=9), libssl-dev (>=1.0.0), pkg-config, gcc (>=4.9) | clang (>=3.5), make (>=4.0), libprotobuf-dev, protobuf-compiler, qt5-qmake (>=5.1.0), qtbase5-dev (>=5.1.0), qtchooser (>=5.1.0), qtbase5-dev (>=5.1.0), qttools5-dev-tools (>=5.1.0), qtdeclarative5-dev (>=5.1.0), qtmultimedia5-dev (>=5.1.0), qml-module-qtquick-controls (>=5.1.0), qml-module-qtquick-dialogs (>=5.1.0), tor (>=0.2.5.12)
+
+Package: ricochet
+Architecture: any
+Depends: libssl1.0.0 (>=1.0.0), tor (>=0.2.5.12), ${shlibs:Depends}, ${misc:Depends}
+Description: Anonymous peer-to-peer instant messaging
+ Ricochet is an experiment with a different kind of instant messaging that
+ doesn't trust anyone with your identity, your contact list, or your
+ communications.
+  * You can chat without exposing your identity (or IP address) to anyone
+  * Nobody can discover who your contacts are or when you talk
+    (metadata-free!)
+  * There are no servers or operators to compromise that could access your
+    information
+  * It's cross-platform and easy for non-technical users
