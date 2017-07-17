@@ -1,57 +1,41 @@
+# Last Modified: Mon Jul 17 00:25:38 2017
+#include <tunables/global>
+
 # AppArmor Ricochet profile for Debian GNU/Linux
 # This profile is Free Software and released under the same license as Ricochet
 # itself.
 #
 # Copyleft 2015 Jacob Appelbaum <jacob@appelbaum.net>
 #
-#include <tunables/global>
+
 
 /usr/bin/ricochet {
+  #include <abstractions/audio>
   #include <abstractions/kde>
   #include <abstractions/nameservice>
-  #include <abstractions/audio>
 
-  # Allow TCP connections
   network inet stream,
   network inet6 stream,
 
-  /usr/lib/** mr,
-
-  # Allow Ricochet to exec pulseaudio
-  # This makes me very sad...
-  # as it seems that you can't isolate playing and recording :(
-  /usr/bin/pulseaudio ixr,
-
-  # Allow Ricochet to exec tor
-  /usr/bin/tor ixr,
-  /usr/share/tor/geoip  r,
-  /usr/share/tor/geoip6 r,
-  # Tor in turn needs various things
-  /proc/sys/kernel/random/uuid r,
-  /sys/devices/system/cpu/ r,
-
-  # Allow Ricochet to read itself
-  /usr/bin/ricochet r,
+  /dev/dri/ r,
+  /etc/machine-id r,
   /proc/[0-9]*/cmdline r,
-
-  # Allow Ricochet to generate audio
-  owner /{dev,run}/shm/pulse-shm* m,
-
-  # Allow Ricochet to draw the UX
-  /sys/devices/pci[0-9]*/**/uevent r,
+  /proc/[0-9]*/environ r,
+  /proc/sys/kernel/random/uuid r,
+  /run/tor/control.authcookie r,
   /run/udev/data/* r,
-
-  # Allow Ricochet to load GTK themes
+  /sys/devices/pci[0-9]*/**/config r,
+  /sys/devices/pci[0-9]*/**/uevent r,
+  /sys/devices/system/cpu/ r,
+  /usr/bin/pulseaudio rix,
+  /usr/bin/ricochet r,
+  /usr/bin/tor rix,
+  /usr/lib/** mr,
   /usr/share/themes/* r,
   /usr/share/themes/**/* r,
-  owner @{HOME}/.gtkrc-2.0 r,
-
-  # Allow Ricochet to look up all your machine's PII
-  # Why does it need this stuff? BAD NEWS BEARS
-  /etc/machine-id r,
   /var/lib/dbus/machine-id r,
-  /etc/udev/udev.conf r,
-
+  owner /{dev,run}/shm/pulse-shm* m,
+  owner @{HOME}/.gtkrc-2.0 r,
   owner @{HOME}/.local/share/Ricochet/ rw,
-  owner @{HOME}/.local/share/Ricochet/** rwmk,
+  owner @{HOME}/.local/share/Ricochet/** mrwk,
 }
