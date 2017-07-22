@@ -61,6 +61,16 @@ contains(DEFINES, RICOCHET_NO_PORTABLE) {
         scalable_icon.files = icons/ricochet.svg
         INSTALLS += target shortcut icon scalable_icon
 
+        system(cp -f contrib/usr.bin.ricochet-apparmor contrib/usr.bin.ricochet)
+        QMAKE_CLEAN += contrib/usr.bin.ricochet
+        apparmor_profile.files = contrib/usr.bin.ricochet
+        !isEmpty(APPARMORDIR) {
+                apparmor_profile.path = $${APPARMORDIR}/
+        } else {
+                apparmor_profile.path = /etc/apparmor.d/
+	}
+        INSTALLS += apparmor_profile
+
         exists(tor) {
             message(Adding bundled Tor to installations)
             bundletor.path = /usr/lib/ricochet/tor/
