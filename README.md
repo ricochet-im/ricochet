@@ -1,4 +1,6 @@
 ### Anonymous metadata-resistant instant messaging that just works.
+[![Bountysource](https://img.shields.io/bountysource/team/ricochet/activity.svg)](https://www.bountysource.com/teams/ricochet) Support the project. Create a bounty or donate regularly.
+
 Ricochet is an experimental kind of instant messaging that **doesn't trust anyone** with your identity, your contact list, or your communications.
 
 * You can chat without exposing your identity (or IP address) to *anyone*
