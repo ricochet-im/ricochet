@@ -20,5 +20,12 @@
         <file>ricochet_he.qm</file>
         <file>ricochet_sl.qm</file>
         <file>ricochet_zh.qm</file>
+        <file>ricochet_et_EE.qm</file>
+        <file>ricochet_it_IT.qm</file>
+        <file>ricochet_nb.qm</file>
+        <file>ricochet_pt_PT.qm</file>
+        <file>ricochet_sq.qm</file>
+        <file>ricochet_zh_HK.qm</file>
+        <file>ricochet_ja.qm</file>
     </qresource>
 </RCC>

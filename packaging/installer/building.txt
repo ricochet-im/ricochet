@@ -1,7 +1,6 @@
 Building the installer requires Inno Setup; see http://www.jrsoftware.org/isinfo.php
 
-Place tor.exe and ricochet.exe in this directory. You will also need the CRT
-DLLs from the version of MSVC used, e.g. msvcp110.dll and msvcr110.dll.
+Place tor.exe and ricochet.exe in this directory.
 
 In console:
 

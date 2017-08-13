@@ -11,6 +11,13 @@ PROTOC = protoc
 unix {
     PKG_CONFIG = $$pkgConfigExecutable()
 
+    # All our dependency resolution depends on pkg-config. If it isn't
+    # available, the errors we will get subsequently are a lot more cryptic than
+    # this.
+    !system($$PKG_CONFIG --version 2>&1 > /dev/null) {
+        error("pkg-config executable is not available. please install it so I can find dependencies.")
+    }
+
     !contains(QT_CONFIG, no-pkg-config) {
         CONFIG += link_pkgconfig
         PKGCONFIG += protobuf
@@ -32,7 +39,7 @@ win32 {
     isEmpty(PROTOBUFDIR):error(You must pass PROTOBUFDIR=path/to/protobuf to qmake on this platform)
     INCLUDEPATH += $${PROTOBUFDIR}/include
     LIBS += -L$${PROTOBUFDIR}/lib -lprotobuf
-    PROTOC = $${PROTOBUFDIR}/bin/protoc.exe
+    contains(QMAKE_HOST.os,Windows):PROTOC = $${PROTOBUFDIR}/bin/protoc.exe
 }
 
 protobuf_decl.name = protobuf headers

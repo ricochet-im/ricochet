@@ -1,0 +1,31 @@
+language: cpp
+dist: trusty
+sudo: required
+
+os:
+  - linux
+  - osx
+
+env:
+  - CONFIG=Debug
+    #  - CONFIG=Release
+
+install:
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+         sudo apt-get update
+      && sudo apt-get install -qq libssl-dev libprotobuf-dev protobuf-compiler
+      && sudo apt-get install -qq qt5-qmake qt5-default qtbase5-dev qttools5-dev-tools qtdeclarative5-dev
+      ;
+    fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+         brew update
+      && brew install qt5
+      && brew install protobuf
+      && brew install openssl
+      ;
+    fi
+
+script:
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then qmake -qt=qt5 CONFIG+=$CONFIG; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]];   then /usr/local/opt/qt5/bin/qmake CONFIG+=$CONFIG OPENSSLDIR=/usr/local/opt/openssl PROTOBUFDIR=/usr/local/opt/protobuf; fi
+  - make

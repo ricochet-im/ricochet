@@ -117,6 +117,7 @@ void ConversationModel::sendMessage(const QString &text)
     beginInsertRows(QModelIndex(), 0, 0);
     messages.prepend(message);
     endInsertRows();
+    prune();
 }
 
 void ConversationModel::sendQueuedMessages()
@@ -170,6 +171,20 @@ void ConversationModel::sendQueuedMessages()
 
 void ConversationModel::messageReceived(const QString &text, const QDateTime &time, MessageId id)
 {
+    // In rare cases an outgoing acknowledgement packet can be lost which
+    // causes the other party to resend the message. Discard the duplicate.
+    // We don't need to resend the old acknowledgement packet because
+    // it is identical to the one for the duplicate message.
+    for (int i = 0; i < messages.size() && i < 5; i++) {
+        if (messages[i].status == Delivered) {
+            break;
+        }
+        if (messages[i].identifier == id && messages[i].text == text) {
+            qDebug() << "duplicate incoming message" << id;
+            return;
+        }
+    }
+
     // To preserve conversation flow despite potentially high latency, incoming messages
     // are positioned above the last unacknowledged messages to the peer. We assume that
     // the peer hadn't seen any unacknowledged message when this message was sent.
@@ -185,6 +200,7 @@ void ConversationModel::messageReceived(const QString &text, const QDateTime &ti
     MessageData message(text, time, id, Received);
     messages.insert(row, message);
     endInsertRows();
+    prune();
 
     m_unreadCount++;
     emit unreadCountChanged();
@@ -316,3 +332,14 @@ int ConversationModel::indexOfIdentifier(MessageId identifier, bool isOutgoing) 
     return -1;
 }
 
+void ConversationModel::prune()
+{
+    const int history_limit = 1000;
+    if (messages.size() > history_limit) {
+        beginRemoveRows(QModelIndex(), history_limit, messages.size()-1);
+        while (messages.size() > history_limit) {
+            messages.removeLast();
+        }
+        endRemoveRows();
+    }
+}

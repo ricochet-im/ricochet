@@ -1,6 +1,7 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.0
 import QtQuick.Layouts 1.0
+import im.ricochet 1.0
 
 ColumnLayout {
     anchors {
@@ -46,6 +47,45 @@ ColumnLayout {
             }
         }
     }
+
+    RowLayout {
+        z: 2
+        Label { text: qsTr("Language") }
+
+        ComboBox {
+            id: languageBox
+            model: languageModel
+            textRole: "nativeName"
+            currentIndex: languageModel.rowForLocaleID(uiSettings.data.language)
+            Layout.minimumWidth: 200
+
+            LanguagesModel {
+                id: languageModel
+            }
+
+            onActivated: {
+                var localeID = languageModel.localeID(index)
+                uiSettings.write("language", localeID)
+                restartBubble.displayed = true
+                bubbleResetTimer.start()
+            }
+
+            Bubble {
+                id: restartBubble
+                target: languageBox
+                text: qsTr("Restart Ricochet to apply changes")
+                displayed: false
+                horizontalAlignment: Qt.AlignRight
+
+                Timer {
+                    id: bubbleResetTimer
+                    interval: 3000
+                    onTriggered: restartBubble.displayed = false
+                }
+            }
+        }
+    }
+
 
     Item {
         Layout.fillHeight: true

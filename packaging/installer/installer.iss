@@ -18,14 +18,12 @@ VersionInfoDescription=Ricochet
 VersionInfoProductName=Ricochet
 WizardImageFile=SetupModern11.bmp
 ShowLanguageDialog=no
-SetupIconFile=..\..\icons\ricochet.ico
+SetupIconFile=ricochet.ico
 [Files]
 Source: ricochet.exe; DestDir: {app}; DestName: ricochet.exe; Flags: replacesameversion
-Source: ..\..\LICENSE; DestDir: {app}
+Source: LICENSE; DestDir: {app}
 Source: tor.exe; DestDir: {app}; Flags: replacesameversion uninsrestartdelete
 Source: Qt\*; DestDir: {app}; Flags: recursesubdirs
-Source: MSVCP120.DLL; DestDir: {app}; Flags: skipifsourcedoesntexist
-Source: MSVCR120.DLL; DestDir: {app}; Flags: skipifsourcedoesntexist
 [Icons]
 Name: {group}\Ricochet; Filename: {app}\ricochet.exe; WorkingDir: {app}; Comment: {cm:AppTitle}; Check: not IsPortableInstall
 Name: {group}\{cm:UninstallShortcut}; Filename: {uninstallexe}; Check: not IsPortableInstall
@@ -34,24 +32,31 @@ Name: {app}\config; Type: filesandordirs
 [Run]
 Filename: {app}\ricochet.exe; WorkingDir: {app}; Description: {cm:RunShortcut}; Flags: postinstall nowait
 [Languages]
-Name: "bg"; MessagesFile: "..\..\translation\inno\Bulgarian.isl,..\..\translation\installer_bg.isl"
-Name: "cs"; MessagesFile: "compiler:Languages\Czech.isl,..\..\translation\installer_cs.isl"
-Name: "da"; MessagesFile: "compiler:Languages\Danish.isl,..\..\translation\installer_da.isl"
-Name: "de"; MessagesFile: "compiler:Languages\German.isl,..\..\translation\installer_de.isl"
-Name: "en"; MessagesFile: "compiler:Default.isl,..\..\translation\installer_en.isl"
-Name: "es"; MessagesFile: "compiler:Languages\Spanish.isl,..\..\translation\installer_es.isl"
-Name: "fi"; MessagesFile: "compiler:Languages\Finnish.isl,..\..\translation\installer_fi.isl"
-Name: "fr"; MessagesFile: "compiler:Languages\French.isl,..\..\translation\installer_fr.isl"
-Name: "it"; MessagesFile: "compiler:Languages\Italian.isl,..\..\translation\installer_it.isl"
-Name: "nl_NL"; MessagesFile: "compiler:Languages\Dutch.isl,..\..\translation\installer_nl_NL.isl"
-Name: "pt_BR"; MessagesFile: "compiler:Languages\BrazilianPortuguese.isl,..\..\translation\installer_pt_BR.isl"
-Name: "ru"; MessagesFile: "compiler:Languages\Russian.isl,..\..\translation\installer_ru.isl"
-Name: "sv"; MessagesFile: "..\..\translation\inno\Swedish.isl,..\..\translation\installer_sv.isl"
-Name: "tr"; MessagesFile: "compiler:Languages\Turkish.isl,..\..\translation\installer_tr.isl"
-Name: "uk"; MessagesFile: "compiler:Languages\Ukrainian.isl,..\..\translation\installer_uk.isl"
-Name: "pl"; MessagesFile: "compiler:Languages\Polish.isl,..\..\translation\installer_pl.isl"
-Name: "sl"; MessagesFile: "compiler:Languages\Slovenian.isl,..\..\translation\installer_sl.isl"
-Name: "zh"; MessagesFile: "..\..\translation\inno\ChineseSimplified.isl,..\..\translation\installer_zh.isl"
+Name: "bg"; MessagesFile: "translation\inno\Bulgarian.isl,translation\installer_bg.isl"
+Name: "cs"; MessagesFile: "compiler:Languages\Czech.isl,translation\installer_cs.isl"
+Name: "da"; MessagesFile: "compiler:Languages\Danish.isl,translation\installer_da.isl"
+Name: "de"; MessagesFile: "compiler:Languages\German.isl,translation\installer_de.isl"
+Name: "en"; MessagesFile: "compiler:Default.isl,translation\installer_en.isl"
+Name: "es"; MessagesFile: "compiler:Languages\Spanish.isl,translation\installer_es.isl"
+Name: "et_EE"; MessagesFile: "translation\inno\Estonian.isl,translation\installer_et_EE.isl"
+Name: "fi"; MessagesFile: "compiler:Languages\Finnish.isl,translation\installer_fi.isl"
+Name: "fr"; MessagesFile: "compiler:Languages\French.isl,translation\installer_fr.isl"
+Name: "ja"; MessagesFile: "compiler:Languages\Japanese.isl,translation\installer_ja.isl"
+Name: "it"; MessagesFile: "compiler:Languages\Italian.isl,translation\installer_it.isl"
+Name: "it_IT"; MessagesFile: "compiler:Languages\Italian.isl,translation\installer_it_IT.isl"
+Name: "nb"; MessagesFile: "compiler:Languages\Norwegian.isl,translation\installer_nb.isl"
+Name: "nl_NL"; MessagesFile: "compiler:Languages\Dutch.isl,translation\installer_nl_NL.isl"
+Name: "pt_BR"; MessagesFile: "compiler:Languages\BrazilianPortuguese.isl,translation\installer_pt_BR.isl"
+Name: "pt_PT"; MessagesFile: "compiler:Languages\Portuguese.isl,translation\installer_pt_PT.isl"
+Name: "ru"; MessagesFile: "compiler:Languages\Russian.isl,translation\installer_ru.isl"
+Name: "sv"; MessagesFile: "translation\inno\Swedish.isl,translation\installer_sv.isl"
+Name: "sq"; MessagesFile: "translation\inno\Albanian.isl,translation\installer_sq.isl"
+Name: "tr"; MessagesFile: "compiler:Languages\Turkish.isl,translation\installer_tr.isl"
+Name: "uk"; MessagesFile: "compiler:Languages\Ukrainian.isl,translation\installer_uk.isl"
+Name: "pl"; MessagesFile: "compiler:Languages\Polish.isl,translation\installer_pl.isl"
+Name: "sl"; MessagesFile: "compiler:Languages\Slovenian.isl,translation\installer_sl.isl"
+Name: "zh"; MessagesFile: "translation\inno\ChineseSimplified.isl,translation\installer_zh.isl"
+Name: "zh_HK"; MessagesFile: "translation\inno\ChineseSimplified.isl,translation\installer_zh_HK.isl"
 
 [Code]
 // http://www.vincenzo.net/isxkb/index.php?title=Obtaining_the_application's_version

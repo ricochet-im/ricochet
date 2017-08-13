@@ -262,7 +262,6 @@ message ChannelResult {
     }
 
     optional CommonError common_error = 3;
-    optional string error_message = 4;
 
     // As with OpenChannel, it is valid to extend this message with fields specific
     // to the channel type.
@@ -366,6 +365,10 @@ message ChatAcknowledge {
 
 Acknowledge receipt of a *ChatMessage*.
 
+The *accepted* parameter indicates whether or not the message is to be
+considered delivered to the client. If it is false, then the message delivery
+should be considered to have failed.
+
 ### Contact request channel
 
 | Channel            | Detail |
@@ -429,7 +432,6 @@ message Response {
     }
 
     required Status status = 1;
-    optional string error_message = 2;
 }
 ```
 

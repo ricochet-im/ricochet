@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="de">
+<TS version="2.1" language="sq">
 <context>
     <name>AboutPreferences</name>
     <message>
@@ -15,17 +15,17 @@
     <message>
         <location filename="../src/ui/qml/AddContactDialog.qml" line="51"/>
         <source>Share your Ricochet ID to allow connection requests</source>
-        <translation>Teile deine Ricochet ID, um Verbindungsanfragen zu erlauben</translation>
+        <translation>Ndani me të tjerët ID-në tuaj Ricochet që të lejoni kërkesa lidhjesh</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/AddContactDialog.qml" line="107"/>
         <source>Cancel</source>
-        <translation>Abbrechen</translation>
+        <translation>Anulojeni</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/AddContactDialog.qml" line="112"/>
         <source>Add</source>
-        <translation>Hinzufügen</translation>
+        <translation>Shtoje</translation>
     </message>
 </context>
 <context>
@@ -33,22 +33,22 @@
     <message>
         <location filename="../src/ui/qml/ContactActions.qml" line="40"/>
         <source>Open Window</source>
-        <translation>Fenster öffnen</translation>
+        <translation>Hap Dritare</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactActions.qml" line="44"/>
         <source>Details...</source>
-        <translation>Details...</translation>
+        <translation>Hollësi…</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactActions.qml" line="48"/>
         <source>Rename</source>
-        <translation>Umbenennen</translation>
+        <translation>Riemërtojeni</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactActions.qml" line="53"/>
         <source>Remove</source>
-        <translation>Entfernen</translation>
+        <translation>Hiqe</translation>
     </message>
 </context>
 <context>
@@ -56,27 +56,27 @@
     <message>
         <location filename="../src/ui/qml/ContactIDField.qml" line="41"/>
         <source>&lt;b&gt;%1&lt;/b&gt; is already your contact</source>
-        <translation>&lt;b&gt;%1&lt;/b&gt; ist bereits dein Kontakt</translation>
+        <translation>&lt;b&gt;%1&lt;/b&gt; është tashmë kontakt i juaji</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactIDField.qml" line="43"/>
         <source>You can&apos;t add yourself as a contact</source>
-        <translation>Du kannst dich nicht selbst als Kontakt hinzufügen</translation>
+        <translation>S’mund të shtoni veten si kontakt</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactIDField.qml" line="45"/>
         <source>Enter an ID starting with &lt;b&gt;ricochet:&lt;/b&gt;</source>
-        <translation>Gebe eine ID an, beginnend mit &lt;b&gt;ricochet:&lt;b&gt;</translation>
+        <translation>Jepni një ID që fillon me &lt;b&gt;ricochet:&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactIDField.qml" line="81"/>
         <source>Copied to clipboard</source>
-        <translation>In die Zwischenablage kopiert</translation>
+        <translation>U kopjua në të papastër</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactIDField.qml" line="93"/>
         <source>Copy</source>
-        <translation>Kopieren</translation>
+        <translation>Kopjoje</translation>
     </message>
 </context>
 <context>
@@ -84,27 +84,27 @@
     <message>
         <location filename="../src/ui/qml/ContactList.qml" line="76"/>
         <source>Online</source>
-        <translation>Online</translation>
+        <translation>Në linjë</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactList.qml" line="77"/>
         <source>Offline</source>
-        <translation>Offline</translation>
+        <translation>Jo në linjë</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactList.qml" line="78"/>
         <source>Requests</source>
-        <translation>Anfragen</translation>
+        <translation>Kërkesa</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactList.qml" line="79"/>
         <source>Rejected</source>
-        <translation>Abgewiesen</translation>
+        <translation>E hedhur tej</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactList.qml" line="80"/>
         <source>Outdated</source>
-        <translation>veraltet</translation>
+        <translation>E vjetruar</translation>
     </message>
 </context>
 <context>
@@ -112,63 +112,63 @@
     <message>
         <location filename="../src/ui/qml/ContactPreferences.qml" line="98"/>
         <source>Date added:</source>
-        <translation>Hinzugefügt am:</translation>
+        <translation>Datë shtimi:</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactPreferences.qml" line="106"/>
         <source>Last seen:</source>
-        <translation>Zuletzt gesehen:</translation>
+        <translation>Parë së fundi më:</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactPreferences.qml" line="116"/>
         <source>Request:</source>
-        <translation>Anfrage:</translation>
+        <translation>Kërkesë:</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactPreferences.qml" line="126"/>
         <source>Pending connection</source>
-        <translation>Laufende Verbindung</translation>
+        <translation>Lidhje në pritje të pranimit</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactPreferences.qml" line="127"/>
         <source>Delivered</source>
-        <translation>Gesendet</translation>
+        <translation>Të dërguar</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactPreferences.qml" line="128"/>
         <source>Accepted</source>
-        <translation>Akzeptiert</translation>
+        <translation>Të pranuara</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactPreferences.qml" line="129"/>
         <source>Error</source>
-        <translation>Fehler</translation>
+        <translation>Gabim</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactPreferences.qml" line="130"/>
         <source>Rejected</source>
-        <translation>Abgewiesen</translation>
+        <translation>E hedhur tej</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactPreferences.qml" line="134"/>
         <source>%1 (Connected)</source>
         <extracomment>%1 status, e.g. &quot;Accepted&quot;</extracomment>
-        <translation>%1 (Verbunden)</translation>
+        <translation>%1 (I lidhur)</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactPreferences.qml" line="140"/>
         <source>Response:</source>
-        <translation>Antwort:</translation>
+        <translation>Përgjigje:</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactPreferences.qml" line="163"/>
         <source>Rename</source>
-        <translation>Umbenennen</translation>
+        <translation>Riemërtojeni</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactPreferences.qml" line="170"/>
         <source>Remove</source>
-        <translation>Entfernen</translation>
+        <translation>Hiqe</translation>
     </message>
 </context>
 <context>
@@ -176,17 +176,17 @@
     <message>
         <location filename="../src/ui/qml/ContactRequestDialog.qml" line="55"/>
         <source>Someone new is asking to connect to you</source>
-        <translation>Jemand unbekanntes möchte sich zu Ihnen verbinden</translation>
+        <translation>Dikush i ri po kërkon të lidhet me ju</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactRequestDialog.qml" line="102"/>
         <source>Reject</source>
-        <translation>Abweisen</translation>
+        <translation>Hidheni tej</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactRequestDialog.qml" line="107"/>
         <source>Accept</source>
-        <translation>Annehmen</translation>
+        <translation>Pranojeni</translation>
     </message>
 </context>
 <context>
@@ -199,12 +199,12 @@
     <message>
         <location filename="../src/ui/qml/ContactRequestFields.qml" line="29"/>
         <source>Name:</source>
-        <translation>Name:</translation>
+        <translation>Emër:</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactRequestFields.qml" line="40"/>
         <source>Message:</source>
-        <translation>Nachricht:</translation>
+        <translation>Mesazh:</translation>
     </message>
 </context>
 <context>
@@ -212,43 +212,43 @@
     <message>
         <location filename="../src/ui/qml/GeneralPreferences.qml" line="13"/>
         <source>Use a single window for conversations</source>
-        <translation>Nutze ein einzelnes Fenster für Unterhaltungen</translation>
+        <translation>Përdor një dritare të vetme për bisedat</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/GeneralPreferences.qml" line="21"/>
         <source>Open links in default browser without prompting</source>
-        <translation>Öffne Links im Standardbrowser ohne Nachfrage</translation>
+        <translation>Hapi lidhjet në shfletuesin parazgjedhje, pa pyetur</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/GeneralPreferences.qml" line="29"/>
         <source>Play audio notifications</source>
-        <translation>Benachrichtigungston abspielen</translation>
+        <translation>Luaji njoftimet audion</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/GeneralPreferences.qml" line="38"/>
         <source>Volume</source>
-        <translation>Lautstärke</translation>
+        <translation>Volum</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/GeneralPreferences.qml" line="53"/>
         <source>Language</source>
-        <translation type="unfinished">Sprache</translation>
+        <translation type="unfinished">Gjuhë</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/GeneralPreferences.qml" line="76"/>
         <source>Restart Ricochet to apply changes</source>
-        <translation type="unfinished">Starte Ricochet neu, um Änderungung anzuwenden</translation>
+        <translation type="unfinished">Riniseni Ricochet-in që të zbatohen ndryshimet</translation>
     </message>
 </context>
 <context>
     <name>LanguagePreferences</name>
     <message>
         <source>Select Language</source>
-        <translation type="vanished">Sprache auswählen</translation>
+        <translation type="vanished">Përzgjidhni Gjuhë</translation>
     </message>
     <message>
         <source>Restart Ricochet to apply changes</source>
-        <translation type="vanished">Starte Ricochet neu, um Änderungung anzuwenden</translation>
+        <translation type="vanished">Riniseni Ricochet-in që të zbatohen ndryshimet</translation>
     </message>
 </context>
 <context>
@@ -256,7 +256,7 @@
     <message>
         <location filename="../src/ui/LanguagesModel.cpp" line="43"/>
         <source>System default</source>
-        <translation>Systemvorgabe</translation>
+        <translation>Parazgjedhje sistemi</translation>
     </message>
 </context>
 <context>
@@ -264,7 +264,7 @@
     <message>
         <location filename="../src/main.cpp" line="81"/>
         <source>Ricochet Error</source>
-        <translation>Ricochet Fehler</translation>
+        <translation>Gabim Ricochet-i</translation>
     </message>
 </context>
 <context>
@@ -272,17 +272,17 @@
     <message>
         <location filename="../src/ui/qml/MainToolBar.qml" line="19"/>
         <source>Add Contact</source>
-        <translation>Kontakt hinzufügen</translation>
+        <translation>Shtoni Kontakt</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/MainToolBar.qml" line="28"/>
         <source>Preferences</source>
-        <translation>Einstellungen</translation>
+        <translation>Parapëlqime</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/MainToolBar.qml" line="75"/>
         <source>Click to add contacts</source>
-        <translation>Klicken, um Kontakte hinzuzufügen</translation>
+        <translation>Klikoni që të shtoni kontakte</translation>
     </message>
 </context>
 <context>
@@ -290,12 +290,12 @@
     <message>
         <location filename="../src/ui/MainWindow.cpp" line="191"/>
         <source>Remove %1</source>
-        <translation>Entferne %1</translation>
+        <translation>Hiqe</translation>
     </message>
     <message>
         <location filename="../src/ui/MainWindow.cpp" line="192"/>
         <source>Do you want to permanently remove %1?</source>
-        <translation>Möchten Sie 1% permanent entfernen?</translation>
+        <translation>Doni të hiqet %1 përgjithmonë?</translation>
     </message>
 </context>
 <context>
@@ -304,37 +304,37 @@
         <location filename="../src/ui/qml/MessageDelegate.qml" line="26"/>
         <source>%1 is offline</source>
         <extracomment>%1 nickname</extracomment>
-        <translation>%1 ist offline</translation>
+        <translation>%1 s’është në linjë</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/MessageDelegate.qml" line="135"/>
         <source>Copy ID</source>
-        <translation>Kopiere ID</translation>
+        <translation>Kopjo ID-në</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/MessageDelegate.qml" line="135"/>
         <source>Copy Link</source>
-        <translation>Kopiere Link</translation>
+        <translation>Kopjo Lidhjen</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/MessageDelegate.qml" line="140"/>
         <source>Open with Browser</source>
-        <translation>Im Browser öffnen</translation>
+        <translation>Hape me Shfletues</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/MessageDelegate.qml" line="154"/>
         <source>Add as Contact</source>
-        <translation>Als Kontakt hinzufügen</translation>
+        <translation>Shtojeni si Kontakt</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/MessageDelegate.qml" line="166"/>
         <source>Copy Message</source>
-        <translation>Nachricht kopieren</translation>
+        <translation>Kopjo Mesazhin</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/MessageDelegate.qml" line="173"/>
         <source>Copy Selection</source>
-        <translation>Auswahl kopieren</translation>
+        <translation>Kopjo Përzgjedhjen</translation>
     </message>
 </context>
 <context>
@@ -342,18 +342,18 @@
     <message>
         <location filename="../src/ui/qml/MessageDialogWrapper.qml" line="8"/>
         <source>Remove %1</source>
-        <translation>Entferne %1</translation>
+        <translation>Hiqe %1</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/MessageDialogWrapper.qml" line="10"/>
         <source>Do you want to permanently remove %1?</source>
         <extracomment>%1 nickname</extracomment>
-        <translation>Möchten Sie %1 permanent entfernen?</translation>
+        <translation>Doni të hiqet %1 përgjithmonë?</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/MessageDialogWrapper.qml" line="11"/>
         <source>This contact will no longer be able to message you, and will be notified about the removal. They may choose to send a new connection request.</source>
-        <translation>Dieser Kontakt wird Ihnen nicht mehr schreiben können, und wird über das Entfernen in Kenntnis gesetzt. Eine neue Verbindungsanfrage kann von ihm/ihr gesendet werden.</translation>
+        <translation>Ky kontakt s’do të jetë më në gjendje t’ju dërgojë mesazhe, dhe do të njoftohet për heqjen. Ai mund të zgjedhë t’ju dërgojë një kërkesë të re lidhjeje.</translation>
     </message>
 </context>
 <context>
@@ -361,22 +361,22 @@
     <message>
         <location filename="../src/ui/qml/NetworkSetupWizard.qml" line="100"/>
         <source>This computer&apos;s Internet connection is free of obstacles. I would like to connect directly to the Tor network.</source>
-        <translation>Die Internetverbindung dieses Rechners ist frei von Hindernissen. Ich möchte gerne eine direkte Verbindung zum Tor-Netzwerk herstellen.</translation>
+        <translation>Lidhja në Internet e këtij kompjuteri është pa pengesa. Do të doja të lidhem drejtpërsëdrejti me rrjetin Tor.</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/NetworkSetupWizard.qml" line="107"/>
         <source>Connect</source>
-        <translation>Verbinden</translation>
+        <translation>Lidhu</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/NetworkSetupWizard.qml" line="124"/>
         <source>This computer&apos;s Internet connection is censored, filtered, or proxied. I need to configure network settings.</source>
-        <translation>Die Internetverbindung dieses Rechners ist zensiert, gefiltert oder vermittelt.</translation>
+        <translation>Lidhja në Internet e këtij kompjuteri është e censuruar, e filtruar ose bëhet përmes një ndërmjetësi. Kam nevojë të formësoj rregullime rrjeti.</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/NetworkSetupWizard.qml" line="131"/>
         <source>Configure</source>
-        <translation>Konfigurieren</translation>
+        <translation>Formësojeni</translation>
     </message>
 </context>
 <context>
@@ -384,23 +384,23 @@
     <message>
         <location filename="../src/ui/qml/OfflineStateItem.qml" line="107"/>
         <source>Configure</source>
-        <translation>Konfigurieren</translation>
+        <translation>Formësojeni</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/OfflineStateItem.qml" line="115"/>
         <source>Details</source>
-        <translation>Details</translation>
+        <translation>Hollësi</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/OfflineStateItem.qml" line="143"/>
         <source>Connection failed</source>
-        <translation>Verbindung gescheitert</translation>
+        <translation>Lidhja dështoi</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/OfflineStateItem.qml" line="169"/>
         <source>Connecting…</source>
         <extracomment>\u2026 is ellipsis</extracomment>
-        <translation>Verbindet...</translation>
+        <translation>Po lidhet…</translation>
     </message>
 </context>
 <context>
@@ -408,27 +408,27 @@
     <message>
         <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="40"/>
         <source>&lt;b&gt;Warning!&lt;/b&gt; Opening links with your default browser will harm your security and anonymity.&lt;br&gt;&lt;br&gt;You can &lt;a href=&apos;.&apos;&gt;copy to the clipboard&lt;/a&gt; instead.</source>
-        <translation>&lt;b&gt;Warnung!&lt;/b&gt; Links mit deinem Standardbrowser zu öffnen kann deine Sicherheit und Anonymität beeinträchtigen.&lt;br&gt; &lt;br&gt;Du kannst stattdessen &lt;a href=&apos;.&apos;&gt;in die Zwischenablage kopieren.&lt;/a&gt;</translation>
+        <translation>&lt;b&gt;Kujdes!&lt;/b&gt; Hapja e lidhjeve me shfletuesin tuaj parazgjedhje do të rrezikojë sigurinë dhe anonimitetin tuaj.&lt;br&gt;&lt;br&gt;Më mirë mund &lt;a href=&apos;.&apos;&gt;ta kopjoni në të papastër&lt;/a&gt;.</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="59"/>
         <source>Don&apos;t ask again for links from %1</source>
-        <translation>Nicht mehr fragen bei Links von %1</translation>
+        <translation>Mos pyet sërish për lidhje nga %1</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="65"/>
         <source>Don&apos;t ask again for any links (not recommended!)</source>
-        <translation>Für keinen Link mehr nachfragen (nicht empfohlen!)</translation>
+        <translation>Mos pyet më, për çfarëdo lidhje (e pakëshillueshme!)</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="72"/>
         <source>Open Browser</source>
-        <translation>Browser öffnen</translation>
+        <translation>Hap Shfletues</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="84"/>
         <source>Cancel</source>
-        <translation>Abbrechen</translation>
+        <translation>Anulojeni</translation>
     </message>
 </context>
 <context>
@@ -436,16 +436,16 @@
     <message>
         <location filename="../src/ui/qml/PreferencesDialog.qml" line="12"/>
         <source>Ricochet Preferences</source>
-        <translation>Ricochet Einstellungen</translation>
+        <translation>Parapëlqime për Ricochet-in</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/PreferencesDialog.qml" line="41"/>
         <source>General</source>
-        <translation>Allgemein</translation>
+        <translation>Të përgjithshme</translation>
     </message>
     <message>
         <source>Language</source>
-        <translation type="vanished">Sprache</translation>
+        <translation type="vanished">Gjuhë</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/PreferencesDialog.qml" line="46"/>
@@ -460,7 +460,7 @@
     <message>
         <location filename="../src/ui/qml/PreferencesDialog.qml" line="56"/>
         <source>About</source>
-        <translation>Über</translation>
+        <translation>Mbi</translation>
     </message>
 </context>
 <context>
@@ -468,7 +468,7 @@
     <message>
         <location filename="../src/ui/qml/MainWindow.qml" line="29"/>
         <source>Preference</source>
-        <translation>Einstellung</translation>
+        <translation>Parapëlqim</translation>
     </message>
 </context>
 <context>
@@ -476,12 +476,12 @@
     <message>
         <location filename="../src/ui/qml/StartupStatusPage.qml" line="18"/>
         <source>The Tor process was not started successfully. This is most likely an installation or system error.</source>
-        <translation>Der Tor-Prozess konnte nicht gestartet werden. Es handelt sich wahrscheinlich um einen Installations- oder einen Systemfehler.</translation>
+        <translation>Procesi Tor s’u nis me sukses. Ka shumë të ngjarë që ky të jetë një gabim instalimi ose sistemi.</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/StartupStatusPage.qml" line="49"/>
         <source>Quit</source>
-        <translation>Beenden</translation>
+        <translation>Dilni</translation>
     </message>
 </context>
 <context>
@@ -490,27 +490,27 @@
         <location filename="../src/ui/qml/TorBootstrapStatus.qml" line="17"/>
         <source>Connecting to the Tor network…</source>
         <extracomment>\u2026 is ellipsis</extracomment>
-        <translation>Verbinde zum Tor-Netzwerk...</translation>
+        <translation>Po lidhet me rrjetin TOR…</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorBootstrapStatus.qml" line="51"/>
         <source>Back</source>
-        <translation>Zurück</translation>
+        <translation>Mbrapsht</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorBootstrapStatus.qml" line="58"/>
         <source>Hide details</source>
-        <translation>Details verstecken</translation>
+        <translation>Fshihi hollësitë</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorBootstrapStatus.qml" line="58"/>
         <source>Show details</source>
-        <translation>Details anzeigen</translation>
+        <translation>Shfaqi hollësitë</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorBootstrapStatus.qml" line="70"/>
         <source>Done</source>
-        <translation>Fertig</translation>
+        <translation>U bë</translation>
     </message>
 </context>
 <context>
@@ -518,84 +518,84 @@
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="73"/>
         <source>Does this computer need a proxy to access the internet?</source>
-        <translation>Benötigt dieser Rechner einen Proxy um sich mit dem Internet zu verbinden?</translation>
+        <translation>Ka nevojë për ndërmjetës ky kompjuter, që të lidhet në internet?</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="85"/>
         <source>Proxy type:</source>
-        <translation>Proxytyp:</translation>
+        <translation>Lloj ndërmjetësi:</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="90"/>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="92"/>
         <source>None</source>
-        <translation>Keiner</translation>
+        <translation>Asnjë</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="107"/>
         <source>Address:</source>
-        <translation>Adresse:</translation>
+        <translation>Adresë:</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="116"/>
         <source>IP address or hostname</source>
-        <translation>IP-Adresse oder Rechnername</translation>
+        <translation>Adresë IP ose emër strehe</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="119"/>
         <source>Port:</source>
-        <translation>Port:</translation>
+        <translation>Portë:</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="130"/>
         <source>Username:</source>
-        <translation>Benutzername:</translation>
+        <translation>Emër përdoruesi:</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="140"/>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="150"/>
         <source>Optional</source>
-        <translation>Fakultativ</translation>
+        <translation>Opsionale</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="143"/>
         <source>Password:</source>
-        <translation>Passwort:</translation>
+        <translation>Fjalëkalim:</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="160"/>
         <source>Does this computer&apos;s Internet connection go through a firewall that only allows connections to certain ports?</source>
-        <translation>Geht die Verbindung dieses Rechners durch eine Firewall, die nur Verbindungen zu manchen Ports erlaubt?</translation>
+        <translation>A kalon përmes një firewall-i lidhja internet e këtij kompjuteri, i cili lejon lidhje vetëm te disa prej portave?</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="171"/>
         <source>Allowed ports:</source>
-        <translation>Erlaubte Ports:</translation>
+        <translation>Porta të lejuara:</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="178"/>
         <source>Example: 80,443</source>
-        <translation>Beispiel: 80, 443</translation>
+        <translation>Shembull: 80,443</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="189"/>
         <source>If this computer&apos;s Internet connection is censored, you will need to obtain and use bridge relays.</source>
-        <translation>Sollte die Internetverbindung dieses Rechners zensiert sein, werden Sie Brücken-Relays  finden und nutzen müssen.</translation>
+        <translation>Nëse lidhja në Internet e këtij kompjuteri është e censuruar, do t’ju duhet të merrni dhe përdorni &lt;i&gt;bridge relays&lt;/i&gt;.</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="198"/>
         <source>Enter one or more bridge relays (one per line):</source>
-        <translation>Geben Sie ein oder mehrere Brücken-Relays an (eins pro Zeile):</translation>
+        <translation>Jepni një ose më tepër &lt;i&gt;bridge relays&lt;/i&gt; (një për rresht):</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="213"/>
         <source>Back</source>
-        <translation>Zurück</translation>
+        <translation>Mbrapsht</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="220"/>
         <source>Connect</source>
-        <translation>Verbinden</translation>
+        <translation>Lidhu</translation>
     </message>
 </context>
 <context>
@@ -603,51 +603,51 @@
     <message>
         <location filename="../src/ui/qml/TorPreferences.qml" line="25"/>
         <source>Running:</source>
-        <translation>Läuft:</translation>
+        <translation>Xhiron:</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorPreferences.qml" line="26"/>
         <location filename="../src/ui/qml/TorPreferences.qml" line="28"/>
         <location filename="../src/ui/qml/TorPreferences.qml" line="30"/>
         <source>Yes</source>
-        <translation>Ja</translation>
+        <translation>Po</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorPreferences.qml" line="26"/>
         <location filename="../src/ui/qml/TorPreferences.qml" line="28"/>
         <location filename="../src/ui/qml/TorPreferences.qml" line="30"/>
         <source>No</source>
-        <translation>Nein</translation>
+        <translation>Jo</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorPreferences.qml" line="26"/>
         <source>External</source>
-        <translation>Extern</translation>
+        <translation>I jashtëm</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorPreferences.qml" line="27"/>
         <source>Control connected:</source>
-        <translation>Control verbunden:</translation>
+        <translation>I lidhur me kontrollin:</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorPreferences.qml" line="29"/>
         <source>Circuits established:</source>
-        <translation>Circuits aufgebaut:</translation>
+        <translation>Qarqe të vendosur:</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorPreferences.qml" line="31"/>
         <source>Hidden service:</source>
-        <translation>Versteckter Service:</translation>
+        <translation>Shërbim i fshehur:</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorPreferences.qml" line="32"/>
         <source>Online</source>
-        <translation>Online</translation>
+        <translation>Në linjë</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorPreferences.qml" line="32"/>
         <source>Offline</source>
-        <translation>Offline</translation>
+        <translation>Jo në linjë</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorPreferences.qml" line="33"/>
@@ -658,12 +658,12 @@
         <location filename="../src/ui/qml/TorPreferences.qml" line="60"/>
         <source>Error: &lt;b&gt;%1&lt;/b&gt;</source>
         <extracomment>%1 is error message</extracomment>
-        <translation>Fehler: &lt;b&gt;%1&lt;/b&gt;</translation>
+        <translation>Gabim: &lt;b&gt;%1&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorPreferences.qml" line="76"/>
         <source>Configure</source>
-        <translation>Konfigurieren</translation>
+        <translation>Formësojeni</translation>
     </message>
 </context>
 <context>
@@ -672,30 +672,30 @@
         <location filename="../src/ui/qml/TorStateWidget.qml" line="9"/>
         <location filename="../src/ui/qml/TorStateWidget.qml" line="20"/>
         <source>Connection failed</source>
-        <translation>Verbindung gescheitert</translation>
+        <translation>Lidhja dështoi</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorStateWidget.qml" line="12"/>
         <location filename="../src/ui/qml/TorStateWidget.qml" line="22"/>
         <source>Connecting…</source>
         <extracomment>\u2026 is ellipsis</extracomment>
-        <translation>Verbinde...</translation>
+        <translation>Po lidhet…</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorStateWidget.qml" line="25"/>
         <source>Connecting… (%1%)</source>
         <extracomment>%1 is progress percentage, e.g. 100</extracomment>
-        <translation>Verbinde... (%1%)</translation>
+        <translation>Po lidhet… (%1%)</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorStateWidget.qml" line="32"/>
         <source>Online</source>
-        <translation>Online</translation>
+        <translation>Në linjë</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorStateWidget.qml" line="34"/>
         <source>Connected</source>
-        <translation>Verbunden</translation>
+        <translation>I lidhur</translation>
     </message>
 </context>
 </TS>

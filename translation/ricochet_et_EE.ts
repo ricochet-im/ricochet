@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="de">
+<TS version="2.1" language="et_EE">
 <context>
     <name>AboutPreferences</name>
     <message>
@@ -15,17 +15,17 @@
     <message>
         <location filename="../src/ui/qml/AddContactDialog.qml" line="51"/>
         <source>Share your Ricochet ID to allow connection requests</source>
-        <translation>Teile deine Ricochet ID, um Verbindungsanfragen zu erlauben</translation>
+        <translation>Jaga oma Ricochet ID ühenduste jaoks</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/AddContactDialog.qml" line="107"/>
         <source>Cancel</source>
-        <translation>Abbrechen</translation>
+        <translation>Tühista</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/AddContactDialog.qml" line="112"/>
         <source>Add</source>
-        <translation>Hinzufügen</translation>
+        <translation>Lisa</translation>
     </message>
 </context>
 <context>
@@ -33,22 +33,22 @@
     <message>
         <location filename="../src/ui/qml/ContactActions.qml" line="40"/>
         <source>Open Window</source>
-        <translation>Fenster öffnen</translation>
+        <translation>Ava aken</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactActions.qml" line="44"/>
         <source>Details...</source>
-        <translation>Details...</translation>
+        <translation>Detailid...</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactActions.qml" line="48"/>
         <source>Rename</source>
-        <translation>Umbenennen</translation>
+        <translation>Nimeta ümber</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactActions.qml" line="53"/>
         <source>Remove</source>
-        <translation>Entfernen</translation>
+        <translation>Eemalda</translation>
     </message>
 </context>
 <context>
@@ -56,27 +56,27 @@
     <message>
         <location filename="../src/ui/qml/ContactIDField.qml" line="41"/>
         <source>&lt;b&gt;%1&lt;/b&gt; is already your contact</source>
-        <translation>&lt;b&gt;%1&lt;/b&gt; ist bereits dein Kontakt</translation>
+        <translation>&lt;b&gt;%1&lt;/b&gt; on juba sinu kontaktides</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactIDField.qml" line="43"/>
         <source>You can&apos;t add yourself as a contact</source>
-        <translation>Du kannst dich nicht selbst als Kontakt hinzufügen</translation>
+        <translation>Sa ei saa lisada ennast kontaktiks</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactIDField.qml" line="45"/>
         <source>Enter an ID starting with &lt;b&gt;ricochet:&lt;/b&gt;</source>
-        <translation>Gebe eine ID an, beginnend mit &lt;b&gt;ricochet:&lt;b&gt;</translation>
+        <translation>Sisesta ID koos &lt;b&gt;ricochet:&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactIDField.qml" line="81"/>
         <source>Copied to clipboard</source>
-        <translation>In die Zwischenablage kopiert</translation>
+        <translation>Kopeeri lõikeväljale</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactIDField.qml" line="93"/>
         <source>Copy</source>
-        <translation>Kopieren</translation>
+        <translation>Kopeeri</translation>
     </message>
 </context>
 <context>
@@ -84,27 +84,27 @@
     <message>
         <location filename="../src/ui/qml/ContactList.qml" line="76"/>
         <source>Online</source>
-        <translation>Online</translation>
+        <translation>Võrgus</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactList.qml" line="77"/>
         <source>Offline</source>
-        <translation>Offline</translation>
+        <translation>Võrgust väljas</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactList.qml" line="78"/>
         <source>Requests</source>
-        <translation>Anfragen</translation>
+        <translation>Päringud</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactList.qml" line="79"/>
         <source>Rejected</source>
-        <translation>Abgewiesen</translation>
+        <translation>Tagasi lükatud</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactList.qml" line="80"/>
         <source>Outdated</source>
-        <translation>veraltet</translation>
+        <translation>Vananenud</translation>
     </message>
 </context>
 <context>
@@ -112,63 +112,63 @@
     <message>
         <location filename="../src/ui/qml/ContactPreferences.qml" line="98"/>
         <source>Date added:</source>
-        <translation>Hinzugefügt am:</translation>
+        <translation>Lisatud kuupäeval:</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactPreferences.qml" line="106"/>
         <source>Last seen:</source>
-        <translation>Zuletzt gesehen:</translation>
+        <translation>Viimati nähtud:</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactPreferences.qml" line="116"/>
         <source>Request:</source>
-        <translation>Anfrage:</translation>
+        <translation>Päring:</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactPreferences.qml" line="126"/>
         <source>Pending connection</source>
-        <translation>Laufende Verbindung</translation>
+        <translation>Ootel ühendus</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactPreferences.qml" line="127"/>
         <source>Delivered</source>
-        <translation>Gesendet</translation>
+        <translation>Tarnitud</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactPreferences.qml" line="128"/>
         <source>Accepted</source>
-        <translation>Akzeptiert</translation>
+        <translation>Aksepteeritud</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactPreferences.qml" line="129"/>
         <source>Error</source>
-        <translation>Fehler</translation>
+        <translation>Viga</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactPreferences.qml" line="130"/>
         <source>Rejected</source>
-        <translation>Abgewiesen</translation>
+        <translation>Tagasi lükatud</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactPreferences.qml" line="134"/>
         <source>%1 (Connected)</source>
         <extracomment>%1 status, e.g. &quot;Accepted&quot;</extracomment>
-        <translation>%1 (Verbunden)</translation>
+        <translation>%1 (Ühendatud)</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactPreferences.qml" line="140"/>
         <source>Response:</source>
-        <translation>Antwort:</translation>
+        <translation>Vastus:</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactPreferences.qml" line="163"/>
         <source>Rename</source>
-        <translation>Umbenennen</translation>
+        <translation>Muuda nime</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactPreferences.qml" line="170"/>
         <source>Remove</source>
-        <translation>Entfernen</translation>
+        <translation>Eemalda</translation>
     </message>
 </context>
 <context>
@@ -176,17 +176,17 @@
     <message>
         <location filename="../src/ui/qml/ContactRequestDialog.qml" line="55"/>
         <source>Someone new is asking to connect to you</source>
-        <translation>Jemand unbekanntes möchte sich zu Ihnen verbinden</translation>
+        <translation>Keegi uus palub sinuga ühenduda</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactRequestDialog.qml" line="102"/>
         <source>Reject</source>
-        <translation>Abweisen</translation>
+        <translation>Lükka tagasi</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactRequestDialog.qml" line="107"/>
         <source>Accept</source>
-        <translation>Annehmen</translation>
+        <translation>Luba</translation>
     </message>
 </context>
 <context>
@@ -199,12 +199,12 @@
     <message>
         <location filename="../src/ui/qml/ContactRequestFields.qml" line="29"/>
         <source>Name:</source>
-        <translation>Name:</translation>
+        <translation>Nimi:</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/ContactRequestFields.qml" line="40"/>
         <source>Message:</source>
-        <translation>Nachricht:</translation>
+        <translation>Sõnum:</translation>
     </message>
 </context>
 <context>
@@ -212,43 +212,43 @@
     <message>
         <location filename="../src/ui/qml/GeneralPreferences.qml" line="13"/>
         <source>Use a single window for conversations</source>
-        <translation>Nutze ein einzelnes Fenster für Unterhaltungen</translation>
+        <translation>Kasuta eraldi akent suhtlemiseks</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/GeneralPreferences.qml" line="21"/>
         <source>Open links in default browser without prompting</source>
-        <translation>Öffne Links im Standardbrowser ohne Nachfrage</translation>
+        <translation>Ava lingid vaikimsi brauseriga ilma märguandeta</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/GeneralPreferences.qml" line="29"/>
         <source>Play audio notifications</source>
-        <translation>Benachrichtigungston abspielen</translation>
+        <translation>Mängi heli märguandeid</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/GeneralPreferences.qml" line="38"/>
         <source>Volume</source>
-        <translation>Lautstärke</translation>
+        <translation>Heli valjus</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/GeneralPreferences.qml" line="53"/>
         <source>Language</source>
-        <translation type="unfinished">Sprache</translation>
+        <translation type="unfinished">Keel</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/GeneralPreferences.qml" line="76"/>
         <source>Restart Ricochet to apply changes</source>
-        <translation type="unfinished">Starte Ricochet neu, um Änderungung anzuwenden</translation>
+        <translation type="unfinished">Taaskäivita Ricochet muudatuste jaoks </translation>
     </message>
 </context>
 <context>
     <name>LanguagePreferences</name>
     <message>
         <source>Select Language</source>
-        <translation type="vanished">Sprache auswählen</translation>
+        <translation type="vanished">Keelevalik</translation>
     </message>
     <message>
         <source>Restart Ricochet to apply changes</source>
-        <translation type="vanished">Starte Ricochet neu, um Änderungung anzuwenden</translation>
+        <translation type="vanished">Taaskäivita Ricochet muudatuste jaoks </translation>
     </message>
 </context>
 <context>
@@ -256,7 +256,7 @@
     <message>
         <location filename="../src/ui/LanguagesModel.cpp" line="43"/>
         <source>System default</source>
-        <translation>Systemvorgabe</translation>
+        <translation>Süsteemi keel</translation>
     </message>
 </context>
 <context>
@@ -264,7 +264,7 @@
     <message>
         <location filename="../src/main.cpp" line="81"/>
         <source>Ricochet Error</source>
-        <translation>Ricochet Fehler</translation>
+        <translation>Ricocheti viga</translation>
     </message>
 </context>
 <context>
@@ -272,17 +272,17 @@
     <message>
         <location filename="../src/ui/qml/MainToolBar.qml" line="19"/>
         <source>Add Contact</source>
-        <translation>Kontakt hinzufügen</translation>
+        <translation>Lisa kontakt</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/MainToolBar.qml" line="28"/>
         <source>Preferences</source>
-        <translation>Einstellungen</translation>
+        <translation>Eelistused</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/MainToolBar.qml" line="75"/>
         <source>Click to add contacts</source>
-        <translation>Klicken, um Kontakte hinzuzufügen</translation>
+        <translation>Kliki kontaktide lisamiseks</translation>
     </message>
 </context>
 <context>
@@ -290,12 +290,12 @@
     <message>
         <location filename="../src/ui/MainWindow.cpp" line="191"/>
         <source>Remove %1</source>
-        <translation>Entferne %1</translation>
+        <translation>Eemalda %1</translation>
     </message>
     <message>
         <location filename="../src/ui/MainWindow.cpp" line="192"/>
         <source>Do you want to permanently remove %1?</source>
-        <translation>Möchten Sie 1% permanent entfernen?</translation>
+        <translation>Kas sa tahad tingimata eemaldada: %1?</translation>
     </message>
 </context>
 <context>
@@ -304,37 +304,37 @@
         <location filename="../src/ui/qml/MessageDelegate.qml" line="26"/>
         <source>%1 is offline</source>
         <extracomment>%1 nickname</extracomment>
-        <translation>%1 ist offline</translation>
+        <translation>%1 on võrgust väljas</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/MessageDelegate.qml" line="135"/>
         <source>Copy ID</source>
-        <translation>Kopiere ID</translation>
+        <translation>Kopeeri ID</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/MessageDelegate.qml" line="135"/>
         <source>Copy Link</source>
-        <translation>Kopiere Link</translation>
+        <translation>Kopeeri link</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/MessageDelegate.qml" line="140"/>
         <source>Open with Browser</source>
-        <translation>Im Browser öffnen</translation>
+        <translation>Ava koos veebilehitsejaga</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/MessageDelegate.qml" line="154"/>
         <source>Add as Contact</source>
-        <translation>Als Kontakt hinzufügen</translation>
+        <translation>Lisa kontaktina</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/MessageDelegate.qml" line="166"/>
         <source>Copy Message</source>
-        <translation>Nachricht kopieren</translation>
+        <translation>Kopeeri sõnum</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/MessageDelegate.qml" line="173"/>
         <source>Copy Selection</source>
-        <translation>Auswahl kopieren</translation>
+        <translation>Kopeeri valik</translation>
     </message>
 </context>
 <context>
@@ -342,18 +342,18 @@
     <message>
         <location filename="../src/ui/qml/MessageDialogWrapper.qml" line="8"/>
         <source>Remove %1</source>
-        <translation>Entferne %1</translation>
+        <translation>Eemalda %1</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/MessageDialogWrapper.qml" line="10"/>
         <source>Do you want to permanently remove %1?</source>
         <extracomment>%1 nickname</extracomment>
-        <translation>Möchten Sie %1 permanent entfernen?</translation>
+        <translation>Kas sa tahad tingimata eemaldada %1?</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/MessageDialogWrapper.qml" line="11"/>
         <source>This contact will no longer be able to message you, and will be notified about the removal. They may choose to send a new connection request.</source>
-        <translation>Dieser Kontakt wird Ihnen nicht mehr schreiben können, und wird über das Entfernen in Kenntnis gesetzt. Eine neue Verbindungsanfrage kann von ihm/ihr gesendet werden.</translation>
+        <translation>See kontakt ei saa sulle sõnumeid saata ja on märgitud eemaldamiseks. Kontakt saab saata sulle uue päringu ühendamiseks.</translation>
     </message>
 </context>
 <context>
@@ -361,22 +361,22 @@
     <message>
         <location filename="../src/ui/qml/NetworkSetupWizard.qml" line="100"/>
         <source>This computer&apos;s Internet connection is free of obstacles. I would like to connect directly to the Tor network.</source>
-        <translation>Die Internetverbindung dieses Rechners ist frei von Hindernissen. Ich möchte gerne eine direkte Verbindung zum Tor-Netzwerk herstellen.</translation>
+        <translation>Selle arvuti interneti ühendus on vaba takistustest. Tahaksin ühenduda Tor võrku.</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/NetworkSetupWizard.qml" line="107"/>
         <source>Connect</source>
-        <translation>Verbinden</translation>
+        <translation>Ühendus</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/NetworkSetupWizard.qml" line="124"/>
         <source>This computer&apos;s Internet connection is censored, filtered, or proxied. I need to configure network settings.</source>
-        <translation>Die Internetverbindung dieses Rechners ist zensiert, gefiltert oder vermittelt.</translation>
+        <translation>Selle arvuti interneti ühendus on senseeritud, filtreeritud või proksi all. Vajan seadistamaks võrguühendust.</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/NetworkSetupWizard.qml" line="131"/>
         <source>Configure</source>
-        <translation>Konfigurieren</translation>
+        <translation>Seadistus</translation>
     </message>
 </context>
 <context>
@@ -384,23 +384,23 @@
     <message>
         <location filename="../src/ui/qml/OfflineStateItem.qml" line="107"/>
         <source>Configure</source>
-        <translation>Konfigurieren</translation>
+        <translation>Seadistamine</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/OfflineStateItem.qml" line="115"/>
         <source>Details</source>
-        <translation>Details</translation>
+        <translation>Detailid</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/OfflineStateItem.qml" line="143"/>
         <source>Connection failed</source>
-        <translation>Verbindung gescheitert</translation>
+        <translation>Ühenduse viga</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/OfflineStateItem.qml" line="169"/>
         <source>Connecting…</source>
         <extracomment>\u2026 is ellipsis</extracomment>
-        <translation>Verbindet...</translation>
+        <translation>Ühendumine...</translation>
     </message>
 </context>
 <context>
@@ -408,27 +408,27 @@
     <message>
         <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="40"/>
         <source>&lt;b&gt;Warning!&lt;/b&gt; Opening links with your default browser will harm your security and anonymity.&lt;br&gt;&lt;br&gt;You can &lt;a href=&apos;.&apos;&gt;copy to the clipboard&lt;/a&gt; instead.</source>
-        <translation>&lt;b&gt;Warnung!&lt;/b&gt; Links mit deinem Standardbrowser zu öffnen kann deine Sicherheit und Anonymität beeinträchtigen.&lt;br&gt; &lt;br&gt;Du kannst stattdessen &lt;a href=&apos;.&apos;&gt;in die Zwischenablage kopieren.&lt;/a&gt;</translation>
+        <translation>&lt;b&gt;Hoiatus!&lt;/b&gt; Lingi avamine sinu veebilehitsejaga võib vähendada sinu turvalisust ja anonüümsust.&lt;br&gt;&lt;br&gt;Sa võid hoopis&lt;a href=&apos;.&apos;&gt;kopeerida lõikeväljale&lt;/a&gt; .</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="59"/>
         <source>Don&apos;t ask again for links from %1</source>
-        <translation>Nicht mehr fragen bei Links von %1</translation>
+        <translation>Ära küsi enam linke %1</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="65"/>
         <source>Don&apos;t ask again for any links (not recommended!)</source>
-        <translation>Für keinen Link mehr nachfragen (nicht empfohlen!)</translation>
+        <translation>Ära küsi rohkem mitte ühegi linkide kohta (ei ole soovitatud!)</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="72"/>
         <source>Open Browser</source>
-        <translation>Browser öffnen</translation>
+        <translation>Ava Brauser</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/OpenBrowserDialog.qml" line="84"/>
         <source>Cancel</source>
-        <translation>Abbrechen</translation>
+        <translation>Tühista</translation>
     </message>
 </context>
 <context>
@@ -436,21 +436,21 @@
     <message>
         <location filename="../src/ui/qml/PreferencesDialog.qml" line="12"/>
         <source>Ricochet Preferences</source>
-        <translation>Ricochet Einstellungen</translation>
+        <translation>Ricochet seadistused</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/PreferencesDialog.qml" line="41"/>
         <source>General</source>
-        <translation>Allgemein</translation>
+        <translation>Üldine</translation>
     </message>
     <message>
         <source>Language</source>
-        <translation type="vanished">Sprache</translation>
+        <translation type="vanished">Keel</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/PreferencesDialog.qml" line="46"/>
         <source>Contacts</source>
-        <translation>Kontakte</translation>
+        <translation>Kontaktid</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/PreferencesDialog.qml" line="51"/>
@@ -460,7 +460,7 @@
     <message>
         <location filename="../src/ui/qml/PreferencesDialog.qml" line="56"/>
         <source>About</source>
-        <translation>Über</translation>
+        <translation>Lähemalt</translation>
     </message>
 </context>
 <context>
@@ -468,7 +468,7 @@
     <message>
         <location filename="../src/ui/qml/MainWindow.qml" line="29"/>
         <source>Preference</source>
-        <translation>Einstellung</translation>
+        <translation>Eelistused</translation>
     </message>
 </context>
 <context>
@@ -476,12 +476,12 @@
     <message>
         <location filename="../src/ui/qml/StartupStatusPage.qml" line="18"/>
         <source>The Tor process was not started successfully. This is most likely an installation or system error.</source>
-        <translation>Der Tor-Prozess konnte nicht gestartet werden. Es handelt sich wahrscheinlich um einen Installations- oder einen Systemfehler.</translation>
+        <translation>Tor protsesside käivitamine ei ole õnnestunud. See on tavaliselt paigaldusel või süsteemiveal.</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/StartupStatusPage.qml" line="49"/>
         <source>Quit</source>
-        <translation>Beenden</translation>
+        <translation>Lahku</translation>
     </message>
 </context>
 <context>
@@ -490,27 +490,27 @@
         <location filename="../src/ui/qml/TorBootstrapStatus.qml" line="17"/>
         <source>Connecting to the Tor network…</source>
         <extracomment>\u2026 is ellipsis</extracomment>
-        <translation>Verbinde zum Tor-Netzwerk...</translation>
+        <translation>Ühendumine Tor võrku...</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorBootstrapStatus.qml" line="51"/>
         <source>Back</source>
-        <translation>Zurück</translation>
+        <translation>Tagasi</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorBootstrapStatus.qml" line="58"/>
         <source>Hide details</source>
-        <translation>Details verstecken</translation>
+        <translation>Peida detailid</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorBootstrapStatus.qml" line="58"/>
         <source>Show details</source>
-        <translation>Details anzeigen</translation>
+        <translation>Näita detaile</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorBootstrapStatus.qml" line="70"/>
         <source>Done</source>
-        <translation>Fertig</translation>
+        <translation>Tehtud</translation>
     </message>
 </context>
 <context>
@@ -518,28 +518,28 @@
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="73"/>
         <source>Does this computer need a proxy to access the internet?</source>
-        <translation>Benötigt dieser Rechner einen Proxy um sich mit dem Internet zu verbinden?</translation>
+        <translation>Kas see arvuti vajab interneti ühendamiseks proksit?</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="85"/>
         <source>Proxy type:</source>
-        <translation>Proxytyp:</translation>
+        <translation>Proksi tüüp:</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="90"/>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="92"/>
         <source>None</source>
-        <translation>Keiner</translation>
+        <translation>Ei ole</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="107"/>
         <source>Address:</source>
-        <translation>Adresse:</translation>
+        <translation>Aadress:</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="116"/>
         <source>IP address or hostname</source>
-        <translation>IP-Adresse oder Rechnername</translation>
+        <translation>IP aadress või hostinimi</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="119"/>
@@ -549,53 +549,53 @@
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="130"/>
         <source>Username:</source>
-        <translation>Benutzername:</translation>
+        <translation>Kasutajanimi:</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="140"/>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="150"/>
         <source>Optional</source>
-        <translation>Fakultativ</translation>
+        <translation>Valikuline</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="143"/>
         <source>Password:</source>
-        <translation>Passwort:</translation>
+        <translation>Parool:</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="160"/>
         <source>Does this computer&apos;s Internet connection go through a firewall that only allows connections to certain ports?</source>
-        <translation>Geht die Verbindung dieses Rechners durch eine Firewall, die nur Verbindungen zu manchen Ports erlaubt?</translation>
+        <translation>Kas see arvuti vajab interneti ühenduseks läbi tulemüüri ainult teatuid porte?</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="171"/>
         <source>Allowed ports:</source>
-        <translation>Erlaubte Ports:</translation>
+        <translation>Lubatud pordid:</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="178"/>
         <source>Example: 80,443</source>
-        <translation>Beispiel: 80, 443</translation>
+        <translation>Näide: 80.443</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="189"/>
         <source>If this computer&apos;s Internet connection is censored, you will need to obtain and use bridge relays.</source>
-        <translation>Sollte die Internetverbindung dieses Rechners zensiert sein, werden Sie Brücken-Relays  finden und nutzen müssen.</translation>
+        <translation>Kui selle arvuti internetiühendus on senseeritud, siis vajad ja pead saama kasutada sildühendusi.</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="198"/>
         <source>Enter one or more bridge relays (one per line):</source>
-        <translation>Geben Sie ein oder mehrere Brücken-Relays an (eins pro Zeile):</translation>
+        <translation>Sisesta üks või rohkem sildühendusi (üks rea kohta):</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="213"/>
         <source>Back</source>
-        <translation>Zurück</translation>
+        <translation>Tagasi</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorConfigurationPage.qml" line="220"/>
         <source>Connect</source>
-        <translation>Verbinden</translation>
+        <translation>Ühenda</translation>
     </message>
 </context>
 <context>
@@ -603,67 +603,67 @@
     <message>
         <location filename="../src/ui/qml/TorPreferences.qml" line="25"/>
         <source>Running:</source>
-        <translation>Läuft:</translation>
+        <translation>Jooksutab:</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorPreferences.qml" line="26"/>
         <location filename="../src/ui/qml/TorPreferences.qml" line="28"/>
         <location filename="../src/ui/qml/TorPreferences.qml" line="30"/>
         <source>Yes</source>
-        <translation>Ja</translation>
+        <translation>Jah</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorPreferences.qml" line="26"/>
         <location filename="../src/ui/qml/TorPreferences.qml" line="28"/>
         <location filename="../src/ui/qml/TorPreferences.qml" line="30"/>
         <source>No</source>
-        <translation>Nein</translation>
+        <translation>Ei</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorPreferences.qml" line="26"/>
         <source>External</source>
-        <translation>Extern</translation>
+        <translation>Väline</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorPreferences.qml" line="27"/>
         <source>Control connected:</source>
-        <translation>Control verbunden:</translation>
+        <translation>Kontrollitud ühendus:</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorPreferences.qml" line="29"/>
         <source>Circuits established:</source>
-        <translation>Circuits aufgebaut:</translation>
+        <translation>Ringühendused kehtestatud:</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorPreferences.qml" line="31"/>
         <source>Hidden service:</source>
-        <translation>Versteckter Service:</translation>
+        <translation>Peidetud teenus:</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorPreferences.qml" line="32"/>
         <source>Online</source>
-        <translation>Online</translation>
+        <translation>Võrgus</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorPreferences.qml" line="32"/>
         <source>Offline</source>
-        <translation>Offline</translation>
+        <translation>Võrgust väljas</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorPreferences.qml" line="33"/>
         <source>Version:</source>
-        <translation>Version:</translation>
+        <translation>Versioon:</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorPreferences.qml" line="60"/>
         <source>Error: &lt;b&gt;%1&lt;/b&gt;</source>
         <extracomment>%1 is error message</extracomment>
-        <translation>Fehler: &lt;b&gt;%1&lt;/b&gt;</translation>
+        <translation>Viga: &lt;b&gt;%1&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorPreferences.qml" line="76"/>
         <source>Configure</source>
-        <translation>Konfigurieren</translation>
+        <translation>Seadistus</translation>
     </message>
 </context>
 <context>
@@ -672,30 +672,30 @@
         <location filename="../src/ui/qml/TorStateWidget.qml" line="9"/>
         <location filename="../src/ui/qml/TorStateWidget.qml" line="20"/>
         <source>Connection failed</source>
-        <translation>Verbindung gescheitert</translation>
+        <translation>Ühenduse viga</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorStateWidget.qml" line="12"/>
         <location filename="../src/ui/qml/TorStateWidget.qml" line="22"/>
         <source>Connecting…</source>
         <extracomment>\u2026 is ellipsis</extracomment>
-        <translation>Verbinde...</translation>
+        <translation>Ühendumine...</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorStateWidget.qml" line="25"/>
         <source>Connecting… (%1%)</source>
         <extracomment>%1 is progress percentage, e.g. 100</extracomment>
-        <translation>Verbinde... (%1%)</translation>
+        <translation>Ühendamine...(%1%)</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorStateWidget.qml" line="32"/>
         <source>Online</source>
-        <translation>Online</translation>
+        <translation>Võrgus</translation>
     </message>
     <message>
         <location filename="../src/ui/qml/TorStateWidget.qml" line="34"/>
         <source>Connected</source>
-        <translation>Verbunden</translation>
+        <translation>Ühendatud</translation>
     </message>
 </context>
 </TS>
