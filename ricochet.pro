@@ -60,16 +60,18 @@ contains(DEFINES, RICOCHET_NO_PORTABLE) {
         scalable_icon.path = /usr/share/icons/hicolor/scalable/apps/
         scalable_icon.files = icons/ricochet.svg
         INSTALLS += target shortcut icon scalable_icon
-
-        system(cp -f contrib/usr.bin.ricochet-apparmor contrib/usr.bin.ricochet)
         QMAKE_CLEAN += contrib/usr.bin.ricochet
-        apparmor_profile.files = contrib/usr.bin.ricochet
-        !isEmpty(APPARMORDIR) {
-                apparmor_profile.path = $${APPARMORDIR}/
-        } else {
-                apparmor_profile.path = /etc/apparmor.d/
-	}
-        INSTALLS += apparmor_profile
+        contains(DEFINES, APPARMOR) {
+            apparmor_profile.extra = cp -f $${_PRO_FILE_PWD_}/contrib/usr.bin.ricochet-apparmor $${_PRO_FILE_PWD_}/contrib/usr.bin.ricochet
+            apparmor_profile.files = contrib/usr.bin.ricochet
+            QMAKE_CLEAN += contrib/usr.bin.ricochet
+            !isEmpty(APPARMORDIR) {
+                    apparmor_profile.path = $${APPARMORDIR}/
+            } else {
+                    apparmor_profile.path = /etc/apparmor.d/
+            }
+            INSTALLS += apparmor_profile
+        }
 
         exists(tor) {
             message(Adding bundled Tor to installations)
