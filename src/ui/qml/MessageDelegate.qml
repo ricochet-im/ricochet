@@ -22,14 +22,18 @@ Column {
         sourceComponent: Label {
             //: %1 nickname
             text: {
-                if (model.section === "offline")
-                    return qsTr("%1 is offline").arg(contact !== null ? contact.nickname : "")
+                if (model.section === "offline"){
+                    var nick = (contact ? contact.nickname.replace(/\s/gm, ' ').trim().substr(0,80) : "");
+                    return qsTr("%1 is offline").arg(nick)
+                }
+
                 else
                     return Qt.formatDateTime(model.timestamp, Qt.DefaultLocaleShortDate)
             }
             textFormat: Text.PlainText
             width: background.parent.width
             elide: Text.ElideRight
+            maximumLineCount: 1
             horizontalAlignment: Qt.AlignHCenter
             color: palette.mid
 

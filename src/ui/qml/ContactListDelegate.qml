@@ -36,6 +36,7 @@ Rectangle {
         text: model.name
         textFormat: Text.PlainText
         elide: Text.ElideRight
+        maximumLineCount: 1
         font.pointSize: styleHelper.pointSize
         color: "black"
         opacity: model.status === ContactUser.Online ? 1 : 0.8

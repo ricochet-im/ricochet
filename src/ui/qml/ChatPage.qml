@@ -44,7 +44,7 @@ FocusScope {
         }
 
         Label {
-            text: contact.nickname
+            text: contact.nickname.replace(/\s/gm, " ").trim().substr(0,80);
             textFormat: Text.PlainText
             font.pointSize: styleHelper.pointSize
         }
