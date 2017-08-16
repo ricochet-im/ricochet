@@ -1,43 +1,51 @@
+# Last Modified: Mon Jul 17 00:25:38 2017
+#include <tunables/global>
+
 # AppArmor Ricochet profile for Debian GNU/Linux
 # This profile is Free Software and released under the same license as Ricochet
 # itself.
 #
 # Copyleft 2015 Jacob Appelbaum <jacob@appelbaum.net>
 #
-#include <tunables/global>
+
 
 /usr/bin/ricochet {
+  #include <abstractions/audio>
   #include <abstractions/kde>
   #include <abstractions/nameservice>
-  #include <abstractions/audio>
+
+  /usr/lib/** mr,
 
   # Allow TCP connections
   network inet stream,
   network inet6 stream,
 
-  /usr/lib/** mr,
-
   # Allow Ricochet to exec pulseaudio
   # This makes me very sad...
   # as it seems that you can't isolate playing and recording :(
-  /usr/bin/pulseaudio ixr,
+  /usr/bin/pulseaudio rix,
 
   # Allow Ricochet to exec tor
-  /usr/bin/tor ixr,
+  /usr/bin/tor rix,
+  # Tor in turn needs various things
   /usr/share/tor/geoip  r,
   /usr/share/tor/geoip6 r,
-  # Tor in turn needs various things
   /proc/sys/kernel/random/uuid r,
   /sys/devices/system/cpu/ r,
+  # Allow Ricochet to read tor daemons auth cookie
+  /run/tor/control.authcookie r,
 
   # Allow Ricochet to read itself
   /usr/bin/ricochet r,
   /proc/[0-9]*/cmdline r,
+  /proc/[0-9]*/environ r,
 
   # Allow Ricochet to generate audio
   owner /{dev,run}/shm/pulse-shm* m,
 
   # Allow Ricochet to draw the UX
+  /dev/dri/ r,
+  /sys/devices/pci[0-9]*/**/config r,
   /sys/devices/pci[0-9]*/**/uevent r,
   /run/udev/data/* r,
 
@@ -50,8 +58,7 @@
   # Why does it need this stuff? BAD NEWS BEARS
   /etc/machine-id r,
   /var/lib/dbus/machine-id r,
-  /etc/udev/udev.conf r,
 
   owner @{HOME}/.local/share/Ricochet/ rw,
-  owner @{HOME}/.local/share/Ricochet/** rwmk,
+  owner @{HOME}/.local/share/Ricochet/** mrwk,
 }
