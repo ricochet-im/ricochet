@@ -1,5 +1,5 @@
 /* Ricochet - https://ricochet.im/
- * Copyright (C) 2014, John Brooks <john.brooks@dereferenced.net>
+ * Copyright (C) 2015, Kacper Kołodziej <kacper@kolodziej.in>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -30,50 +30,71 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#include "TrayIcon.h"
 
-#include <QObject>
-#include <QVariantMap>
+#include <QApplication>
 
-class TrayIcon;
-class ContactUser;
-class UserIdentity;
-class IncomingContactRequest;
-class OutgoingContactRequest;
-class QQmlApplicationEngine;
-class QQuickItem;
-class QQuickWindow;
-
-class MainWindow : public QObject
+TrayIcon::TrayIcon(const QIcon& std_icon, const QIcon& unread_icon) :
+        m_std_icon(std_icon),
+        m_unread_icon(unread_icon),
+        m_blink_state(false)
 {
-    Q_OBJECT
-    Q_DISABLE_COPY(MainWindow)
+    connect(this, &QSystemTrayIcon::activated, this, &TrayIcon::onActivated);
+    setIcon(m_std_icon);
 
-    Q_PROPERTY(QString version READ version CONSTANT)
-    Q_PROPERTY(QString aboutText READ aboutText CONSTANT)
-    Q_PROPERTY(QVariantMap screens READ screens CONSTANT)
+    m_blink_timer.setInterval(750);
+    m_blink_timer.setSingleShot(false);
+    connect(&m_blink_timer, SIGNAL(timeout()), this, SLOT(blinkIcon()));
 
-public:
-    explicit MainWindow(QObject *parent = 0);
-    ~MainWindow();
+    m_context_menu = new QMenu();
+    m_context_menu->addAction(tr("Preferences"), this, SIGNAL(preferences()));
+    m_context_menu->addAction(tr("Add Contact"), this, SIGNAL(addContact()));
+    m_context_menu->addAction(tr("Copy My ID"), this, SIGNAL(copyId()));
+    m_context_menu->addSeparator();
+    m_context_menu->addAction(tr("Quit"), qApp, SLOT(quit()));
+    setContextMenu(m_context_menu);
 
-    bool showUI();
+    show();
+}
 
-    QString aboutText() const;
-    QString version() const;
-    QVariantMap screens() const;
+TrayIcon::~TrayIcon()
+{
+    delete m_context_menu;
+}
 
-    Q_INVOKABLE bool showRemoveContactDialog(ContactUser *user);
+void TrayIcon::stdIcon()
+{
+    setIcon(m_std_icon);
+}
 
-    // Find parent window of a QQuickItem; exposed as property after Qt 5.4
-    Q_INVOKABLE QQuickWindow *findParentWindow(QQuickItem *item);
+void TrayIcon::unreadIcon()
+{
+    setIcon(m_unread_icon);
+}
 
-private:
-    QQmlApplicationEngine *qml;
-    TrayIcon *trayIcon;
-};
+void TrayIcon::setUnread(bool unread)
+{
+    if (unread) {
+        unreadIcon();
+        m_blink_timer.start();
+    } else {
+        m_blink_timer.stop();
+        stdIcon();
+    }
+}
 
-extern MainWindow *uiMain;
+void TrayIcon::onActivated(QSystemTrayIcon::ActivationReason reason)
+{
+    if (reason == QSystemTrayIcon::Trigger)
+        emit toggleWindow();
+}
 
-#endif // MAINWINDOW_H
+void TrayIcon::blinkIcon()
+{
+    if (m_blink_state)
+        stdIcon();
+    else
+        unreadIcon();
+
+    m_blink_state = !m_blink_state;
+}

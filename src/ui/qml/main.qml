@@ -9,9 +9,8 @@ import "ContactWindow.js" as ContactWindow
 QtObject {
     id: root
 
-    property MainWindow mainWindow: MainWindow {
-        onVisibleChanged: if (!visible) Qt.quit()
-    }
+    property MainWindow mainWindow: MainWindow {}
+    property int lastVisibility: Window.Windowed
 
     function createDialog(component, properties, parent) {
         if (typeof(component) === "string")
@@ -92,6 +91,30 @@ QtObject {
                     object.networkReady.connect(function() { object.visible = false })
                     object.visible = true
                 }
+            }
+        },
+
+        Connections {
+            target: trayIcon
+            onToggleWindow: {
+                if (mainWindow.visibility == Window.Hidden ||
+                    mainWindow.visibility == Window.Minimized) {
+                    mainWindow.visibility = lastVisibility;
+                } else {
+                    lastVisibility = mainWindow.visibility;
+                    mainWindow.visibility = Window.Hidden;
+                }
+            }
+            onPreferences: openPreferences()
+            onAddContact: {
+                if (mainWindow.visible == false)
+                    mainWindow.visibility = lastVisibility
+
+                var addContactDialog = createDialog("AddContactDialog.qml", {}, mainWindow)
+                addContactDialog.visible = true
+            }
+            onCopyId: {
+                LinkedText.copyToClipboard(userIdentity.contactID)
             }
         },
 

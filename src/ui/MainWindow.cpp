@@ -46,6 +46,7 @@
 #include "utils/PendingOperation.h"
 #include "utils/Useful.h"
 #include "ui/LanguagesModel.h"
+#include "ui/TrayIcon.h"
 #include <QtQml>
 #include <QQmlApplicationEngine>
 #include <QQmlNetworkAccessManagerFactory>
@@ -102,11 +103,17 @@ public:
     }
 };
 
-MainWindow::MainWindow(QObject *parent)
-    : QObject(parent)
+MainWindow::MainWindow(QObject *parent) :
+    QObject(parent),
+    trayIcon(nullptr)
 {
     Q_ASSERT(!uiMain);
     uiMain = this;
+
+    /* tray icon doesn't behave well on Mac OS X */
+#ifndef Q_OS_MAC
+    trayIcon = new TrayIcon(QIcon(QLatin1String(":/icons/ricochet.svg")), QIcon(QLatin1String(":/icons/ricochet_unread.svg")));
+#endif
 
     qml = new QQmlApplicationEngine(this);
     qml->setNetworkAccessManagerFactory(new NetworkAccessBlockingFactory);
@@ -131,6 +138,8 @@ MainWindow::MainWindow(QObject *parent)
 
 MainWindow::~MainWindow()
 {
+    if (trayIcon != nullptr)
+        delete trayIcon;
 }
 
 bool MainWindow::showUI()
@@ -140,6 +149,7 @@ bool MainWindow::showUI()
     qml->rootContext()->setContextProperty(QLatin1String("torControl"), torControl);
     qml->rootContext()->setContextProperty(QLatin1String("torInstance"), Tor::TorManager::instance());
     qml->rootContext()->setContextProperty(QLatin1String("uiMain"), this);
+    qml->rootContext()->setContextProperty(QLatin1String("trayIcon"), trayIcon);
 
     qml->load(QUrl(QLatin1String("qrc:/ui/main.qml")));
 

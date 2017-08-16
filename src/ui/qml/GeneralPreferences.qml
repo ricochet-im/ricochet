@@ -26,12 +26,22 @@ ColumnLayout {
     }
 
     CheckBox {
+        text: qsTr("Close button minimizes window to tray")
+        visible: (Qt.platform.os === "osx") ? false : true
+        checked: uiSettings.data.hideOnX || false
+        onCheckedChanged: {
+            uiSettings.write("hideOnX", checked)
+        }
+    }
+
+    CheckBox {
         text: qsTr("Play audio notifications")
         checked: uiSettings.data.playAudioNotification || false
         onCheckedChanged: {
             uiSettings.write("playAudioNotification", checked)
         }
     }
+
     RowLayout {
         Item { width: 16 }
 

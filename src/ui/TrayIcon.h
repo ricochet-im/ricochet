@@ -1,5 +1,5 @@
 /* Ricochet - https://ricochet.im/
- * Copyright (C) 2014, John Brooks <john.brooks@dereferenced.net>
+ * Copyright (C) 2015, Kacper Kołodziej <kacper@kolodziej.in>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -30,50 +30,46 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef TRAYICON_H
+#define TRAYICON_H
+#include <QSystemTrayIcon>
+#include <QTimer>
+#include <QMenu>
 
-#include <QObject>
-#include <QVariantMap>
-
-class TrayIcon;
-class ContactUser;
-class UserIdentity;
-class IncomingContactRequest;
-class OutgoingContactRequest;
-class QQmlApplicationEngine;
-class QQuickItem;
-class QQuickWindow;
-
-class MainWindow : public QObject
+class TrayIcon : public QSystemTrayIcon
 {
     Q_OBJECT
-    Q_DISABLE_COPY(MainWindow)
-
-    Q_PROPERTY(QString version READ version CONSTANT)
-    Q_PROPERTY(QString aboutText READ aboutText CONSTANT)
-    Q_PROPERTY(QVariantMap screens READ screens CONSTANT)
-
+    Q_PROPERTY(bool unread WRITE setUnread)
 public:
-    explicit MainWindow(QObject *parent = 0);
-    ~MainWindow();
+    TrayIcon(const QIcon& std_icon, const QIcon& unread_icon);
+    ~TrayIcon();
 
-    bool showUI();
+    // changes icon
+    inline void stdIcon();
+    inline void unreadIcon();
 
-    QString aboutText() const;
-    QString version() const;
-    QVariantMap screens() const;
+    // changes state of tray icon
+    void setUnread(bool unread);
 
-    Q_INVOKABLE bool showRemoveContactDialog(ContactUser *user);
+public slots:
+    void onActivated(QSystemTrayIcon::ActivationReason);
+    void blinkIcon();
 
-    // Find parent window of a QQuickItem; exposed as property after Qt 5.4
-    Q_INVOKABLE QQuickWindow *findParentWindow(QQuickItem *item);
+signals:
+    void toggleWindow();
+    void preferences();
+    void addContact();
+    void copyId();
 
 private:
-    QQmlApplicationEngine *qml;
-    TrayIcon *trayIcon;
+    QIcon m_std_icon;
+    QIcon m_unread_icon;
+    bool m_blink_state;
+
+    QTimer m_blink_timer;
+
+    QMenu* m_context_menu;
 };
 
-extern MainWindow *uiMain;
+#endif // TRAYICON_H
 
-#endif // MAINWINDOW_H
