@@ -10,6 +10,7 @@ ApplicationWindow {
     height: 400
     minimumHeight: 400
     title: qsTr("Ricochet Preferences")
+    flags: Qt.Dialog
 
     signal closed
     onVisibleChanged: if (!visible) closed()
