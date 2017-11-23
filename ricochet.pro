@@ -52,12 +52,12 @@ CONFIG(release,debug|release):DEFINES += QT_NO_DEBUG_OUTPUT QT_NO_WARNING_OUTPUT
 
 contains(DEFINES, RICOCHET_NO_PORTABLE) {
     unix:!macx {
-        target.path = /usr/bin
-        shortcut.path = /usr/share/applications
+        target.path = $$PREFIX/bin
+        shortcut.path = $$PREFIX/share/applications
         shortcut.files = src/ricochet.desktop
-        icon.path = /usr/share/icons/hicolor/48x48/apps/
+        icon.path = $$PREFIX/share/icons/hicolor/48x48/apps/
         icon.files = icons/ricochet.png
-        scalable_icon.path = /usr/share/icons/hicolor/scalable/apps/
+        scalable_icon.path = $$PREFIX/share/icons/hicolor/scalable/apps/
         scalable_icon.files = icons/ricochet.svg
         INSTALLS += target shortcut icon scalable_icon
         QMAKE_CLEAN += contrib/usr.bin.ricochet
@@ -75,10 +75,10 @@ contains(DEFINES, RICOCHET_NO_PORTABLE) {
 
         exists(tor) {
             message(Adding bundled Tor to installations)
-            bundletor.path = /usr/lib/ricochet/tor/
+            bundletor.path = $$PREFIX/lib/ricochet/tor/
             bundletor.files = tor/*
             INSTALLS += bundletor
-            DEFINES += BUNDLED_TOR_PATH=\\\"/usr/lib/ricochet/tor/\\\"
+            DEFINES += BUNDLED_TOR_PATH=\\\"$$PREFIX/lib/ricochet/tor/\\\"
         }
     }
 }
@@ -130,7 +130,10 @@ win32|mac {
 
 unix {
     !isEmpty(OPENSSLDIR) {
-        INCLUDEPATH += $${OPENSSLDIR}/include
+        !equals(OPENSSLDIR, "/usr") {
+            # adding /usr/include to INCLUDEPATH breaks STL's include logic
+            INCLUDEPATH += $${OPENSSLDIR}/include
+        }
         LIBS += -L$${OPENSSLDIR}/lib -lcrypto
     } else {
         CONFIG += link_pkgconfig
