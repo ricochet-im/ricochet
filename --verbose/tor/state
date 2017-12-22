@@ -1,0 +1,47 @@
+# Tor state file last generated on 2017-12-21 23:31:28 local time
+# Other times below are in UTC
+# You *do not* need to edit this file.
+
+Guard in=default rsa_id=EF7C037C402BAE53B784D9EDF69769CB15AB5207 nickname=ArachnideFR sampled_on=2017-12-17T16:03:52 sampled_by=0.3.1.9 listed=1
+Guard in=default rsa_id=033D1B67A346C979D1ABF2A1DEF9E56AC0F67C5B nickname=humanrights sampled_on=2017-12-19T03:56:10 sampled_by=0.3.1.9 listed=1 confirmed_on=2017-12-21T15:00:14 confirmed_idx=0 pb_use_attempts=10.000000 pb_use_successes=10.000000 pb_circ_attempts=49.000000 pb_circ_successes=44.000000 pb_successful_circuits_closed=41.000000 pb_collapsed_circuits=3.000000 pb_timeouts=3.000000
+Guard in=default rsa_id=A853BA9862837B5FC8E4FF784829DB3BE6F53A75 nickname=dc6jgk12 sampled_on=2017-12-19T20:39:08 sampled_by=0.3.1.9 listed=1
+Guard in=default rsa_id=0CDCFB0B6E1500E57BDD7F240543EBAEF81C11CA nickname=TheLoneGunmen sampled_on=2017-12-11T09:36:03 sampled_by=0.3.1.9 listed=1 confirmed_on=2017-12-19T20:30:43 confirmed_idx=1 pb_use_attempts=1.000000 pb_use_successes=1.000000 pb_circ_attempts=2.000000 pb_circ_successes=2.000000 pb_successful_circuits_closed=2.000000
+Guard in=default rsa_id=BB199E6505E5D65A8746CF35877F96ED7F3C1F13 nickname=Iridium66 sampled_on=2017-12-21T04:31:33 sampled_by=0.3.1.9 listed=1
+Guard in=default rsa_id=61A8888BC57869147277D6CFB8CB5F14B4AA7286 nickname=MikeTorNode sampled_on=2017-12-14T15:01:05 sampled_by=0.3.1.9 listed=1
+Guard in=default rsa_id=5F276A6F7AA74AFB2AF100EADA28C7A6F48BA50F nickname=ripChesterB sampled_on=2017-12-11T14:40:23 sampled_by=0.3.1.9 listed=1
+Guard in=default rsa_id=361D33C96D0F161275EE67E2C91EE10B276E778B nickname=cxx4freedom sampled_on=2017-12-16T10:29:04 sampled_by=0.3.1.9 listed=1
+Guard in=default rsa_id=4FF8ED7C072B5F8EC296458151E6BABBD6BC3211 nickname=TykRelay08 sampled_on=2017-12-12T23:45:00 sampled_by=0.3.1.9 listed=1
+Guard in=default rsa_id=A5945077E0D35729F8E2920A54BE12A0058B403E nickname=radia5 sampled_on=2017-12-18T19:43:06 sampled_by=0.3.1.9 listed=1
+Guard in=default rsa_id=A987537FBBF79F2AF87731297DF67FC707D7143C nickname=inShroomsWeTrust sampled_on=2017-12-16T14:42:08 sampled_by=0.3.1.9 listed=1
+Guard in=default rsa_id=C41314CD0F5CFB79B3518757596D317DA6B03ECC nickname=RMB sampled_on=2017-12-17T01:28:06 sampled_by=0.3.1.9 listed=1
+Guard in=default rsa_id=B0299647E08CD42A42CA3CE15D4CCD212040646B nickname=rutor2 sampled_on=2017-12-19T06:23:28 sampled_by=0.3.1.9 listed=1
+Guard in=default rsa_id=F421435AE6B311C93D7C9140B364033CDF0CFFC3 nickname=ITSecLuTor3 sampled_on=2017-12-17T16:37:02 sampled_by=0.3.1.9 listed=1
+Guard in=default rsa_id=12AD30E5D25AA67F519780E2111E611A455FDC89 nickname=mdfnet1 sampled_on=2017-12-10T16:43:29 sampled_by=0.3.1.9 listed=1 confirmed_on=2017-12-17T14:13:27 confirmed_idx=3
+Guard in=default rsa_id=8C63F68259DC7FDA9E49B567E74D0C831FE183A9 nickname=sexwarriorHQ sampled_on=2017-12-20T19:45:44 sampled_by=0.3.1.9 listed=1
+Guard in=default rsa_id=F706699EE1C5317C9B2CC85A3830B5E409A3692D nickname=Ommedzi sampled_on=2017-12-12T05:26:35 sampled_by=0.3.1.9 listed=1
+Guard in=default rsa_id=51800AF38B30ED1454DD74CB412BADCED5F60593 nickname=Unnamed sampled_on=2017-12-17T09:06:16 sampled_by=0.3.1.9 listed=1
+Guard in=default rsa_id=0F318808B72A767E8FD973184FDE6D1405C0D395 nickname=tisztaszar sampled_on=2017-12-17T02:09:56 sampled_by=0.3.1.9 listed=1
+Guard in=default rsa_id=9E654F92F84908427A2EABFF43349BCC32838F1D nickname=Reichsfunkmast sampled_on=2017-12-14T08:38:03 sampled_by=0.3.1.9 listed=1 confirmed_on=2017-12-11T19:44:35 confirmed_idx=2
+TorVersion Tor 0.3.1.9 (git-727d3f1b5e6eeda7)
+LastWritten 2017-12-22 07:31:28
+TotalBuildTimes 44
+CircuitBuildTimeBin 525 2
+CircuitBuildTimeBin 575 4
+CircuitBuildTimeBin 625 5
+CircuitBuildTimeBin 675 3
+CircuitBuildTimeBin 725 2
+CircuitBuildTimeBin 775 3
+CircuitBuildTimeBin 825 4
+CircuitBuildTimeBin 875 1
+CircuitBuildTimeBin 925 3
+CircuitBuildTimeBin 975 1
+CircuitBuildTimeBin 1025 3
+CircuitBuildTimeBin 1075 2
+CircuitBuildTimeBin 1125 1
+CircuitBuildTimeBin 1225 3
+CircuitBuildTimeBin 1275 1
+CircuitBuildTimeBin 1325 2
+CircuitBuildTimeBin 1525 1
+CircuitBuildTimeBin 1675 1
+CircuitBuildTimeBin 1825 1
+CircuitBuildTimeBin 3475 1

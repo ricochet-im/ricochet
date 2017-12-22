@@ -1,0 +1,20 @@
+{
+    "contacts": {
+        "0": {
+            "hostname": "cpovenn3wwqeqe62.onion",
+            "lastConnected": "2017-12-22T07:29:43Z",
+            "nickname": "josepherino",
+            "sentUpgradeNotification": null,
+            "whenCreated": "2017-12-22T07:29:33Z"
+        }
+    },
+    "identity": {
+        "dataDirectory": "data-0",
+        "serviceKey": "MIICXQIBAAKBgQCnvWvqfgSPDCrQZ4ZAR0ovY0eMDZpNa6vKQDvp/3397r5rc17wTj14xnEA8NpYT3KsEDy9agTNmjXstSt2TqQ3EBjgaMkYSmr6AUXTAExemdEr5wWh2S0xFFgoCMOZ75QCaKpwItUQHkXZB1q2LoeSBVg2N5zBn60SKe1ajl/3bQIDAQABAoGBAJ3WXAmW8us348Ge6HDrpB7bKKPc2Oko+8mgj8AsLX4YfQ3WzesJdEaFVCgyewLGH31Q+hayADsHdN57y53Teijf6xTpVZPpsbN36J6AQuq6UBPk9KpR8NhDu8wXrx+vAOmaVbE6Ni04IsOZ3wnNQFa89IK89ez5q2K9+VjEiSCBAkEA0yNjoWuUNnyPNVbZreBiQvZoMGavf/QWdA0lIKZif0KWjwhfuKIGyAl/xTGN8NeCFtgi8sH3a54B3KEUzDMUBQJBAMthbvHuKEWGHbWVLjBTZde29HHj6RJ0sLu9q3/4dKLYQHKaB3LR4fkqHg8OW6YkJe2Okp+htdSlDiu9ICgn2kkCQGlpscRVwZmydo1a3zNAY86q1znTCqwHYW5vYan7aBHBXQnsVF4KBvi4RWJea09jST++iTRKQw0nxiYxBgEtP0ECQQCplfID65lK950YR29/PltCdzz3Jpq3F/QyZ+J0T8E59GYw6Tziwh3SPQtZdJh5PdUec+7RCu9qg8MAN7Bzq195AkASKhivUOpAfms+cb0rO2SLGpVCJv9IQ9u/WTqfC0dHrs1IrWKMMYQg4e3conTiZFi+3gEzpWR9hjOKN32PHk2J"
+    },
+    "ui": {
+        "combinedChatWindow": true,
+        "language": "",
+        "notificationVolume": 0.75
+    }
+}

@@ -1,0 +1,3 @@
+ControlPort auto
+DisableNetwork 0
+Log notice stdout
