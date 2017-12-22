@@ -1,4 +1,0 @@
-SocksPort auto
-AvoidDiskWrites 1
-DisableNetwork 1
-__ReloadTorrcOnSIGHUP 0
