@@ -1,12 +1,13 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.0
 import QtQuick.Layouts 1.0
+import QtQuick.Window 2.2
 import im.ricochet 1.0
 import "utils.js" as Utils
 
 ApplicationWindow {
     id: dialog
-    width: 400
+    width: Screen.width / 3
     height: layout.height + 32
     minimumWidth: width
     maximumWidth: width
