@@ -6,9 +6,8 @@ import im.ricochet 1.0
 import "utils.js" as Utils
 
 ApplicationWindow {
-    property int dpi: Screen.pixelDensity
     id: dialog
-    width: 200 * dpi
+    width: Screen.width / 3
     height: layout.height + 32
     minimumWidth: width
     maximumWidth: width
