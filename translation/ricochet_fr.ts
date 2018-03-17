@@ -237,7 +237,7 @@
     <message>
         <location filename="../src/ui/qml/GeneralPreferences.qml" line="76"/>
         <source>Restart Ricochet to apply changes</source>
-        <translation type="unfinished">Redémarrer l&apos;application pour applique les modifications</translation>
+        <translation type="unfinished">Redémarrer l&apos;application pour appliquer les modifications</translation>
     </message>
 </context>
 <context>
@@ -248,7 +248,7 @@
     </message>
     <message>
         <source>Restart Ricochet to apply changes</source>
-        <translation type="vanished">Redémarrer l&apos;application pour applique les modifications</translation>
+        <translation type="vanished">Redémarrer l&apos;application pour appliquer les modifications</translation>
     </message>
 </context>
 <context>
