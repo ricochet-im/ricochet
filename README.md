@@ -1,3 +1,11 @@
+
+### This software is officially ended development in November 2016.
+### Please move to [qTox](https://qtox.github.io/).
+
+
+---
+
+
 ### Anonymous metadata-resistant instant messaging that just works.
 Ricochet is an experimental kind of instant messaging that **doesn't trust anyone** with your identity, your contact list, or your communications.
 
