@@ -337,7 +337,7 @@ message ChatMessage {
 }
 ```
 
-A *message_id* of zero (or omitted) indicates that the recipient doesn't expect acknowledgement.
+A *message_id* of zero (or omitted) indicates that the sender doesn't expect acknowledgement.
 
 If *message_id* is non-zero, the recipient should acknowledge receiving this message by sending
 *ChatAcknowledge*. Unacknowledged messages may be re-sent with the same *message_id*, and the

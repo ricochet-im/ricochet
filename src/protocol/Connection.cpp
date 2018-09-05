@@ -459,7 +459,7 @@ bool ConnectionPrivate::writePacket(int channelId, const QByteArray &data)
 
 int ConnectionPrivate::availableOutboundChannelId()
 {
-    // Server opens even-nubmered channels, client opens odd-numbered
+    // Server opens even-numbered channels, client opens odd-numbered
     bool evenNumbered = (direction == Connection::ServerSide);
     const int minId = evenNumbered ? 2 : 1;
     const int maxId = evenNumbered ? (UINT16_MAX-1) : UINT16_MAX;
@@ -470,8 +470,7 @@ int ConnectionPrivate::availableOutboundChannelId()
     // Find an unused id, trying a maximum of 100 times, using a random step to avoid collision
     for (int i = 0; i < 100 && channels.contains(nextOutboundChannelId); i++) {
         nextOutboundChannelId += 1 + (qrand() % 200);
-        if (evenNumbered)
-            nextOutboundChannelId += nextOutboundChannelId % 2;
+        nextOutboundChannelId += (nextOutboundChannelId % 2) + (evenNumbered ? 0 : 1);
         if (nextOutboundChannelId > maxId)
             nextOutboundChannelId = minId;
     }
