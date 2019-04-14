@@ -61,4 +61,6 @@
 
   owner @{HOME}/.local/share/Ricochet/ rw,
   owner @{HOME}/.local/share/Ricochet/** mrwk,
+  owner @{HOME}/.cache/Ricochet/ rw,
+  owner @{HOME}/.cache/Ricochet/** mrwk,
 }
