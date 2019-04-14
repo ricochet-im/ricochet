@@ -10,6 +10,7 @@
 
 
 /usr/bin/ricochet {
+  #include <abstractions/base>
   #include <abstractions/audio>
   #include <abstractions/kde>
   #include <abstractions/nameservice>
