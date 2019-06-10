@@ -1,3 +1,9 @@
+## R<sup>2</sup> Rebound
+Rebound is an attempt to revive Ricochet, backed by Blueprint for Free Speech. We are a non-government, not-for-profit organisation working to safeguard the freedom of expression for whistleblowers, activists, and everybody else, worldwide. To find out more, check out our profile, or head to [http://blueprintforfreespeech.net]. We are not officially affiliated with Ricochet.
+
+Details about Ricochet can be found at [the original repository](https://github.com/ricochet-im/ricochet). The readme for Ricochet is reproduced below for convenience.
+
+## Ricochet's README (not by or affiliated with Blueprint)
 ### Anonymous metadata-resistant instant messaging that just works.
 Ricochet is an experimental kind of instant messaging that **doesn't trust anyone** with your identity, your contact list, or your communications.
 
