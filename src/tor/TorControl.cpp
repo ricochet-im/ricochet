@@ -522,6 +522,10 @@ void TorControlPrivate::publishServices()
                                  .arg(tit->targetAddress.toString())
                                  .arg(tit->targetPort);
                 torConfig.append(qMakePair(QByteArray("HiddenServicePort"), target.toLatin1()));
+
+                // Via github user @kradan: https://github.com/kradan/ricochet/commit/a34e8123b382b6e4ec490c633141510f26ff11dd
+                QString version = QString::fromLatin1("3");
+                torConfig.append(qMakePair(QByteArray("HiddenServiceVersion"), version.toLatin1()));
             }
 
             QObject::connect(command, &SetConfCommand::setConfSucceeded, service, &HiddenService::servicePublished);
