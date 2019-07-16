@@ -1,5 +1,5 @@
 ## R<sup>2</sup>: Ricochet Refresh
-Refresh is an attempt to revive Ricochet, backed by Blueprint for Free Speech. We are a non-government, not-for-profit organisation working to safeguard the freedom of expression for whistleblowers, activists, and everybody else, worldwide. To find out more, check out our profile, or head to [http://blueprintforfreespeech.net]. We are not officially affiliated with Ricochet.
+Ricochet Refresh is the new updated version of Ricochet, supported by Blueprint for Free Speech.. We are a non-government, not-for-profit organisation working to safeguard the freedom of expression for whistleblowers, activists, and everybody else, worldwide. To find out more, check out our profile, or head to [http://blueprintforfreespeech.net]. Blueprint was the original sponsor of Ricochet, written by developer J. Brooks.
 
 Details about Ricochet can be found at [the original repository](https://github.com/ricochet-im/ricochet). The readme for Ricochet is reproduced below for convenience.
 
