@@ -1,5 +1,5 @@
-# Ricochet - https://ricochet.im/
-# Copyright (C) 2014, John Brooks <john.brooks@dereferenced.net>
+# Ricochet Refresh - https://blueprint-freespeech.github.io/refresh-site/
+# Copyright (C) 2019, Blueprint for Free Speech  <info@blueprintforfreespeech.net>
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are
@@ -103,7 +103,7 @@ macx {
         QMAKE_POST_LINK += cp -R $${_PRO_FILE_PWD_}/tor $${OUT_PWD}/$${TARGET}.app/Contents/MacOS/;
     }
 
-    icons.files = icons/Ricochet.icns
+    icons.files = icons/ricochet_refresh.icns
     icons.path = Contents/Resources/
     QMAKE_BUNDLE_DATA += icons
 }
@@ -251,7 +251,7 @@ RESOURCES += src/ui/qml/qml.qrc \
     icons/icons.qrc \
     sounds/sounds.qrc
 
-win32:RC_ICONS = icons/ricochet.ico
+win32:RC_ICONS = icons/RicochetRefresh.ico
 OTHER_FILES += src/ui/qml/*
 lupdate_only {
     SOURCES += src/ui/qml/*.qml

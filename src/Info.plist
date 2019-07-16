@@ -5,17 +5,17 @@
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
 	<key>CFBundleIconFile</key>
-	<string>Ricochet.icns</string>
+	<string>ricochet_refresh.icns</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleExecutable</key>
-	<string>ricochet</string>
+	<string>ricochet-refresh</string>
 	<key>CFBundleIdentifier</key>
 	<string>im.ricochet</string>
 	<key>CFBundleName</key>
-	<string>Ricochet</string>
+	<string>Ricochet-Refresh</string>
 	<key>NSSupportsAutomaticGraphicsSwitching</key>
 	<true/>
 </dict>
