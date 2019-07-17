@@ -33,7 +33,7 @@ lessThan(QT_MAJOR_VERSION,5)|lessThan(QT_MINOR_VERSION,1) {
     error("Qt 5.1 or greater is required. You can build your own, or get the SDK at https://qt-project.org/downloads")
 }
 
-TARGET = ricochet
+TARGET = ricochet-refresh
 TEMPLATE = app
 QT += core gui network quick widgets
 CONFIG += c++11
