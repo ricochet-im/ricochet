@@ -52,8 +52,8 @@ install -m 0644 -D -p README.md %{buildroot}/%{_docdir}/%{name}/README.md
 %files
 /usr/bin/ricochet
 /usr/share/applications/ricochet.desktop
-/usr/share/icons/hicolor/48x48/apps/ricochet.png
-/usr/share/icons/hicolor/scalable/apps/ricochet.svg
+/usr/share/icons/hicolor/48x48/apps/ricochet_refresh.png
+/usr/share/icons/hicolor/scalable/apps/ricochet_refresh.svg
 %docdir %{_docdir}/%{name}
 %doc %{_docdir}/%{name}/LICENSE
 %doc %{_docdir}/%{name}/AUTHORS.md

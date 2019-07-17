@@ -56,9 +56,9 @@ contains(DEFINES, RICOCHET_NO_PORTABLE) {
         shortcut.path = /usr/share/applications
         shortcut.files = src/ricochet.desktop
         icon.path = /usr/share/icons/hicolor/48x48/apps/
-        icon.files = icons/ricochet.png
+        icon.files = icons/ricochet_refresh.png
         scalable_icon.path = /usr/share/icons/hicolor/scalable/apps/
-        scalable_icon.files = icons/ricochet.svg
+        scalable_icon.files = icons/ricochet_refresh.svg
         INSTALLS += target shortcut icon scalable_icon
         QMAKE_CLEAN += contrib/usr.bin.ricochet
         contains(DEFINES, APPARMOR) {
@@ -251,7 +251,7 @@ RESOURCES += src/ui/qml/qml.qrc \
     icons/icons.qrc \
     sounds/sounds.qrc
 
-win32:RC_ICONS = icons/RicochetRefresh.ico
+win32:RC_ICONS = icons/ricochet_refresh.ico
 OTHER_FILES += src/ui/qml/*
 lupdate_only {
     SOURCES += src/ui/qml/*.qml

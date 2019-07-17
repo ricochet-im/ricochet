@@ -1,9 +1,9 @@
 [Desktop Entry]
 Encoding=UTF-8
 Type=Application
-Name=Ricochet IM
+Name=Ricochet Refresh
 Categories=Network;InstantMessaging;Chat;FileTransfer;Qt
 Comment=Anonymous instant messaging
-Icon=ricochet
+Icon=ricochet_refresh
 Exec=ricochet
 
