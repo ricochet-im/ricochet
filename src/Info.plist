@@ -11,7 +11,7 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleExecutable</key>
-	<string>ricochet-refresh</string>
+	<string>ricochet</string>
 	<key>CFBundleIdentifier</key>
 	<string>im.ricochet</string>
 	<key>CFBundleName</key>
