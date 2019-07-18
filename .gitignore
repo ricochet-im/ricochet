@@ -31,3 +31,4 @@ config.tests/*/*
 !config.tests/*/*.cpp
 !config.tests/*/*.h
 ricochet
+build-tests*
