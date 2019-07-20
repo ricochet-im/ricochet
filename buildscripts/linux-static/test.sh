@@ -10,6 +10,10 @@ pushd "../tests"
   export PATH=${ROOT_LIB}/protobuf/bin/:${PATH}
 
   qmake tests.pro CONFIG+=x86_64 CONFIG+=qtquickcompiler OPENSSLDIR=$OPENSSLDIR && make qmake_all && make
+
+  find . -type f
+  find . -type f -regextype sed -regex "./.*\(test_\|tst_\)[^/]*"
+  find . -type f -regextype sed -regex "./.*\(test_\|tst_\)[^/]*" -executable
   TEST_COMMAND=$'find . -type f -regextype sed -regex "./.*\(test_\|tst_\)[^/]*" -executable | while read -r test; do $test || exit $?; done'
 
   if [ -n "$HEADLESS" ]; then
