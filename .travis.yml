@@ -41,7 +41,7 @@ addons:
     - qtdeclarative5-dev
 
 install:
-  - set +x
+  - set -x
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
       export PATH="$(brew --prefix qt5)/bin:$PATH"
       export OPENSSLDIR="$(brew --prefix openssl)"
