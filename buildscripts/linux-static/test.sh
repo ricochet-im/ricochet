@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -ex
+set -e
 
 ROOT_LIB=$(pwd)/lib
 OPENSSLDIR="${OPENSSLDIR:-${ROOT_LIB}/openssl/}"
