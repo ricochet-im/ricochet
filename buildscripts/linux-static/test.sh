@@ -11,16 +11,11 @@ pushd "../tests"
 
   qmake tests.pro CONFIG+=x86_64 CONFIG+=qtquickcompiler OPENSSLDIR=$OPENSSLDIR && make qmake_all && make
 
-  find . -type f
-  find . -type f -regextype sed -regex "./.*\(test_\|tst_\)[^/]*"
-  find . -type f -regextype sed -regex "./.*\(test_\|tst_\)[^/]*" -executable
-  TEST_COMMAND=$'find . -type f -regextype sed -regex "./.*\(test_\|tst_\)[^/]*" -executable | while read -r test; do $test || exit $?; done'
-
   if [ -n "$HEADLESS" ]; then
     Xvfb :1 -screen 0 800x600x16 &
-    xvfb-run "$TEST_COMMAND"
+    find . -type f -regextype sed -regex "./.*\(test_\|tst_\)[^/]*" -executable | while read -r test; do xvfb-run $test || exit $?; done
   else
-    "$TEST_COMMAND"
+    find . -type f -regextype sed -regex "./.*\(test_\|tst_\)[^/]*" -executable | while read -r test; do $test || exit $?; done
   fi
 popd
 
