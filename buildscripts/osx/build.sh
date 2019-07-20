@@ -26,7 +26,7 @@ pushd ..
     cp "${BUILD_OUTPUT}/tor" "ricochet-refresh.app/Contents/MacOS"
     strip ricochet-refresh.app/Contents/MacOS/*
 
-    mv ricochet-refresh.app Ricochet\ Refresh.app
+    mv ricochet-refresh.app "Ricochet Refresh.app"
     macdeployqt "Ricochet Refresh.app" -qmldir=../src/ui/qml
     cp -R "Ricochet Refresh.app" "${BUILD_OUTPUT}/"
 

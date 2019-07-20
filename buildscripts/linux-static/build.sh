@@ -2,39 +2,33 @@
 
 set -e
 
-ROOT_SRC=$(pwd)/src
 ROOT_LIB=$(pwd)/lib
 BUILD_OUTPUT=$(pwd)/output
 
-cd "$ROOT_SRC"
+pushd ..
+  RICOCHET_VERSION=$(git describe --tags HEAD)
 
-# Ricochet
-test -e ricochet || git clone https://github.com/ricochet-im/ricochet.git
-cd ricochet
-git clean -dfx .
+  test -e build && rm -r build
+  mkdir build
+  pushd build
 
-RICOCHET_VERSION=$(git describe --tags HEAD)
+    export PKG_CONFIG_PATH=${ROOT_LIB}/protobuf/lib/pkgconfig:${PKG_CONFIG_PATH}
+    export PATH=${ROOT_LIB}/qt5/bin/:${ROOT_LIB}/protobuf/bin/:${PATH}
+    qmake CONFIG+=release OPENSSLDIR="${ROOT_LIB}/openssl/" ..
+    make ${MAKEOPTS}
+    cp ricochet-refresh "${BUILD_OUTPUT}/ricochet-refresh-unstripped"
+    strip ricochet-refresh
 
-test -e build && rm -r build
-mkdir build
-cd build
+    mkdir -p staging/ricochet-refresh
+    cp ricochet-refresh staging/ricochet-refresh
+    cp "${BUILD_OUTPUT}/tor" staging/ricochet-refresh
+    cp -r ../packaging/linux-static/content/* staging/ricochet-refresh/
 
-export PKG_CONFIG_PATH=${ROOT_LIB}/protobuf/lib/pkgconfig:${PKG_CONFIG_PATH}
-export PATH=${ROOT_LIB}/qt5/bin/:${ROOT_LIB}/protobuf/bin/:${PATH}
-qmake CONFIG+=release OPENSSLDIR="${ROOT_LIB}/openssl/" ..
-make "${MAKEOPTS}"
-cp ricochet "${BUILD_OUTPUT}/ricochet-unstripped"
-strip ricochet
-
-mkdir -p staging/ricochet
-cp ricochet staging/ricochet
-cp "${BUILD_OUTPUT}/tor" staging/ricochet
-# XXX
-cp -r ../packaging/linux-static/content/* staging/ricochet/
-
-cd staging
-tar cfj "${BUILD_OUTPUT}/ricochet-${RICOCHET_VERSION}-static.tar.bz2" ricochet
-cd ../../..
+    pushd staging
+      tar cfj "${BUILD_OUTPUT}/ricochet-refresh-${RICOCHET_VERSION}-static.tar.bz2" ricochet-refresh
+    popd
+  popd
+popd
 
 echo "---------------------"
 ls -la "${BUILD_OUTPUT}/"
