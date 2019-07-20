@@ -37,7 +37,9 @@ matrix:
 install:
   - set +x
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-      export PATH="$(brew --prefix qt5):$PATH"
+      export PATH="$(brew --prefix qt5)/bin:$PATH"
+      ;
+    fi
 
 script:
   - cd buildscripts
