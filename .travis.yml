@@ -39,6 +39,8 @@ addons:
     - qtbase5-dev
     - qttools5-dev-tools
     - qtdeclarative5-dev
+    - xvfb
+    - libxrender1
 
 install:
   - set -x
