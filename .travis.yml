@@ -8,6 +8,7 @@ git:
 env:
   global:
   - HEADLESS=True
+  - QT_DEBUG_PLUGINS=1
   matrix:
   - CONFIG=Debug
   #  - CONFIG=Release
