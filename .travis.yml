@@ -20,6 +20,7 @@ matrix:
   - os: linux
     env:
     - BUILDSCRIPT=linux-static
+      OPENSSLDIR=/usr/
 
 addons:
   homebrew:
