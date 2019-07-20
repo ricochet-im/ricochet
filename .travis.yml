@@ -15,7 +15,7 @@ matrix:
     env:
     - BUILDSCRIPT=osx
   - os: linux
-    enc:
+    env:
     - BUILDSCRIPT=linux-static
 
 before_install:
