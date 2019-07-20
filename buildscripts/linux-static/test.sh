@@ -15,7 +15,7 @@ pushd "../tests"
   if [ -n "$HEADLESS" ]; then
     docker pull garthk/qt-build:bionic-5.12.0
     docker run -d -v $PWD/..:/repo -w /repo/tests --name tester garthk/qt-build:bionic-5.12.0 tail -f /dev/null
-    docker exec -it tester bash -c "apt-get update && apt-get -yq --no-install-suggests --no-install-recommends install libssl-dev libprotobuf-dev protobuf-compiler qt5-qmake qt5-default qtbase5-dev qttools5-dev-tools qtdeclarative5-dev pkg-config"
+    docker exec -it tester bash -c "apt-get update && apt-get -yq --no-install-suggests --no-install-recommends install libssl-dev libprotobuf-dev protobuf-compiler qt5-qmake qt5-default qtbase5-dev qttools5-dev-tools qtdeclarative5-dev pkg-config libxcb-xinerama0"
     docker exec -it --env "PKG_CONFIG_PATH=/usr/lib/x86_64-linux-gnu/pkgconfig" tester bash -c "$MAKE_COMMAND"
     docker exec -it tester bash -c "$TEST_COMMAND"
   else
