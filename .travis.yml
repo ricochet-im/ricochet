@@ -14,26 +14,30 @@ matrix:
   - os: osx
     env:
     - BUILDSCRIPT=osx
+    addons:
+      homebrew:
+        packages:
+        - qt5
+          protobuf
+          openssl
   - os: linux
     env:
     - BUILDSCRIPT=linux-static
+    apt:
+      packages:
+      - libssl-dev
+      - libprotobuf-dev
+      - protobuf-compiler
+      - qt5-qmake
+      - qt5-default
+      - qtbase5-dev
+      - qttools5-dev-tools
+      - qtdeclarative5-dev
 
-before_install:
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get update; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; fi
 install:
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-         sudo apt-get install -qq libssl-dev libprotobuf-dev protobuf-compiler
-      && sudo apt-get install -qq qt5-qmake qt5-default qtbase5-dev qttools5-dev-tools qtdeclarative5-dev
-      ;
-    fi
+  - set +x
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-         brew install qt5
-      && brew install protobuf
-      && brew install openssl
-      export PATH="$(brew --prefix qt5)/bin:$PATH"
-      ;
-    fi
+      export PATH="$(brew --prefix qt5):$PATH"
 
 script:
   - cd buildscripts
