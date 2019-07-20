@@ -5,6 +5,9 @@ sudo: required
 os:
   - linux
   - osx
+  
+git:
+    submodules: false
 
 env:
   - CONFIG=Debug
