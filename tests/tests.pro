@@ -1,3 +1,2 @@
 TEMPLATE = subdirs
-SUBDIRS += test_cryptoKey
-SUBDIRS += test_contactIDValidator
+SUBDIRS += tst_cryptokey

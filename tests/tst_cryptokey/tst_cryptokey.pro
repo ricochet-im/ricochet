@@ -1,6 +1,6 @@
 include(../tests.pri)
 
-SOURCES += test_cryptoKey.cpp \
+SOURCES += tst_cryptokey.cpp \
     $${SRC}/utils/CryptoKey.cpp \
     $${SRC}/utils/SecureRNG.cpp
 

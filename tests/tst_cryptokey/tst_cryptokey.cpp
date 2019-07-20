@@ -225,4 +225,4 @@ void TestCryptoKey::sign()
 }
 
 QTEST_MAIN(TestCryptoKey)
-#include "test_cryptoKey.moc"
+#include "tst_cryptokey.moc"
