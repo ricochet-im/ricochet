@@ -10,7 +10,7 @@ pushd "../tests"
   qmake tests.pro CONFIG+=x86_64 CONFIG+=qtquickcompiler OPENSSLDIR="${ROOT_LIB}/openssl/" && make qmake_all
   make ${MAKEOPTS}
 
-  TEST_COMMAND=$'find . -type f -regextype sed -regex "./.*\(test_\|tst_\)[^/]*" -executable | while read -r test; do $test; done'
+  TEST_COMMAND=$'find . -type f -regextype sed -regex "./.*\(test_\|tst_\)[^/]*" -executable | while read -r test; do $test; echo "test $test exited with $?"; done'
   if [ -n "$HEADLESS" ]; then
     docker run -t -i --rm -v $PWD:/tests garthk/qt-build:bionic-5.12.0 bash -c "$TEST_COMMAND"
   else
