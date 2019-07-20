@@ -6,8 +6,11 @@ git:
     submodules: false
 
 env:
+  global:
+  - HEADLESS=True
+  matrix:
   - CONFIG=Debug
-    #  - CONFIG=Release
+  #  - CONFIG=Release
 
 matrix:
   include:
