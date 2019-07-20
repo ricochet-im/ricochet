@@ -35,3 +35,4 @@ build-tests*
 buildscripts/src/ricochet-refresh
 buildscripts/output
 buildscripts/lib
+target_wrapper\.sh
