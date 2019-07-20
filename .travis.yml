@@ -14,25 +14,27 @@ matrix:
   - os: osx
     env:
     - BUILDSCRIPT=osx
-    addons:
-      homebrew:
-        packages:
-        - qt5
-          protobuf
-          openssl
   - os: linux
     env:
     - BUILDSCRIPT=linux-static
-    apt:
-      packages:
-      - libssl-dev
-      - libprotobuf-dev
-      - protobuf-compiler
-      - qt5-qmake
-      - qt5-default
-      - qtbase5-dev
-      - qttools5-dev-tools
-      - qtdeclarative5-dev
+
+addons:
+  homebrew:
+    packages:
+    - qt5
+    - protobuf
+    - openssl
+    update: true
+  apt:
+    packages:
+    - libssl-dev
+    - libprotobuf-dev
+    - protobuf-compiler
+    - qt5-qmake
+    - qt5-default
+    - qtbase5-dev
+    - qttools5-dev-tools
+    - qtdeclarative5-dev
 
 install:
   - set +x
