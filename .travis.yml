@@ -49,10 +49,11 @@ install:
   cp "$(which tor)" "buildscripts/output/tor"
   chmod +w "buildscripts/output/tor"
 script:
-- pushd buildscripts
-- "${BUILDSCRIPT}/test.sh"
-- "${BUILDSCRIPT}/build.sh"
-- popd
+- |
+  pushd buildscripts
+    "${BUILDSCRIPT}/test.sh"
+    "${BUILDSCRIPT}/build.sh"
+  popd
 deploy:
   provider: releases
   api_key:
