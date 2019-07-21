@@ -1,7 +1,7 @@
 #!/bin/bash
 
 set -ex
-
+source common_functions.sh
 ROOT_LIB=$(pwd)/lib
 BUILD_OUTPUT=$(pwd)/output
 
@@ -12,7 +12,7 @@ test -e "${BUILD_OUTPUT}/ricochet-refresh-unstripped" && rm -rf "${BUILD_OUTPUT}
 test -e "${BUILD_OUTPUT}/Ricochet*.dmg" && rm -rf "${BUILD_OUTPUT}/Ricochet*.dmg"
 
 pushd ..
-  RICOCHET_VERSION=$(git describe --tags HEAD)
+  RICOCHET_VERSION=$(git_version)
 
   test -e build && rm -r build
   mkdir build

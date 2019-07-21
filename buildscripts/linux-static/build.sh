@@ -2,11 +2,12 @@
 
 set -e
 
+source common_functions.sh
 ROOT_LIB=$(pwd)/lib
 BUILD_OUTPUT=$(pwd)/output
 
 pushd ..
-  RICOCHET_VERSION=$(git describe --tags HEAD)
+  RICOCHET_VERSION=$(git_version)
 
   test -e build && rm -r build
   mkdir build
