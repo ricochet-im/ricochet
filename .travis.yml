@@ -62,6 +62,6 @@ deploy:
   - 'buildscripts/output/ricochet-refresh-*-static.tar.bz2'
   on:
     repo: blueprint-freespeech/ricochet-refresh
-    tags: true
+    # tags: true
   overwrite: true
   draft: true
