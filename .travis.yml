@@ -6,6 +6,7 @@ git:
 env:
   global:
   - HEADLESS=True
+  - SKIP_CODESIGN=1
   matrix:
   - CONFIG=Debug
 matrix:

@@ -48,6 +48,8 @@ pushd ..
 
   echo "---------------------"
   ls -la "${BUILD_OUTPUT}/"
-  spctl -vvvv --assess --type execute "${BUILD_OUTPUT}/Ricochet Refresh.app"
+  if [ -z "$SKIP_CODESIGN" ]; then
+    spctl -vvvv --assess --type execute "${BUILD_OUTPUT}/Ricochet Refresh.app"
+  fi
   echo "build: done"
 popd
