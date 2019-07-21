@@ -38,9 +38,10 @@ addons:
     - libxrender1
 install:
 - set -x
-- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then \
-    export PATH="$(brew --prefix qt5)/bin:$PATH"; \
-    export OPENSSLDIR="$(brew --prefix openssl)"; \
+- |
+  if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+    export PATH="$(brew --prefix qt5)/bin:$PATH";
+    export OPENSSLDIR="$(brew --prefix openssl)";
   fi
 - mkdir -p "buildscripts/output"
 - cp "$(which tor)" "buildscripts/output/tor"
