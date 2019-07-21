@@ -36,6 +36,7 @@ addons:
     - qtdeclarative5-dev
     - xvfb
     - libxrender1
+    - tor
 install:
 - set -x
 - |
