@@ -29,4 +29,6 @@ fileignoreconfig:
 - filename: buildscripts/src/tor
   checksum: 4342dd22b2eed9735fc04953581e25e3f8960dfe316ae0af5cffdba2c16d5a9d
   ignore_detectors: []
-
+- filename: .travis.yml
+  checksum: 037426550669d51167f1e9a2163bc35bf56e72c8e471e5e8a16cfbba52194250
+  ignore_detectors: []
