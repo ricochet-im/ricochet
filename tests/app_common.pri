@@ -1,5 +1,7 @@
 QT += core gui network quick widgets
 
+CONFIG += c++11
+
 macx {
     QT += macextras
 }
