@@ -10,6 +10,7 @@ test -e "${ROOT_LIB}" && rm -rf "${ROOT_LIB}"
 mkdir "${ROOT_LIB}"
 test -e "${BUILD_OUTPUT}" && rm -rf "${BUILD_OUTPUT}"
 mkdir "${BUILD_OUTPUT}"
+MACOS_VERSION_MIN="${MACOS_VERSION_MIN:-10.7}"
 
 # Build dependencies
 git submodule update --init
@@ -53,7 +54,7 @@ pushd "$ROOT_SRC"
     else
       git clean -dfx .
       git reset --hard
-      ./Configure no-shared no-zlib --prefix="${ROOT_LIB}/openssl/" -fPIC -mmacosx-version-min=10.7 darwin64-x86_64-cc
+      ./Configure no-shared no-zlib --prefix="${ROOT_LIB}/openssl/" --openssldir="${ROOT_LIB}/openssl/" -fPIC "-mmacosx-version-min=${MACOS_VERSION_MIN}" darwin64-x86_64-cc
       make -j1
       make install
     fi
@@ -83,7 +84,7 @@ pushd "$ROOT_SRC"
       git reset --hard
       # git apply "${ROOT_SRC}/../osx/tor-0001-Forcefully-disable-getentropy-and-clock_gettime-on-m.patch"
       ./autogen.sh
-      CFLAGS="-fPIC -mmacosx-version-min=10.7" ./configure --prefix="${ROOT_LIB}/tor" --with-openssl-dir="${ROOT_LIB}/openssl/" --with-libevent-dir="${ROOT_LIB}/libevent/" --enable-static-openssl --enable-static-libevent --disable-asciidoc --disable-libscrypt
+      CFLAGS="-fPIC -mmacosx-version-min=${MACOS_VERSION_MIN}" ./configure --prefix="${ROOT_LIB}/tor" --with-openssl-dir="${ROOT_LIB}/openssl/" --with-libevent-dir="${ROOT_LIB}/libevent/" --enable-static-openssl --enable-static-libevent --disable-asciidoc --disable-libscrypt
       make ${MAKEOPTS}
       make install
     fi
@@ -105,7 +106,7 @@ pushd "$ROOT_SRC"
     fi
 
     ./autogen.sh
-    CXX=clang++ CXXFLAGS="-mmacosx-version-min=10.7 -stdlib=libc++" ./configure --prefix="${ROOT_LIB}/protobuf/" --disable-shared --without-zlib --with-pic
+    CXX=clang++ CXXFLAGS="-mmacosx-version-min=${MACOS_VERSION_MIN} -stdlib=libc++" ./configure --prefix="${ROOT_LIB}/protobuf/" --disable-shared --without-zlib --with-pic
     make ${MAKEOPTS}
     make install
   popd

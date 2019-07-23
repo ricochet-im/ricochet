@@ -38,7 +38,7 @@ cd ..
 cd openssl
 git clean -dfx .
 git reset --hard
-./config no-shared no-zlib no-dso --prefix="${ROOT_LIB}/openssl/" -fPIC
+./config no-shared no-zlib no-dso --prefix="${ROOT_LIB}/openssl/" --openssldir="${ROOT_LIB}/openssl/" -fPIC
 make -j1
 make install
 cd ..

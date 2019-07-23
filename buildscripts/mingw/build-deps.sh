@@ -50,7 +50,7 @@ if [ "$(git config core.autocrlf)" != "false" ]; then
 fi
 git clean -dfx .
 git reset --hard
-./config no-shared no-zlib --prefix="${ROOT_LIB}/openssl/"
+./config no-shared no-zlib --prefix="${ROOT_LIB}/openssl/" --openssldir="${ROOT_LIB}/openssl/"
 make -j1
 make install
 cd ..

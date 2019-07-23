@@ -41,7 +41,7 @@ cd ..
 cd openssl
 git clean -dfx .
 git reset --hard
-./Configure no-shared no-zlib no-capieng --prefix="${ROOT_LIB}/openssl/" --cross-compile-prefix=i686-w64-mingw32- mingw
+./Configure no-shared no-zlib no-capieng --prefix="${ROOT_LIB}/openssl/" --openssldir="${ROOT_LIB}/openssl/" --cross-compile-prefix=i686-w64-mingw32- mingw
 make -j1 depend
 make -j1
 make install
