@@ -31,10 +31,10 @@ Ricochet is available for Windows, OS X (10.7 or later), and as a generic Linux 
 All releases and signatures are also available at https://ricochet.im/releases/.
 
 ### Building from source
-See [BUILDING](https://github.com/ricochet-im/ricochet/blob/master/BUILDING.md) for Linux, OS X, and Windows build instructions.
+See [BUILDING](https://github.com/blueprint-freespeech/ricochet-refresh/blob/master/BUILDING.md) for Linux, OS X, and Windows build instructions.
 
 ### Other
-Bugs can be reported on the [issue tracker](https://github.com/ricochet-im/ricochet/issues). Translations can be contributed on [Transifex](https://www.transifex.com/projects/p/ricochet/).
+Bugs can be reported on the [issue tracker](https://github.com/blueprint-freespeech/ricochet-refresh/issues). Translations can be contributed on [Transifex](https://www.transifex.com/projects/p/ricochet/).
 
 You can contact me at `ricochet:rs7ce36jsj24ogfw` or `john.brooks@dereferenced.net`.
 
