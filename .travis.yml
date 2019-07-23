@@ -7,13 +7,16 @@ env:
   global:
   - HEADLESS=True
   - SKIP_CODESIGN=1
-  matrix:
   - CONFIG=Debug
 matrix:
   include:
   - os: osx
     env:
     - BUILDSCRIPT=osx
+    - USE_LOCAL_QT=YES
+    - USE_LOCAL_OPENSSL=YES
+    - USE_LOCAL_LIBEVENT=YES
+    - USE_LOCAL_PROTOBUF=YES
   - os: linux
     env:
     - BUILDSCRIPT=linux-static
@@ -23,6 +26,7 @@ addons:
     - qt5
     - protobuf
     - openssl
+    - libevent
     - tor
     update: true
   apt:
@@ -40,14 +44,9 @@ addons:
     - tor
 install:
 - |
-  if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-    export PATH="$(brew --prefix qt5)/bin:$PATH";
-    export OPENSSLDIR="$(brew --prefix openssl)";
-  fi
-- |
-  mkdir -p "buildscripts/output"
-  cp "$(which tor)" "buildscripts/output/tor"
-  chmod +w "buildscripts/output/tor"
+  pushd buildscripts
+    "${BUILDSCRIPT}/build-deps.sh"
+  popd
 script:
 - |
   pushd buildscripts
