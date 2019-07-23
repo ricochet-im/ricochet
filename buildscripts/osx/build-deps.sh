@@ -38,7 +38,7 @@ pushd "$ROOT_SRC"
           -qt-zlib -qt-libpng -qt-libjpeg -qt-freetype -qt-pcre \
           -nomake tests -nomake examples \
           -prefix "${ROOT_LIB}/qt5/"
-      make "${MAKEOPTS}"
+      make ${MAKEOPTS}
       make install
       export PATH="$PATH:${ROOT_LIB}/qt5/bin"
     fi
