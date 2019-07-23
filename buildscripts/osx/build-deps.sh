@@ -17,7 +17,7 @@ pushd "$ROOT_SRC"
 
   # Qt
   pushd qt5
-    if [[ -n $USE_BREW_QT ]]; then
+    if [[ -n $USE_LOCAL_QT ]]; then
       if ! brew info qt5 > /dev/null; then
         echo "please install qt5 using brew"
         exit 1
@@ -44,7 +44,7 @@ pushd "$ROOT_SRC"
 
   # Openssl
   pushd openssl
-    if [[ -n $USE_BREW_OPENSSL ]]; then
+    if [[ -n $USE_LOCAL_OPENSSL ]]; then
       if ! brew info openssl > /dev/null; then
         echo "please install openssl using brew"
         exit 1
@@ -72,7 +72,7 @@ pushd "$ROOT_SRC"
 
   # Tor
   pushd tor
-    if [[ -n $USE_BREW_TOR ]]; then
+    if [[ -n $USE_LOCAL_TOR ]]; then
       if ! brew info tor > /dev/null; then
         echo "please install tor using brew"
         exit 1
