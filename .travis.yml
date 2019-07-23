@@ -14,8 +14,6 @@ matrix:
     env:
     - BUILDSCRIPT=osx
     - USE_LOCAL_QT=YES
-    - USE_LOCAL_OPENSSL=YES
-    - USE_LOCAL_LIBEVENT=YES
     - USE_LOCAL_PROTOBUF=YES
   - os: linux
     env:
@@ -25,9 +23,6 @@ addons:
     packages:
     - qt5
     - protobuf
-    - openssl
-    - libevent
-    - tor
     update: true
   apt:
     packages:
