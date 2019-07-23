@@ -30,8 +30,6 @@ Ricochet is available for Windows, OS X (10.7 or later), and as a generic Linux 
 
 All releases and signatures are also available at https://ricochet.im/releases/.
 
-Binaries are PGP signed by `9032 CAE4 CBFA 933A 5A21 45D5 FF97 C53F 183C 045D`.
-
 ### Building from source
 See [BUILDING](https://github.com/ricochet-im/ricochet/blob/master/BUILDING.md) for Linux, OS X, and Windows build instructions.
 
