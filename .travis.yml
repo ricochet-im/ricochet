@@ -39,11 +39,13 @@ addons:
     - tor
 install:
 - |
+  set -e
   pushd buildscripts
     "${BUILDSCRIPT}/build-deps.sh"
   popd
 script:
 - |
+  set -e
   pushd buildscripts
     "${BUILDSCRIPT}/test.sh"
     "${BUILDSCRIPT}/build.sh"
