@@ -12,6 +12,11 @@ test -e "${BUILD_OUTPUT}" && rm -rf "${BUILD_OUTPUT}"
 mkdir "${BUILD_OUTPUT}"
 MACOS_VERSION_MIN="${MACOS_VERSION_MIN:-10.7}"
 
+if [[ -n $USE_LOCAL_TOR ]]; then
+  echo "Warning: Using local tor means libevent is not statically compiled into the tor binary, making it less portable."
+  sleep 5
+fi
+
 # Build dependencies
 git submodule update --init
 pushd "$ROOT_SRC"
@@ -23,7 +28,6 @@ pushd "$ROOT_SRC"
         echo "please install qt5 using brew"
         exit 1
       fi
-      PATH="$PATH:$(brew --prefix qt5)/bin"
       ln -s "$(brew --prefix qt5)" "${ROOT_LIB}/qt5"
     else
       git submodule update --init qtbase qtdeclarative qtgraphicaleffects qtimageformats qtquickcontrols qtsvg qtmacextras qttools qtmultimedia
@@ -36,11 +40,13 @@ pushd "$ROOT_SRC"
           -prefix "${ROOT_LIB}/qt5/"
       make "${MAKEOPTS}"
       make install
+      export PATH="$PATH:${ROOT_LIB}/qt5/bin"
     fi
   popd
 
   if ! command -v qmake; then
     echo "qmake not found"
+    exit 1
   fi
 
   # Openssl
@@ -62,13 +68,21 @@ pushd "$ROOT_SRC"
 
   # Libevent
   pushd libevent
-    git clean -dfx .
-    git reset --hard
-    # git apply "${ROOT_SRC}/../osx/libevent-0001-Forcefully-disable-clock_gettime-on-macOS-due-to-a-S.patch"
-    ./autogen.sh
-    CFLAGS="-mmacosx-version-min=10.11" ./configure --prefix="${ROOT_LIB}/libevent" --disable-openssl
-    make ${MAKEOPTS}
-    make install
+    if [[ -n $USE_LOCAL_LIBEVENT ]]; then
+      if ! brew info libevent > /dev/null; then
+        echo "please install libevent using brew"
+        exit 1
+      fi
+      ln -s "$(brew --prefix libevent)" "${ROOT_LIB}/libevent"
+    else
+      git clean -dfx .
+      git reset --hard
+      # git apply "${ROOT_SRC}/../osx/libevent-0001-Forcefully-disable-clock_gettime-on-macOS-due-to-a-S.patch"
+      ./autogen.sh
+      CFLAGS="-mmacosx-version-min=${MACOS_VERSION_MIN}" ./configure --prefix="${ROOT_LIB}/libevent" --disable-openssl
+      make ${MAKEOPTS}
+      make install
+    fi
   popd
 
   # Tor
@@ -94,21 +108,29 @@ pushd "$ROOT_SRC"
 
   # Protobuf
   pushd protobuf
-    git clean -dfx .
-    git reset --hard
+    if [[ -n $USE_LOCAL_PROTOBUF ]]; then
+      if ! brew info protobuf > /dev/null; then
+        echo "please install protobuf using brew"
+        exit 1
+      fi
+      ln -s "$(brew --prefix protobuf)" "${ROOT_LIB}/protobuf"
+    else
+      git clean -dfx .
+      git reset --hard
 
-    # Protobuf will rudely fetch this over HTTP if it isn't present..
-    if [ ! -e gtest ]; then
-      git clone https://github.com/google/googletest.git gtest
-      pushd gtest
-      git checkout release-1.5.0
-      popd
+      # Protobuf will rudely fetch this over HTTP if it isn't present..
+      if [ ! -e gtest ]; then
+        git clone https://github.com/google/googletest.git gtest
+        pushd gtest
+          git checkout release-1.5.0
+        popd
+      fi
+
+      ./autogen.sh
+      CXX=clang++ CXXFLAGS="-mmacosx-version-min=${MACOS_VERSION_MIN} -stdlib=libc++" ./configure --prefix="${ROOT_LIB}/protobuf/" --disable-shared --without-zlib --with-pic
+      make ${MAKEOPTS}
+      make install
     fi
-
-    ./autogen.sh
-    CXX=clang++ CXXFLAGS="-mmacosx-version-min=${MACOS_VERSION_MIN} -stdlib=libc++" ./configure --prefix="${ROOT_LIB}/protobuf/" --disable-shared --without-zlib --with-pic
-    make ${MAKEOPTS}
-    make install
   popd
 
 popd
