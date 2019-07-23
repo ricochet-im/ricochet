@@ -56,7 +56,7 @@ You must have a `tor` binary installed on the system (in $PATH), or placed next 
 
 In portable mode (default), all configuration is stored in a folder called `config` with the binary. When installed, the platform's user configuration path is used instead.
 
-The [buildscripts](https://github.com/blueprint-freespeech/refresh-buildscripts) repository contains a set of scripts to build a fully static Ricochet Refresh on a clean Debian system. These are used to create the generic linux binary packages.
+The [buildscripts](https://github.com/blueprint-freespeech/ricochet-refresh/tree/master/buildscripts) directory contains a set of scripts to build a fully static Ricochet Refresh on a clean Debian system. These are used to create the generic linux binary packages.
 
 #### Hardening
 Ricochet Refresh will use aggressive compiler hardening flags if available. `qmake` will print the results of these tests on first run, or when run with `CONFIG+=recheck`.
@@ -94,7 +94,7 @@ make
 
 ## Windows
 
-Building for Windows is difficult. The process and scripts used for release builds are documented in the [buildscripts repository](https://github.com/blueprint-freespeech/refresh-buildscripts/tree/master/mingw).
+Building for Windows is difficult. The process and scripts used for release builds are documented in the [buildscripts directory](https://github.com/blueprint-freespeech/ricochet-refresh/tree/master/buildscripts).
 
 For development builds, you will want:
  * Visual Studio C++ or MinGW
