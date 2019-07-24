@@ -20,7 +20,6 @@ matrix:
     - BUILD_TARGET=linux-static
     - USE_LOCAL_QT=YES
     - USE_LOCAL_LIBEVENT=YES
-    - USE_LOCAL_OPENSSL=YES
 addons:
   homebrew:
     packages:
