@@ -22,7 +22,7 @@ pushd ..
     export PKG_CONFIG_PATH=${ROOT_LIB}/protobuf/lib/pkgconfig:${PKG_CONFIG_PATH}
     export PATH="${ROOT_LIB}/protobuf/bin/:${ROOT_LIB}/qt5/bin:${PATH}"
     qmake CONFIG+=release OPENSSLDIR="$OPENSSLDIR" ..
-    make ${MAKEOPTS}
+    "make ${MAKEOPTS}"
 
     cp ricochet-refresh.app/Contents/MacOS/ricochet-refresh "${BUILD_OUTPUT}/ricochet-refresh-unstripped"
     cp "${BUILD_OUTPUT}/tor" "ricochet-refresh.app/Contents/MacOS"

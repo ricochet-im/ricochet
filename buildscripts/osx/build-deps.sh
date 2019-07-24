@@ -38,7 +38,7 @@ pushd "$ROOT_SRC"
           -qt-zlib -qt-libpng -qt-libjpeg -qt-freetype -qt-pcre \
           -nomake tests -nomake examples \
           -prefix "${ROOT_LIB}/qt5/"
-      make ${MAKEOPTS}
+      "make ${MAKEOPTS}"
       make install
     fi
     export PATH="$PATH:${ROOT_LIB}/qt5/bin"
@@ -60,7 +60,9 @@ pushd "$ROOT_SRC"
     else
       git clean -dfx .
       git reset --hard
-      ./Configure no-shared no-zlib --prefix="${ROOT_LIB}/openssl/" --openssldir="${ROOT_LIB}/openssl/" -fPIC "-mmacosx-version-min=${MACOS_VERSION_MIN}" darwin64-x86_64-cc
+      ./Configure no-shared no-zlib "--prefix=${ROOT_LIB}/openssl/" \
+        "--openssldir=${ROOT_LIB}/openssl/" -fPIC "-mmacosx-version-min=${MACOS_VERSION_MIN}" \
+        darwin64-x86_64-cc
       make -j1
       make install
     fi
@@ -79,8 +81,8 @@ pushd "$ROOT_SRC"
       git reset --hard
       # git apply "${ROOT_SRC}/../osx/libevent-0001-Forcefully-disable-clock_gettime-on-macOS-due-to-a-S.patch"
       ./autogen.sh
-      CFLAGS="-mmacosx-version-min=${MACOS_VERSION_MIN}" ./configure --prefix="${ROOT_LIB}/libevent" --disable-openssl
-      make ${MAKEOPTS}
+      CFLAGS="-mmacosx-version-min=${MACOS_VERSION_MIN}" ./configure "--prefix=${ROOT_LIB}/libevent" --disable-openssl
+      "make ${MAKEOPTS}"
       make install
     fi
   popd
@@ -99,10 +101,10 @@ pushd "$ROOT_SRC"
       # git apply "${ROOT_SRC}/../osx/tor-0001-Forcefully-disable-getentropy-and-clock_gettime-on-m.patch"
       ./autogen.sh
       CFLAGS="-fPIC -mmacosx-version-min=${MACOS_VERSION_MIN}" ./configure --prefix="${ROOT_LIB}/tor" \
-        --with-openssl-dir="${ROOT_LIB}/openssl/" --enable-static-openssl \
-        --with-libevent-dir="${ROOT_LIB}/libevent/" --enable-static-libevent \
+        "--with-openssl-dir=${ROOT_LIB}/openssl/" --enable-static-openssl \
+        "--with-libevent-dir=${ROOT_LIB}/libevent/" --enable-static-libevent \
         --disable-asciidoc --disable-libscrypt
-      make ${MAKEOPTS}
+      "make ${MAKEOPTS}"
       make install
     fi
     cp "${ROOT_LIB}/tor/bin/tor" "${BUILD_OUTPUT}/"
@@ -130,8 +132,9 @@ pushd "$ROOT_SRC"
       fi
 
       ./autogen.sh
-      CXX=clang++ CXXFLAGS="-mmacosx-version-min=${MACOS_VERSION_MIN} -stdlib=libc++" ./configure --prefix="${ROOT_LIB}/protobuf/" --disable-shared --without-zlib --with-pic
-      make ${MAKEOPTS}
+      CXX=clang++ CXXFLAGS="-mmacosx-version-min=${MACOS_VERSION_MIN} -stdlib=libc++" ./configure \
+        "--prefix=${ROOT_LIB}/protobuf/" --disable-shared --without-zlib --with-pic
+      "make ${MAKEOPTS}"
       make install
     fi
   popd

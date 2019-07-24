@@ -21,7 +21,7 @@ cd build
 
 export PATH=${ROOT_LIB}/qt5/bin/:${ROOT_LIB}/protobuf-native/bin/:${PATH}
 qmake CONFIG+=release OPENSSLDIR="${ROOT_LIB}/openssl/" PROTOBUFDIR="${ROOT_LIB}/protobuf/" ..
-make ${MAKEOPTS}
+"make ${MAKEOPTS}"
 cp release/ricochet.exe "${BUILD_OUTPUT}/"
 
 mkdir -p staging/ricochet

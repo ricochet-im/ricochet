@@ -24,7 +24,7 @@ pushd "$ROOT_SRC"
       ./configure -opensource -confirm-license -static -no-qml-debug -qt-zlib \
         -qt-libpng -qt-libjpeg -qt-freetype -no-openssl -qt-pcre -qt-xcb \
         -nomake tests -nomake examples -no-cups -prefix "${ROOT_LIB}/qt5/"
-      make ${MAKEOPTS}
+      "make ${MAKEOPTS}"
       make install
     fi
   popd
@@ -36,21 +36,31 @@ pushd "$ROOT_SRC"
 
   # Openssl
   pushd openssl
-    git clean -dfx .
-    git reset --hard
-    ./config no-shared no-zlib no-dso --prefix="${ROOT_LIB}/openssl/" --openssldir="${ROOT_LIB}/openssl/" -fPIC
-    make -j1
-    make install
+    if [[ -n $USE_LOCAL_OPENSSL ]]; then
+      OPENSSL_DIR="$(pkg-config --variable=libdir openssl)"
+    else
+      OPENSSL_DIR="${ROOT_LIB}/openssl"
+      git clean -dfx .
+      git reset --hard
+      ./config no-shared no-zlib "--prefix=${OPENSSL_DIR}" "--openssldir=${OPENSSL_DIR}" -fPIC
+      make -j1
+      make install_sw
+    fi
   popd
 
   # Libevent
   pushd libevent
-    git clean -dfx .
-    git reset --hard
-    ./autogen.sh
-    ./configure --prefix="${ROOT_LIB}/libevent" --disable-openssl
-    make ${MAKEOPTS}
-    make install
+    if [[ -n $USE_LOCAL_LIBEVENT ]]; then
+      LIBEVENT_DIR="$(pkg-config --variable=libdir libevent)"
+    else
+      LIBEVENT_DIR="${ROOT_LIB}/libevent"
+      git clean -dfx .
+      git reset --hard
+      ./autogen.sh
+      ./configure "--prefix=${LIBEVENT_DIR}" --disable-openssl
+      "make ${MAKEOPTS}"
+      make install
+    fi
   popd
 
   # Tor
@@ -58,12 +68,12 @@ pushd "$ROOT_SRC"
     git clean -dfx .
     git reset --hard
     ./autogen.sh
-    CFLAGS=-fPIC ./configure --prefix="${ROOT_LIB}/tor" \
-      --with-openssl-dir="${ROOT_LIB}/openssl/" --enable-static-openssl \
-      --with-libevent-dir="${ROOT_LIB}/libevent/" --enable-static-libevent \
-      --with-zlib-dir="$(pkg-config --variable=libdir zlib)" \
-      --enable-static-tor --disable-asciidoc
-    make ${MAKEOPTS}
+    CFLAGS=-fPIC LD_LIBRARY_PATH="$OPENSSL_DIR" ./configure "--prefix=${ROOT_LIB}/tor" \
+      "--with-openssl-dir=${OPENSSL_DIR}/lib" --enable-static-openssl \
+      "--with-libevent-dir=${LIBEVENT_DIR}" --enable-static-libevent \
+      "--with-zlib-dir=$(pkg-config --variable=libdir zlib)" \
+      --disable-asciidoc
+    "make ${MAKEOPTS}"
     make install
     cp "${ROOT_LIB}/tor/bin/tor" "${BUILD_OUTPUT}/"
   popd
@@ -82,8 +92,8 @@ pushd "$ROOT_SRC"
     fi
 
     ./autogen.sh
-    ./configure --prefix="${ROOT_LIB}/protobuf/" --disable-shared --without-zlib --with-pic
-    make ${MAKEOPTS}
+    ./configure "--prefix=${ROOT_LIB}/protobuf/" --disable-shared --without-zlib --with-pic
+    "make ${MAKEOPTS}"
     make install
   popd
 

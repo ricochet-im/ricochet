@@ -10,7 +10,7 @@ pushd "../tests"
   export PATH=${ROOT_LIB}/protobuf/bin/:${PATH}
 
   qmake tests.pro -spec macx-clang CONFIG+=x86_64 CONFIG+=qtquickcompiler OPENSSLDIR="$OPENSSLDIR" && /usr/bin/make qmake_all
-  make ${MAKEOPTS}
+  "make ${MAKEOPTS}"
 
   TESTS=$(/usr/bin/find -E . -type f -regex "./.*(test_|tst_)[^/]*" -perm +111)
 
