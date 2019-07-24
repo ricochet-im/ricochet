@@ -22,7 +22,6 @@ pushd "$ROOT_SRC"
     git submodule foreach git reset --hard
     ./configure -opensource -confirm-license -static -no-qml-debug -qt-zlib \
       -qt-libpng -qt-libjpeg -qt-freetype -no-openssl -qt-pcre -qt-xcb \
-      -qt-xkbcommon-x11 \
       -nomake tests -nomake examples -no-cups -prefix "${ROOT_LIB}/qt5/"
     make ${MAKEOPTS}
     make install
