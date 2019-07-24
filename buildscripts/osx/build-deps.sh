@@ -40,8 +40,8 @@ pushd "$ROOT_SRC"
           -prefix "${ROOT_LIB}/qt5/"
       make ${MAKEOPTS}
       make install
-      export PATH="$PATH:${ROOT_LIB}/qt5/bin"
     fi
+    export PATH="$PATH:${ROOT_LIB}/qt5/bin"
   popd
 
   if ! command -v qmake; then
