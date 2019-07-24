@@ -38,6 +38,9 @@ addons:
     - xvfb
     - libxrender1
     - tor
+    - autotools-dev
+    - automake
+    - libtool
 install:
 - (cd buildscripts && "${BUILD_TARGET}/build-deps.sh")
 script:
