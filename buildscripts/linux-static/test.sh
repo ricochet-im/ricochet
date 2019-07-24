@@ -14,7 +14,7 @@ pushd "../tests"
 
   if [ -n "$HEADLESS" ]; then
     Xvfb :1 -screen 0 800x600x16 &
-    echo "$TESTS" | while read -r test; do xvfb-run "$test" || exit $?; done
+    echo "$TESTS" | while read -r test; do xvfb-run -e /dev/stderr -a "$test" || exit $?; done
   else
     echo "$TESTS" | while read -r test; do "$test" || exit $?; done
   fi
