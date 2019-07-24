@@ -39,18 +39,10 @@ addons:
     - libxrender1
     - tor
 install:
-- |
-  set -ex;
-  pushd buildscripts;
-    "${BUILDSCRIPT}/build-deps.sh";
-  popd;
+- (cd buildscripts && "${BUILDSCRIPT}/build-deps.sh")
 script:
-- |
-  set -e;
-  pushd buildscripts;
-    "${BUILDSCRIPT}/test.sh";
-    "${BUILDSCRIPT}/build.sh";
-  popd;
+- (cd buildscripts && "${BUILDSCRIPT}/test.sh")
+- (cd buildscripts && "${BUILDSCRIPT}/build.sh")
 deploy:
   provider: releases
   api_key:
