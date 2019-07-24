@@ -40,17 +40,17 @@ addons:
     - tor
 install:
 - |
-  set -ex
-  pushd buildscripts
-    "${BUILDSCRIPT}/build-deps.sh"
-  popd
+  set -ex;
+  pushd buildscripts;
+    "${BUILDSCRIPT}/build-deps.sh";
+  popd;
 script:
 - |
-  set -e
-  pushd buildscripts
-    "${BUILDSCRIPT}/test.sh"
-    "${BUILDSCRIPT}/build.sh"
-  popd
+  set -e;
+  pushd buildscripts;
+    "${BUILDSCRIPT}/test.sh";
+    "${BUILDSCRIPT}/build.sh";
+  popd;
 deploy:
   provider: releases
   api_key:
