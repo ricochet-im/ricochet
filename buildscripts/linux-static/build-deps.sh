@@ -17,15 +17,22 @@ pushd "$ROOT_SRC"
 
   # Qt
   pushd qt5
-    git submodule update --init qtbase qtdeclarative qtgraphicaleffects qtimageformats qtquickcontrols qtsvg qtx11extras qttools qtmultimedia
-    git submodule foreach git clean -dfx .
-    git submodule foreach git reset --hard
-    ./configure -opensource -confirm-license -static -no-qml-debug -qt-zlib \
-      -qt-libpng -qt-libjpeg -qt-freetype -no-openssl -qt-pcre -qt-xcb \
-      -nomake tests -nomake examples -no-cups -prefix "${ROOT_LIB}/qt5/"
-    make ${MAKEOPTS}
-    make install
+    if [[ -z $USE_LOCAL_QT ]]; then
+      git submodule update --init qtbase qtdeclarative qtgraphicaleffects qtimageformats qtquickcontrols qtsvg qtx11extras qttools qtmultimedia
+      git submodule foreach git clean -dfx .
+      git submodule foreach git reset --hard
+      ./configure -opensource -confirm-license -static -no-qml-debug -qt-zlib \
+        -qt-libpng -qt-libjpeg -qt-freetype -no-openssl -qt-pcre -qt-xcb \
+        -nomake tests -nomake examples -no-cups -prefix "${ROOT_LIB}/qt5/"
+      make ${MAKEOPTS}
+      make install
+    fi
   popd
+
+  if ! command -v qmake; then
+    echo "qmake not found"
+    exit 1
+  fi
 
   # Openssl
   pushd openssl

@@ -18,6 +18,7 @@ matrix:
   - os: linux
     env:
     - BUILDSCRIPT=linux-static
+    - USE_LOCAL_QT=YES
 addons:
   homebrew:
     packages:
