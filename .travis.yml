@@ -18,7 +18,6 @@ matrix:
   - os: linux
     env:
     - BUILD_TARGET=linux-static
-    - USE_LOCAL_QT=YES
 addons:
   homebrew:
     packages:
