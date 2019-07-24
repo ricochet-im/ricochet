@@ -12,12 +12,12 @@ matrix:
   include:
   - os: osx
     env:
-    - BUILDSCRIPT=osx
+    - BUILD_TARGET=osx
     - USE_LOCAL_QT=YES
     - USE_LOCAL_PROTOBUF=YES
   - os: linux
     env:
-    - BUILDSCRIPT=linux-static
+    - BUILD_TARGET=linux-static
     - USE_LOCAL_QT=YES
 addons:
   homebrew:
@@ -39,10 +39,10 @@ addons:
     - libxrender1
     - tor
 install:
-- (cd buildscripts && "${BUILDSCRIPT}/build-deps.sh")
+- (cd buildscripts && "${BUILD_TARGET}/build-deps.sh")
 script:
-- (cd buildscripts && "${BUILDSCRIPT}/test.sh")
-- (cd buildscripts && "${BUILDSCRIPT}/build.sh")
+- (cd buildscripts && "${BUILD_TARGET}/test.sh")
+- (cd buildscripts && "${BUILD_TARGET}/build.sh")
 deploy:
   provider: releases
   api_key:
