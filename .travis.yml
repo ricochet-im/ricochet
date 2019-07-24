@@ -48,7 +48,8 @@ install:
 - (cd buildscripts && "${BUILD_TARGET}/build-deps.sh")
 script:
 - (cd buildscripts && "${BUILD_TARGET}/test.sh")
-- '[["$?" -eq 0]] && (cd buildscripts && "${BUILD_TARGET}/build.sh")'
+on_success:
+- (cd buildscripts && "${BUILD_TARGET}/build.sh")
 deploy:
   provider: releases
   api_key:
