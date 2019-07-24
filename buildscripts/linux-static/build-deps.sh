@@ -82,21 +82,23 @@ pushd "$ROOT_SRC"
 
   # Protobuf
   pushd protobuf
-    git clean -dfx .
-    git reset --hard
+    if [[ -z $USE_LOCAL_PROTOBUF ]]; then
+      git clean -dfx .
+      git reset --hard
 
-    # Protobuf will rudely fetch this over HTTP if it isn't present..
-    if [ ! -e gtest ]; then
-      git clone https://github.com/google/googletest.git gtest
-      pushd gtest
-      git checkout release-1.5.0
-      popd
+      # Protobuf will rudely fetch this over HTTP if it isn't present..
+      if [ ! -e gtest ]; then
+        git clone https://github.com/google/googletest.git gtest
+        pushd gtest
+        git checkout release-1.5.0
+        popd
+      fi
+
+      ./autogen.sh
+      ./configure "--prefix=${ROOT_LIB}/protobuf/" --disable-shared --without-zlib --with-pic
+      make ${MAKEOPTS}
+      make install
     fi
-
-    ./autogen.sh
-    ./configure "--prefix=${ROOT_LIB}/protobuf/" --disable-shared --without-zlib --with-pic
-    make ${MAKEOPTS}
-    make install
   popd
 
 popd
