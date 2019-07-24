@@ -48,7 +48,6 @@ install:
 - (cd buildscripts && "${BUILD_TARGET}/build-deps.sh")
 script:
 - (cd buildscripts && "${BUILD_TARGET}/test.sh")
-on_success:
 - (cd buildscripts && "${BUILD_TARGET}/build.sh")
 deploy:
   provider: releases
