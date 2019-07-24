@@ -19,6 +19,8 @@ matrix:
     env:
     - BUILD_TARGET=linux-static
     - USE_LOCAL_QT=YES
+    - USE_LOCAL_LIBEVENT=YES
+    - USE_LOCAL_OPENSSL=YES
 addons:
   homebrew:
     packages:
@@ -28,6 +30,7 @@ addons:
   apt:
     packages:
     - libssl-dev
+    - libevent-dev
     - libprotobuf-dev
     - protobuf-compiler
     - qt5-qmake
@@ -41,6 +44,7 @@ addons:
     - autotools-dev
     - automake
     - libtool
+    - pkg-config
 install:
 - (cd buildscripts && "${BUILD_TARGET}/build-deps.sh")
 script:
