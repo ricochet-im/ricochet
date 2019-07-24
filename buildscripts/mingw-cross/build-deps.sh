@@ -24,7 +24,7 @@ pushd "$ROOT_SRC"
       git apply --ignore-whitespace "${ROOT_SRC}/../mingw-cross/0001-windeployqt-Hack-to-use-objdump-for-PE-parsing.patch"
     popd
     ./configure -prefix "${ROOT_LIB}/qt5/" -release -opensource -confirm-license -no-dbus -no-qml-debug -no-glib -no-openssl -no-fontconfig -no-icu -qt-pcre -qt-zlib -qt-libpng -qt-libjpeg -nomake tools -nomake examples -xplatform win32-g++ -device-option "CROSS_COMPILE=/usr/bin/i686-w64-mingw32-"
-    "make ${MAKEOPTS}"
+    make ${MAKEOPTS}
     make install
   popd
 
@@ -44,7 +44,7 @@ pushd "$ROOT_SRC"
     git reset --hard
     ./autogen.sh
     ./configure --prefix="${ROOT_LIB}/libevent" --host=i686-w64-mingw32
-    "make ${MAKEOPTS}"
+    make ${MAKEOPTS}
     make install
   popd
 
@@ -54,7 +54,7 @@ pushd "$ROOT_SRC"
     git reset --hard
     ./autogen.sh
     ./configure --prefix="${ROOT_LIB}/tor" --host=i686-w64-mingw32 --with-openssl-dir="${ROOT_LIB}/openssl/" --with-libevent-dir="${ROOT_LIB}/libevent/" --with-zlib-dir="$(i686-w64-mingw32-pkg-config --variable=libdir zlib)" --enable-static-tor --disable-asciidoc
-    "make ${MAKEOPTS}"
+    make ${MAKEOPTS}
     make install
     cp "${ROOT_LIB}/tor/bin/tor.exe" "${BUILD_OUTPUT}/"
   popd
@@ -73,12 +73,12 @@ pushd "$ROOT_SRC"
     ./autogen.sh
     # Build native protobuf (for the protoc compiler)
     ./configure --prefix="${ROOT_LIB}/protobuf-native/" --disable-shared --without-zlib
-    "make ${MAKEOPTS}"
+    make ${MAKEOPTS}
     make install
     # Build protobuf for target
     make distclean
     ./configure --prefix="${ROOT_LIB}/protobuf/" --host=i686-w64-mingw32 --with-protoc="${ROOT_LIB}/protobuf-native/bin/protoc" --disable-shared --without-zlib
-    "make ${MAKEOPTS}"
+    make ${MAKEOPTS}
     make install
   popd
 popd

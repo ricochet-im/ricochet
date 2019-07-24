@@ -24,7 +24,7 @@ pushd "$ROOT_SRC"
       ./configure -opensource -confirm-license -static -no-qml-debug -qt-zlib \
         -qt-libpng -qt-libjpeg -qt-freetype -no-openssl -qt-pcre -qt-xcb \
         -nomake tests -nomake examples -no-cups -prefix "${ROOT_LIB}/qt5/"
-      "make ${MAKEOPTS}"
+      make ${MAKEOPTS}
       make install
     fi
   popd
@@ -58,7 +58,7 @@ pushd "$ROOT_SRC"
       git reset --hard
       ./autogen.sh
       ./configure "--prefix=${LIBEVENT_DIR}" --disable-openssl
-      "make ${MAKEOPTS}"
+      make ${MAKEOPTS}
       make install
     fi
   popd
@@ -69,11 +69,11 @@ pushd "$ROOT_SRC"
     git reset --hard
     ./autogen.sh
     CFLAGS=-fPIC LD_LIBRARY_PATH="$OPENSSL_DIR" ./configure "--prefix=${ROOT_LIB}/tor" \
-      "--with-openssl-dir=${OPENSSL_DIR}/lib" --enable-static-openssl \
+      "--with-openssl-dir=${OPENSSL_DIR}" --enable-static-openssl \
       "--with-libevent-dir=${LIBEVENT_DIR}" --enable-static-libevent \
       "--with-zlib-dir=$(pkg-config --variable=libdir zlib)" \
       --disable-asciidoc
-    "make ${MAKEOPTS}"
+    make ${MAKEOPTS}
     make install
     cp "${ROOT_LIB}/tor/bin/tor" "${BUILD_OUTPUT}/"
   popd
@@ -93,7 +93,7 @@ pushd "$ROOT_SRC"
 
     ./autogen.sh
     ./configure "--prefix=${ROOT_LIB}/protobuf/" --disable-shared --without-zlib --with-pic
-    "make ${MAKEOPTS}"
+    make ${MAKEOPTS}
     make install
   popd
 

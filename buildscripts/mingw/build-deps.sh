@@ -27,7 +27,7 @@ pushd "$ROOT_SRC"
     # Prefix needs to use the Windows style, not the mingw converted path
     QT_PREFIX="$(cygpath -m "${ROOT_LIB}/qt5/")"
     ./configure -prefix "${QT_PREFIX}" -release -opensource -confirm-license -no-dbus -no-qml-debug -no-glib -no-openssl -no-fontconfig -no-icu -qt-pcre -qt-zlib -qt-libpng -qt-libjpeg -nomake tools -nomake examples -platform win32-g++ -opengl dynamic
-    "make ${MAKEOPTS}"
+    make ${MAKEOPTS}
     make install
   popd
 
@@ -52,7 +52,7 @@ pushd "$ROOT_SRC"
     git reset --hard
     ./autogen.sh
     ./configure --prefix="${ROOT_LIB}/libevent" --disable-openssl
-    "make ${MAKEOPTS}"
+    make ${MAKEOPTS}
     make install
   popd
 
@@ -62,7 +62,7 @@ pushd "$ROOT_SRC"
     git reset --hard
     ./autogen.sh
     LIBS+=-lcrypt32 ./configure --prefix="${ROOT_LIB}/tor" --with-openssl-dir="${ROOT_LIB}/openssl/" --with-libevent-dir="${ROOT_LIB}/libevent/" --with-zlib-dir="$(pkg-config --variable=libdir zlib)" --enable-static-tor --disable-asciidoc
-    "make ${MAKEOPTS}"
+    make ${MAKEOPTS}
     make install
     cp "${ROOT_LIB}/tor/bin/tor.exe" "${BUILD_OUTPUT}/"
   popd
@@ -82,7 +82,7 @@ pushd "$ROOT_SRC"
 
     ./autogen.sh
     ./configure --prefix="${ROOT_LIB}/protobuf/" --disable-shared --without-zlib
-    "make ${MAKEOPTS}"
+    make ${MAKEOPTS}
     make install
   popd
 
