@@ -1,16 +1,16 @@
-## Building Ricochet
+## Building Ricochet Refresh
 
-These instructions are intended for people who wish to build or modify Ricochet from source. Most users should [download releases](https://github.com/ricochet-im/ricochet/releases) instead.
+These instructions are intended for people who wish to build or modify Ricochet Refresh from source. Most users should [download releases](https://github.com/blueprint-freespeech/ricochet-refresh/releases) instead.
 
-Clone with git from `https://github.com/ricochet-im/ricochet.git`, or download source packages [on github](https://github.com/ricochet-im/ricochet/releases). Then proceed to instructions for your platform.
+Clone with git from `https://github.com/blueprint-freespeech/ricochet-refresh.git`, or download source packages [on github](https://github.com/blueprint-freespeech/ricochet-refresh/releases). Then proceed to instructions for your platform.
 
-If you're interested in helping to package Ricochet for common Linux platforms, please get in touch!
+If you're interested in helping to package Ricochet Refresh for common Linux platforms, please get in touch!
 
 ## Hints
 
 Add `CONFIG+=debug` or `CONFIG+=release` to the qmake command for a debug or release build. Debug builds enable logging to standard output, and shouldn't be used in sensitive environments.
 
-By default, Ricochet will be portable, and configuration is stored in a folder named `config` next to the binary. Add `DEFINES+=RICOCHET_NO_PORTABLE` to the qmake command for a system-wide installation using platform configuration paths instead.
+By default, Ricochet Refresh will be portable, and configuration is stored in a folder named `config` next to the binary. Add `DEFINES+=RICOCHET_NO_PORTABLE` to the qmake command for a system-wide installation using platform configuration paths instead.
 
 ## Linux
 
@@ -56,10 +56,10 @@ You must have a `tor` binary installed on the system (in $PATH), or placed next 
 
 In portable mode (default), all configuration is stored in a folder called `config` with the binary. When installed, the platform's user configuration path is used instead.
 
-The [buildscripts](https://github.com/ricochet-im/buildscripts) repository contains a set of scripts to build a fully static Ricochet on a clean Debian system. These are used to create the generic linux binary packages.
+The [buildscripts](https://github.com/blueprint-freespeech/ricochet-refresh/tree/master/buildscripts) directory contains a set of scripts to build a fully static Ricochet Refresh on a clean Debian system. These are used to create the generic linux binary packages.
 
 #### Hardening
-Ricochet will use aggressive compiler hardening flags if available. `qmake` will print the results of these tests on first run, or when run with `CONFIG+=recheck`.
+Ricochet Refresh will use aggressive compiler hardening flags if available. `qmake` will print the results of these tests on first run, or when run with `CONFIG+=recheck`.
 
 To take full advantage of the sanitizer options, you may need to install `libasan` and `libubsan`.
 
@@ -77,7 +77,7 @@ You can either load `ricochet.pro` in Qt Creator and build normally, or build co
 make
 ```
 
-You also need a `tor` binary in $PATH or inside the build's `ricochet.app/Contents/MacOS` folder. The easiest solution is to use `brew install tor`. If you copy the `tor` binary, you will need to keep it up to date.
+You also need a `tor` binary in $PATH or inside the build's `ricochet refresh.app/Contents/MacOS` folder. The easiest solution is to use `brew install tor`. If you copy the `tor` binary, you will need to keep it up to date.
 
 Normally, configuration will be stored in a `config.ricochet` folder, in the same location as `ricochet.app`. However, if the bundle is installed to `/Applications`, the system location `~/Library/Application Support/Ricochet` is used instead. You can force that behavior by adding `DEFINES+=RICOCHET_NO_PORTABLE` to the qmake command.
 
@@ -94,7 +94,7 @@ make
 
 ## Windows
 
-Building for Windows is difficult. The process and scripts used for release builds are documented in the [buildscripts repository](https://github.com/ricochet-im/buildscripts/tree/master/mingw).
+Building for Windows is difficult. The process and scripts used for release builds are documented in the [buildscripts directory](https://github.com/blueprint-freespeech/ricochet-refresh/tree/master/buildscripts).
 
 For development builds, you will want:
  * Visual Studio C++ or MinGW

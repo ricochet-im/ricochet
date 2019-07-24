@@ -1,11 +1,11 @@
-Ricochet Build Scripts
+Ricochet Refresh Build Scripts
 ----------------------
 
-These are the scripts and instructions used to build distribution binaries for Ricochet, for various platforms.
+These are the scripts and instructions used to build distribution binaries for Ricochet Refresh, for various platforms.
 
-If you don't know what Ricochet is or you're trying to find pre-built binaries, you're probably more interested in the [main repository](https://github.com/ricochet-im/ricochet) or [website](https://ricochet.im/).
+If you don't know what Ricochet Refresh is or you're trying to find pre-built binaries, you're probably more interested in the [main repository](https://github.com/blueprint-freespeech/ricochet-refresh) or [website](https://ricochet.im/).
 
-If you want to build your own Ricochet for local use, there are general [build instructions](https://github.com/ricochet-im/ricochet/blob/master/BUILDING.md). These scripts might still be useful to you, because they take care of all dependencies and create redistributable binaries.
+If you want to build your own Ricochet Refresh for local use, there are general [build instructions](https://github.com/blueprint-freespeech/ricochet-refresh/blob/master/BUILDING.md). These scripts might still be useful to you, because they take care of all dependencies and create redistributable binaries.
 
 Platforms
 ---------
