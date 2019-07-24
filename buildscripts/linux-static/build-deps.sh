@@ -42,7 +42,7 @@ pushd "$ROOT_SRC"
       OPENSSL_DIR="${ROOT_LIB}/openssl"
       git clean -dfx .
       git reset --hard
-      ./config no-shared no-zlib "--prefix=${OPENSSL_DIR}" "--openssldir=${OPENSSL_DIR}" -fPIC
+      ./config no-shared no-zlib no-dso "--prefix=${OPENSSL_DIR}" "--openssldir=${OPENSSL_DIR}" -fPIC
       make -j1
       make install_sw
     fi
@@ -68,11 +68,13 @@ pushd "$ROOT_SRC"
     git clean -dfx .
     git reset --hard
     ./autogen.sh
-    CFLAGS=-fPIC LD_LIBRARY_PATH="$OPENSSL_DIR" ./configure "--prefix=${ROOT_LIB}/tor" \
-      "--with-openssl-dir=${OPENSSL_DIR}" --enable-static-openssl \
-      "--with-libevent-dir=${LIBEVENT_DIR}" --enable-static-libevent \
-      "--with-zlib-dir=$(pkg-config --variable=libdir zlib)" \
-      --disable-asciidoc
+    CFLAGS=-fPIC ./configure \
+      --prefix="${ROOT_LIB}/tor" \
+      --with-openssl-dir="${ROOT_LIB}/openssl/" \
+      --with-libevent-dir="${ROOT_LIB}/libevent/" \
+      --with-zlib-dir="$(pkg-config --variable=libdir zlib)" \
+      --enable-static-tor --disable-asciidoc
+
     make ${MAKEOPTS}
     make install
     cp "${ROOT_LIB}/tor/bin/tor" "${BUILD_OUTPUT}/"
