@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -ex
 
 ROOT_SRC=$(pwd)/src
 ROOT_LIB=$(pwd)/lib

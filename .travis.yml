@@ -19,7 +19,6 @@ matrix:
     env:
     - BUILD_TARGET=linux-static
     - USE_LOCAL_QT=YES
-    - USE_LOCAL_LIBEVENT=YES
 addons:
   homebrew:
     packages:
