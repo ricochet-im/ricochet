@@ -38,7 +38,7 @@ pushd ..
         codesign --verbose --sign "$CODESIGN_ID" --deep Ricochet\ Refresh.app
         # Sign twice to work around a bug(?) that results in the asan library being invalid
         codesign -f --verbose --sign "$CODESIGN_ID" --deep Ricochet\ Refresh.app
-        codesign -vvvv -d Ricochet.app
+        codesign -vvvv -d Ricochet\ Refresh.app
       fi
 
       hdiutil create "Ricochet Refresh.dmg" -srcfolder "Ricochet Refresh.app" -format UDZO -volname "Ricochet Refresh"
