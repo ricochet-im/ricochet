@@ -7,7 +7,7 @@ env:
   global:
   - HEADLESS=True
   - SKIP_CODESIGN=1
-  - CONFIG=Debug
+  - CONFIG=Release
 matrix:
   include:
   - os: osx
