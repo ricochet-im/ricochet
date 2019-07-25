@@ -1,4 +1,5 @@
-/* Ricochet - https://ricochet.im/
+/* Ricochet Refresh - https://ricochetrefresh.net/
+ * Copyright (C) 2019, Blueprint For Free Speech <info@blueprintforfreespeech.net>
  * Copyright (C) 2014, John Brooks <john.brooks@dereferenced.net>
  *
  * Redistribution and use in source and binary forms, with or without
