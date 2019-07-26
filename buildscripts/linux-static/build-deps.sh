@@ -21,9 +21,11 @@ pushd "$ROOT_SRC"
       git submodule update --init qtbase qtdeclarative qtgraphicaleffects qtimageformats qtquickcontrols qtsvg qtx11extras qttools qtmultimedia
       git submodule foreach git clean -dfx .
       git submodule foreach git reset --hard
-      ./configure -opensource -confirm-license -static -no-qml-debug -qt-zlib \
-        -qt-libpng -qt-libjpeg -qt-freetype -no-openssl -qt-pcre \
-        -nomake tests -nomake examples -no-cups -prefix "${ROOT_LIB}/qt5/"
+      ./configure -opensource -confirm-license -static -release \
+        -no-qml-debug -no-openssl -no-cups \
+        -qt-zlib -qt-libpng -qt-libjpeg -qt-freetype -qt-pcre \
+        -nomake tests -nomake examples \
+        -prefix "${ROOT_LIB}/qt5/"
       make ${MAKEOPTS}
       make install
     fi
