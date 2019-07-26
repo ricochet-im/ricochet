@@ -103,7 +103,7 @@ pushd "$ROOT_SRC"
       CFLAGS="-fPIC -mmacosx-version-min=${MACOS_VERSION_MIN}" ./configure --prefix="${ROOT_LIB}/tor" \
         --with-openssl-dir="${ROOT_LIB}/openssl/" --enable-static-openssl \
         --with-libevent-dir="${ROOT_LIB}/libevent/" --enable-static-libevent \
-        --disable-asciidoc --disable-libscrypt
+        --disable-asciidoc --disable-libscrypt --disable-lzma
       make ${MAKEOPTS}
       make install
     fi
