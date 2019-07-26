@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -ex
 
 source common_functions.sh
 ROOT_LIB=$(pwd)/lib

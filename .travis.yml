@@ -7,27 +7,29 @@ env:
   global:
   - HEADLESS=True
   - SKIP_CODESIGN=1
-  matrix:
-  - CONFIG=Debug
+  - CONFIG=Release
 matrix:
   include:
   - os: osx
     env:
-    - BUILDSCRIPT=osx
+    - BUILD_TARGET=osx
+    - USE_LOCAL_QT=YES
+    - USE_LOCAL_PROTOBUF=YES
   - os: linux
     env:
-    - BUILDSCRIPT=linux-static
+    - BUILD_TARGET=linux-static
+    - USE_LOCAL_QT=YES
 addons:
   homebrew:
     packages:
     - qt5
     - protobuf
-    - openssl
-    - tor
+    - pkg-config
     update: true
   apt:
     packages:
     - libssl-dev
+    - libevent-dev
     - libprotobuf-dev
     - protobuf-compiler
     - qt5-qmake
@@ -38,33 +40,38 @@ addons:
     - xvfb
     - libxrender1
     - tor
+    - autotools-dev
+    - automake
+    - libtool
+    - pkg-config
 install:
-- |
-  if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-    export PATH="$(brew --prefix qt5)/bin:$PATH";
-    export OPENSSLDIR="$(brew --prefix openssl)";
-  fi
-- |
-  mkdir -p "buildscripts/output"
-  cp "$(which tor)" "buildscripts/output/tor"
-  chmod +w "buildscripts/output/tor"
+- (cd buildscripts && "${BUILD_TARGET}/build-deps.sh")
 script:
-- |
-  pushd buildscripts
-    "${BUILDSCRIPT}/test.sh"
-    "${BUILDSCRIPT}/build.sh"
-  popd
+- (cd buildscripts && "${BUILD_TARGET}/test.sh")
+- (cd buildscripts && "${BUILD_TARGET}/build.sh")
+- export BUILD_NAME=$(cd buildscripts && "./get_build_name.sh")
 deploy:
-  provider: releases
-  api_key:
-    secure: lIHMpIYSRcQAzFnbKeucjndUCzCVH78CZ7JpgB7BpUSO/F61ngdW9oWy8oJWdMb1JU0efSRRYNXbX4lTVBOS/iueqfoL6jNojT7t8yVgM31ZfnzJipqdtUHBDHHUHDEQez7MXudUpa9Zo6yCoHF8IT30NiKErbi7jG5YIEaxYzMR2ICWSkechFbGwe6nFgVW8iceNBW8GyyeBpkII7arTpJbZZlrcWDh+Ej5r6fHivV7oifuhSZ6VUYT3dB0tOqcHPU8OtnFpq1sQOtNwr+KNBEfBGLd+gyCXTdjmUebBXnSI6nR3hKEEQR87znlqFrzYKq2OwXqtYkTtc7MpSbmzH9bfxqC4WUa/8QL77cgLJWzhAaOe6+nqeadEJFEFB31KLOlt2SbsMyBy2xWi+NS43VOVz6FecbhgODq7QpXBN5kvN6kjc5kc7xY8joQW5k939/kN5P4DfpePd//bvmUzCVdYaak2pPKLzsyY5dXGqk7z3lGVE3h5Q+8EOnbsEvSrbhNF+Svm/FAEbjUMnaAx20o66MxPxvbb+I0iNT72+jqJypZLv5mjkw2ItMJR1G5zD95qxgZakzJ3liSSpGROBzpLSGQb8GQpOktY9UzocIM0pqyawg2Hfn6y1D9Ptp1SfOZ8rFJvqI+Mxv3FFp+lD3tOV6MvFj1+EJ8PiHyIQc=
-  skip_cleanup: true
-  file_glob: true
-  file:
-  - 'buildscripts/output/Ricochet-Refresh-*.dmg'
-  - 'buildscripts/output/ricochet-refresh-*-static.tar.bz2'
-  on:
-    repo: blueprint-freespeech/ricochet-refresh
-    # tags: true
-  overwrite: true
-  draft: true
+  - provider: releases
+    name: DRAFT ${BUILD_NAME}
+    api_key:
+      secure: lIHMpIYSRcQAzFnbKeucjndUCzCVH78CZ7JpgB7BpUSO/F61ngdW9oWy8oJWdMb1JU0efSRRYNXbX4lTVBOS/iueqfoL6jNojT7t8yVgM31ZfnzJipqdtUHBDHHUHDEQez7MXudUpa9Zo6yCoHF8IT30NiKErbi7jG5YIEaxYzMR2ICWSkechFbGwe6nFgVW8iceNBW8GyyeBpkII7arTpJbZZlrcWDh+Ej5r6fHivV7oifuhSZ6VUYT3dB0tOqcHPU8OtnFpq1sQOtNwr+KNBEfBGLd+gyCXTdjmUebBXnSI6nR3hKEEQR87znlqFrzYKq2OwXqtYkTtc7MpSbmzH9bfxqC4WUa/8QL77cgLJWzhAaOe6+nqeadEJFEFB31KLOlt2SbsMyBy2xWi+NS43VOVz6FecbhgODq7QpXBN5kvN6kjc5kc7xY8joQW5k939/kN5P4DfpePd//bvmUzCVdYaak2pPKLzsyY5dXGqk7z3lGVE3h5Q+8EOnbsEvSrbhNF+Svm/FAEbjUMnaAx20o66MxPxvbb+I0iNT72+jqJypZLv5mjkw2ItMJR1G5zD95qxgZakzJ3liSSpGROBzpLSGQb8GQpOktY9UzocIM0pqyawg2Hfn6y1D9Ptp1SfOZ8rFJvqI+Mxv3FFp+lD3tOV6MvFj1+EJ8PiHyIQc=
+    skip_cleanup: true
+    file_glob: true
+    file:
+    - 'buildscripts/output/Ricochet-Refresh-*.dmg'
+    - 'buildscripts/output/ricochet-refresh-*-static.tar.bz2'
+    overwrite: true
+    draft: true
+  - provider: releases
+    name: PRERELEASE ${BUILD_NAME}
+    api_key:
+      secure: lIHMpIYSRcQAzFnbKeucjndUCzCVH78CZ7JpgB7BpUSO/F61ngdW9oWy8oJWdMb1JU0efSRRYNXbX4lTVBOS/iueqfoL6jNojT7t8yVgM31ZfnzJipqdtUHBDHHUHDEQez7MXudUpa9Zo6yCoHF8IT30NiKErbi7jG5YIEaxYzMR2ICWSkechFbGwe6nFgVW8iceNBW8GyyeBpkII7arTpJbZZlrcWDh+Ej5r6fHivV7oifuhSZ6VUYT3dB0tOqcHPU8OtnFpq1sQOtNwr+KNBEfBGLd+gyCXTdjmUebBXnSI6nR3hKEEQR87znlqFrzYKq2OwXqtYkTtc7MpSbmzH9bfxqC4WUa/8QL77cgLJWzhAaOe6+nqeadEJFEFB31KLOlt2SbsMyBy2xWi+NS43VOVz6FecbhgODq7QpXBN5kvN6kjc5kc7xY8joQW5k939/kN5P4DfpePd//bvmUzCVdYaak2pPKLzsyY5dXGqk7z3lGVE3h5Q+8EOnbsEvSrbhNF+Svm/FAEbjUMnaAx20o66MxPxvbb+I0iNT72+jqJypZLv5mjkw2ItMJR1G5zD95qxgZakzJ3liSSpGROBzpLSGQb8GQpOktY9UzocIM0pqyawg2Hfn6y1D9Ptp1SfOZ8rFJvqI+Mxv3FFp+lD3tOV6MvFj1+EJ8PiHyIQc=
+    skip_cleanup: true
+    file_glob: true
+    file:
+    - 'buildscripts/output/Ricochet-Refresh-*.dmg'
+    - 'buildscripts/output/ricochet-refresh-*-static.tar.bz2'
+    on:
+      tags: true
+    overwrite: true
+    prerelease: true

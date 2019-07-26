@@ -17,12 +17,12 @@ ColumnLayout {
 
     Label {
         Layout.fillWidth: true
-        text: "<a href='https://ricochet.im/'>ricochet.im</a>"
+        text: "<a href='https://ricochetrefresh.net/'>ricochetrefresh.net</a>"
         horizontalAlignment: Qt.AlignHCenter
 
         MouseArea {
             anchors.fill: parent
-            onClicked: Qt.openUrlExternally("https://ricochet.im/")
+            onClicked: Qt.openUrlExternally("https://ricochetrefresh.net/")
         }
     }
 

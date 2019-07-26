@@ -25,4 +25,4 @@ See individual directories for build instructions. Generally, set `MAKEOPTS=-j6`
 
 If a submodule has changed versions since the last time you ran a build, you will need to run `git submodule foreach --recursive git clean -x -f -d` to get submodules to a consistent state.
 
-In the case of macOS, you can specify these flags to just use the brew versions of each library (since it's impossible to build qt5 on macOS Mojave) `USE_BREW_QT=1 USE_BREW_OPENSSL=1 USE_BREW_TOR=1 USE_BREW_PROTOBUF=1 osx/make-deps.sh`
+In the case of macOS, you can specify these flags to just use the brew versions of each library (since it's impossible to build qt5 on macOS Mojave) `USE_LOCAL_QT=1 USE_LOCAL_OPENSSL=1 USE_LOCAL_TOR=1 USE_LOCAL_PROTOBUF=1 osx/make-deps.sh`
