@@ -49,16 +49,27 @@ script:
 - (cd buildscripts && "${BUILD_TARGET}/test.sh")
 - (cd buildscripts && "${BUILD_TARGET}/build.sh")
 deploy:
-  provider: releases
-  api_key:
-    secure: lIHMpIYSRcQAzFnbKeucjndUCzCVH78CZ7JpgB7BpUSO/F61ngdW9oWy8oJWdMb1JU0efSRRYNXbX4lTVBOS/iueqfoL6jNojT7t8yVgM31ZfnzJipqdtUHBDHHUHDEQez7MXudUpa9Zo6yCoHF8IT30NiKErbi7jG5YIEaxYzMR2ICWSkechFbGwe6nFgVW8iceNBW8GyyeBpkII7arTpJbZZlrcWDh+Ej5r6fHivV7oifuhSZ6VUYT3dB0tOqcHPU8OtnFpq1sQOtNwr+KNBEfBGLd+gyCXTdjmUebBXnSI6nR3hKEEQR87znlqFrzYKq2OwXqtYkTtc7MpSbmzH9bfxqC4WUa/8QL77cgLJWzhAaOe6+nqeadEJFEFB31KLOlt2SbsMyBy2xWi+NS43VOVz6FecbhgODq7QpXBN5kvN6kjc5kc7xY8joQW5k939/kN5P4DfpePd//bvmUzCVdYaak2pPKLzsyY5dXGqk7z3lGVE3h5Q+8EOnbsEvSrbhNF+Svm/FAEbjUMnaAx20o66MxPxvbb+I0iNT72+jqJypZLv5mjkw2ItMJR1G5zD95qxgZakzJ3liSSpGROBzpLSGQb8GQpOktY9UzocIM0pqyawg2Hfn6y1D9Ptp1SfOZ8rFJvqI+Mxv3FFp+lD3tOV6MvFj1+EJ8PiHyIQc=
-  skip_cleanup: true
-  file_glob: true
-  file:
-  - 'buildscripts/output/Ricochet-Refresh-*.dmg'
-  - 'buildscripts/output/ricochet-refresh-*-static.tar.bz2'
-  on:
-    repo: blueprint-freespeech/ricochet-refresh
-    # tags: true
-  overwrite: true
-  draft: true
+  - provider: releases
+    name: DRAFT $(cd buildscripts && "get_build_name.sh")
+    api_key:
+      secure: lIHMpIYSRcQAzFnbKeucjndUCzCVH78CZ7JpgB7BpUSO/F61ngdW9oWy8oJWdMb1JU0efSRRYNXbX4lTVBOS/iueqfoL6jNojT7t8yVgM31ZfnzJipqdtUHBDHHUHDEQez7MXudUpa9Zo6yCoHF8IT30NiKErbi7jG5YIEaxYzMR2ICWSkechFbGwe6nFgVW8iceNBW8GyyeBpkII7arTpJbZZlrcWDh+Ej5r6fHivV7oifuhSZ6VUYT3dB0tOqcHPU8OtnFpq1sQOtNwr+KNBEfBGLd+gyCXTdjmUebBXnSI6nR3hKEEQR87znlqFrzYKq2OwXqtYkTtc7MpSbmzH9bfxqC4WUa/8QL77cgLJWzhAaOe6+nqeadEJFEFB31KLOlt2SbsMyBy2xWi+NS43VOVz6FecbhgODq7QpXBN5kvN6kjc5kc7xY8joQW5k939/kN5P4DfpePd//bvmUzCVdYaak2pPKLzsyY5dXGqk7z3lGVE3h5Q+8EOnbsEvSrbhNF+Svm/FAEbjUMnaAx20o66MxPxvbb+I0iNT72+jqJypZLv5mjkw2ItMJR1G5zD95qxgZakzJ3liSSpGROBzpLSGQb8GQpOktY9UzocIM0pqyawg2Hfn6y1D9Ptp1SfOZ8rFJvqI+Mxv3FFp+lD3tOV6MvFj1+EJ8PiHyIQc=
+    skip_cleanup: true
+    file_glob: true
+    file:
+    - 'buildscripts/output/Ricochet-Refresh-*.dmg'
+    - 'buildscripts/output/ricochet-refresh-*-static.tar.bz2'
+    overwrite: true
+    draft: true
+  - provider: releases
+    name: PRERELEASE $(cd buildscripts && "get_build_name.sh")
+    api_key:
+      secure: lIHMpIYSRcQAzFnbKeucjndUCzCVH78CZ7JpgB7BpUSO/F61ngdW9oWy8oJWdMb1JU0efSRRYNXbX4lTVBOS/iueqfoL6jNojT7t8yVgM31ZfnzJipqdtUHBDHHUHDEQez7MXudUpa9Zo6yCoHF8IT30NiKErbi7jG5YIEaxYzMR2ICWSkechFbGwe6nFgVW8iceNBW8GyyeBpkII7arTpJbZZlrcWDh+Ej5r6fHivV7oifuhSZ6VUYT3dB0tOqcHPU8OtnFpq1sQOtNwr+KNBEfBGLd+gyCXTdjmUebBXnSI6nR3hKEEQR87znlqFrzYKq2OwXqtYkTtc7MpSbmzH9bfxqC4WUa/8QL77cgLJWzhAaOe6+nqeadEJFEFB31KLOlt2SbsMyBy2xWi+NS43VOVz6FecbhgODq7QpXBN5kvN6kjc5kc7xY8joQW5k939/kN5P4DfpePd//bvmUzCVdYaak2pPKLzsyY5dXGqk7z3lGVE3h5Q+8EOnbsEvSrbhNF+Svm/FAEbjUMnaAx20o66MxPxvbb+I0iNT72+jqJypZLv5mjkw2ItMJR1G5zD95qxgZakzJ3liSSpGROBzpLSGQb8GQpOktY9UzocIM0pqyawg2Hfn6y1D9Ptp1SfOZ8rFJvqI+Mxv3FFp+lD3tOV6MvFj1+EJ8PiHyIQc=
+    skip_cleanup: true
+    file_glob: true
+    file:
+    - 'buildscripts/output/Ricochet-Refresh-*.dmg'
+    - 'buildscripts/output/ricochet-refresh-*-static.tar.bz2'
+    on:
+      tags: true
+    overwrite: true
+    prerelease: true

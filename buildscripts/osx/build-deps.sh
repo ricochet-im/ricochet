@@ -101,8 +101,8 @@ pushd "$ROOT_SRC"
       # git apply "${ROOT_SRC}/../osx/tor-0001-Forcefully-disable-getentropy-and-clock_gettime-on-m.patch"
       ./autogen.sh
       CFLAGS="-fPIC -mmacosx-version-min=${MACOS_VERSION_MIN}" ./configure --prefix="${ROOT_LIB}/tor" \
-        "--with-openssl-dir=${ROOT_LIB}/openssl/" --enable-static-openssl \
-        "--with-libevent-dir=${ROOT_LIB}/libevent/" --enable-static-libevent \
+        --with-openssl-dir="${ROOT_LIB}/openssl/" --enable-static-openssl \
+        --with-libevent-dir="${ROOT_LIB}/libevent/" --enable-static-libevent \
         --disable-asciidoc --disable-libscrypt
       make ${MAKEOPTS}
       make install
