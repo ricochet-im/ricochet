@@ -24,6 +24,7 @@ addons:
     packages:
     - qt5
     - protobuf
+    - pkg-config
     update: true
   apt:
     packages:
