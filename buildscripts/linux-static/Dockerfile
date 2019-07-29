@@ -1,17 +1,29 @@
 FROM ubuntu:18.04
 
 RUN set -ex; \
-    apt-get update && \
-    apt-get install -y --no-install-recommends \
+    apt-get update \
+    && apt-get install -y --no-install-recommends \
         automake \
         autotools-dev \
         build-essential \
+        ca-certificates \
         curl \
         git \
+        libasound2-dev \
         libevent-dev \
+        libfontconfig1-dev \
+        libglu1-mesa-dev \
         libprotobuf-dev \
+        libqt5gui5 \
+        libqt5opengl5 \
+        libqt5opengl5-dev \
+        libqt5svg5 \
         libssl-dev \
         libtool \
+        libx11-xcb-dev \
+        '^libxcb.*' \
+        '^libxkb.*' \
+        libxrender-dev \
         libxrender1 \
         pkg-config \
         protobuf-compiler \
@@ -24,18 +36,14 @@ RUN set -ex; \
         tor \
         unzip \
         vim \
-        xvfb \
-        ca-certificates \
-        '^libxcb.*' \
-        libx11-xcb-dev \
-        libglu1-mesa-dev \
-        libxrender-dev \
-        libfontconfig1-dev \
-        libglu1-mesa-dev \
-        libxrender-dev \
         xkb-data \
-        libasound2-dev \
-        && rm -rf /var/lib/apt/lists/*
+        xvfb \
+    && apt-get autoremove -y -qq \
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -rf /var/cache/man/* \
+    && rm -rf /usr/share/doc/* \
+    && rm -rf /usr/share/man/* \
+    && rm -rf /usr/share/zoneinfo/*
 
 WORKDIR /root
 RUN git clone https://github.com/blueprint-freespeech/ricochet-refresh
