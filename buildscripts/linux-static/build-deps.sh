@@ -26,24 +26,25 @@ pushd "$ROOT_SRC"
       git clean -dfx .
       git reset --hard
       ./configure \
-        -opensource \
         -confirm-license \
-        -static \
-        -release \
-        -no-qml-debug \
-        -no-openssl \
+        -no-compile-examples \
         -no-cups \
-        -qt-zlib \
-        -qt-libpng \
-        -qt-libjpeg \
+        -no-openssl \
+        -no-qml-debug \
+        -nomake examples \
+        -nomake tests \
+        -opensource \
+        -prefix "${ROOT_LIB}/qt5/" \
         -qt-freetype \
+        -qt-libjpeg \
+        -qt-libpng \
         -qt-pcre \
         -qt-xcb \
-        -xkbcommon \
-        -nomake tests \
-        -nomake examples \
-        -prefix "${ROOT_LIB}/qt5/"
-      make ${MAKEOPTS}
+        -qt-zlib \
+        -release \
+        -static \
+        -xkbcommon
+     make ${MAKEOPTS}
       make install
       if [ ! -f "${ROOT_LIB}/qt5/bin/qmake" ]; then
         ln -s "$(pwd)/qtbase/bin/qmake" "${ROOT_LIB}/qt5/bin/qmake"
