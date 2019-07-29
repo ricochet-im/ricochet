@@ -2,9 +2,10 @@
 
 set -ex
 
-ROOT_SRC=$(pwd)/src
-ROOT_LIB=$(pwd)/lib
-BUILD_OUTPUT=$(pwd)/output
+ROOT_SRC="$(pwd)/src"
+ROOT_LIB="$(pwd)/lib"
+BUILD_OUTPUT="$(pwd)/output"
+MAKEOPTS="-j$(nproc)"
 test -e "${ROOT_SRC}"
 test -e "${ROOT_LIB}" && rm -r "${ROOT_LIB}"
 mkdir "${ROOT_LIB}"
@@ -18,17 +19,37 @@ pushd "$ROOT_SRC"
   # Qt
   pushd qt5
     if [[ -z $USE_LOCAL_QT ]]; then
+      git submodule deinit --all -f
       git submodule update --init qtbase qtdeclarative qtgraphicaleffects qtimageformats qtquickcontrols qtsvg qtx11extras qttools qtmultimedia
-      git submodule foreach git clean -dfx .
-      git submodule foreach git reset --hard
-      ./configure -opensource -confirm-license -static -release \
-        -no-qml-debug -no-openssl -no-cups \
-        -qt-zlib -qt-libpng -qt-libjpeg -qt-freetype -qt-pcre \
-        -nomake tests -nomake examples \
+      git submodule foreach --recursive git clean -dfx .
+      git submodule foreach --recursive git reset --hard
+      git clean -dfx .
+      git reset --hard
+      ./configure \
+        -opensource \
+        -confirm-license \
+        -static \
+        -release \
+        -no-qml-debug \
+        -no-openssl \
+        -no-cups \
+        -qt-zlib \
+        -qt-libpng \
+        -qt-libjpeg \
+        -qt-freetype \
+        -qt-pcre \
+        -qt-xcb \
+        -xkbcommon \
+        -nomake tests \
+        -nomake examples \
         -prefix "${ROOT_LIB}/qt5/"
       make ${MAKEOPTS}
       make install
+      if [ ! -f "${ROOT_LIB}/qt5/bin/qmake" ]; then
+        ln -s "$(pwd)/qtbase/bin/qmake" "${ROOT_LIB}/qt5/bin/qmake"
+      fi
     fi
+    export PATH="${ROOT_LIB}/qt5/bin:${PATH}"
   popd
 
   if ! command -v qmake; then
