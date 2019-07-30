@@ -1,5 +1,5 @@
 language: cpp
-dist: trusty
+dist: bionic
 sudo: required
 git:
   submodules: false

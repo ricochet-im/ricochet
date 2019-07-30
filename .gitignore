@@ -40,3 +40,4 @@ moc_predefs.h
 \.vscode/c_cpp_properties\.json
 
 \.vscode/
+notes/*
