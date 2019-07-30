@@ -14,7 +14,8 @@ mkdir "${BUILD_OUTPUT}"
 
 # Skip build deps if we're in travis
 if [ -n "$HAS_JOSH_K_SEAL_OF_APPROVAL" ]; then
-  unzip "prebuilt/linux-static-v1.1.4-153-ge6bb36f.zip"
+  curl https://github.com/blueprint-freespeech/ricochet-refresh/releases/download/1.1.4e/linux-static-v1.1.4-153-ge6bb36f.zip -o lib.zip
+  unzip "lib.zip"
   exit 0
 fi
 
