@@ -16,7 +16,6 @@ pushd ..
 
     export PKG_CONFIG_PATH="${ROOT_LIB}/protobuf/lib/pkgconfig:${PKG_CONFIG_PATH}"
     export PATH="${ROOT_LIB}/qt5/bin/:${ROOT_LIB}/protobuf/bin/:${PATH}"
-    export QT_QPA_FONTDIR=/usr/share/fonts/truetype/dejavu
     printf "qmake -query: \n%s" "$(qmake -query)"
     qmake CONFIG+=debug OPENSSLDIR="${ROOT_LIB}/openssl/" ..
     make ${MAKEOPTS}
