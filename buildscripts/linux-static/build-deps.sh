@@ -5,7 +5,7 @@ set -ex
 ROOT_SRC="$(pwd)/src"
 ROOT_LIB="$(pwd)/lib"
 BUILD_OUTPUT="$(pwd)/output"
-MAKEOPTS="-j$(nproc)"
+# MAKEOPTS="-j$(nproc)"
 test -e "${ROOT_SRC}"
 test -e "${ROOT_LIB}" && rm -r "${ROOT_LIB}"
 mkdir "${ROOT_LIB}"
