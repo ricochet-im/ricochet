@@ -34,6 +34,7 @@ pushd "$ROOT_SRC"
       git reset --hard
       ./configure \
         -confirm-license \
+        -fontconfig \
         -no-compile-examples \
         -no-cups \
         -no-openssl \
@@ -50,6 +51,7 @@ pushd "$ROOT_SRC"
         -qt-zlib \
         -release \
         -static \
+        -system-freetype \
         -xkbcommon
      make ${MAKEOPTS}
       make install
