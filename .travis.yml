@@ -28,23 +28,47 @@ addons:
     update: true
   apt:
     packages:
-    - libssl-dev
-    - libevent-dev
-    - libprotobuf-dev
-    - protobuf-compiler
-    - qt5-qmake
-    - qt5-default
-    - qtbase5-dev
-    - qttools5-dev-tools
-    - qtdeclarative5-dev
-    - xvfb
-    - libxrender1
-    - tor
-    - autotools-dev
     - automake
+    - autotools-dev
+    - build-essential
+    - ca-certificates
+    - curl
+    - git
+    - libasound2-dev
+    - libevent-dev
+    - libfontconfig1
+    - libfontconfig1-dev
+    - libfreetype6
+    - libfreetype6-dev
+    - libglu1-mesa-dev
+    - libprotobuf-dev
+    - libprotobuf-dev
+    - libqt5gui5
+    - libqt5opengl5
+    - libqt5opengl5-dev
+    - libqt5svg5
+    - libssl-dev
     - libtool
+    - libx11-xcb-dev
+    - '^libxcb.*'
+    - '^libxkb.*'
+    - libxrender-dev
+    - libxrender1
     - pkg-config
+    - protobuf-compiler
+    - python
+    - qt5-default
+    - qt5-qmake
+    - qtbase5-dev
+    - qtdeclarative5-dev
+    - qttools5-dev-tools
+    - tor
+    - unzip
+    - vim
+    - xkb-data
+    - xvfb
     - zip
+
 install:
 - (cd buildscripts && "${BUILD_TARGET}/build-deps.sh")
 script:
