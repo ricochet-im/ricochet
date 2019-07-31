@@ -11,7 +11,10 @@ RUN set -ex; \
         git \
         libasound2-dev \
         libevent-dev \
+        libfontconfig1 \
         libfontconfig1-dev \
+        libfreetype6 \
+        libfreetype6-dev \
         libglu1-mesa-dev \
         libprotobuf-dev \
         libqt5gui5 \
