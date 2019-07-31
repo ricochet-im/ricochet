@@ -24,11 +24,81 @@ pushd "$ROOT_SRC"
       git submodule foreach --recursive git reset --hard
       git clean -dfx .
       git reset --hard
+      # Missing configure options
+      # -no-feature-concurrent \
+      # -no-feature-dbus \
+      # -no-feature-dom \
+      # -no-feature-errormessage \
+      # -no-feature-freetype \
+      # -no-feature-im \
+      # -no-feature-image_heuristic_mask \
+      # -no-feature-image_text \
+      # -no-feature-imageformat_bmp \
+      # -no-feature-imageformat_jpeg \
+      # -no-feature-imageformat_png \
+      # -no-feature-imageformat_ppm \
+      # -no-feature-imageformat_xbm \
+      # -no-feature-mimetype \
+      # -no-feature-process \
+      # -no-feature-sharedmemory \
+      # -no-feature-systemsemaphore \
+      # -skip qtdeclarative \
+      # -skip qtimageformats \
+      # -skip qtmultimedia \
+      # -skip qtquickcontrols \
+      # -skip qtquickcontrols2 \
+      # -skip qtsvg \
+      # -skip qttools \
+      # -skip qttranslations \
+      # -skip qtx11extras \
+      #
       ./configure \
         -confirm-license \
         -fontconfig \
         -no-compile-examples \
         -no-cups \
+        -no-feature-bearermanagement \
+        -no-feature-big_codecs \
+        -no-feature-calendarwidget \
+        -no-feature-codecs \
+        -no-feature-colordialog \
+        -no-feature-colornames \
+        -no-feature-completer \
+        -no-feature-cups \
+        -no-feature-datawidgetmapper \
+        -no-feature-desktopservices \
+        -no-feature-effects \
+        -no-feature-filedialog \
+        -no-feature-filesystemmodel \
+        -no-feature-filesystemwatcher \
+        -no-feature-fontdialog \
+        -no-feature-fscompleter \
+        -no-feature-ftp \
+        -no-feature-gestures \
+        -no-feature-graphicseffect \
+        -no-feature-graphicsview \
+        -no-feature-iconv \
+        -no-feature-inputdialog \
+        -no-feature-keysequenceedit \
+        -no-feature-networkdiskcache \
+        -no-feature-networkproxy \
+        -no-feature-paint_debug \
+        -no-feature-printpreviewdialog \
+        -no-feature-printpreviewwidget \
+        -no-feature-progressdialog \
+        -no-feature-sizegrip \
+        -no-feature-socks5 \
+        -no-feature-statemachine \
+        -no-feature-systemtrayicon \
+        -no-feature-texthtmlparser \
+        -no-feature-textodfwriter \
+        -no-feature-translation \
+        -no-feature-udpsocket \
+        -no-feature-undocommand \
+        -no-feature-undogroup \
+        -no-feature-undostack \
+        -no-feature-undoview \
+        -no-feature-wizard \
         -no-openssl \
         -no-qml-debug \
         -nomake examples \
@@ -42,10 +112,37 @@ pushd "$ROOT_SRC"
         -qt-xcb \
         -qt-zlib \
         -release \
+        -skip qt3d \
+        -skip qtandroidextras \
+        -skip qtcanvas3d \
+        -skip qtcharts \
+        -skip qtconnectivity \
+        -skip qtdatavis3d \
+        -skip qtdoc \
+        -skip qtgamepad \
+        -skip qtgraphicaleffects \
+        -skip qtlocation \
+        -skip qtmacextras \
+        -skip qtnetworkauth \
+        -skip qtpurchasing \
+        -skip qtscript \
+        -skip qtscxml \
+        -skip qtsensors \
+        -skip qtserialbus \
+        -skip qtserialport \
+        -skip qtspeech \
+        -skip qtvirtualkeyboard \
+        -skip qtwayland \
+        -skip qtwebchannel \
+        -skip qtwebengine \
+        -skip qtwebsockets \
+        -skip qtwebview \
+        -skip qtwinextras \
+        -skip qtxmlpatterns \
         -static \
         -system-freetype \
         -xkbcommon
-     make ${MAKEOPTS}
+      make ${MAKEOPTS}
       make install
       if [ ! -f "${ROOT_LIB}/qt5/bin/qmake" ]; then
         ln -s "$(pwd)/qtbase/bin/qmake" "${ROOT_LIB}/qt5/bin/qmake"
