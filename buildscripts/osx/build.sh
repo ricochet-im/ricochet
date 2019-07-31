@@ -42,6 +42,7 @@ pushd ..
       fi
 
       hdiutil create "Ricochet Refresh.dmg" -srcfolder "Ricochet Refresh.app" -format UDZO -volname "Ricochet Refresh"
+      codesign -f --verbose --sign "$CODESIGN_ID" --deep Ricochet\ Refresh.dmg
       mv "Ricochet Refresh.dmg" "${BUILD_OUTPUT}/Ricochet-Refresh-${RICOCHET_VERSION}.dmg"
     popd
   popd
