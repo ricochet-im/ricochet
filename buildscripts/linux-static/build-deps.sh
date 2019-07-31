@@ -12,17 +12,9 @@ mkdir "${ROOT_LIB}"
 test -e "${BUILD_OUTPUT}" && rm -r "${BUILD_OUTPUT}"
 mkdir "${BUILD_OUTPUT}"
 
-# Skip build deps if we're in travis
-if [ -n "$HAS_JOSH_K_SEAL_OF_APPROVAL" ]; then
-  curl -vL https://github.com/blueprint-freespeech/ricochet-refresh/releases/download/1.1.4e/linux-static-v1.1.4-153-ge6bb36f.zip -o lib.zip
-  unzip lib.zip
-  exit 0
-fi
-
 # Build dependencies
 git submodule update --init
 pushd "$ROOT_SRC"
-
   # Qt
   pushd qt5
     if [[ -z $USE_LOCAL_QT ]]; then
