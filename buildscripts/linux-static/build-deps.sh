@@ -20,9 +20,7 @@ pushd "$ROOT_SRC"
     if [[ -z $USE_LOCAL_QT ]]; then
       git submodule deinit --all -f
       git submodule update --init qtbase qtdeclarative qtgraphicaleffects qtimageformats qtquickcontrols qtsvg qtx11extras qttools qtmultimedia
-      git submodule foreach --recursive git clean -dfx .
       git submodule foreach --recursive git reset --hard
-      git clean -dfx .
       git reset --hard
       # Missing configure options
       # -no-feature-concurrent \
