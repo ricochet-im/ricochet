@@ -1,5 +1,7 @@
 ### Development
 * John Brooks (@special) `<john.brooks@dereferenced.net>`
+* Derwent Mcelhinney (@derwentx)
+* Peter Tonoli (@petertonoli)
 
 ### Sponsors
 * Blueprint for Free Speech - https://blueprintforfreespeech.net/
