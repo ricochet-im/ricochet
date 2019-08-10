@@ -1,5 +1,5 @@
 # Ricochet Refresh - https://blueprint-freespeech.github.io/refresh-site/
-# Copyright (C) 2019, Blueprint for Free Speech  <info@blueprintforfreespeech.net>
+# Copyright (C) 2019, Blueprint for Free Speech  <ricochet@blueprintforfreespeech.net>
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are
