@@ -19,7 +19,7 @@ takes up to 1 argument, the ricochet folder path (relative to the current
 working directory). If this folder does not exist, ricochet will create the 
 folder and inside that folder will create files containing tor keys and 
 contacts. If no argument is given, ricochet will create a config folder at 
-QStandardPaths::DataLocation (see 
+QStandardPaths::AppDataLocation (see 
 https://doc.qt.io/qt-5/qstandardpaths.html#StandardLocation-enum).
 .Sh AUTHOR
 .Nm

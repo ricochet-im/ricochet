@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
         qputenv("QMLSCENE_DEVICE", "softwarecontext");
 
     QApplication a(argc, argv);
-    a.setApplicationVersion(QLatin1String("1.1.4"));
+    a.setApplicationVersion(QLatin1String("3.0.0"));
     a.setOrganizationName(QStringLiteral("Ricochet"));
 
 #if !defined(Q_OS_WIN) && !defined(Q_OS_MAC)
@@ -118,7 +118,7 @@ int main(int argc, char *argv[])
 
 static QString userConfigPath()
 {
-    QString path = QStandardPaths::writableLocation(QStandardPaths::DataLocation);
+    QString path = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
     QString oldPath = path;
     oldPath.replace(QStringLiteral("Ricochet"), QStringLiteral("Torsion"), Qt::CaseInsensitive);
     if (QFile::exists(oldPath))

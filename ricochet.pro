@@ -38,7 +38,7 @@ TEMPLATE = app
 QT += core gui network quick widgets
 CONFIG += c++11
 
-VERSION = 1.1.4
+VERSION = 3.0.0
 
 # Use CONFIG+=no-hardened to disable compiler hardening options
 !CONFIG(no-hardened) {
