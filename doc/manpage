@@ -1,0 +1,28 @@
+.\" Manpage for Ricochet Refresh
+.\" Submit a PR on the github repository for typos/errors (https://github.com/blueprint-freespeech/ricochet-refresh.git)
+.Dd $Mdocdate$
+.Dt ricochet-refresh 1
+.Os
+.Sh NAME
+.Nm ricochet-refresh
+.Nd Anonymous metadata-resistant instant messaging
+.Sh SYNOPSIS
+.Nm ricochet-refresh
+.Op options
+.Sh DESCRIPTION
+.Nm
+is an open source project to allow private and anonymous 
+instant messaging. It is metadata-resistant, anonymous and decentralised.
+.Sh OPTIONS
+.Nm
+takes up to 1 argument, the ricochet folder path (relative to the current 
+working directory). If this folder does not exist, ricochet will create the 
+folder and inside that folder will create files containing tor keys and 
+contacts. If no argument is given, ricochet will create a config folder at 
+QStandardPaths::DataLocation (see 
+https://doc.qt.io/qt-5/qstandardpaths.html#StandardLocation-enum).
+.Sh AUTHOR
+.Nm
+has been written by John Brooks <john.brooks@dereferenced.net> and is 
+currently maintained by Blueprint For Free Speech 
+<ricochet@blueprintforfreespeech.net>

@@ -5,4 +5,4 @@ Name=Ricochet Refresh
 Categories=Network;InstantMessaging;Chat;FileTransfer;Qt
 Comment=Anonymous instant messaging
 Icon=ricochet_refresh
-Exec=ricochet
+Exec=ricochet-refresh

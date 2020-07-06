@@ -22,12 +22,36 @@ pushd "$ROOT_SRC"
       git submodule update --init qtbase qtdeclarative qtgraphicaleffects qtimageformats qtquickcontrols qtsvg qtx11extras qttools qtmultimedia
       git submodule foreach --recursive git reset --hard
       git reset --hard
+      # TODO:
+      # Find which configure options can be included to compile QT without breaking the compilation
+
       # Missing configure options
+      # -no-feature-bearermanagement \
+      # -no-feature-big_codecs \
+      # -no-feature-calendarwidget \
+      # -no-feature-codecs \
+      # -no-feature-colordialog \
+      # -no-feature-colornames \
       # -no-feature-concurrent \
+      # -no-feature-completer \
+      # -no-feature-cups \
+      # -no-feature-datawidgetmapper \
       # -no-feature-dbus \
+      # -no-feature-desktopservices \
       # -no-feature-dom \
+      # -no-feature-effects \
       # -no-feature-errormessage \
+      # -no-feature-filedialog \
+      # -no-feature-filesystemmodel \
+      # -no-feature-filesystemwatcher \
+      # -no-feature-fontdialog \
       # -no-feature-freetype \
+      # -no-feature-fscompleter \
+      # -no-feature-ftp \
+      # -no-feature-gestures \
+      # -no-feature-graphicseffect \
+      # -no-feature-graphicsview \
+      # -no-feature-iconv \
       # -no-feature-im \
       # -no-feature-image_heuristic_mask \
       # -no-feature-image_text \
@@ -36,10 +60,31 @@ pushd "$ROOT_SRC"
       # -no-feature-imageformat_png \
       # -no-feature-imageformat_ppm \
       # -no-feature-imageformat_xbm \
+      # -no-feature-inputdialog \
+      # -no-feature-keysequenceedit \
       # -no-feature-mimetype \
+      # -no-feature-networkdiskcache \
+      # -no-feature-networkproxy \
+      # -no-feature-paint_debug \
+      # -no-feature-printpreviewdialog \
+      # -no-feature-printpreviewwidget \
       # -no-feature-process \
+      # -no-feature-progressdialog \
       # -no-feature-sharedmemory \
+      # -no-feature-sizegrip \
+      # -no-feature-socks5 \
+      # -no-feature-statemachine \
       # -no-feature-systemsemaphore \
+      # -no-feature-systemtrayicon \
+      # -no-feature-texthtmlparser \
+      # -no-feature-textodfwriter \
+      # -no-feature-translation \
+      # -no-feature-udpsocket \
+      # -no-feature-undocommand \
+      # -no-feature-undogroup \
+      # -no-feature-undostack \
+      # -no-feature-undoview \
+      # -no-feature-wizard \
       # -skip qtdeclarative \
       # -skip qtimageformats \
       # -skip qtmultimedia \
@@ -55,48 +100,6 @@ pushd "$ROOT_SRC"
         -fontconfig \
         -no-compile-examples \
         -no-cups \
-        -no-feature-bearermanagement \
-        -no-feature-big_codecs \
-        -no-feature-calendarwidget \
-        -no-feature-codecs \
-        -no-feature-colordialog \
-        -no-feature-colornames \
-        -no-feature-completer \
-        -no-feature-cups \
-        -no-feature-datawidgetmapper \
-        -no-feature-desktopservices \
-        -no-feature-effects \
-        -no-feature-filedialog \
-        -no-feature-filesystemmodel \
-        -no-feature-filesystemwatcher \
-        -no-feature-fontdialog \
-        -no-feature-fscompleter \
-        -no-feature-ftp \
-        -no-feature-gestures \
-        -no-feature-graphicseffect \
-        -no-feature-graphicsview \
-        -no-feature-iconv \
-        -no-feature-inputdialog \
-        -no-feature-keysequenceedit \
-        -no-feature-networkdiskcache \
-        -no-feature-networkproxy \
-        -no-feature-paint_debug \
-        -no-feature-printpreviewdialog \
-        -no-feature-printpreviewwidget \
-        -no-feature-progressdialog \
-        -no-feature-sizegrip \
-        -no-feature-socks5 \
-        -no-feature-statemachine \
-        -no-feature-systemtrayicon \
-        -no-feature-texthtmlparser \
-        -no-feature-textodfwriter \
-        -no-feature-translation \
-        -no-feature-udpsocket \
-        -no-feature-undocommand \
-        -no-feature-undogroup \
-        -no-feature-undostack \
-        -no-feature-undoview \
-        -no-feature-wizard \
         -no-openssl \
         -no-qml-debug \
         -nomake examples \
