@@ -389,27 +389,28 @@ QByteArray torControlHashedPassword(const QByteArray &password)
 
 #define BASE32_CHARS "abcdefghijklmnopqrstuvwxyz234567"
 
-/* Implements base32 encoding as in rfc3548. Requires that srclen*8 is a multiple of 5. */
+/* Implements base32 encoding as in rfc3548. */
 void base32_encode(char *dest, unsigned destlen, const char *src, unsigned srclen)
 {
     unsigned i, bit, v, u;
     unsigned nbits = srclen * 8;
 
-     /* We need an even multiple of 5 bits, and enough space */
-    if ((nbits%5) != 0 || destlen > (nbits/5)+1) {
+    /* We need enough space */
+    if(!(((nbits + 5 - 1) / 5) + 1 <= destlen)) {
         Q_ASSERT(false);
-        memset(dest, 0, destlen);
         return;
     }
+
+    memset(dest, 0, destlen);
 
     for (i = 0, bit = 0; bit < nbits; ++i, bit += 5)
     {
         /* set v to the 16-bit value starting at src[bits/8], 0-padded. */
-        v = ((quint8) src[bit / 8]) << 8;
-        if (bit + 5 < nbits)
-            v += (quint8) src[(bit/8)+1];
-
-        /* set u to the 5-bit value at the bit'th bit of src. */
+        size_t idx = bit / 8;
+        v = ((uint8_t)src[idx]) << 8;
+        if (idx + 1 < srclen)
+            v += (uint8_t)src[idx + 1];
+        /* set u to the 5-bit value at the bit'th bit of buf. */
         u = (v >> (11 - (bit % 8))) & 0x1F;
         dest[i] = BASE32_CHARS[u];
     }
@@ -417,19 +418,19 @@ void base32_encode(char *dest, unsigned destlen, const char *src, unsigned srcle
     dest[i] = '\0';
 }
 
-/* Implements base32 decoding as in rfc3548. Requires that srclen*5 is a multiple of 8. */
+/* Implements base32 decoding as in rfc3548. */
 bool base32_decode(char *dest, unsigned destlen, const char *src, unsigned srclen)
 {
     unsigned int i, j, bit;
-    unsigned nbits = srclen * 5;
+    unsigned nbits = ((srclen * 5) / 8) * 8;
 
-     /* We need an even multiple of 8 bits, and enough space */
-    if ((nbits%8) != 0 || (nbits/8)+1 > destlen) {
+    /* We need enough space */
+    if(!(nbits/8 <= destlen)) {
         Q_ASSERT(false);
         return false;
     }
 
-    char *tmp = new char[srclen];
+    char *tmp = new char[srclen]();
 
     /* Convert base32 encoded chars to the 5-bit values that they represent. */
     for (j = 0; j < srclen; ++j)
@@ -453,21 +454,26 @@ bool base32_decode(char *dest, unsigned destlen, const char *src, unsigned srcle
         switch (bit % 40)
         {
         case 0:
-            dest[i] = (((quint8)tmp[(bit/5)]) << 3) + (((quint8)tmp[(bit/5)+1]) >> 2);
+            dest[i] = (((quint8)tmp[(bit/5)]) << 3) + 
+                      (((quint8)tmp[(bit/5)+1]) >> 2);
             break;
         case 8:
-            dest[i] = (((quint8)tmp[(bit/5)]) << 6) + (((quint8)tmp[(bit/5)+1]) << 1)
-                      + (((quint8)tmp[(bit/5)+2]) >> 4);
+            dest[i] = (((quint8)tmp[(bit/5)]) << 6) + 
+                      (((quint8)tmp[(bit/5)+1]) << 1) + 
+                      (((quint8)tmp[(bit/5)+2]) >> 4);
             break;
         case 16:
-            dest[i] = (((quint8)tmp[(bit/5)]) << 4) + (((quint8)tmp[(bit/5)+1]) >> 1);
+            dest[i] = (((quint8)tmp[(bit/5)]) << 4) + 
+                      (((quint8)tmp[(bit/5)+1]) >> 1);
             break;
         case 24:
-            dest[i] = (((quint8)tmp[(bit/5)]) << 7) + (((quint8)tmp[(bit/5)+1]) << 2)
-                      + (((quint8)tmp[(bit/5)+2]) >> 3);
+            dest[i] = (((quint8)tmp[(bit/5)]) << 7) + 
+                      (((quint8)tmp[(bit/5)+1]) << 2) + 
+                      (((quint8)tmp[(bit/5)+2]) >> 3);
             break;
         case 32:
-            dest[i] = (((quint8)tmp[(bit/5)]) << 5) + ((quint8)tmp[(bit/5)+1]);
+            dest[i] = (((quint8)tmp[(bit/5)]) << 5) + 
+                      ((quint8)tmp[(bit/5)+1]);
             break;
         }
     }

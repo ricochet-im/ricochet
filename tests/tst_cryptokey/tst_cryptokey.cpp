@@ -31,7 +31,14 @@
  */
 
 #include <QtTest>
+#include <string.h>
 #include "utils/CryptoKey.h"
+#include "utils/SecureRNG.h"
+
+#include <stdio.h>
+
+void base32_encode(char *dest, unsigned destlen, const char *src, unsigned srclen);
+bool base32_decode(char *dest, unsigned destlen, const char *src, unsigned srclen);
 
 class TestCryptoKey : public QObject
 {
@@ -44,6 +51,7 @@ private slots:
     void encodedPrivateKey();
     void torServiceID();
     void sign();
+    void testBase32();
 };
 
 const char *alice =
@@ -222,6 +230,66 @@ void TestCryptoKey::sign()
     QByteArray signaturep = QByteArray::fromHex(aliceSignedTestData);
     QVERIFY(key.verifyData(data, signaturep));
     QVERIFY(key.verifySHA256(dataDigest, signaturep));
+}
+
+void TestCryptoKey::testBase32()
+{
+    /* Base32 encode */
+
+    char *data1 = new char[64]();
+    char *data2 = new char[64]();
+    
+    /* test different length inputs */
+    strcpy(data1, "test0");
+    base32_encode(data2, 9, data1, 5);
+    QCOMPARE(QString::fromLocal8Bit(data2), QString("orsxg5bq"));
+
+    strcpy(data1, "\xff\xf5\x6d\x44\xae\x0d\x5c\xc9\x62\xc4");
+    base32_encode(data2, 17, data1, 10);
+    QCOMPARE(QString::fromLocal8Bit(data2), QString("772w2rfobvomsywe"));
+
+    strcpy(data1, "\x18\x78\xa6\xd3\x32\xc8\xce\x91\x59\xaa\xc7\x38\x87\x37\x84");
+    base32_encode(data2, 35, data1, 15);
+    QCOMPARE(QString::fromLocal8Bit(data2), QString("db4knuzszdhjcwnky44ion4e"));
+
+    /* test padding */
+    strcpy(data1, "\x2e\xd0\x63\xe2\x5b\x16\xdf\xc4\xfc\x01\x23\xc9\xeb\xf6\x83\x71\xe4\x8e\xa0\x1c\x08\x65\xab\xb2\x58\x3c\xd5\xd3\x60");
+    base32_encode(data2, 49, data1, 30);
+    QCOMPARE(QString::fromLocal8Bit(data2), QString("f3ighys3c3p4j7abepe6x5udohsi5ia4bbs2xmsyhtk5gyaa"));
+
+    /* test non multiple of 5 length input */
+    strcpy(data1, "\x2e\xd0\x63\xe2\x5b\x16\xdf\xc4\xfc\x01\x23\xc9\xeb\xf6\x83\x71\xe4\x8e\xa0\x1c\x08\x65\xab\xb2\x58\x3c");
+    base32_encode(data2, 49, data1, 27);
+    QCOMPARE(QString::fromLocal8Bit(data2), QString("f3ighys3c3p4j7abepe6x5udohsi5ia4bbs2xmsyhqaa"));
+
+    delete[] data1;
+    delete[] data2;
+
+    /* Base32 decode */
+    char *rnd_bytes = new char[60]();
+    char *encoded   = new char[97]();
+    char *decoded   = new char[60]();
+
+    /* encode and decode random bytes */
+    SecureRNG::random(rnd_bytes, 60);
+    base32_encode(encoded, 97, rnd_bytes, 60);
+    QVERIFY(base32_decode(decoded, 60, encoded, 96));
+    QCOMPARE(QString::fromLocal8Bit(rnd_bytes), QString::fromLocal8Bit(decoded));
+
+    /* test that decoding works on uppercase strings */
+    for(char *c = encoded; *c != 0; c++) *c = std::toupper(*c);
+    QVERIFY(base32_decode(decoded, 60, encoded, 96));
+    QCOMPARE(QString::fromLocal8Bit(rnd_bytes), QString::fromLocal8Bit(decoded));
+
+    /* change the encoded string and test again */
+    if(encoded[0] == 'a' || encoded[0] == 'A') encoded[0] = 'B';
+    else encoded[0] = 'A';
+    QVERIFY(base32_decode(decoded, 60, encoded, 96));
+    QVERIFY(QString::fromLocal8Bit(rnd_bytes).compare(QString::fromLocal8Bit(decoded)) != 0);
+
+    /* bad base32 encoded string */
+    encoded[0] = '@';
+    QVERIFY(base32_decode(decoded, 60, encoded, 96) == false);
 }
 
 QTEST_MAIN(TestCryptoKey)
