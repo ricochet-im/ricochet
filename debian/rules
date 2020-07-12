@@ -4,8 +4,8 @@ export QT_SELECT=qt5
 %:
 	dh $@ --buildsystem=qmake --parallel
 
-override_dh_auto_configure:
-	dh_auto_configure $(AC_OPTS)
+#override_dh_auto_configure:
+#	dh_auto_configure $(AC_OPTS)
 
-override_dh_auto_install:
-	dh_auto_install
+#override_dh_auto_install:
+#	dh_auto_install
