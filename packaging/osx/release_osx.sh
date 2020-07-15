@@ -43,16 +43,7 @@ if [ ! -z "$CODESIGN_ID" ]; then
     codesign --verbose --sign "$CODESIGN_ID" --deep Ricochet.app
 fi
 
-# Since create-dmg does not clobber, be sure to delete previous DMG
-[[ -f Ricochet.dmg ]] && rm Ricochet.dmg
-
-# Creates source folder required by create-dmg
-# [[ -f osx-dmg-source ]] && rm -rf osx-dmg-source
-mkdir osx-dmg-source
-cp -r Ricochet.app osx-dmg-source/Ricochet.app
-
-# Create "fancy" DMG with shortcut to `Applications` and instruction to user. (See: https://github.com/create-dmg/create-dmg) 
-create-dmg --window-size 540 380 --icon-size 80 --text-size 12 --app-drop-link 370 225 --icon "Ricochet.app" 165 225 --volname "Ricochet" --hide-extension "Ricochet.app" --background "../icons/osx-dmg-background.tiff" "Ricochet.dmg" "osx-dmg-source/"
+hdiutil create Ricochet.dmg -srcfolder Ricochet.app -format UDZO -volname Ricochet
 
 echo "---------"
 
