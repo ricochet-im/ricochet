@@ -28,7 +28,7 @@ rm -r build || true
 mkdir build
 cd build
 
-qmake CONFIG+=release ..
+/usr/local/opt/qt5/bin/qmake OPENSSLDIR=/usr/local/opt/openssl/ CONFIG+=release ..
 make
 
 cp "$TOR_BINARY" ricochet.app/Contents/MacOS/
