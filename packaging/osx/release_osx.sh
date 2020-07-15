@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Create and package a clean, release-mode build of the application
+# Install `create-dmg` with `brew install create-dmg` or from source: https://github.com/create-dmg/create-dmg
 # Must be run from the git source directory.
 # Create a .packagingrc file to define:
 #  TOR_BINARY Path to tor binary to copy into bundle.
