@@ -87,7 +87,7 @@ Since the openssl header files were removed in El Capitan, have qmake use the op
 
 Steps:
 ```
-brew install protobuf qt5 tor
+brew install protobuf qt5 tor pkg-config
 /usr/local/opt/qt5/bin/qmake OPENSSLDIR=/usr/local/opt/openssl/ CONFIG+=debug
 make
 ```
