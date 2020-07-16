@@ -5,7 +5,7 @@ import im.ricochet 1.0
 Rectangle {
     id: delegate
     color: highlighted ? "#c4e7ff" : "white"
-    width: parent.width
+    width: parent != null ? parent.width : 0
     height: nameLabel.height + 8
 
     property bool highlighted: ListView.isCurrentItem

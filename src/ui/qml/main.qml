@@ -78,7 +78,7 @@ QtObject {
     property list<QtObject> data: [
         Connections {
             target: userIdentity.contacts.incomingRequests
-            onRequestAdded: {
+            function onRequestAdded(request) {
                 var object = createDialog("ContactRequestDialog.qml", { 'request': request })
                 object.visible = true
             }
@@ -86,7 +86,7 @@ QtObject {
 
         Connections {
             target: torInstance
-            onConfigurationNeededChanged: {
+            function onConfigurationNeededChanged() {
                 if (torInstance.configurationNeeded) {
                     var object = createDialog("NetworkSetupWizard.qml", { 'modality': Qt.ApplicationModal }, mainWindow)
                     object.networkReady.connect(function() { object.visible = false })

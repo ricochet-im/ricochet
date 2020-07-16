@@ -18,7 +18,7 @@ ApplicationWindow {
     onVisibleChanged: if (!visible) closed()
 
     property QtObject request
-    property bool hasValidContact: request.hostname != "" && fields.name.text.length
+    property bool hasValidContact: request != null && request.hostname != "" && fields.name.text.length
 
     function close() {
         visible = false

@@ -56,7 +56,7 @@ TorProcessPrivate::TorProcessPrivate(TorProcess *q)
     connect(&process, &QProcess::started, this, &TorProcessPrivate::processStarted);
     connect(&process, (void (QProcess::*)(int, QProcess::ExitStatus))&QProcess::finished,
             this, &TorProcessPrivate::processFinished);
-    connect(&process, (void (QProcess::*)(QProcess::ProcessError))&QProcess::error,
+    connect(&process, (void (QProcess::*)(QProcess::ProcessError))&QProcess::errorOccurred,
             this, &TorProcessPrivate::processError);
     connect(&process, &QProcess::readyRead, this, &TorProcessPrivate::processReadable);
 

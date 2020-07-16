@@ -51,7 +51,7 @@ ToolBar {
         width: parent.width
 
         TorStateWidget {
-            anchors.verticalCenter: parent.verticalCenter
+            Layout.alignment: Qt.AlignVCenter
         }
 
         Item {

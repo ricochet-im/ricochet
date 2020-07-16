@@ -24,7 +24,9 @@ FocusScope {
 
     Connections {
         target: conversationModel
-        onUnreadCountChanged: if (active) conversationModel.resetUnreadCount()
+        function onUnreadCountChanged(user, unreadCount) {
+            if (active) conversationModel.resetUnreadCount()
+        }
     }
 
     RowLayout {
@@ -40,11 +42,12 @@ FocusScope {
         spacing: 8
 
         PresenceIcon {
-            status: contact.status
+            // 1 = Status::Offline
+            status: contact != null ? contact.status : 1
         }
 
         Label {
-            text: contact.nickname
+            text: contact != null ? contact.nickname : ""
             textFormat: Text.PlainText
             font.pointSize: styleHelper.pointSize
         }
