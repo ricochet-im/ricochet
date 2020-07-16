@@ -134,7 +134,7 @@ void ContactsModel::contactAdded(ContactUser *user)
 
     connectSignals(user);
 
-    QList<ContactUser*>::Iterator lp = qLowerBound(contacts.begin(), contacts.end(), user, contactSort);
+    QList<ContactUser*>::Iterator lp = std::lower_bound(contacts.begin(), contacts.end(), user, contactSort);
     int row = lp - contacts.begin();
 
     beginInsertRows(QModelIndex(), row, row);
