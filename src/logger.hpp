@@ -55,6 +55,11 @@ private:
         std::chrono::duration<double> duration(now - start);
         return duration.count();
     }
-
-
 };
+
+inline std::ostream& operator<<(std::ostream& out, const QString& str)
+{
+    auto utf8str = str.toUtf8();
+    out << utf8str.constData();
+    return out;
+}
