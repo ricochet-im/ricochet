@@ -36,7 +36,6 @@ lessThan(QT_MAJOR_VERSION,5)|lessThan(QT_MINOR_VERSION,1) {
 TARGET = ricochet-refresh
 TEMPLATE = app
 QT += core gui network quick widgets
-CONFIG += c++11
 
 VERSION = 1.1.4
 
@@ -129,6 +128,9 @@ win32|mac {
 }
 
 unix {
+    # get us onto the latest c++
+    QMAKE_CXXFLAGS += --std=c++2a
+
     !isEmpty(OPENSSLDIR) {
         INCLUDEPATH += $${OPENSSLDIR}/include
         LIBS += -L$${OPENSSLDIR}/lib -lcrypto
@@ -239,6 +241,27 @@ HEADERS += src/protocol/Channel.h \
     src/protocol/AuthHiddenServiceChannel.h \
     src/protocol/ChatChannel.h \
     src/protocol/ContactRequestChannel.h
+
+# fmt lib
+SOURCE +=\
+    src/fmt/format.cc \
+    src/fmt/posix.cc
+
+HEADERS +=\
+    src/fmt/core.h \
+    src/fmt/format.h \
+    src/fmt/format-inl.h \
+    src/fmt/ostream.h \
+    src/fmt/posix.h \
+    src/fmt/printf.h \
+    src/fmt/ranges.h \
+    src/fmt/time.h
+
+
+
+# custom
+HEADERS +=\
+    src/logger.hpp
 
 include(protobuf.pri)
 PROTOS += src/protocol/ControlChannel.proto \
