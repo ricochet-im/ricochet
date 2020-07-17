@@ -11,7 +11,7 @@ TextArea {
 
     Connections {
         target: torInstance.process
-        onLogMessage: {
+        function onLogMessage(message) {
             logDisplay.append(message)
         }
     }

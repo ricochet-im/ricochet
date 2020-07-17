@@ -24,7 +24,9 @@ FocusScope {
 
     Connections {
         target: conversationModel
-        onUnreadCountChanged: if (active) conversationModel.resetUnreadCount()
+        function onUnreadCountChanged(user, unreadCount) {
+            if (active) conversationModel.resetUnreadCount()
+        }
     }
 
     RowLayout {

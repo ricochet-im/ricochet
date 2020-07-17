@@ -33,7 +33,7 @@ ApplicationWindow {
 
     Connections {
         target: userIdentity.contacts
-        onUnreadCountChanged: {
+        function onUnreadCountChanged(user, unreadCount) {
             if (unreadCount > 0) {
                 if (audioNotifications !== null)
                     audioNotifications.message.play()
@@ -44,7 +44,7 @@ ApplicationWindow {
                 w.alert(Qt.platform.os == "osx" ? 1000 : 0)
             }
         }
-        onContactStatusChanged: {
+        function onContactStatusChanged(user, status) {
             if (status === ContactUser.Online && audioNotifications !== null) {
                 audioNotifications.contactOnline.play()
             }
@@ -75,7 +75,7 @@ ApplicationWindow {
                     anchors.fill: parent
                     opacity: offlineLoader.item !== null ? (1 - offlineLoader.item.opacity) : 1
 
-                    onContactActivated: {
+                    function onContactActivated(contact, actions) {
                         if (contact.status === ContactUser.RequestPending || contact.status === ContactUser.RequestRejected) {
                             actions.openPreferences()
                         } else if (!uiSettings.data.combinedChatWindow) {
@@ -86,7 +86,7 @@ ApplicationWindow {
 
                 Loader {
                     id: offlineLoader
-                    active: torControl.torStatus !== TorControl.TorReady || (item !== null && item.visible)
+                    active: torControl.torStatus !== TorControl.TorReady
                     anchors.fill: parent
                     source: Qt.resolvedUrl("OfflineStateItem.qml")
                 }
