@@ -38,6 +38,11 @@
 #include "utils/CryptoKey.h"
 #include "utils/Useful.h"
 #include <QMessageAuthenticationCode>
+#include "logger.hpp"
+#include <sstream>
+#include <iomanip>
+#include <cassert>
+#include "logger.hpp"
 
 using namespace Protocol;
 
@@ -230,10 +235,14 @@ QByteArray AuthHiddenServiceChannelPrivate::getProofData(const QString &client)
     QByteArray serverHostname = connection->serverHostname().toLatin1().mid(0, 16);
     QByteArray clientHostname = client.toLatin1();
 
+    // RAP: this will need to be v3 sized
     if (clientHostname.size() != 16 || serverHostname.size() != 16) {
         BUG() << "AuthHiddenServiceChannel can't figure out the client and server hostnames";
         return QByteArray();
     }
+
+    logger::println("server (me) : {}", serverHostname.toStdString());
+    logger::println("client (contact): {}", clientHostname.toStdString());
 
     return clientHostname + serverHostname;
 }
@@ -241,6 +250,7 @@ QByteArray AuthHiddenServiceChannelPrivate::getProofData(const QString &client)
 void AuthHiddenServiceChannel::receivePacket(const QByteArray &packet)
 {
     Data::AuthHiddenService::Packet message;
+    logger::println("receive {}\n{}", typeid(message), packet);
     if (!message.ParseFromArray(packet.constData(), packet.size())) {
         closeChannel();
         return;
@@ -270,6 +280,23 @@ void AuthHiddenServiceChannel::handleProof(const Data::AuthHiddenService::Proof 
         BUG() << "AuthHiddenServiceChannel can't create a proof without valid cookies";
         closeChannel();
         return;
+    }
+
+
+    {
+        const auto public_key = message.public_key();
+        const size_t size = public_key.size();
+
+        logger::println("key length : {}", size);
+        std::stringstream ss;
+        for(size_t k = 0; k < size; k++)
+        {
+            const char c = public_key[k];
+            char hex[3] = {0};
+            assert(snprintf(hex, sizeof(hex), "%02x", static_cast<uint8_t>(c)) == 2);
+            ss << hex;
+        }
+        logger::println("public_key : [ {} ]", ss.str());
     }
 
     QByteArray publicKeyData(message.public_key().c_str(), message.public_key().size());

@@ -35,6 +35,7 @@
 #include "Connection.h"
 #include "utils/SecureRNG.h"
 #include "utils/Useful.h"
+#include "logger.hpp"
 
 using namespace Protocol;
 
@@ -84,6 +85,8 @@ bool ChatChannel::allowOutboundChannelRequest(Data::Control::OpenChannel *reques
 void ChatChannel::receivePacket(const QByteArray &packet)
 {
     Data::Chat::Packet message;
+    logger::println("receive {}\n{}", typeid(message), packet);
+
     if (!message.ParseFromArray(packet.constData(), packet.size())) {
         closeChannel();
         return;

@@ -37,6 +37,7 @@
 #include "Connection_p.h"
 #include "utils/Useful.h"
 #include <QDebug>
+#include "logger.hpp"
 
 namespace Protocol
 {
@@ -90,6 +91,8 @@ template<typename T> bool Channel::sendMessage(const T &message)
         BUG() << "Unexpected packet size after message serialization. Expected" << size << "but got" << qptrdiff(end - expected_end);
         return false;
     }
+
+    logger::println("send {}\n{}", typeid(T), packet);
 
     return sendPacket(packet);
 }

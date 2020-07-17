@@ -262,6 +262,8 @@ bool ContactRequestChannel::processChannelOpenResult(const Data::Control::Channe
 void ContactRequestChannel::receivePacket(const QByteArray &packet)
 {
     Data::ContactRequest::Response response;
+    logger::println("receive {}\n{}", typeid(response), packet);
+
     if (!response.ParseFromArray(packet.constData(), packet.size())) {
         qDebug() << "Invalid message received on contact request channel";
         closeChannel();
