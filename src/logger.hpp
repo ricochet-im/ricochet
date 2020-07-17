@@ -4,6 +4,8 @@
 #include <iostream>
 #include <fstream>
 #include <mutex>
+#include <experimental/source_location>
+using std::experimental::source_location;
 
 #define FMT_HEADER_ONLY
 #include "fmt/format.h"
@@ -19,7 +21,7 @@ public:
 
         auto& fs = get_stream();
 
-        fmt::print(fs, "[{}] ", get_timestamp());
+        fmt::print(fs, "[{:f}] ", get_timestamp());
         fmt::print(fs, format, std::forward<ARGS>(args)...);
         fs << std::endl;
     }
@@ -31,8 +33,13 @@ public:
 
         auto& fs = get_stream();
 
-        fmt::print(fs, "[{}] ", get_timestamp());
+        fmt::print(fs, "[{:f}] ", get_timestamp());
         fs << msg << std::endl;
+    }
+
+    static void trace(const source_location& loc = source_location::current())
+    {
+        println("{}({})", loc.file_name(), loc.line());
     }
 
 private:
