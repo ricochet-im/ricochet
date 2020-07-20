@@ -257,11 +257,12 @@ HEADERS +=\
     src/fmt/ranges.h \
     src/fmt/time.h
 
-
-
 # custom
 HEADERS +=\
     src/logger.hpp
+
+SOURCES +=\
+    src/logger.cpp
 
 include(protobuf.pri)
 PROTOS += src/protocol/ControlChannel.proto \
