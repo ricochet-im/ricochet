@@ -40,6 +40,7 @@
 #include <QTcpSocket>
 #include <QBuffer>
 #include <QDir>
+#include "logger.hpp"
 
 using namespace Protocol;
 
@@ -89,6 +90,7 @@ void UserIdentity::setupService()
             return;
         }
 
+        logger::trace();
         m_hiddenService = new Tor::HiddenService(key, legacyDir, this);
     } else if (!legacyDir.isEmpty() && QFile::exists(legacyDir + QLatin1String("/private_key"))) {
         qDebug() << "Attempting to load key from legacy filesystem format in" << legacyDir;
@@ -100,6 +102,7 @@ void UserIdentity::setupService()
         } else {
             keyData = QString::fromLatin1(key.encodedPrivateKey(CryptoKey::DER).toBase64());
             m_settings->write("serviceKey", keyData);
+            logger::trace();
             m_hiddenService = new Tor::HiddenService(key, legacyDir, this);
         }
     } else if (!m_settings->read("initializing").toBool()) {

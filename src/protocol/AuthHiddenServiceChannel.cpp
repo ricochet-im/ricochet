@@ -241,20 +241,19 @@ QByteArray AuthHiddenServiceChannelPrivate::getProofData(const QString &client)
         return QByteArray();
     }
 
-    logger::println("server (me) : {}", serverHostname.toStdString());
-    logger::println("client (contact): {}", clientHostname.toStdString());
-
     return clientHostname + serverHostname;
 }
 
 void AuthHiddenServiceChannel::receivePacket(const QByteArray &packet)
 {
     Data::AuthHiddenService::Packet message;
-    logger::println("receive {}\n{}", typeid(message), packet);
+
     if (!message.ParseFromArray(packet.constData(), packet.size())) {
         closeChannel();
         return;
     }
+
+    logger::println("receive {}\n{}", typeid(message), message.DebugString());
 
     if (message.has_proof()) {
         handleProof(message.proof());

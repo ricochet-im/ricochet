@@ -34,6 +34,7 @@
 #include "tor/HiddenService.h"
 #include "utils/CryptoKey.h"
 #include "utils/StringUtil.h"
+#include "logger.hpp"
 
 using namespace Tor;
 
@@ -89,6 +90,7 @@ void AddOnionCommand::onReply(int statusCode, const QByteArray &data)
             return;
         }
 
+        logger::trace();
         m_service->setPrivateKey(key);
     }
 }

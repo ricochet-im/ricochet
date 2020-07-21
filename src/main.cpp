@@ -50,6 +50,7 @@
 #include <QLockFile>
 #include <QStandardPaths>
 #include <openssl/crypto.h>
+#include "logger.hpp"
 
 static bool initSettings(SettingsFile *settings, QLockFile **lockFile, QString &errorMessage);
 static bool importLegacySettings(SettingsFile *settings, const QString &oldPath);
@@ -57,6 +58,8 @@ static void initTranslation();
 
 int main(int argc, char *argv[])
 {
+    logger::println("Ricochet Start!");
+
     /* Disable rwx memory.
        This will also ensure full PAX/Grsecurity protections. */
     qputenv("QV4_FORCE_INTERPRETER",  "1");

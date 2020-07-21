@@ -92,7 +92,8 @@ template<typename T> bool Channel::sendMessage(const T &message)
         return false;
     }
 
-    logger::println("send {}\n{}", typeid(T), packet);
+    logger::println("server hostname : {}", this->connection()->serverHostname());
+    logger::println("send {}\n{}", typeid(message), message.DebugString());
 
     return sendPacket(packet);
 }

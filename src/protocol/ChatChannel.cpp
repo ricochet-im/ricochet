@@ -85,12 +85,13 @@ bool ChatChannel::allowOutboundChannelRequest(Data::Control::OpenChannel *reques
 void ChatChannel::receivePacket(const QByteArray &packet)
 {
     Data::Chat::Packet message;
-    logger::println("receive {}\n{}", typeid(message), packet);
 
     if (!message.ParseFromArray(packet.constData(), packet.size())) {
         closeChannel();
         return;
     }
+
+    logger::println("receive {}\n{}", typeid(message), message.DebugString());
 
     if (message.has_chat_message()) {
         handleChatMessage(message.chat_message());

@@ -272,6 +272,7 @@ bool Channel::sendPacket(const QByteArray &packet)
         return false;
     }
 
+    logger::println("send packet : {{size: {}, channel_id: {} }}", packet.size(), this->identifier());
     return connection()->d->writePacket(this, packet);
 }
 

@@ -38,6 +38,8 @@
 #include <QtEndian>
 #include <QDebug>
 
+#include "logger.hpp"
+
 using namespace Protocol;
 
 Connection::Connection(QTcpSocket *socket, Direction direction)
@@ -337,6 +339,9 @@ void ConnectionPrivate::socketReadable()
         quint16 packetSize = qFromBigEndian<quint16>(header);
         quint16 channelId = qFromBigEndian<quint16>(&header[2]);
 
+        logger::println("server hostname : {}", q->serverHostname());
+        logger::println("received packet : {{ size: {}, channel_id: {} }}", packetSize, channelId);
+
         if (packetSize < PacketHeaderSize) {
             qWarning() << "Corrupted data from connection (packet size is too small); disconnecting";
             socket->abort();
@@ -357,6 +362,7 @@ void ConnectionPrivate::socketReadable()
                 BUG() << "Socket read was unexpectedly small;" << available << "bytes should've been available but we read" << re;
             }
             socket->abort();
+            logger::trace();
             return;
         }
 
@@ -370,6 +376,7 @@ void ConnectionPrivate::socketReadable()
                 // As above
                 BUG() << "Socket read was unexpectedly small;" << available << "bytes should've been available but we read" << re;
             }
+            logger::trace();
             socket->abort();
             return;
         }
@@ -384,6 +391,7 @@ void ConnectionPrivate::socketReadable()
                 // Send channel close message
                 writePacket(channelId, QByteArray());
             }
+            logger::trace();
             continue;
         }
 
@@ -397,6 +405,7 @@ void ConnectionPrivate::socketReadable()
         }
 
         if (data.isEmpty()) {
+            logger::println("Empty packet, close channel {}", channelId);
             channel->closeChannel();
         } else {
             channel->receivePacket(data);

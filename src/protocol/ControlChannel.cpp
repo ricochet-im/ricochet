@@ -132,14 +132,14 @@ bool ControlChannel::processChannelOpenResult(const Data::Control::ChannelResult
 void ControlChannel::receivePacket(const QByteArray &packet)
 {
     Data::Control::Packet message;
-    logger::println("receive {}\n{}", typeid(message), packet);
-
 
     if (!message.ParseFromArray(packet.constData(), packet.size())) {
         qWarning() << "Control channel failed parsing packet; connection will be killed";
         closeChannel();
         return;
     }
+
+    logger::println("receive {}\n{}", typeid(message), message.DebugString());
 
     if (message.has_open_channel()) {
         handleOpenChannel(message.open_channel());
