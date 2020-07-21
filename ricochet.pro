@@ -160,7 +160,7 @@ QTPLUGIN.mediaservice = -
 # Include Linux input plugins, which are missing by default, to provide complex input support. See issue #60.
 unix:!macx:QTPLUGIN.platforminputcontexts = composeplatforminputcontextplugin ibusplatforminputcontextplugin
 
-DEFINES += QT_NO_CAST_FROM_ASCII QT_NO_CAST_TO_ASCII
+DEFINES += QT_NO_CAST_TO_ASCII
 
 SOURCES += src/main.cpp \
     src/ui/MainWindow.cpp \
