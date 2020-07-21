@@ -60,7 +60,6 @@ public:
 
     QByteArray publicKeyDigest() const;
     QByteArray encodedPublicKey(KeyFormat format) const;
-    QByteArray encodedPrivateKey(KeyFormat format) const;
     // write to tor's 'KeyBlob' format
     QByteArray encodedKeyBlob() const;
     QString torServiceID() const;
@@ -77,6 +76,7 @@ public:
     bool verifySHA256(const QByteArray &digest, QByteArray signature) const;
 
 private:
+    QByteArray encodedPrivateKey(KeyFormat format) const;
     struct Data : public QSharedData
     {
         typedef struct rsa_st RSA;

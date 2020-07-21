@@ -54,8 +54,8 @@ QByteArray AddOnionCommand::build()
     QByteArray out("ADD_ONION");
 
     if (m_service->privateKey().isLoaded()) {
-        out += " RSA1024:";
-        out += m_service->privateKey().encodedPrivateKey(CryptoKey::DER).toBase64();
+        out += " ";
+        out += m_service->privateKey().encodedKeyBlob();
     } else {
         out += " NEW:RSA1024";
     }
