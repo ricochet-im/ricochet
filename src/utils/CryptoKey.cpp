@@ -418,7 +418,7 @@ void base32_encode(char *dest, unsigned destlen, const char *src, unsigned srcle
     dest[CryptoKey::base32_encoded_size(srclen) - 1] = '\0';
 }
 
-/* Implements base32 decoding as in rfc3548. */
+/* Implements base32 decoding as in rfc3548, except for padding. This implementation allows both '=' and null byte padding */
 bool base32_decode(char *dest, unsigned destlen, const char *src, unsigned srclen)
 {
     unsigned int i, j, bit;
