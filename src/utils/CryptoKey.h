@@ -50,10 +50,6 @@ public:
         DER
     };
 
-    CryptoKey();
-    CryptoKey(const CryptoKey &other) : d(other.d) { }
-    ~CryptoKey();
-
     CryptoKey& operator=(const CryptoKey&) = default;
 
     bool loadFromData(const QByteArray &data, KeyType type, KeyFormat format = PEM);
