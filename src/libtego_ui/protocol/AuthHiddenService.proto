@@ -15,8 +15,8 @@ message Packet {
 }
 
 message Proof {
-    optional bytes public_key = 1;      // DER encoded public key
-    optional bytes signature = 2;       // RSA signature
+    optional bytes signature = 1;       // RSA signature
+    optional string service_id = 2;      // sans .onion prefix
 }
 
 message Result {

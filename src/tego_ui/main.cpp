@@ -43,9 +43,14 @@ static bool initSettings(SettingsFile *settings, QLockFile **lockFile, QString &
 static bool importLegacySettings(SettingsFile *settings, const QString &oldPath);
 static void initTranslation();
 
-int main(int argc, char *argv[])
+int main(int argc, char *argv[]) try
 {
-    /* Disable rwx memory.
+    tego_initialize(tego::throw_on_error());
+    auto tego_cleanup = tego::make_scope_exit([]() -> void {
+        tego_uninitialize(tego::throw_on_error());
+    });
+
+   /* Disable rwx memory.
        This will also ensure full PAX/Grsecurity protections. */
     qputenv("QV4_FORCE_INTERPRETER",  "1");
     qputenv("QT_ENABLE_REGEXP_JIT",   "0");
@@ -112,6 +117,11 @@ int main(int argc, char *argv[])
 
     return a.exec();
 }
+catch(std::exception& re)
+{
+    qDebug() << "Caught Exception: " << re.what();
+}
+
 
 static QString userConfigPath()
 {

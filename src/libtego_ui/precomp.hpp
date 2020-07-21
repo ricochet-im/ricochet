@@ -16,9 +16,6 @@
 #include <openssl/bio.h>
 #include <openssl/pem.h>
 
-// tego
-#include <tego/tego.h>
-
 // C++ headers
 #ifdef __cplusplus
 
@@ -105,6 +102,7 @@
 
 // tego
 #include <tego/logger.hpp>
+#include <tego/tego.hpp>
 
 #endif // __cplusplus
 

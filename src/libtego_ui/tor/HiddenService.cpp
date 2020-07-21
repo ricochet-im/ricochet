@@ -43,19 +43,8 @@ HiddenService::HiddenService(QObject *parent)
 {
 }
 
-HiddenService::HiddenService(const QString &path, QObject *parent)
-    : QObject(parent), m_dataPath(path), m_status(NotCreated)
-{
-    /* Set the initial status and, if possible, load the hostname */
-    if (QDir(m_dataPath).exists(QLatin1String("private_key"))) {
-        loadPrivateKey();
-        if (!m_hostname.isEmpty())
-            m_status = Offline;
-    }
-}
-
-HiddenService::HiddenService(const CryptoKey &privateKey, const QString &path, QObject *parent)
-    : QObject(parent), m_dataPath(path), m_status(NotCreated)
+HiddenService::HiddenService(const CryptoKey &privateKey, QObject *parent)
+    : QObject(parent), m_status(NotCreated)
 {
     setPrivateKey(privateKey);
     m_status = Offline;
@@ -103,25 +92,8 @@ void HiddenService::setPrivateKey(const CryptoKey &key)
     emit privateKeyChanged();
 }
 
-void HiddenService::loadPrivateKey()
-{
-    if (m_privateKey.isLoaded() || m_dataPath.isEmpty())
-        return;
-
-    bool ok = m_privateKey.loadFromFile(m_dataPath + QLatin1String("/private_key"), CryptoKey::PrivateKey);
-    if (!ok) {
-        qWarning() << "Failed to load hidden service key";
-        return;
-    }
-
-    m_hostname = m_privateKey.torServiceID();
-    emit privateKeyChanged();
-}
-
 void HiddenService::servicePublished()
 {
-    loadPrivateKey();
-
     if (m_hostname.isEmpty()) {
         qDebug() << "Failed to read hidden service hostname";
         return;

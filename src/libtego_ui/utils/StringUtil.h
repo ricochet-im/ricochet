@@ -40,4 +40,11 @@ QByteArray unquotedString(const QByteArray &string);
 
 QList<QByteArray> splitQuotedStrings(const QByteArray &input, char separator);
 
+template<size_t N>
+constexpr size_t static_strlen(const char (&str)[N])
+{
+    Q_ASSERT(str[N-1] == 0);
+    return N - 1;
+}
+
 #endif // STRINGUTIL_H

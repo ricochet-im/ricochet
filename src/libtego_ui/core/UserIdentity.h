@@ -115,7 +115,7 @@ private:
     QTcpServer *m_incomingServer;
     QVector<QSharedPointer<Protocol::Connection>> m_incomingConnections;
 
-    static UserIdentity *createIdentity(int uniqueID, const QString &dataDirectory = QString());
+    static UserIdentity *createIdentity(int uniqueID);
 
     void handleIncomingAuthedConnection(Protocol::Connection *connection);
     void setupService();

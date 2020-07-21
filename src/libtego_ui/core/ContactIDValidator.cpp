@@ -31,10 +31,11 @@
  */
 
 #include "ContactIDValidator.h"
+#include "utils/StringUtil.h"
 
 // multiple consumers of this regex object seems to cause thread contention issues
 // and segfaults, so make it thread_local to sidestep the issue for now
-static thread_local QRegularExpression regex(QStringLiteral("(torsion|ricochet):([a-z2-7]{16})"));
+static thread_local QRegularExpression regex(QStringLiteral("(torsion|ricochet):([a-z2-7]{56})"));
 
 ContactIDValidator::ContactIDValidator(QObject *parent)
     : QRegularExpressionValidator(parent), m_uniqueIdentity(0)
@@ -98,14 +99,11 @@ QString ContactIDValidator::hostnameFromID(const QString &ID)
 
 QString ContactIDValidator::idFromHostname(const QString &hostname)
 {
-    QString re = hostname;
+    #define DOT_ONION ".onion"
 
-    if (re.size() != 16)
-    {
-        if (re.size() == 22 && re.toLower().endsWith(QLatin1String(".onion")))
-            re.chop(6);
-        else
-            return QString();
+    QString re = hostname.toLower();
+    if (re.endsWith(DOT_ONION)) {
+        re.chop(static_strlen(DOT_ONION));
     }
 
     re.prepend(QStringLiteral("ricochet:"));

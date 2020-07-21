@@ -53,10 +53,10 @@ QByteArray AddOnionCommand::build()
     QByteArray out("ADD_ONION");
 
     if (m_service->privateKey().isLoaded()) {
-        out += " RSA1024:";
-        out += m_service->privateKey().encodedPrivateKey(CryptoKey::DER).toBase64();
+        out += " ";
+        out += m_service->privateKey().encodedKeyBlob();
     } else {
-        out += " NEW:RSA1024";
+        out += " NEW:ED25519-V3";
     }
 
     foreach (const HiddenService::Target &target, m_service->targets()) {
@@ -80,15 +80,16 @@ void AddOnionCommand::onReply(int statusCode, const QByteArray &data)
         return;
     }
 
-    const QByteArray keyPrefix("PrivateKey=RSA1024:");
-    if (data.startsWith(keyPrefix)) {
-        QByteArray keyData(QByteArray::fromBase64(data.mid(keyPrefix.size())));
+    const char PRIVATE_KEY_EQUALS[] = "PrivateKey=";
+
+    if(data.startsWith(PRIVATE_KEY_EQUALS))
+    {
         CryptoKey key;
-        if (!key.loadFromData(keyData, CryptoKey::PrivateKey, CryptoKey::DER)) {
+        if(!key.loadFromKeyBlob(data.mid(static_strlen(PRIVATE_KEY_EQUALS))))
+        {
             m_errorMessage = QStringLiteral("Key decoding failed");
             return;
         }
-
         m_service->setPrivateKey(key);
     }
 }

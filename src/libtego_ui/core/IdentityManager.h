@@ -49,7 +49,7 @@ public:
     UserIdentity *lookupHostname(const QString &hostname) const;
     UserIdentity *lookupUniqueID(int uniqueID) const;
 
-    UserIdentity *createIdentity(const QString &serviceDirectory = QString(), const QString &nickname = QString());
+    UserIdentity *createIdentity();
 
 signals:
     void identityAdded(UserIdentity *identity);

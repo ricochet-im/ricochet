@@ -55,7 +55,7 @@ UserIdentity::UserIdentity(int id, QObject *parent)
     contacts.loadFromSettings();
 }
 
-UserIdentity *UserIdentity::createIdentity(int uniqueID, const QString &dataDirectory)
+UserIdentity *UserIdentity::createIdentity(int uniqueID)
 {
     // There is actually no support for multiple identities currently.
     Q_ASSERT(uniqueID == 0);
@@ -64,10 +64,6 @@ UserIdentity *UserIdentity::createIdentity(int uniqueID, const QString &dataDire
 
     SettingsObject settings(QStringLiteral("identity"));
     settings.write("initializing", true);
-    if (dataDirectory.isEmpty())
-        settings.write("dataDirectory", QString::fromLatin1("data-%1").arg(uniqueID));
-    else
-        settings.write("dataDirectory", dataDirectory);
 
     return new UserIdentity(uniqueID);
 }
@@ -76,36 +72,22 @@ UserIdentity *UserIdentity::createIdentity(int uniqueID, const QString &dataDire
 void UserIdentity::setupService()
 {
     QString keyData = m_settings->read("serviceKey").toString();
-    QString legacyDir = m_settings->read("dataDirectory").toString();
 
     if (!keyData.isEmpty()) {
         CryptoKey key;
-        if (!key.loadFromData(QByteArray::fromBase64(keyData.toLatin1()), CryptoKey::PrivateKey, CryptoKey::DER)) {
+        if (!key.loadFromKeyBlob(keyData.toLatin1())) {
             qWarning() << "Cannot load service key from configuration";
             return;
         }
-
-        m_hiddenService = new Tor::HiddenService(key, legacyDir, this);
-    } else if (!legacyDir.isEmpty() && QFile::exists(legacyDir + QLatin1String("/private_key"))) {
-        qDebug() << "Attempting to load key from legacy filesystem format in" << legacyDir;
-
-        CryptoKey key;
-        if (!key.loadFromFile(legacyDir + QLatin1String("/private_key"), CryptoKey::PrivateKey)) {
-            qWarning() << "Cannot load legacy format key from" << legacyDir << "for conversion";
-            return;
-        } else {
-            keyData = QString::fromLatin1(key.encodedPrivateKey(CryptoKey::DER).toBase64());
-            m_settings->write("serviceKey", keyData);
-            m_hiddenService = new Tor::HiddenService(key, legacyDir, this);
-        }
+        m_hiddenService = new Tor::HiddenService(key, this);
     } else if (!m_settings->read("initializing").toBool()) {
         qWarning() << "Missing private key for initialized identity";
         return;
     } else {
-        m_hiddenService = new Tor::HiddenService(legacyDir, this);
+        m_hiddenService = new Tor::HiddenService(this);
         connect(m_hiddenService, &Tor::HiddenService::privateKeyChanged, this,
             [&]() {
-                QString key = QString::fromLatin1(m_hiddenService->privateKey().encodedPrivateKey(CryptoKey::DER).toBase64());
+                QString key = QString::fromLatin1(m_hiddenService->privateKey().encodedKeyBlob());
                 m_settings->write("serviceKey", key);
             }
         );

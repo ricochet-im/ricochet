@@ -3,9 +3,6 @@
 // openssl
 #include <openssl/crypto.h>
 
-// tego
-#include <tego/tego.h>
-
 // C++ headers
 #ifdef __cplusplus
 
@@ -28,7 +25,7 @@
 #include <QTranslator>
 
 // tego
-#include <tego/logger.hpp>
+#include <tego/tego.hpp>
 
 #endif // __cplusplus
 
