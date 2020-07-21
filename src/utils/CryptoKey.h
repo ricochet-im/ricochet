@@ -46,12 +46,11 @@ public:
     };
 
     enum KeyFormat {
-        PEM,
         DER
     };
 
-    bool loadFromData(const QByteArray &data, KeyType type, KeyFormat format = PEM);
-    bool loadFromFile(const QString &path, KeyType type, KeyFormat format = PEM);
+    bool loadFromData(const QByteArray &data, KeyType type, KeyFormat format);
+    bool loadFromFile(const QString &path, KeyType type, KeyFormat format);
     void clear();
 
     bool isLoaded() const { return d.data() && d->key != 0; }

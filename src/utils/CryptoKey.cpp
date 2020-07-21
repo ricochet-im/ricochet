@@ -73,16 +73,7 @@ bool CryptoKey::loadFromData(const QByteArray &data, KeyType type, KeyFormat for
     if (data.isEmpty())
         return false;
 
-    if (format == PEM) {
-        BIO *b = BIO_new_mem_buf((void*)data.constData(), -1);
-
-        if (type == PrivateKey)
-            key = PEM_read_bio_RSAPrivateKey(b, NULL, NULL, NULL);
-        else
-            key = PEM_read_bio_RSAPublicKey(b, NULL, NULL, NULL);
-
-        BIO_free(b);
-    } else if (format == DER) {
+    if (format == DER) {
         const uchar *dp = reinterpret_cast<const uchar*>(data.constData());
 
         if (type == PrivateKey)
@@ -159,26 +150,7 @@ QByteArray CryptoKey::encodedPublicKey(KeyFormat format) const
     if (!isLoaded())
         return QByteArray();
 
-    if (format == PEM) {
-        BIO *b = BIO_new(BIO_s_mem());
-
-        if (!PEM_write_bio_RSAPublicKey(b, d->key)) {
-            BUG() << "Failed to encode public key in PEM format";
-            BIO_free(b);
-            return QByteArray();
-        }
-
-        BUF_MEM *buf;
-        BIO_get_mem_ptr(b, &buf);
-
-        /* Close BIO, but don't free buf. */
-        (void)BIO_set_close(b, BIO_NOCLOSE);
-        BIO_free(b);
-
-        QByteArray re((const char *)buf->data, (int)buf->length);
-        BUF_MEM_free(buf);
-        return re;
-    } else if (format == DER) {
+    if (format == DER) {
         uchar *buf = NULL;
         int len = i2d_RSAPublicKey(d->key, &buf);
         if (len <= 0 || !buf) {
@@ -201,26 +173,7 @@ QByteArray CryptoKey::encodedPrivateKey(KeyFormat format) const
     if (!isLoaded() || !isPrivate())
         return QByteArray();
 
-    if (format == PEM) {
-        BIO *b = BIO_new(BIO_s_mem());
-
-        if (!PEM_write_bio_RSAPrivateKey(b, d->key, NULL, NULL, 0, NULL, NULL)) {
-            BUG() << "Failed to encode private key in PEM format";
-            BIO_free(b);
-            return QByteArray();
-        }
-
-        BUF_MEM *buf;
-        BIO_get_mem_ptr(b, &buf);
-
-        /* Close BIO, but don't free buf. */
-        (void)BIO_set_close(b, BIO_NOCLOSE);
-        BIO_free(b);
-
-        QByteArray re((const char *)buf->data, (int)buf->length);
-        BUF_MEM_free(buf);
-        return re;
-    } else if (format == DER) {
+    if (format == DER) {
         uchar *buf = NULL;
         int len = i2d_RSAPrivateKey(d->key, &buf);
         if (len <= 0 || !buf) {
