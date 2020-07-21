@@ -50,8 +50,6 @@ public:
         DER
     };
 
-    CryptoKey& operator=(const CryptoKey&) = default;
-
     bool loadFromData(const QByteArray &data, KeyType type, KeyFormat format = PEM);
     bool loadFromFile(const QString &path, KeyType type, KeyFormat format = PEM);
     void clear();
