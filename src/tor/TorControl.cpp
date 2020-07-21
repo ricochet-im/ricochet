@@ -484,55 +484,16 @@ void TorControlPrivate::publishServices()
         return;
     }
 
-    if (q->torVersionAsNewAs(QStringLiteral("0.2.7"))) {
-        foreach (HiddenService *service, services) {
-            if (service->hostname().isEmpty())
-                qDebug() << "torctrl: Creating a new hidden service";
-            else
-                qDebug() << "torctrl: Publishing hidden service" << service->hostname();
-            AddOnionCommand *onionCommand = new AddOnionCommand(service);
-            QObject::connect(onionCommand, &AddOnionCommand::succeeded, service, &HiddenService::servicePublished);
-            socket->sendCommand(onionCommand, onionCommand->build());
-        }
-    } else {
-        qDebug() << "torctrl: Using legacy SETCONF hidden service configuration for tor" << torVersion;
-        SetConfCommand *command = new SetConfCommand;
-        QList<QPair<QByteArray,QByteArray> > torConfig;
+    Q_ASSERT(q->torVersionAsNewAs(QStringLiteral("0.2.7")));
 
-        foreach (HiddenService *service, services)
-        {
-            if (service->dataPath().isEmpty())
-                continue;
-
-            if (service->privateKey().isLoaded() && !QFile::exists(service->dataPath() + QStringLiteral("/private_key"))) {
-                // This case can happen if tor is downgraded after the profile is created
-                qWarning() << "Cannot publish ephemeral hidden services with this version of tor; skipping";
-                continue;
-            }
-
-            qDebug() << "torctrl: Configuring hidden service at" << service->dataPath();
-
-            QDir dir(service->dataPath());
-            torConfig.append(qMakePair(QByteArray("HiddenServiceDir"), dir.absolutePath().toLocal8Bit()));
-
-            const QList<HiddenService::Target> &targets = service->targets();
-            for (QList<HiddenService::Target>::ConstIterator tit = targets.begin(); tit != targets.end(); ++tit)
-            {
-                QString target = QString::fromLatin1("%1 %2:%3").arg(tit->servicePort)
-                                 .arg(tit->targetAddress.toString())
-                                 .arg(tit->targetPort);
-                torConfig.append(qMakePair(QByteArray("HiddenServicePort"), target.toLatin1()));
-
-                // Via github user @kradan: https://github.com/kradan/ricochet/commit/a34e8123b382b6e4ec490c633141510f26ff11dd
-                QString version = QString::fromLatin1("3");
-                torConfig.append(qMakePair(QByteArray("HiddenServiceVersion"), version.toLatin1()));
-            }
-
-            QObject::connect(command, &SetConfCommand::setConfSucceeded, service, &HiddenService::servicePublished);
-        }
-
-        if (!torConfig.isEmpty())
-            socket->sendCommand(command, command->build(torConfig));
+    foreach (HiddenService *service, services) {
+        if (service->hostname().isEmpty())
+            qDebug() << "torctrl: Creating a new hidden service";
+        else
+            qDebug() << "torctrl: Publishing hidden service" << service->hostname();
+        AddOnionCommand *onionCommand = new AddOnionCommand(service);
+        QObject::connect(onionCommand, &AddOnionCommand::succeeded, service, &HiddenService::servicePublished);
+        socket->sendCommand(onionCommand, onionCommand->build());
     }
 }
 

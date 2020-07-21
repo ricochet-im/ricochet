@@ -65,13 +65,11 @@ public:
     };
 
     HiddenService(QObject *parent = 0);
-    HiddenService(const QString &dataPath, QObject *parent = 0);
-    HiddenService(const CryptoKey &privateKey, const QString &dataPath = QString(), QObject *parent = 0);
+    HiddenService(const CryptoKey &privateKey, QObject *parent = 0);
 
     Status status() const { return m_status; }
 
     const QString &hostname() const { return m_hostname; }
-    const QString &dataPath() const { return m_dataPath; }
 
     CryptoKey privateKey() { return m_privateKey; }
     void setPrivateKey(const CryptoKey &privateKey);
@@ -89,13 +87,11 @@ private slots:
     void servicePublished();
 
 private:
-    QString m_dataPath;
     QList<Target> m_targets;
     QString m_hostname;
     Status m_status;
     CryptoKey m_privateKey;
 
-    void loadPrivateKey();
     void setStatus(Status newStatus);
 };
 
