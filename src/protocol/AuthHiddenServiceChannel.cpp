@@ -222,6 +222,7 @@ void AuthHiddenServiceChannel::sendAuthMessage()
     QScopedPointer<Data::AuthHiddenService::Proof> proof(new Data::AuthHiddenService::Proof);
     proof->set_public_key(std::string(publicKey.constData(), publicKey.size()));
     proof->set_signature(std::string(signature.constData(), signature.size()));
+    proof->set_service_id(d->privateKey.torServiceID().toStdString());
 
     Data::AuthHiddenService::Packet message;
     message.set_allocated_proof(proof.take());
@@ -281,25 +282,13 @@ void AuthHiddenServiceChannel::handleProof(const Data::AuthHiddenService::Proof 
         return;
     }
 
-
-    {
-        const auto public_key = message.public_key();
-        const size_t size = public_key.size();
-
-        logger::println("key length : {}", size);
-        std::stringstream ss;
-        for(size_t k = 0; k < size; k++)
-        {
-            const char c = public_key[k];
-            char hex[3] = {0};
-            assert(snprintf(hex, sizeof(hex), "%02x", static_cast<uint8_t>(c)) == 2);
-            ss << hex;
-        }
-        logger::println("public_key : [ {} ]", ss.str());
-    }
-
     QByteArray publicKeyData(message.public_key().c_str(), message.public_key().size());
     QByteArray signature(message.signature().c_str(), message.signature().size());
+    std::string serviceId = message.service_id();
+
+    logger::println("serivceId: {}", serviceId);
+    logger::println("publicKeyData:\n{}", publicKeyData);
+    logger::println("signature:\n{}", signature);
 
     QScopedPointer<Data::AuthHiddenService::Result> result(new Data::AuthHiddenService::Result);
     result->set_accepted(false);
@@ -315,6 +304,9 @@ void AuthHiddenServiceChannel::handleProof(const Data::AuthHiddenService::Proof 
     } else if (publicKey.bits() != 1024) {
         qWarning() << "Received invalid public key (" << publicKey.bits() << "bits) on" << type();
     } else {
+
+        // disable signature verification
+#if RAP
         bool ok = false;
         QByteArray proofData = d->getProofData(publicKey.torServiceID());
         if (!proofData.isEmpty()) {
@@ -322,6 +314,10 @@ void AuthHiddenServiceChannel::handleProof(const Data::AuthHiddenService::Proof 
                     QCryptographicHash::Sha256);
             ok = publicKey.verifySHA256(proofHMAC, signature);
         }
+#else
+        bool ok = true;
+        logger::println("Skipping signature verification");
+#endif
 
         if (!ok) {
             qWarning() << "Signature verification failed on" << type();
