@@ -33,11 +33,14 @@
 #include "CryptoKey.h"
 #include "SecureRNG.h"
 #include "Useful.h"
+#include "utils/StringUtil.h"
 #include <QtDebug>
 #include <QFile>
 #include <openssl/bn.h>
 #include <openssl/bio.h>
 #include <openssl/pem.h>
+
+#include "logger.hpp"
 
 #if OPENSSL_VERSION_NUMBER < 0x10100000L || defined(LIBRESSL_VERSION_NUMBER)
 void RSA_get0_factors(const RSA *r, const BIGNUM **p, const BIGNUM **q)
@@ -93,20 +96,23 @@ bool CryptoKey::loadFromData(const QByteArray &data, KeyType type, KeyFormat for
     return true;
 }
 
-bool CryptoKey::loadFromFile(const QString &path, KeyType type, KeyFormat format)
+bool CryptoKey::loadFromKeyBlob(const QByteArray& keyBlob)
 {
-    QFile file(path);
-    if (!file.open(QIODevice::ReadOnly))
+    constexpr const char RSA1024[] = "RSA1024:";
+    constexpr const char ED25519_V3[] = "ED25519-V3:";
+
+    if (keyBlob.startsWith(RSA1024))
     {
-        qWarning() << "Failed to open" << (type == PrivateKey ? "private" : "public") << "key from"
-                   << path << "-" << file.errorString();
-        return false;
+        const auto base64Blob = keyBlob.mid(static_strlen(RSA1024));
+        const auto rawBlob = QByteArray::fromBase64(base64Blob);
+
+        return loadFromData(rawBlob, CryptoKey::PrivateKey, CryptoKey::DER);
     }
+    else if (keyBlob.startsWith(ED25519_V3))
+    {
 
-    QByteArray data = file.readAll();
-    file.close();
-
-    return loadFromData(data, type, format);
+    }
+    return false;
 }
 
 bool CryptoKey::isPrivate() const

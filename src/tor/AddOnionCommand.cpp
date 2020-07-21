@@ -81,16 +81,16 @@ void AddOnionCommand::onReply(int statusCode, const QByteArray &data)
         return;
     }
 
-    const QByteArray keyPrefix("PrivateKey=RSA1024:");
-    if (data.startsWith(keyPrefix)) {
-        QByteArray keyData(QByteArray::fromBase64(data.mid(keyPrefix.size())));
+    const char PRIVATE_KEY_EQUALS[] = "PrivateKey=";
+
+    if(data.startsWith(PRIVATE_KEY_EQUALS))
+    {
         CryptoKey key;
-        if (!key.loadFromData(keyData, CryptoKey::PrivateKey, CryptoKey::DER)) {
+        if(!key.loadFromKeyBlob(data.mid(static_strlen(PRIVATE_KEY_EQUALS))))
+        {
             m_errorMessage = QStringLiteral("Key decoding failed");
             return;
         }
-
-        logger::trace();
         m_service->setPrivateKey(key);
     }
 }

@@ -46,11 +46,12 @@ public:
     };
 
     enum KeyFormat {
-        DER
+        DER,
+        ED25519_V3,
     };
 
     bool loadFromData(const QByteArray &data, KeyType type, KeyFormat format);
-    bool loadFromFile(const QString &path, KeyType type, KeyFormat format);
+    bool loadFromKeyBlob(const QByteArray& keyBlob);
     void clear();
 
     bool isLoaded() const { return d.data() && d->key != 0; }
