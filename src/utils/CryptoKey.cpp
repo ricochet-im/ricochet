@@ -389,14 +389,14 @@ QByteArray torControlHashedPassword(const QByteArray &password)
 
 #define BASE32_CHARS "abcdefghijklmnopqrstuvwxyz234567"
 
-/* Implements base32 encoding as in rfc3548. */
+/* Implements base32 encoding as in rfc3548, except for padding. This implementation uses null bytes for padding */
 void base32_encode(char *dest, unsigned destlen, const char *src, unsigned srclen)
 {
     unsigned i, bit, v, u;
     unsigned nbits = srclen * 8;
 
-    /* We need enough space */
-    if(!(((nbits + 5 - 1) / 5) + 1 <= destlen)) {
+    /* We need enough space, check that the encoded length of src is not greater than destlen*/
+    if(CryptoKey::base32_encoded_size(srclen) > destlen) {
         Q_ASSERT(false);
         return;
     }
@@ -415,7 +415,7 @@ void base32_encode(char *dest, unsigned destlen, const char *src, unsigned srcle
         dest[i] = BASE32_CHARS[u];
     }
 
-    dest[i] = '\0';
+    dest[CryptoKey::base32_encoded_size(srclen) - 1] = '\0';
 }
 
 /* Implements base32 decoding as in rfc3548. */
@@ -425,7 +425,7 @@ bool base32_decode(char *dest, unsigned destlen, const char *src, unsigned srcle
     unsigned nbits = ((srclen * 5) / 8) * 8;
 
     /* We need enough space */
-    if(!(nbits/8 <= destlen)) {
+    if(nbits/8 > destlen) {
         Q_ASSERT(false);
         return false;
     }
@@ -435,7 +435,9 @@ bool base32_decode(char *dest, unsigned destlen, const char *src, unsigned srcle
     /* Convert base32 encoded chars to the 5-bit values that they represent. */
     for (j = 0; j < srclen; ++j)
     {
-        if (src[j] > 0x60 && src[j] < 0x7B)
+        if (src[j] == '=' || src[j] == '\0')
+            break;
+        else if (src[j] > 0x60 && src[j] < 0x7B)
             tmp[j] = src[j] - 0x61;
         else if (src[j] > 0x31 && src[j] < 0x38)
             tmp[j] = src[j] - 0x18;

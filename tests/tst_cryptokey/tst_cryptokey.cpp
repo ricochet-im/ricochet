@@ -254,13 +254,13 @@ void TestCryptoKey::testBase32()
 
     /* test padding */
     strcpy(data1, "\x2e\xd0\x63\xe2\x5b\x16\xdf\xc4\xfc\x01\x23\xc9\xeb\xf6\x83\x71\xe4\x8e\xa0\x1c\x08\x65\xab\xb2\x58\x3c\xd5\xd3\x60");
-    base32_encode(data2, 49, data1, 30);
-    QCOMPARE(QString::fromLocal8Bit(data2), QString("f3ighys3c3p4j7abepe6x5udohsi5ia4bbs2xmsyhtk5gyaa"));
+    base32_encode(data2, 49, data1, 29);
+    QCOMPARE(QString::fromLocal8Bit(data2), QString("f3ighys3c3p4j7abepe6x5udohsi5ia4bbs2xmsyhtk5gya"));
 
     /* test non multiple of 5 length input */
     strcpy(data1, "\x2e\xd0\x63\xe2\x5b\x16\xdf\xc4\xfc\x01\x23\xc9\xeb\xf6\x83\x71\xe4\x8e\xa0\x1c\x08\x65\xab\xb2\x58\x3c");
-    base32_encode(data2, 49, data1, 27);
-    QCOMPARE(QString::fromLocal8Bit(data2), QString("f3ighys3c3p4j7abepe6x5udohsi5ia4bbs2xmsyhqaa"));
+    base32_encode(data2, 49, data1, 26);
+    QCOMPARE(QString::fromLocal8Bit(data2), QString("f3ighys3c3p4j7abepe6x5udohsi5ia4bbs2xmsyhq"));
 
     delete[] data1;
     delete[] data2;
@@ -269,6 +269,24 @@ void TestCryptoKey::testBase32()
     char *rnd_bytes = new char[60]();
     char *encoded   = new char[97]();
     char *decoded   = new char[60]();
+
+    /* Test known string */
+    strcpy(encoded, "orsxg5bq");
+    QVERIFY(base32_decode(decoded, 60, encoded, 8));
+    QCOMPARE(QString::fromLocal8Bit(decoded), QString("test0"));
+
+    /* Test padding */
+    strcpy(encoded, "orsxg5bq===");
+    QVERIFY(base32_decode(decoded, 60, encoded, 11));
+    QCOMPARE(QString::fromLocal8Bit(decoded), QString("test0"));
+
+    strcpy(encoded, "orsxg5bq======");
+    QVERIFY(base32_decode(decoded, 60, encoded, 14));
+    QCOMPARE(QString::fromLocal8Bit(decoded), QString("test0"));
+    
+    strcpy(encoded, "orsxg5bq\0\0\0\0\0");
+    QVERIFY(base32_decode(decoded, 60, encoded, 13));
+    QCOMPARE(QString::fromLocal8Bit(decoded), QString("test0"));
 
     /* encode and decode random bytes */
     SecureRNG::random(rnd_bytes, 60);

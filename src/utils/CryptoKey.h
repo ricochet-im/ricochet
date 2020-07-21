@@ -77,6 +77,13 @@ public:
     // Verify a signature as per signSHA256
     bool verifySHA256(const QByteArray &digest, QByteArray signature) const;
 
+    /* Given a source input length (srclen), calculate the size of the base32 encoded string for it */
+    static inline unsigned base32_encoded_size(unsigned srclen) {
+        /* 1. Divide (srclen * 8) by five, rounding up  - ((srclen * 8) + 4)/5 */
+        /* 2. Add 1 byte for null terminator */
+        return (((srclen * 8) + 4)/5) + 1;
+    }
+
 private:
     struct Data : public QSharedData
     {
