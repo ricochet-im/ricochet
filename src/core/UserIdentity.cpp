@@ -80,7 +80,7 @@ void UserIdentity::setupService()
 
     if (!keyData.isEmpty()) {
         CryptoKey key;
-        if (!key.loadFromData(QByteArray::fromBase64(keyData.toLatin1()), CryptoKey::PrivateKey, CryptoKey::DER)) {
+        if (!key.loadFromKeyBlob(keyData.toLatin1())) {
             qWarning() << "Cannot load service key from configuration";
             return;
         }
@@ -94,7 +94,7 @@ void UserIdentity::setupService()
         m_hiddenService = new Tor::HiddenService(this);
         connect(m_hiddenService, &Tor::HiddenService::privateKeyChanged, this,
             [&]() {
-                QString key = QString::fromLatin1(m_hiddenService->privateKey().encodedPrivateKey(CryptoKey::DER).toBase64());
+                QString key = QString::fromLatin1(m_hiddenService->privateKey().encodedKeyBlob());
                 m_settings->write("serviceKey", key);
             }
         );

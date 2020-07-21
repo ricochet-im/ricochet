@@ -51,6 +51,7 @@ public:
     };
 
     bool loadFromData(const QByteArray &data, KeyType type, KeyFormat format);
+    // load from tor's 'KeyBlob' format
     bool loadFromKeyBlob(const QByteArray& keyBlob);
     void clear();
 
@@ -60,6 +61,8 @@ public:
     QByteArray publicKeyDigest() const;
     QByteArray encodedPublicKey(KeyFormat format) const;
     QByteArray encodedPrivateKey(KeyFormat format) const;
+    // write to tor's 'KeyBlob' format
+    QByteArray encodedKeyBlob() const;
     QString torServiceID() const;
     int bits() const;
 

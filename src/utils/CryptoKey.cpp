@@ -197,6 +197,22 @@ QByteArray CryptoKey::encodedPrivateKey(KeyFormat format) const
     return QByteArray();
 }
 
+QByteArray CryptoKey::encodedKeyBlob() const
+{
+    const auto keyFormat = CryptoKey::DER;
+    if (keyFormat == CryptoKey::DER)
+    {
+        QByteArray retval("RSA1024:");
+        retval += encodedPrivateKey(keyFormat).toBase64();
+
+        return retval;
+    } else {
+        Q_UNREACHABLE();
+    }
+
+    return QByteArray();
+}
+
 QString CryptoKey::torServiceID() const
 {
     if (!isLoaded())
