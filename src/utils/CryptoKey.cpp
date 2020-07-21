@@ -387,16 +387,33 @@ QByteArray torControlHashedPassword(const QByteArray &password)
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#define BASE32_CHARS "abcdefghijklmnopqrstuvwxyz234567"
+/* TODO: move this to a header file somewhere so it can be used elsewhere */
+#define CEIL_DIV(a, b) (((a) + ((b) - 1)) / (b))
 
-/* Implements base32 encoding as in rfc3548, except for padding. This implementation uses null bytes for padding */
+/* Given a source input length (srclen), calculate the size of the 
+ * base32 encoded string for it _without padding_, doesn't include null terminator */
+/* XXX: unused
+static inline unsigned base32_encoded_size_no_pad(unsigned srclen) {
+    return CEIL_DIV(srclen * 8, 5);
+}*/
+
+/* Given a source input length (srclen), calculate the size of the 
+ * base32 encoded string for it _with padding_, doesn't include null terminator */
+static inline unsigned base32_encoded_size(unsigned srclen) {
+    return (CEIL_DIV(srclen, 5) * 8);
+}
+
+#define BASE32_CHARS "abcdefghijklmnopqrstuvwxyz234567"
+#define BASE32_PAD '='
+
+/* Implements base32 encoding as in RFC4648 */
 void base32_encode(char *dest, unsigned destlen, const char *src, unsigned srclen)
 {
     unsigned i, bit, v, u;
     unsigned nbits = srclen * 8;
 
     /* We need enough space, check that the encoded length of src is not greater than destlen*/
-    if(CryptoKey::base32_encoded_size(srclen) > destlen) {
+    if(base32_encoded_size(srclen) > destlen) {
         Q_ASSERT(false);
         return;
     }
@@ -415,10 +432,11 @@ void base32_encode(char *dest, unsigned destlen, const char *src, unsigned srcle
         dest[i] = BASE32_CHARS[u];
     }
 
-    dest[CryptoKey::base32_encoded_size(srclen) - 1] = '\0';
+    for(; i < base32_encoded_size(srclen); i++) dest[i] = BASE32_PAD;
+    dest[i] = '\0';
 }
 
-/* Implements base32 decoding as in rfc3548, except for padding. This implementation allows both '=' and null byte padding */
+/* Implements base32 decoding as in RFC4648 */
 bool base32_decode(char *dest, unsigned destlen, const char *src, unsigned srclen)
 {
     unsigned int i, j, bit;
@@ -435,7 +453,7 @@ bool base32_decode(char *dest, unsigned destlen, const char *src, unsigned srcle
     /* Convert base32 encoded chars to the 5-bit values that they represent. */
     for (j = 0; j < srclen; ++j)
     {
-        if (src[j] == '=' || src[j] == '\0')
+        if (src[j] == '=')
             break;
         else if (src[j] > 0x60 && src[j] < 0x7B)
             tmp[j] = src[j] - 0x61;

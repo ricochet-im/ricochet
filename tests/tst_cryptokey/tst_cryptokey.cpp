@@ -239,28 +239,35 @@ void TestCryptoKey::testBase32()
     char *data1 = new char[64]();
     char *data2 = new char[64]();
     
+#define TEST_BASE_32_ENCODE(input, inlen, expected)     \
+    strcpy(data1, input);                               \
+    base32_encode(data2, 64, data1, inlen);             \
+    QCOMPARE(QString::fromLocal8Bit(data2).toLower(), QString(expected).toLower());
+
+    /* test vectors from RFC4648 */
+    /*
+        BASE32("") = ""
+        BASE32("f") = "MY======"
+        BASE32("fo") = "MZXQ====" 
+        BASE32("foo") = "MZXW6==="
+        BASE32("foob") = "MZXW6YQ="
+        BASE32("fooba") = "MZXW6YTB"
+        BASE32("foobar") = "MZXW6YTBOI======"  
+    */
+    TEST_BASE_32_ENCODE("", 0, "");
+    TEST_BASE_32_ENCODE("f", 1, "MY======");
+    TEST_BASE_32_ENCODE("fo", 2, "MZXQ====");
+    TEST_BASE_32_ENCODE("foo", 3, "MZXW6===");
+    TEST_BASE_32_ENCODE("foob", 4, "MZXW6YQ=");
+    TEST_BASE_32_ENCODE("fooba", 5, "MZXW6YTB");
+    TEST_BASE_32_ENCODE("foobar", 6, "MZXW6YTBOI======");
+
     /* test different length inputs */
-    strcpy(data1, "test0");
-    base32_encode(data2, 9, data1, 5);
-    QCOMPARE(QString::fromLocal8Bit(data2), QString("orsxg5bq"));
-
-    strcpy(data1, "\xff\xf5\x6d\x44\xae\x0d\x5c\xc9\x62\xc4");
-    base32_encode(data2, 17, data1, 10);
-    QCOMPARE(QString::fromLocal8Bit(data2), QString("772w2rfobvomsywe"));
-
-    strcpy(data1, "\x18\x78\xa6\xd3\x32\xc8\xce\x91\x59\xaa\xc7\x38\x87\x37\x84");
-    base32_encode(data2, 35, data1, 15);
-    QCOMPARE(QString::fromLocal8Bit(data2), QString("db4knuzszdhjcwnky44ion4e"));
-
-    /* test padding */
-    strcpy(data1, "\x2e\xd0\x63\xe2\x5b\x16\xdf\xc4\xfc\x01\x23\xc9\xeb\xf6\x83\x71\xe4\x8e\xa0\x1c\x08\x65\xab\xb2\x58\x3c\xd5\xd3\x60");
-    base32_encode(data2, 49, data1, 29);
-    QCOMPARE(QString::fromLocal8Bit(data2), QString("f3ighys3c3p4j7abepe6x5udohsi5ia4bbs2xmsyhtk5gya"));
-
-    /* test non multiple of 5 length input */
-    strcpy(data1, "\x2e\xd0\x63\xe2\x5b\x16\xdf\xc4\xfc\x01\x23\xc9\xeb\xf6\x83\x71\xe4\x8e\xa0\x1c\x08\x65\xab\xb2\x58\x3c");
-    base32_encode(data2, 49, data1, 26);
-    QCOMPARE(QString::fromLocal8Bit(data2), QString("f3ighys3c3p4j7abepe6x5udohsi5ia4bbs2xmsyhq"));
+    TEST_BASE_32_ENCODE("test0", 5, "orsxg5bq");
+    TEST_BASE_32_ENCODE("\xff\xf5\x6d\x44\xae\x0d\x5c\xc9\x62\xc4", 10, "772w2rfobvomsywe");
+    TEST_BASE_32_ENCODE("\x18\x78\xa6\xd3\x32\xc8\xce\x91\x59\xaa\xc7\x38\x87\x37\x84", 15, "db4knuzszdhjcwnky44ion4e");
+    TEST_BASE_32_ENCODE("\x2e\xd0\x63\xe2\x5b\x16\xdf\xc4\xfc\x01\x23\xc9\xeb\xf6\x83\x71\xe4\x8e\xa0\x1c\x08\x65\xab\xb2\x58\x3c\xd5\xd3\x60", 29, "f3ighys3c3p4j7abepe6x5udohsi5ia4bbs2xmsyhtk5gya=");
+#undef TEST_BASE_32_ENCODE
 
     delete[] data1;
     delete[] data2;
@@ -270,23 +277,36 @@ void TestCryptoKey::testBase32()
     char *encoded   = new char[97]();
     char *decoded   = new char[60]();
 
-    /* Test known string */
-    strcpy(encoded, "orsxg5bq");
-    QVERIFY(base32_decode(decoded, 60, encoded, 8));
-    QCOMPARE(QString::fromLocal8Bit(decoded), QString("test0"));
+#define TEST_BASE_32_DECODE(input, inlen, expected)             \
+    strcpy(encoded, input);                                     \
+    QVERIFY(base32_decode(decoded, 60, encoded, inlen));        \
+    QCOMPARE(QString::fromLocal8Bit(decoded).toLower(), QString(expected).toLower());
 
-    /* Test padding */
-    strcpy(encoded, "orsxg5bq===");
-    QVERIFY(base32_decode(decoded, 60, encoded, 11));
-    QCOMPARE(QString::fromLocal8Bit(decoded), QString("test0"));
+    TEST_BASE_32_DECODE("orsxg5bq", 8, "test0");
+    TEST_BASE_32_DECODE("orsxg5bq==", 10, "test0");
+    TEST_BASE_32_DECODE("orsxg5bq====", 12, "test0");
+    TEST_BASE_32_DECODE("orsxg5bq======", 14, "test0");
 
-    strcpy(encoded, "orsxg5bq======");
-    QVERIFY(base32_decode(decoded, 60, encoded, 14));
-    QCOMPARE(QString::fromLocal8Bit(decoded), QString("test0"));
-    
-    strcpy(encoded, "orsxg5bq\0\0\0\0\0");
-    QVERIFY(base32_decode(decoded, 60, encoded, 13));
-    QCOMPARE(QString::fromLocal8Bit(decoded), QString("test0"));
+    /* test vectors from RFC4648 */
+    /*
+        BASE32("") = ""
+        BASE32("f") = "MY======"
+        BASE32("fo") = "MZXQ====" 
+        BASE32("foo") = "MZXW6==="
+        BASE32("foob") = "MZXW6YQ="
+        BASE32("fooba") = "MZXW6YTB"
+        BASE32("foobar") = "MZXW6YTBOI======"  
+    */
+    memset(decoded, 0, 60);
+    memset(encoded, 0, 97);
+    TEST_BASE_32_DECODE("", 0, "");
+    TEST_BASE_32_DECODE("MY======", 8, "f");
+    TEST_BASE_32_DECODE("MZXQ====", 8, "fo");
+    TEST_BASE_32_DECODE("MZXW6===", 8, "foo");
+    TEST_BASE_32_DECODE("MZXW6YQ=", 8, "foob");
+    TEST_BASE_32_DECODE("MZXW6YTB", 8, "fooba");
+    TEST_BASE_32_DECODE("MZXW6YTBOI======", 16, "foobar");
+#undef TEST_BASE_32_DECODE
 
     /* encode and decode random bytes */
     SecureRNG::random(rnd_bytes, 60);
