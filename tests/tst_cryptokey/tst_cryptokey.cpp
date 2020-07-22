@@ -31,7 +31,14 @@
  */
 
 #include <QtTest>
+#include <string.h>
 #include "utils/CryptoKey.h"
+#include "utils/SecureRNG.h"
+
+#include <stdio.h>
+
+void base32_encode(char *dest, unsigned destlen, const char *src, unsigned srclen);
+bool base32_decode(char *dest, unsigned destlen, const char *src, unsigned srclen);
 
 class TestCryptoKey : public QObject
 {
@@ -44,6 +51,7 @@ private slots:
     void encodedPrivateKey();
     void torServiceID();
     void sign();
+    void testBase32();
 };
 
 const char *alice =
@@ -222,6 +230,91 @@ void TestCryptoKey::sign()
     QByteArray signaturep = QByteArray::fromHex(aliceSignedTestData);
     QVERIFY(key.verifyData(data, signaturep));
     QVERIFY(key.verifySHA256(dataDigest, signaturep));
+}
+
+void TestCryptoKey::testBase32()
+{
+    /* Base32 encode */
+
+    char *data1 = new char[64]();
+    char *data2 = new char[64]();
+    
+#define TEST_BASE_32_ENCODE(input, inlen, expected)     \
+    strcpy(data1, input);                               \
+    base32_encode(data2, 64, data1, inlen);             \
+    QCOMPARE(QString::fromLocal8Bit(data2).toLower(), QString(expected).toLower());
+
+    /* test vectors from RFC4648 */
+    /*
+        BASE32("") = ""
+        BASE32("f") = "MY======"
+        BASE32("fo") = "MZXQ====" 
+        BASE32("foo") = "MZXW6==="
+        BASE32("foob") = "MZXW6YQ="
+        BASE32("fooba") = "MZXW6YTB"
+        BASE32("foobar") = "MZXW6YTBOI======"  
+    */
+    TEST_BASE_32_ENCODE("", 0, "");
+    TEST_BASE_32_ENCODE("f", 1, "MY======");
+    TEST_BASE_32_ENCODE("fo", 2, "MZXQ====");
+    TEST_BASE_32_ENCODE("foo", 3, "MZXW6===");
+    TEST_BASE_32_ENCODE("foob", 4, "MZXW6YQ=");
+    TEST_BASE_32_ENCODE("fooba", 5, "MZXW6YTB");
+    TEST_BASE_32_ENCODE("foobar", 6, "MZXW6YTBOI======");
+#undef TEST_BASE_32_ENCODE
+
+    delete[] data1;
+    delete[] data2;
+
+    /* Base32 decode */
+    char *rnd_bytes = new char[60]();
+    char *encoded   = new char[97]();
+    char *decoded   = new char[60]();
+
+#define TEST_BASE_32_DECODE(input, inlen, expected)             \
+    strcpy(encoded, input);                                     \
+    QVERIFY(base32_decode(decoded, 60, encoded, inlen));        \
+    QCOMPARE(QString::fromLocal8Bit(decoded).toLower(), QString(expected).toLower());
+    
+    /* test vectors from RFC4648 */
+    /*
+        BASE32("") = ""
+        BASE32("f") = "MY======"
+        BASE32("fo") = "MZXQ====" 
+        BASE32("foo") = "MZXW6==="
+        BASE32("foob") = "MZXW6YQ="
+        BASE32("fooba") = "MZXW6YTB"
+        BASE32("foobar") = "MZXW6YTBOI======"  
+    */
+    TEST_BASE_32_DECODE("", 0, "");
+    TEST_BASE_32_DECODE("MY======", 8, "f");
+    TEST_BASE_32_DECODE("MZXQ====", 8, "fo");
+    TEST_BASE_32_DECODE("MZXW6===", 8, "foo");
+    TEST_BASE_32_DECODE("MZXW6YQ=", 8, "foob");
+    TEST_BASE_32_DECODE("MZXW6YTB", 8, "fooba");
+    TEST_BASE_32_DECODE("MZXW6YTBOI======", 16, "foobar");
+#undef TEST_BASE_32_DECODE
+
+    /* encode and decode random bytes */
+    SecureRNG::random(rnd_bytes, 60);
+    base32_encode(encoded, 97, rnd_bytes, 60);
+    QVERIFY(base32_decode(decoded, 60, encoded, 96));
+    QCOMPARE(QString::fromLocal8Bit(rnd_bytes), QString::fromLocal8Bit(decoded));
+
+    /* test that decoding works on uppercase strings */
+    for(char *c = encoded; *c != 0; c++) *c = std::toupper(*c);
+    QVERIFY(base32_decode(decoded, 60, encoded, 96));
+    QCOMPARE(QString::fromLocal8Bit(rnd_bytes), QString::fromLocal8Bit(decoded));
+
+    /* change the encoded string and test again */
+    if(encoded[0] == 'a' || encoded[0] == 'A') encoded[0] = 'B';
+    else encoded[0] = 'A';
+    QVERIFY(base32_decode(decoded, 60, encoded, 96));
+    QVERIFY(QString::fromLocal8Bit(rnd_bytes).compare(QString::fromLocal8Bit(decoded)) != 0);
+
+    /* bad base32 encoded string */
+    encoded[0] = '@';
+    QVERIFY(base32_decode(decoded, 60, encoded, 96) == false);
 }
 
 QTEST_MAIN(TestCryptoKey)

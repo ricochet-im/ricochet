@@ -378,54 +378,75 @@ QByteArray torControlHashedPassword(const QByteArray &password)
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#define BASE32_CHARS "abcdefghijklmnopqrstuvwxyz234567"
+/* TODO: move this to a header file somewhere so it can be used elsewhere */
+#define CEIL_DIV(a, b) (((a) + ((b) - 1)) / (b))
 
-/* Implements base32 encoding as in rfc3548. Requires that srclen*8 is a multiple of 5. */
+/* Given a source input length (srclen), calculate the size of the 
+ * base32 encoded string for it _without padding_, doesn't include null terminator */
+/* XXX: unused
+static inline unsigned base32_encoded_size_no_pad(unsigned srclen) {
+    return CEIL_DIV(srclen * 8, 5);
+}*/
+
+/* Given a source input length (srclen), calculate the size of the 
+ * base32 encoded string for it _with padding_, doesn't include null terminator */
+static inline unsigned base32_encoded_size(unsigned srclen) {
+    return (CEIL_DIV(srclen, 5) * 8);
+}
+
+#define BASE32_CHARS "abcdefghijklmnopqrstuvwxyz234567"
+#define BASE32_PAD '='
+
+/* Implements base32 encoding as in RFC4648 */
 void base32_encode(char *dest, unsigned destlen, const char *src, unsigned srclen)
 {
     unsigned i, bit, v, u;
     unsigned nbits = srclen * 8;
 
-     /* We need an even multiple of 5 bits, and enough space */
-    if ((nbits%5) != 0 || destlen > (nbits/5)+1) {
+    /* We need enough space, check that the encoded length of src is not greater than destlen*/
+    if(base32_encoded_size(srclen) > destlen) {
         Q_ASSERT(false);
-        memset(dest, 0, destlen);
         return;
     }
+
+    memset(dest, 0, destlen);
 
     for (i = 0, bit = 0; bit < nbits; ++i, bit += 5)
     {
         /* set v to the 16-bit value starting at src[bits/8], 0-padded. */
-        v = ((quint8) src[bit / 8]) << 8;
-        if (bit + 5 < nbits)
-            v += (quint8) src[(bit/8)+1];
-
-        /* set u to the 5-bit value at the bit'th bit of src. */
+        size_t idx = bit / 8;
+        v = ((uint8_t)src[idx]) << 8;
+        if (idx + 1 < srclen)
+            v += (uint8_t)src[idx + 1];
+        /* set u to the 5-bit value at the bit'th bit of buf. */
         u = (v >> (11 - (bit % 8))) & 0x1F;
         dest[i] = BASE32_CHARS[u];
     }
 
+    for(; i < base32_encoded_size(srclen); i++) dest[i] = BASE32_PAD;
     dest[i] = '\0';
 }
 
-/* Implements base32 decoding as in rfc3548. Requires that srclen*5 is a multiple of 8. */
+/* Implements base32 decoding as in RFC4648 */
 bool base32_decode(char *dest, unsigned destlen, const char *src, unsigned srclen)
 {
     unsigned int i, j, bit;
-    unsigned nbits = srclen * 5;
+    unsigned nbits = ((srclen * 5) / 8) * 8;
 
-     /* We need an even multiple of 8 bits, and enough space */
-    if ((nbits%8) != 0 || (nbits/8)+1 > destlen) {
+    /* We need enough space */
+    if(nbits/8 > destlen) {
         Q_ASSERT(false);
         return false;
     }
 
-    char *tmp = new char[srclen];
+    char *tmp = new char[srclen]();
 
     /* Convert base32 encoded chars to the 5-bit values that they represent. */
     for (j = 0; j < srclen; ++j)
     {
-        if (src[j] > 0x60 && src[j] < 0x7B)
+        if (src[j] == '=')
+            break;
+        else if (src[j] > 0x60 && src[j] < 0x7B)
             tmp[j] = src[j] - 0x61;
         else if (src[j] > 0x31 && src[j] < 0x38)
             tmp[j] = src[j] - 0x18;
@@ -444,21 +465,26 @@ bool base32_decode(char *dest, unsigned destlen, const char *src, unsigned srcle
         switch (bit % 40)
         {
         case 0:
-            dest[i] = (((quint8)tmp[(bit/5)]) << 3) + (((quint8)tmp[(bit/5)+1]) >> 2);
+            dest[i] = (((quint8)tmp[(bit/5)]) << 3) + 
+                      (((quint8)tmp[(bit/5)+1]) >> 2);
             break;
         case 8:
-            dest[i] = (((quint8)tmp[(bit/5)]) << 6) + (((quint8)tmp[(bit/5)+1]) << 1)
-                      + (((quint8)tmp[(bit/5)+2]) >> 4);
+            dest[i] = (((quint8)tmp[(bit/5)]) << 6) + 
+                      (((quint8)tmp[(bit/5)+1]) << 1) + 
+                      (((quint8)tmp[(bit/5)+2]) >> 4);
             break;
         case 16:
-            dest[i] = (((quint8)tmp[(bit/5)]) << 4) + (((quint8)tmp[(bit/5)+1]) >> 1);
+            dest[i] = (((quint8)tmp[(bit/5)]) << 4) + 
+                      (((quint8)tmp[(bit/5)+1]) >> 1);
             break;
         case 24:
-            dest[i] = (((quint8)tmp[(bit/5)]) << 7) + (((quint8)tmp[(bit/5)+1]) << 2)
-                      + (((quint8)tmp[(bit/5)+2]) >> 3);
+            dest[i] = (((quint8)tmp[(bit/5)]) << 7) + 
+                      (((quint8)tmp[(bit/5)+1]) << 2) + 
+                      (((quint8)tmp[(bit/5)+2]) >> 3);
             break;
         case 32:
-            dest[i] = (((quint8)tmp[(bit/5)]) << 5) + ((quint8)tmp[(bit/5)+1]);
+            dest[i] = (((quint8)tmp[(bit/5)]) << 5) + 
+                      ((quint8)tmp[(bit/5)+1]);
             break;
         }
     }
