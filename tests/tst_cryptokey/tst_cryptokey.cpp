@@ -261,12 +261,6 @@ void TestCryptoKey::testBase32()
     TEST_BASE_32_ENCODE("foob", 4, "MZXW6YQ=");
     TEST_BASE_32_ENCODE("fooba", 5, "MZXW6YTB");
     TEST_BASE_32_ENCODE("foobar", 6, "MZXW6YTBOI======");
-
-    /* test different length inputs */
-    TEST_BASE_32_ENCODE("test0", 5, "orsxg5bq");
-    TEST_BASE_32_ENCODE("\xff\xf5\x6d\x44\xae\x0d\x5c\xc9\x62\xc4", 10, "772w2rfobvomsywe");
-    TEST_BASE_32_ENCODE("\x18\x78\xa6\xd3\x32\xc8\xce\x91\x59\xaa\xc7\x38\x87\x37\x84", 15, "db4knuzszdhjcwnky44ion4e");
-    TEST_BASE_32_ENCODE("\x2e\xd0\x63\xe2\x5b\x16\xdf\xc4\xfc\x01\x23\xc9\xeb\xf6\x83\x71\xe4\x8e\xa0\x1c\x08\x65\xab\xb2\x58\x3c\xd5\xd3\x60", 29, "f3ighys3c3p4j7abepe6x5udohsi5ia4bbs2xmsyhtk5gya=");
 #undef TEST_BASE_32_ENCODE
 
     delete[] data1;
@@ -281,12 +275,7 @@ void TestCryptoKey::testBase32()
     strcpy(encoded, input);                                     \
     QVERIFY(base32_decode(decoded, 60, encoded, inlen));        \
     QCOMPARE(QString::fromLocal8Bit(decoded).toLower(), QString(expected).toLower());
-
-    TEST_BASE_32_DECODE("orsxg5bq", 8, "test0");
-    TEST_BASE_32_DECODE("orsxg5bq==", 10, "test0");
-    TEST_BASE_32_DECODE("orsxg5bq====", 12, "test0");
-    TEST_BASE_32_DECODE("orsxg5bq======", 14, "test0");
-
+    
     /* test vectors from RFC4648 */
     /*
         BASE32("") = ""
@@ -297,8 +286,6 @@ void TestCryptoKey::testBase32()
         BASE32("fooba") = "MZXW6YTB"
         BASE32("foobar") = "MZXW6YTBOI======"  
     */
-    memset(decoded, 0, 60);
-    memset(encoded, 0, 97);
     TEST_BASE_32_DECODE("", 0, "");
     TEST_BASE_32_DECODE("MY======", 8, "f");
     TEST_BASE_32_DECODE("MZXQ====", 8, "fo");
