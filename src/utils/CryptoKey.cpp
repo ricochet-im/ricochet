@@ -51,15 +51,6 @@ void RSA_get0_factors(const RSA *r, const BIGNUM **p, const BIGNUM **q)
 void base32_encode(char *dest, unsigned destlen, const char *src, unsigned srclen);
 bool base32_decode(char *dest, unsigned destlen, const char *src, unsigned srclen);
 
-CryptoKey::CryptoKey()
-{
-}
-
-CryptoKey::~CryptoKey()
-{
-    clear();
-}
-
 CryptoKey::Data::~Data()
 {
     if (key)
