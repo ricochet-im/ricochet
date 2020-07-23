@@ -46,11 +46,13 @@ public:
     };
 
     enum KeyFormat {
+        PEM,
         DER,
         ED25519_V3,
     };
 
     bool loadFromData(const QByteArray &data, KeyType type, KeyFormat format);
+    bool loadFromData(const QByteArray &data, KeyType type) {};
     // load from tor's 'KeyBlob' format
     bool loadFromKeyBlob(const QByteArray& keyBlob);
     void clear();
@@ -59,6 +61,7 @@ public:
     bool isPrivate() const;
 
     QByteArray publicKeyDigest() const;
+    QByteArray encodedPrivateKey(KeyFormat format) const;
     QByteArray encodedPublicKey(KeyFormat format) const;
     // write to tor's 'KeyBlob' format
     QByteArray encodedKeyBlob() const;
@@ -76,7 +79,6 @@ public:
     bool verifySHA256(const QByteArray &digest, QByteArray signature) const;
 
 private:
-    QByteArray encodedPrivateKey(KeyFormat format) const;
     struct Data : public QSharedData
     {
         typedef struct rsa_st RSA;

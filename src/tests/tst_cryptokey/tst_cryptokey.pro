@@ -1,8 +1,8 @@
 include(../tests.pri)
 
 SOURCES += tst_cryptokey.cpp \
-    $${SRC}/utils/CryptoKey.cpp \
-    $${SRC}/utils/SecureRNG.cpp
+    $${SRC}tego-ui/utils/CryptoKey.cpp \
+    $${SRC}tego-ui/utils/SecureRNG.cpp
 
 unix {
     !isEmpty(OPENSSLDIR) {
