@@ -44,7 +44,7 @@ VERSION = 1.1.4
 # Use CONFIG+=no-hardened to disable compiler hardening options
 !CONFIG(no-hardened) {
     CONFIG += hardened
-    include(hardened.pri)
+    include($${PWD}/qmake_includes/hardened.pri)
 }
 
 # Pass DEFINES+=RICOCHET_NO_PORTABLE for a system-wide installation
@@ -264,7 +264,8 @@ HEADERS +=\
 SOURCES +=\
     tego-ui/logger.cpp
 
-include(protobuf.pri)
+include($${PWD}/qmake_includes/protobuf.pri)
+
 PROTOS += tego-ui/protocol/ControlChannel.proto \
     tego-ui/protocol/AuthHiddenService.proto \
     tego-ui/protocol/ChatChannel.proto \
