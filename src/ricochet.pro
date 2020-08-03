@@ -109,8 +109,6 @@ macx {
     QMAKE_BUNDLE_DATA += icons
 }
 
-CONFIG += debug_and_release
-
 # Create a pdb for release builds as well, to enable debugging
 win32-msvc2008|win32-msvc2010 {
     QMAKE_CXXFLAGS_RELEASE += /Zi
