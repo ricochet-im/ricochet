@@ -33,14 +33,7 @@ lessThan(QT_MAJOR_VERSION,5)|lessThan(QT_MINOR_VERSION,15) {
     error("Qt 5.15 or greater is required. You can build your own, or get the SDK at https://qt-project.org/downloads")
 }
 
-# specify the DESTDIR for final binary and intermediate build files
-release:DESTDIR = release
-debug:DESTDIR = debug
-
-OBJECTS_DIR = $${DESTDIR}/.obj
-MOC_DIR     = $${DESTDIR}/.moc
-RCC_DIR     = $${DESTDIR}/.rcc
-UI_DIR      = $${DESTDIR}/.ui
+include($${PWD}/qmake_includes/artifacts.pri)
 
 TARGET = ricochet-refresh
 TEMPLATE = app
