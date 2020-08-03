@@ -33,7 +33,7 @@ lessThan(QT_MAJOR_VERSION,5)|lessThan(QT_MINOR_VERSION,15) {
     error("Qt 5.15 or greater is required. You can build your own, or get the SDK at https://qt-project.org/downloads")
 }
 
-include($${PWD}/qmake_includes/artifacts.pri)
+include($${PWD}/../qmake_includes/artifacts.pri)
 
 TARGET = ricochet-refresh
 TEMPLATE = app
@@ -44,7 +44,7 @@ VERSION = 1.1.4
 # Use CONFIG+=no-hardened to disable compiler hardening options
 !CONFIG(no-hardened) {
     CONFIG += hardened
-    include($${PWD}/qmake_includes/hardened.pri)
+    include($${PWD}/../qmake_includes/hardened.pri)
 }
 
 # Pass DEFINES+=RICOCHET_NO_PORTABLE for a system-wide installation
@@ -55,11 +55,11 @@ contains(DEFINES, RICOCHET_NO_PORTABLE) {
     unix:!macx {
         target.path = /usr/bin
         shortcut.path = /usr/share/applications
-        shortcut.files = tego-ui/ricochet.desktop
+        shortcut.files = ricochet.desktop
         icon.path = /usr/share/icons/hicolor/48x48/apps/
-        icon.files = tego-ui/icons/ricochet_refresh.png
+        icon.files = icons/ricochet_refresh.png
         scalable_icon.path = /usr/share/icons/hicolor/scalable/apps/
-        scalable_icon.files = tego-ui/icons/ricochet_refresh.svg
+        scalable_icon.files = icons/ricochet_refresh.svg
         INSTALLS += target shortcut icon scalable_icon
         QMAKE_CLEAN += contrib/usr.bin.ricochet
         contains(DEFINES, APPARMOR) {
@@ -91,12 +91,12 @@ macx {
     # Qt 5.4 introduces a bug that breaks QMAKE_INFO_PLIST when qmake has a relative path.
     # Work around by copying Info.plist directly.
     greaterThan(QT_MAJOR_VERSION,5)|greaterThan(QT_MINOR_VERSION,4) {
-        QMAKE_INFO_PLIST = tego-ui/Info.plist
+        QMAKE_INFO_PLIST = Info.plist
     } else:equals(QT_MAJOR_VERSION,5):lessThan(QT_MINOR_VERSION,4) {
-        QMAKE_INFO_PLIST = tego-ui/Info.plist
+        QMAKE_INFO_PLIST = Info.plist
     } else {
         CONFIG += no_plist
-        QMAKE_POST_LINK += cp $${_PRO_FILE_PWD_}/tego-ui/Info.plist $${OUT_PWD}/$${TARGET}.app/Contents/;
+        QMAKE_POST_LINK += cp $${_PRO_FILE_PWD_}/Info.plist $${OUT_PWD}/$${TARGET}.app/Contents/;
     }
 
     exists(tor) {
@@ -115,7 +115,7 @@ win32-msvc2008|win32-msvc2010 {
     QMAKE_LFLAGS_RELEASE += /DEBUG /OPT:REF,ICF
 }
 
-INCLUDEPATH += tego-ui
+INCLUDEPATH += $${PWD}
 
 win32|mac {
     # For mac, this is necessary because homebrew does not link openssl .pc to
@@ -162,124 +162,124 @@ unix:!macx:QTPLUGIN.platforminputcontexts = composeplatforminputcontextplugin ib
 
 DEFINES += QT_NO_CAST_TO_ASCII
 
-SOURCES += tego-ui/main.cpp \
-    tego-ui/ui/MainWindow.cpp \
-    tego-ui/ui/ContactsModel.cpp \
-    tego-ui/tor/TorControl.cpp \
-    tego-ui/tor/TorControlSocket.cpp \
-    tego-ui/tor/TorControlCommand.cpp \
-    tego-ui/tor/ProtocolInfoCommand.cpp \
-    tego-ui/tor/AuthenticateCommand.cpp \
-    tego-ui/tor/SetConfCommand.cpp \
-    tego-ui/tor/AddOnionCommand.cpp \
-    tego-ui/utils/StringUtil.cpp \
-    tego-ui/core/ContactsManager.cpp \
-    tego-ui/core/ContactUser.cpp \
-    tego-ui/tor/GetConfCommand.cpp \
-    tego-ui/tor/HiddenService.cpp \
-    tego-ui/utils/CryptoKey.cpp \
-    tego-ui/utils/SecureRNG.cpp \
-    tego-ui/core/OutgoingContactRequest.cpp \
-    tego-ui/core/IncomingRequestManager.cpp \
-    tego-ui/core/ContactIDValidator.cpp \
-    tego-ui/core/UserIdentity.cpp \
-    tego-ui/core/IdentityManager.cpp \
-    tego-ui/core/ConversationModel.cpp \
-    tego-ui/tor/TorProcess.cpp \
-    tego-ui/tor/TorManager.cpp \
-    tego-ui/tor/TorSocket.cpp \
-    tego-ui/ui/LinkedText.cpp \
-    tego-ui/utils/Settings.cpp \
-    tego-ui/utils/PendingOperation.cpp \
-    tego-ui/ui/LanguagesModel.cpp
+SOURCES += main.cpp \
+    ui/MainWindow.cpp \
+    ui/ContactsModel.cpp \
+    tor/TorControl.cpp \
+    tor/TorControlSocket.cpp \
+    tor/TorControlCommand.cpp \
+    tor/ProtocolInfoCommand.cpp \
+    tor/AuthenticateCommand.cpp \
+    tor/SetConfCommand.cpp \
+    tor/AddOnionCommand.cpp \
+    utils/StringUtil.cpp \
+    core/ContactsManager.cpp \
+    core/ContactUser.cpp \
+    tor/GetConfCommand.cpp \
+    tor/HiddenService.cpp \
+    utils/CryptoKey.cpp \
+    utils/SecureRNG.cpp \
+    core/OutgoingContactRequest.cpp \
+    core/IncomingRequestManager.cpp \
+    core/ContactIDValidator.cpp \
+    core/UserIdentity.cpp \
+    core/IdentityManager.cpp \
+    core/ConversationModel.cpp \
+    tor/TorProcess.cpp \
+    tor/TorManager.cpp \
+    tor/TorSocket.cpp \
+    ui/LinkedText.cpp \
+    utils/Settings.cpp \
+    utils/PendingOperation.cpp \
+    ui/LanguagesModel.cpp
 
-HEADERS += tego-ui/ui/MainWindow.h \
-    tego-ui/ui/ContactsModel.h \
-    tego-ui/tor/TorControl.h \
-    tego-ui/tor/TorControlSocket.h \
-    tego-ui/tor/TorControlCommand.h \
-    tego-ui/tor/ProtocolInfoCommand.h \
-    tego-ui/tor/AuthenticateCommand.h \
-    tego-ui/tor/SetConfCommand.h \
-    tego-ui/tor/AddOnionCommand.h \
-    tego-ui/utils/StringUtil.h \
-    tego-ui/core/ContactsManager.h \
-    tego-ui/core/ContactUser.h \
-    tego-ui/tor/GetConfCommand.h \
-    tego-ui/tor/HiddenService.h \
-    tego-ui/utils/CryptoKey.h \
-    tego-ui/utils/SecureRNG.h \
-    tego-ui/core/OutgoingContactRequest.h \
-    tego-ui/core/IncomingRequestManager.h \
-    tego-ui/core/ContactIDValidator.h \
-    tego-ui/core/UserIdentity.h \
-    tego-ui/core/IdentityManager.h \
-    tego-ui/core/ConversationModel.h \
-    tego-ui/tor/TorProcess.h \
-    tego-ui/tor/TorProcess_p.h \
-    tego-ui/tor/TorManager.h \
-    tego-ui/tor/TorSocket.h \
-    tego-ui/ui/LinkedText.h \
-    tego-ui/utils/Settings.h \
-    tego-ui/utils/PendingOperation.h \
-    tego-ui/ui/LanguagesModel.h
+HEADERS += ui/MainWindow.h \
+    ui/ContactsModel.h \
+    tor/TorControl.h \
+    tor/TorControlSocket.h \
+    tor/TorControlCommand.h \
+    tor/ProtocolInfoCommand.h \
+    tor/AuthenticateCommand.h \
+    tor/SetConfCommand.h \
+    tor/AddOnionCommand.h \
+    utils/StringUtil.h \
+    core/ContactsManager.h \
+    core/ContactUser.h \
+    tor/GetConfCommand.h \
+    tor/HiddenService.h \
+    utils/CryptoKey.h \
+    utils/SecureRNG.h \
+    core/OutgoingContactRequest.h \
+    core/IncomingRequestManager.h \
+    core/ContactIDValidator.h \
+    core/UserIdentity.h \
+    core/IdentityManager.h \
+    core/ConversationModel.h \
+    tor/TorProcess.h \
+    tor/TorProcess_p.h \
+    tor/TorManager.h \
+    tor/TorSocket.h \
+    ui/LinkedText.h \
+    utils/Settings.h \
+    utils/PendingOperation.h \
+    ui/LanguagesModel.h
 
-SOURCES += tego-ui/protocol/Channel.cpp \
-    tego-ui/protocol/ControlChannel.cpp \
-    tego-ui/protocol/Connection.cpp \
-    tego-ui/protocol/OutboundConnector.cpp \
-    tego-ui/protocol/AuthHiddenServiceChannel.cpp \
-    tego-ui/protocol/ChatChannel.cpp \
-    tego-ui/protocol/ContactRequestChannel.cpp
+SOURCES += protocol/Channel.cpp \
+    protocol/ControlChannel.cpp \
+    protocol/Connection.cpp \
+    protocol/OutboundConnector.cpp \
+    protocol/AuthHiddenServiceChannel.cpp \
+    protocol/ChatChannel.cpp \
+    protocol/ContactRequestChannel.cpp
 
-HEADERS += tego-ui/protocol/Channel.h \
-    tego-ui/protocol/Channel_p.h \
-    tego-ui/protocol/ControlChannel.h \
-    tego-ui/protocol/Connection.h \
-    tego-ui/protocol/Connection_p.h \
-    tego-ui/protocol/OutboundConnector.h \
-    tego-ui/protocol/AuthHiddenServiceChannel.h \
-    tego-ui/protocol/ChatChannel.h \
-    tego-ui/protocol/ContactRequestChannel.h
+HEADERS += protocol/Channel.h \
+    protocol/Channel_p.h \
+    protocol/ControlChannel.h \
+    protocol/Connection.h \
+    protocol/Connection_p.h \
+    protocol/OutboundConnector.h \
+    protocol/AuthHiddenServiceChannel.h \
+    protocol/ChatChannel.h \
+    protocol/ContactRequestChannel.h
 
 # fmt lib
 SOURCE +=\
-    tego-ui/fmt/format.cc \
-    tego-ui/fmt/posix.cc
+    fmt/format.cc \
+    fmt/posix.cc
 
 HEADERS +=\
-    tego-ui/fmt/core.h \
-    tego-ui/fmt/format.h \
-    tego-ui/fmt/format-inl.h \
-    tego-ui/fmt/ostream.h \
-    tego-ui/fmt/posix.h \
-    tego-ui/fmt/printf.h \
-    tego-ui/fmt/ranges.h \
-    tego-ui/fmt/time.h
+    fmt/core.h \
+    fmt/format.h \
+    fmt/format-inl.h \
+    fmt/ostream.h \
+    fmt/posix.h \
+    fmt/printf.h \
+    fmt/ranges.h \
+    fmt/time.h
 
 # custom
 HEADERS +=\
-    tego-ui/logger.hpp
+    logger.hpp
 
 SOURCES +=\
-    tego-ui/logger.cpp
+    logger.cpp
 
-include($${PWD}/qmake_includes/protobuf.pri)
+include($${PWD}/../qmake_includes/protobuf.pri)
 
-PROTOS += tego-ui/protocol/ControlChannel.proto \
-    tego-ui/protocol/AuthHiddenService.proto \
-    tego-ui/protocol/ChatChannel.proto \
-    tego-ui/protocol/ContactRequestChannel.proto
+PROTOS += protocol/ControlChannel.proto \
+    protocol/AuthHiddenService.proto \
+    protocol/ChatChannel.proto \
+    protocol/ContactRequestChannel.proto
 
 # QML
-RESOURCES += tego-ui/ui/qml/qml.qrc \
-    tego-ui/icons/icons.qrc \
-    tego-ui/sounds/sounds.qrc
+RESOURCES += ui/qml/qml.qrc \
+    icons/icons.qrc \
+    sounds/sounds.qrc
 
-win32:RC_ICONS = tego-ui/icons/ricochet_refresh.ico
-OTHER_FILES += tego-ui/ui/qml/*
+win32:RC_ICONS = icons/ricochet_refresh.ico
+OTHER_FILES += ui/qml/*
 lupdate_only {
-    SOURCES += tego-ui/ui/qml/*.qml
+    SOURCES += ui/qml/*.qml
 }
 
 # Translations
@@ -317,8 +317,8 @@ TRANSLATIONS += \
     contains(QMAKE_HOST.os,Windows):QMAKE_LRELEASE = $$[QT_INSTALL_BINS]/lrelease.exe
     else:QMAKE_LRELEASE = $$[QT_INSTALL_BINS]/lrelease
     for (translation, TRANSLATIONS) {
-        system($$QMAKE_LRELEASE tego-ui/translation/$${translation}.ts -qm tego-ui/translation/$${translation}.qm)
+        system($$QMAKE_LRELEASE translation/$${translation}.ts -qm translation/$${translation}.qm)
     }
 }
 
-RESOURCES += tego-ui/translation/embedded.qrc
+RESOURCES += translation/embedded.qrc
