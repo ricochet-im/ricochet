@@ -5,7 +5,7 @@ TARGET = tego
 
 CONFIG += staticlib
 
-HEADS =\
+HEADERS =\
     include/libtego.h
 
 SOURCES =\
