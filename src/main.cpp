@@ -65,6 +65,7 @@ int main(int argc, char *argv[])
     if (qEnvironmentVariableIsEmpty("QMLSCENE_DEVICE"))
         qputenv("QMLSCENE_DEVICE", "softwarecontext");
 
+    /* https://doc.qt.io/qt-5/highdpi.html#high-dpi-support-in-qt */
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     if (!qEnvironmentVariableIsSet("QT_DEVICE_PIXEL_RATIO")
             && !qEnvironmentVariableIsSet("QT_AUTO_SCREEN_SCALE_FACTOR")
