@@ -10,14 +10,12 @@ ApplicationWindow {
     title: "Ricochet"
     visibility: Window.AutomaticVisibility
 
-    width: 250
+    width: 650
     height: 400
     minimumHeight: 400
     minimumWidth: uiSettings.data.combinedChatWindow ? 650 : 250
-    maximumWidth: uiSettings.data.combinedChatWindow ? (1 << 24) - 1 : 250
 
     onMinimumWidthChanged: width = Math.max(width, minimumWidth)
-    onMaximumWidthChanged: width = Math.min(width, maximumWidth)
 
     // OS X Menu
     Loader {
