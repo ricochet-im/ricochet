@@ -152,6 +152,8 @@ win32 {
     LIBS += -luser32 -lgdi32 -ladvapi32
 }
 
+include($${PWD}/../libtego/libtego.pri)
+
 # Exclude unneeded plugins from static builds
 QTPLUGIN.playlistformats = -
 QTPLUGIN.imageformats = -
