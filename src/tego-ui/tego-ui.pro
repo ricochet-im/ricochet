@@ -116,6 +116,7 @@ win32-msvc2008|win32-msvc2010 {
 }
 
 INCLUDEPATH += $${PWD}
+INCLUDEPATH += $${PWD}/../extern/fmt/include
 
 win32|mac {
     # For mac, this is necessary because homebrew does not link openssl .pc to
@@ -258,13 +259,6 @@ HEADERS +=\
     fmt/printf.h \
     fmt/ranges.h \
     fmt/time.h
-
-# custom
-HEADERS +=\
-    logger.hpp
-
-SOURCES +=\
-    logger.cpp
 
 include($${PWD}/../qmake_includes/protobuf.pri)
 

@@ -40,7 +40,7 @@
 #include <QTcpSocket>
 #include <QBuffer>
 #include <QDir>
-#include "logger.hpp"
+#include <tego/logger.hpp>
 
 using namespace Protocol;
 

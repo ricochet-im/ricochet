@@ -34,7 +34,7 @@
 #include "tor/HiddenService.h"
 #include "utils/CryptoKey.h"
 #include "utils/StringUtil.h"
-#include "logger.hpp"
+#include <tego/logger.hpp>
 
 using namespace Tor;
 

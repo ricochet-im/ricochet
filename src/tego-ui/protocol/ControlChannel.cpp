@@ -37,7 +37,7 @@
 #include <QScopedPointer>
 #include <QDebug>
 
-#include "logger.hpp"
+#include <tego/logger.hpp>
 
 using namespace Protocol;
 
@@ -139,7 +139,7 @@ void ControlChannel::receivePacket(const QByteArray &packet)
         return;
     }
 
-    logger::println("receive {}\n{}", typeid(message), message.DebugString());
+    logger::println("receive {}\n{}", type_name(message), message.DebugString());
 
     if (message.has_open_channel()) {
         handleOpenChannel(message.open_channel());

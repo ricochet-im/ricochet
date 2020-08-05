@@ -40,7 +40,7 @@
 #include <openssl/bio.h>
 #include <openssl/pem.h>
 
-#include "logger.hpp"
+#include <tego/logger.hpp>
 
 #if OPENSSL_VERSION_NUMBER < 0x10100000L || defined(LIBRESSL_VERSION_NUMBER)
 void RSA_get0_factors(const RSA *r, const BIGNUM **p, const BIGNUM **q)

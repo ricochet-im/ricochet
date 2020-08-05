@@ -14,8 +14,8 @@ using std::experimental::source_location;
 #include <cxxabi.h>
 
 #define FMT_HEADER_ONLY
-#include "fmt/format.h"
-#include "fmt/ostream.h"
+#include <fmt/format.h>
+#include <fmt/ostream.h>
 
 class logger
 {
@@ -73,3 +73,19 @@ private:
 std::ostream& operator<<(std::ostream& out, const QString& str);
 std::ostream& operator<<(std::ostream& out, const QByteArray& blob);
 std::ostream& operator<<(std::ostream& out, const std::type_info& ti);
+
+template<typename T>
+std::string type_name(T&&)
+{
+    int status = 0;
+    std::unique_ptr<char, void(*)(void*)> res = {
+        abi::__cxa_demangle(typeid(T).name(), nullptr, nullptr, &status),
+        std::free
+    };
+
+    if (status == 0)
+    {
+        return std::string(res.get());
+    }
+    return std::string(typeid(T).name());
+}

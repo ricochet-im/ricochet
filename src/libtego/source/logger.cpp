@@ -1,7 +1,7 @@
 #include <QString>
 #include <QByteArray>
 
-#include "logger.hpp"
+#include <tego/logger.hpp>
 
 std::ostream& operator<<(std::ostream& out, const QString& str)
 {
@@ -75,26 +75,3 @@ std::ostream& operator<<(std::ostream& out, const QByteArray& blob)
 
     return out;
 }
-
-// type name
-
-std::ostream& operator<<(std::ostream& out, const std::type_info& ti)
-{
-    int status = 0;
-    std::unique_ptr<char, void(*)(void*)> res = {
-        abi::__cxa_demangle(ti.name(), nullptr, nullptr, &status),
-        std::free
-    };
-
-    if (status == 0)
-    {
-        out << res.get();
-    }
-    else
-    {
-        out << ti.name();
-    }
-
-    return out;
-}
-

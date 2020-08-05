@@ -50,7 +50,9 @@
 #include <QLockFile>
 #include <QStandardPaths>
 #include <openssl/crypto.h>
-#include "logger.hpp"
+
+#include <tego/logger.hpp>
+#include <tego/tego.h>
 
 static bool initSettings(SettingsFile *settings, QLockFile **lockFile, QString &errorMessage);
 static bool importLegacySettings(SettingsFile *settings, const QString &oldPath);
@@ -58,6 +60,8 @@ static void initTranslation();
 
 int main(int argc, char *argv[])
 {
+    tego_test();
+
     logger::println("Ricochet Start!");
 
     /* Disable rwx memory.

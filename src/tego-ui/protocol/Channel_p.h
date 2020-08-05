@@ -37,7 +37,7 @@
 #include "Connection_p.h"
 #include "utils/Useful.h"
 #include <QDebug>
-#include "logger.hpp"
+#include <tego/logger.hpp>
 
 namespace Protocol
 {
@@ -93,7 +93,7 @@ template<typename T> bool Channel::sendMessage(const T &message)
     }
 
     logger::println("server hostname : {}", this->connection()->serverHostname());
-    logger::println("send {}\n{}", typeid(message), message.DebugString());
+    logger::println("send {}\n{}", type_name(message), message.DebugString());
 
     return sendPacket(packet);
 }

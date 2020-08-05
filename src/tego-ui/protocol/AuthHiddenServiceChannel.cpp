@@ -38,11 +38,11 @@
 #include "utils/CryptoKey.h"
 #include "utils/Useful.h"
 #include <QMessageAuthenticationCode>
-#include "logger.hpp"
+#include <tego/logger.hpp>
 #include <sstream>
 #include <iomanip>
 #include <cassert>
-#include "logger.hpp"
+#include <tego/logger.hpp>
 
 using namespace Protocol;
 
@@ -257,7 +257,7 @@ void AuthHiddenServiceChannel::receivePacket(const QByteArray &packet)
         return;
     }
 
-    logger::println("receive {}\n{}", typeid(message), message.DebugString());
+    logger::println("receive {}\n{}", type_name(message), message.DebugString());
 
     if (message.has_proof()) {
         handleProof(message.proof());

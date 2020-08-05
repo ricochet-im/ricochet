@@ -35,7 +35,7 @@
 #include "Connection.h"
 #include "utils/SecureRNG.h"
 #include "utils/Useful.h"
-#include "logger.hpp"
+#include <tego/logger.hpp>
 
 using namespace Protocol;
 
@@ -91,7 +91,7 @@ void ChatChannel::receivePacket(const QByteArray &packet)
         return;
     }
 
-    logger::println("receive {}\n{}", typeid(message), message.DebugString());
+    logger::println("receive {}\n{}", type_name(message), message.DebugString());
 
     if (message.has_chat_message()) {
         handleChatMessage(message.chat_message());

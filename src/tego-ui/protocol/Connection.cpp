@@ -38,7 +38,7 @@
 #include <QtEndian>
 #include <QDebug>
 
-#include "logger.hpp"
+#include <tego/logger.hpp>
 
 using namespace Protocol;
 

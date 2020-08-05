@@ -33,6 +33,8 @@
 #include "ContactRequestChannel.h"
 #include "Channel_p.h"
 
+#include <tego/logger.hpp>
+
 using namespace Protocol;
 
 /* Regarding message and nickname limitations:
@@ -269,7 +271,7 @@ void ContactRequestChannel::receivePacket(const QByteArray &packet)
         return;
     }
 
-    logger::println("receive {}\n{}", typeid(response), response.DebugString());
+    logger::println("receive {}\n{}", type_name(response), response.DebugString());
 
     if (!handleResponse(&response))
         closeChannel();

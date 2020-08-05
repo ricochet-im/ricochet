@@ -6,7 +6,17 @@ TARGET = tego
 CONFIG += staticlib
 
 HEADERS =\
-    include/libtego.h
+    include/tego/tego.h\
+    include/tego/logger.hpp
 
 SOURCES =\
-    source/libtego.cpp
+    source/libtego.cpp\
+    source/logger.cpp\
+
+SOURCES +=\
+    $${PWD}/../extern/fmt/src/format.cc\
+    $${PWD}/../extern/fmt/src/os.cc
+
+INCLUDEPATH +=\
+    include\
+    $${PWD}/../extern/fmt/include
