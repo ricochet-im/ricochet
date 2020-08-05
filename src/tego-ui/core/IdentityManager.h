@@ -33,7 +33,6 @@
 #ifndef IDENTITYMANAGER_H
 #define IDENTITYMANAGER_H
 
-#include <QObject>
 #include "UserIdentity.h"
 
 class IdentityManager : public QObject

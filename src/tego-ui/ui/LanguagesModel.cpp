@@ -31,9 +31,6 @@
  */
 
 #include "LanguagesModel.h"
-#include <QDir>
-#include <QLocale>
-#include <QVariant>
 
 LanguagesModel::LanguagesModel(QObject* parent)
     : QAbstractListModel(parent)

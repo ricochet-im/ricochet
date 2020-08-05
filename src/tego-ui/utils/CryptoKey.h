@@ -33,10 +33,6 @@
 #ifndef CRYPTOKEY_H
 #define CRYPTOKEY_H
 
-#include <QString>
-#include <QSharedData>
-#include <QExplicitlySharedDataPointer>
-
 class CryptoKey
 {
 public:

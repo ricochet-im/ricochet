@@ -33,9 +33,6 @@
 #ifndef TORMANAGER_H
 #define TORMANAGER_H
 
-#include <QObject>
-#include <QStringList>
-
 namespace Tor
 {
 

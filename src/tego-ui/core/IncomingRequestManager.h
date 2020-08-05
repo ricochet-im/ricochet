@@ -33,9 +33,6 @@
 #ifndef INCOMINGREQUESTMANAGER_H
 #define INCOMINGREQUESTMANAGER_H
 
-#include <QObject>
-#include <QPointer>
-#include <QDateTime>
 #include "protocol/Connection.h"
 
 class IncomingRequestManager;

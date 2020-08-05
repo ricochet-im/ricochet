@@ -33,7 +33,6 @@
 #ifndef OUTGOINGCONTACTREQUEST_H
 #define OUTGOINGCONTACTREQUEST_H
 
-#include <QObject>
 #include "utils/Settings.h"
 
 class ContactUser;

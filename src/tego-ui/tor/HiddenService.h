@@ -33,9 +33,6 @@
 #ifndef HIDDENSERVICE_H
 #define HIDDENSERVICE_H
 
-#include <QObject>
-#include <QHostAddress>
-#include <QList>
 #include "utils/CryptoKey.h"
 
 namespace Tor

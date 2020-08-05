@@ -31,16 +31,6 @@
  */
 
 #include "Settings.h"
-#include <QCoreApplication>
-#include <QJsonDocument>
-#include <QJsonParseError>
-#include <QSaveFile>
-#include <QFile>
-#include <QDir>
-#include <QFileInfo>
-#include <QTimer>
-#include <QDebug>
-#include <QPointer>
 
 class SettingsFilePrivate : public QObject
 {

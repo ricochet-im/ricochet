@@ -32,7 +32,6 @@
 
 #include "GetConfCommand.h"
 #include "utils/StringUtil.h"
-#include <QDebug>
 
 using namespace Tor;
 

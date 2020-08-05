@@ -35,7 +35,6 @@
 #include "tor/TorSocket.h"
 #include "ControlChannel.h"
 #include "AuthHiddenServiceChannel.h"
-#include <QSharedPointer>
 
 using namespace Protocol;
 

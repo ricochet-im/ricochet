@@ -35,12 +35,6 @@
 #include "OutgoingContactRequest.h"
 #include "ContactIDValidator.h"
 #include "ConversationModel.h"
-#include <QStringList>
-#include <QDebug>
-
-#ifdef Q_OS_MAC
-#include <QtMac>
-#endif
 
 ContactsManager *contactsManager = 0;
 

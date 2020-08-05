@@ -35,7 +35,6 @@
 #include "Connection.h"
 #include "utils/SecureRNG.h"
 #include "utils/Useful.h"
-#include <tego/logger.hpp>
 
 using namespace Protocol;
 

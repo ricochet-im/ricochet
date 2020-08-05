@@ -33,8 +33,6 @@
 #ifndef PENDINGOPERATION_H
 #define PENDINGOPERATION_H
 
-#include <QObject>
-
 /* Represents an asynchronous operation for reporting status
  *
  * This class is used for asynchronous operations that report a

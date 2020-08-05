@@ -34,8 +34,6 @@
 #include "Connection_p.h"
 #include "ControlChannel.h"
 #include "utils/Useful.h"
-#include <QDebug>
-
 #include "AuthHiddenServiceChannel.h"
 #include "ChatChannel.h"
 #include "ContactRequestChannel.h"

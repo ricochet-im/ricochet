@@ -33,7 +33,6 @@
 #ifndef CONTACTIDVALIDATOR_H
 #define CONTACTIDVALIDATOR_H
 
-#include <QRegularExpressionValidator>
 #include "UserIdentity.h"
 
 class ContactIDValidator : public QRegularExpressionValidator

@@ -35,10 +35,6 @@
 #include "TorSocket.h"
 #include "utils/CryptoKey.h"
 #include "utils/Useful.h"
-#include <QDir>
-#include <QFile>
-#include <QTimer>
-#include <QDebug>
 
 using namespace Tor;
 

@@ -33,9 +33,6 @@
 #ifndef TORPROCESS_H
 #define TORPROCESS_H
 
-#include <QObject>
-#include <QHostAddress>
-
 namespace Tor
 {
 

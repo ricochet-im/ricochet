@@ -33,8 +33,6 @@
 #ifndef CONVERSATIONMODEL_H
 #define CONVERSATIONMODEL_H
 
-#include <QAbstractListModel>
-#include <QDateTime>
 #include "core/ContactUser.h"
 #include "protocol/ChatChannel.h"
 

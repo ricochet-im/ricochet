@@ -33,9 +33,6 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QObject>
-#include <QVariantMap>
-
 class ContactUser;
 class UserIdentity;
 class IncomingContactRequest;

@@ -33,9 +33,6 @@
 #ifndef TORCONTROLCOMMAND_H
 #define TORCONTROLCOMMAND_H
 
-#include <QObject>
-#include <QByteArray>
-
 namespace Tor
 {
 

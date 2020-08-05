@@ -36,11 +36,6 @@
 #include "core/ContactIDValidator.h"
 #include "protocol/Connection.h"
 #include "utils/Useful.h"
-#include <QTcpServer>
-#include <QTcpSocket>
-#include <QBuffer>
-#include <QDir>
-#include <tego/logger.hpp>
 
 using namespace Protocol;
 

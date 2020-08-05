@@ -35,8 +35,6 @@
 
 #include "Channel.h"
 #include "ChatChannel.pb.h"
-#include <QDateTime>
-#include <QSet>
 
 namespace Protocol
 {

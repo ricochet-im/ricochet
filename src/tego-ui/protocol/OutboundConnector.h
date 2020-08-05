@@ -33,8 +33,6 @@
 #ifndef PROTOCOL_OUTBOUNDCONNECTOR_H
 #define PROTOCOL_OUTBOUNDCONNECTOR_H
 
-#include <QObject>
-#include <QSharedPointer>
 #include "Connection.h"
 #include "utils/CryptoKey.h"
 

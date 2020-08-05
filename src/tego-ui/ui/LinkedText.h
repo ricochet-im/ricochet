@@ -33,9 +33,6 @@
 #ifndef LINKEDTEXT_H
 #define LINKEDTEXT_H
 
-#include <QObject>
-#include <QRegularExpression>
-
 class LinkedText : public QObject
 {
     Q_OBJECT

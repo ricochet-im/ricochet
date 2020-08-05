@@ -33,8 +33,6 @@
 #ifndef TORCONTROL_H
 #define TORCONTROL_H
 
-#include <QObject>
-#include <QHostAddress>
 #include "utils/PendingOperation.h"
 
 class QNetworkProxy;

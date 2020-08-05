@@ -36,8 +36,6 @@
 #include "Channel.h"
 #include "Connection_p.h"
 #include "utils/Useful.h"
-#include <QDebug>
-#include <tego/logger.hpp>
 
 namespace Protocol
 {

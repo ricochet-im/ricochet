@@ -33,11 +33,6 @@
 #ifndef STRINGUTIL_H
 #define STRINGUTIL_H
 
-#include <type_traits>
-
-#include <QByteArray>
-#include <QList>
-
 QByteArray quotedString(const QByteArray &string);
 
 /* Return the unquoted contents of a string, either until an end quote or an unescaped separator character. */

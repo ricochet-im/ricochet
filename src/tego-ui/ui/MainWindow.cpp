@@ -46,16 +46,7 @@
 #include "utils/PendingOperation.h"
 #include "utils/Useful.h"
 #include "ui/LanguagesModel.h"
-#include <QtQml>
-#include <QQmlApplicationEngine>
-#include <QQmlNetworkAccessManagerFactory>
-#include <QNetworkAccessManager>
-#include <QQmlContext>
-#include <QMessageBox>
-#include <QPushButton>
-#include <QQuickItem>
-#include <QGuiApplication>
-#include <QScreen>
+
 
 MainWindow *uiMain = 0;
 

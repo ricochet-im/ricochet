@@ -33,8 +33,6 @@
 #ifndef LANGUAGESMODEL_H
 #define LANGUAGESMODEL_H
 
-#include <QAbstractListModel>
-
 class LanguagesModel : public QAbstractListModel
 {
     Q_OBJECT

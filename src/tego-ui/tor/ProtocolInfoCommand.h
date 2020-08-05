@@ -34,7 +34,6 @@
 #define PROTOCOLINFOCOMMAND_H
 
 #include "TorControlCommand.h"
-#include <QFlags>
 
 namespace Tor
 {

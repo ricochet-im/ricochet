@@ -34,13 +34,6 @@
 #include "SecureRNG.h"
 #include "Useful.h"
 #include "utils/StringUtil.h"
-#include <QtDebug>
-#include <QFile>
-#include <openssl/bn.h>
-#include <openssl/bio.h>
-#include <openssl/pem.h>
-
-#include <tego/logger.hpp>
 
 #if OPENSSL_VERSION_NUMBER < 0x10100000L || defined(LIBRESSL_VERSION_NUMBER)
 void RSA_get0_factors(const RSA *r, const BIGNUM **p, const BIGNUM **q)
@@ -356,14 +349,14 @@ QByteArray torControlHashedPassword(const QByteArray &password)
 /* TODO: move this to a header file somewhere so it can be used elsewhere */
 #define CEIL_DIV(a, b) (((a) + ((b) - 1)) / (b))
 
-/* Given a source input length (srclen), calculate the size of the 
+/* Given a source input length (srclen), calculate the size of the
  * base32 encoded string for it _without padding_, doesn't include null terminator */
 /* XXX: unused
 static inline unsigned base32_encoded_size_no_pad(unsigned srclen) {
     return CEIL_DIV(srclen * 8, 5);
 }*/
 
-/* Given a source input length (srclen), calculate the size of the 
+/* Given a source input length (srclen), calculate the size of the
  * base32 encoded string for it _with padding_, doesn't include null terminator */
 static inline unsigned base32_encoded_size(unsigned srclen) {
     return (CEIL_DIV(srclen, 5) * 8);
@@ -440,25 +433,25 @@ bool base32_decode(char *dest, unsigned destlen, const char *src, unsigned srcle
         switch (bit % 40)
         {
         case 0:
-            dest[i] = (((quint8)tmp[(bit/5)]) << 3) + 
+            dest[i] = (((quint8)tmp[(bit/5)]) << 3) +
                       (((quint8)tmp[(bit/5)+1]) >> 2);
             break;
         case 8:
-            dest[i] = (((quint8)tmp[(bit/5)]) << 6) + 
-                      (((quint8)tmp[(bit/5)+1]) << 1) + 
+            dest[i] = (((quint8)tmp[(bit/5)]) << 6) +
+                      (((quint8)tmp[(bit/5)+1]) << 1) +
                       (((quint8)tmp[(bit/5)+2]) >> 4);
             break;
         case 16:
-            dest[i] = (((quint8)tmp[(bit/5)]) << 4) + 
+            dest[i] = (((quint8)tmp[(bit/5)]) << 4) +
                       (((quint8)tmp[(bit/5)+1]) >> 1);
             break;
         case 24:
-            dest[i] = (((quint8)tmp[(bit/5)]) << 7) + 
-                      (((quint8)tmp[(bit/5)+1]) << 2) + 
+            dest[i] = (((quint8)tmp[(bit/5)]) << 7) +
+                      (((quint8)tmp[(bit/5)+1]) << 2) +
                       (((quint8)tmp[(bit/5)+2]) >> 3);
             break;
         case 32:
-            dest[i] = (((quint8)tmp[(bit/5)]) << 5) + 
+            dest[i] = (((quint8)tmp[(bit/5)]) << 5) +
                       ((quint8)tmp[(bit/5)+1]);
             break;
         }

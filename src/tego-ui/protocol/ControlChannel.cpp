@@ -34,10 +34,6 @@
 #include "Channel_p.h"
 #include "Connection_p.h"
 #include "utils/Useful.h"
-#include <QScopedPointer>
-#include <QDebug>
-
-#include <tego/logger.hpp>
 
 using namespace Protocol;
 

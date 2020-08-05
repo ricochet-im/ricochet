@@ -32,7 +32,6 @@
 
 #include "TorSocket.h"
 #include "TorControl.h"
-#include <QNetworkProxy>
 
 using namespace Tor;
 

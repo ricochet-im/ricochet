@@ -31,18 +31,6 @@
  */
 
 #include "SecureRNG.h"
-#include <QtDebug>
-#include <openssl/rand.h>
-#include <openssl/err.h>
-#include <limits.h>
-
-#ifdef Q_OS_WIN
-#include <wincrypt.h>
-#endif
-
-#if QT_VERSION >= 0x040700
-#include <QElapsedTimer>
-#endif
 
 bool SecureRNG::seed()
 {

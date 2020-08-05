@@ -33,8 +33,6 @@
 #ifndef SECURERNG_H
 #define SECURERNG_H
 
-#include <QByteArray>
-
 class SecureRNG
 {
 public:

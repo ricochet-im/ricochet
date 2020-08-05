@@ -33,9 +33,6 @@
 #ifndef TORSOCKET_H
 #define TORSOCKET_H
 
-#include <QTcpSocket>
-#include <QTimer>
-
 namespace Tor {
 
 /* Specialized QTcpSocket which makes connections over the SOCKS proxy

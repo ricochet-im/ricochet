@@ -33,8 +33,6 @@
 #ifndef PROTOCOL_CHANNEL_H
 #define PROTOCOL_CHANNEL_H
 
-#include <QObject>
-#include <QScopedPointer>
 #include "ControlChannel.pb.h"
 
 namespace Protocol

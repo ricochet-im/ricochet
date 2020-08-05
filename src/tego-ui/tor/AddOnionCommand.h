@@ -34,9 +34,6 @@
 #define ADDONIONCOMMAND_H
 
 #include "TorControlCommand.h"
-#include <QList>
-#include <QPair>
-#include <QVariant>
 
 namespace Tor
 {

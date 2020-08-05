@@ -40,10 +40,6 @@
 #include "core/ConversationModel.h"
 #include "tor/HiddenService.h"
 #include "protocol/OutboundConnector.h"
-#include <QtDebug>
-#include <QDateTime>
-#include <QTcpSocket>
-#include <QtEndian>
 
 ContactUser::ContactUser(UserIdentity *ident, int id, QObject *parent)
     : QObject(parent)

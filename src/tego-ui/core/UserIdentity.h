@@ -34,10 +34,6 @@
 #define USERIDENTITY_H
 
 #include "ContactsManager.h"
-#include <QObject>
-#include <QMetaType>
-#include <QVector>
-#include <QSharedPointer>
 
 namespace Tor
 {

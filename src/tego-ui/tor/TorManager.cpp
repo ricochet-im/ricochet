@@ -35,9 +35,6 @@
 #include "TorControl.h"
 #include "GetConfCommand.h"
 #include "utils/Settings.h"
-#include <QFile>
-#include <QDir>
-#include <QCoreApplication>
 
 using namespace Tor;
 

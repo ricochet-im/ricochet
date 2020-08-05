@@ -38,21 +38,6 @@
 #include "utils/CryptoKey.h"
 #include "utils/SecureRNG.h"
 #include "utils/Settings.h"
-#include <QApplication>
-#include <QIcon>
-#include <QLibraryInfo>
-#include <QSettings>
-#include <QTime>
-#include <QDir>
-#include <QTranslator>
-#include <QMessageBox>
-#include <QLocale>
-#include <QLockFile>
-#include <QStandardPaths>
-#include <openssl/crypto.h>
-
-#include <tego/logger.hpp>
-#include <tego/tego.h>
 
 static bool initSettings(SettingsFile *settings, QLockFile **lockFile, QString &errorMessage);
 static bool importLegacySettings(SettingsFile *settings, const QString &oldPath);

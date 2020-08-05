@@ -33,8 +33,6 @@
 #ifndef CONTACTSMANAGER_H
 #define CONTACTSMANAGER_H
 
-#include <QObject>
-#include <QList>
 #include "ContactUser.h"
 #include "IncomingRequestManager.h"
 

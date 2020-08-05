@@ -31,7 +31,6 @@
  */
 
 #include "TorControlCommand.h"
-#include <QDebug>
 
 using namespace Tor;
 

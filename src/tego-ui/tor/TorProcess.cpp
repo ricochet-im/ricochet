@@ -33,9 +33,6 @@
 #include "TorProcess_p.h"
 #include "utils/CryptoKey.h"
 #include "utils/SecureRNG.h"
-#include <QDir>
-#include <QDebug>
-#include <QCoreApplication>
 
 using namespace Tor;
 

@@ -34,8 +34,6 @@
 #define TORPROCESS_P_H
 
 #include "TorProcess.h"
-#include <QProcess>
-#include <QTimer>
 
 namespace Tor {
 

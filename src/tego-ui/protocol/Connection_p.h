@@ -34,9 +34,6 @@
 #define PROTOCOL_CONNECTION_P_H
 
 #include "Connection.h"
-#include <QMap>
-#include <QElapsedTimer>
-#include <cstdint>
 
 namespace Protocol
 {

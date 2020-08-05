@@ -33,8 +33,6 @@
 #include "ContactRequestChannel.h"
 #include "Channel_p.h"
 
-#include <tego/logger.hpp>
-
 using namespace Protocol;
 
 /* Regarding message and nickname limitations:

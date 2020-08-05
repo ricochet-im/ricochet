@@ -33,9 +33,6 @@
 #ifndef TORCONTROLSOCKET_H
 #define TORCONTROLSOCKET_H
 
-#include <QTcpSocket>
-#include <QQueue>
-
 namespace Tor
 {
 

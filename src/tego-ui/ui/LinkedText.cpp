@@ -31,11 +31,6 @@
  */
 
 #include "LinkedText.h"
-#include <QRegularExpression>
-#include <QUrl>
-#include <QClipboard>
-#include <QGuiApplication>
-#include <QDebug>
 
 LinkedText::LinkedText(QObject *parent)
     : QObject(parent)

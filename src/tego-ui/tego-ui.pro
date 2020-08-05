@@ -165,6 +165,9 @@ unix:!macx:QTPLUGIN.platforminputcontexts = composeplatforminputcontextplugin ib
 
 DEFINES += QT_NO_CAST_TO_ASCII
 
+CONFIG += precompile_header
+PRECOMPILED_HEADER = precomp.h
+
 SOURCES += main.cpp \
     ui/MainWindow.cpp \
     ui/ContactsModel.cpp \

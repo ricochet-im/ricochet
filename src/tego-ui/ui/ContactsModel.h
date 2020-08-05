@@ -33,9 +33,6 @@
 #ifndef CONTACTSMODEL_H
 #define CONTACTSMODEL_H
 
-#include <QAbstractListModel>
-#include <QList>
-
 class UserIdentity;
 class ContactUser;
 

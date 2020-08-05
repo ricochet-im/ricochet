@@ -33,8 +33,6 @@
 #ifndef PROTOCOL_CONNECTION_H
 #define PROTOCOL_CONNECTION_H
 
-#include <QObject>
-#include <QHash>
 #include "Channel.h"
 
 class QTcpSocket;

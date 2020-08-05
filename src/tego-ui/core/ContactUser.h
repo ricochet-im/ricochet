@@ -33,11 +33,6 @@
 #ifndef CONTACTUSER_H
 #define CONTACTUSER_H
 
-#include <QObject>
-#include <QHash>
-#include <QMetaType>
-#include <QVariant>
-#include <QSharedPointer>
 #include "utils/Settings.h"
 #include "protocol/Connection.h"
 

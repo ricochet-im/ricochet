@@ -33,12 +33,6 @@
 #include "Connection_p.h"
 #include "ControlChannel.h"
 #include "utils/Useful.h"
-#include <QTcpSocket>
-#include <QTimer>
-#include <QtEndian>
-#include <QDebug>
-
-#include <tego/logger.hpp>
 
 using namespace Protocol;
 

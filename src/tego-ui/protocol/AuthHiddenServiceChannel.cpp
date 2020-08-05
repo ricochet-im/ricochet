@@ -37,12 +37,6 @@
 #include "utils/SecureRNG.h"
 #include "utils/CryptoKey.h"
 #include "utils/Useful.h"
-#include <QMessageAuthenticationCode>
-#include <tego/logger.hpp>
-#include <sstream>
-#include <iomanip>
-#include <cassert>
-#include <tego/logger.hpp>
 
 using namespace Protocol;
 

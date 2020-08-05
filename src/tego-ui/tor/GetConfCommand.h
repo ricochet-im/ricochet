@@ -34,8 +34,6 @@
 #define GETCONFCOMMAND_H
 
 #include "TorControlCommand.h"
-#include <QList>
-#include <QVariantMap>
 
 namespace Tor
 {

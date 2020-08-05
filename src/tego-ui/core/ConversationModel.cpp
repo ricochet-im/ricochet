@@ -33,7 +33,6 @@
 #include "ConversationModel.h"
 #include "protocol/Connection.h"
 #include "protocol/ChatChannel.h"
-#include <QDebug>
 
 ConversationModel::ConversationModel(QObject *parent)
     : QAbstractListModel(parent)

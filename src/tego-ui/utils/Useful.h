@@ -33,9 +33,6 @@
 #ifndef UTILS_USEFUL_H
 #define UTILS_USEFUL_H
 
-#include <QtGlobal>
-#include <QDebug>
-
 /* Print a warning for bug conditions, and assert on a debug build.
  *
  * This should be used in place of Q_ASSERT for bug conditions, along

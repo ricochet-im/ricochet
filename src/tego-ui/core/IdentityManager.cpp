@@ -33,7 +33,6 @@
 #include "IdentityManager.h"
 #include "ContactIDValidator.h"
 #include "core/OutgoingContactRequest.h"
-#include <QDebug>
 
 IdentityManager *identityManager = 0;
 

@@ -33,13 +33,6 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
-#include <QObject>
-#include <QJsonValue>
-#include <QJsonObject>
-#include <QJsonArray>
-#include <QStringList>
-#include <QDateTime>
-
 class SettingsObject;
 class SettingsFilePrivate;
 class SettingsObjectPrivate;

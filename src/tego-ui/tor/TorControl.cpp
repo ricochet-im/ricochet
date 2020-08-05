@@ -41,14 +41,6 @@
 #include "utils/StringUtil.h"
 #include "utils/Settings.h"
 #include "utils/PendingOperation.h"
-#include <QHostAddress>
-#include <QDir>
-#include <QNetworkProxy>
-#include <QQmlEngine>
-#include <QTimer>
-#include <QSaveFile>
-#include <QRegularExpression>
-#include <QDebug>
 
 Tor::TorControl *torControl = 0;
 
