@@ -248,21 +248,6 @@ HEADERS += protocol/Channel.h \
     protocol/ChatChannel.h \
     protocol/ContactRequestChannel.h
 
-# fmt lib
-SOURCE +=\
-    fmt/format.cc \
-    fmt/posix.cc
-
-HEADERS +=\
-    fmt/core.h \
-    fmt/format.h \
-    fmt/format-inl.h \
-    fmt/ostream.h \
-    fmt/posix.h \
-    fmt/printf.h \
-    fmt/ranges.h \
-    fmt/time.h
-
 include($${PWD}/../qmake_includes/protobuf.pri)
 
 PROTOS += protocol/ControlChannel.proto \
