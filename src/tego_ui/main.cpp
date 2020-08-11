@@ -45,8 +45,6 @@ static void initTranslation();
 
 int main(int argc, char *argv[])
 {
-    tego_test();
-
     /* Disable rwx memory.
        This will also ensure full PAX/Grsecurity protections. */
     qputenv("QV4_FORCE_INTERPRETER",  "1");

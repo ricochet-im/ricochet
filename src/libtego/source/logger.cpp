@@ -49,6 +49,8 @@ std::ostream& operator<<(std::ostream& out, const QByteArray& blob)
     const char* head = blob.data();
     size_t address = 0;
 
+    out << '\n';
+
     auto printRow = [&](size_t count) -> void
     {
         constexpr auto octetGrouping = 4;
