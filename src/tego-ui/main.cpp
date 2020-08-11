@@ -45,7 +45,14 @@ static void initTranslation();
 
 int main(int argc, char *argv[])
 {
-    tego_test();
+    try
+    {
+        tego_initialize(tego::throw_on_error());
+    }
+    catch(std::exception& re)
+    {
+        logger::println("Exception : {}", re.what());
+    }
 
     logger::println("Ricochet Start!");
 

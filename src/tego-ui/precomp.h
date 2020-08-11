@@ -105,7 +105,7 @@
 
 // tego
 #include <tego/logger.hpp>
-#include <tego/tego.h>
+#include <tego/tego.hpp>
 
 #endif // __cplusplus
 
