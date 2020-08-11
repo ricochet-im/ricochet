@@ -1,5 +1,8 @@
 #pragma once
 
+#define TEGO_THROW_IF_FALSE_MSG(B, MSG) if (!(B)) { throw std::runtime_error(fmt::format("assertion failed {}:{} : {}", __FILE__, __LINE__, MSG)); }
+#define TEGO_THROW_IF_FALSE(B) TEGO_THROW_IF_FALSE_MSG(B, #B)
+
 struct tego_error
 {
     std::string message;
@@ -19,6 +22,7 @@ namespace tego
         {
             if (out_error)
             {
+                logger::println("Exception: {}", ex.what());
                 *out_error = new tego_error{ex.what()};
             }
         }
@@ -34,6 +38,7 @@ namespace tego
         {
             if (out_error)
             {
+                logger::println("Exception: {}", ex.what());
                 *out_error = new tego_error{ex.what()};
             }
         }

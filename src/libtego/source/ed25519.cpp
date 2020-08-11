@@ -1,5 +1,6 @@
 #include "error.hpp"
 #include "ed25519.hpp"
+#include "utilities.hpp"
 
 extern "C"
 {
@@ -8,9 +9,25 @@ extern "C"
         const char* keyBlob,
         tego_error_t* error)
     {
-        return tego::translateExceptions([]() -> void
+        return tego::translateExceptions([&]() -> void
         {
+            // verify arguments
+            TEGO_THROW_IF_FALSE(out_privateKey != nullptr);
+            TEGO_THROW_IF_FALSE(*out_privateKey == nullptr);
+            TEGO_THROW_IF_FALSE(keyBlob != nullptr);
 
+            TEGO_THROW_IF_FALSE(std::string_view(keyBlob).starts_with("ED25519-V3:"));
+            std::string_view base64(keyBlob + tego::static_strlen("ED25519-V3:"));
+
+            const auto maxByteCount = ::base64_decode_maxsize(base64.size());
+            TEGO_THROW_IF_FALSE(maxByteCount >= ED25519_SECKEY_LEN);
+
+            auto privateKey = new tego_ed25519_private_key();
+            const auto bytesWritten = ::base64_decode(reinterpret_cast<char*>(privateKey->data), sizeof(privateKey->data), base64.data(), base64.size());
+
+            TEGO_THROW_IF_FALSE(bytesWritten == ED25519_SECKEY_LEN);
+
+            *out_privateKey = privateKey;
         }, error);
     }
 
@@ -21,7 +38,8 @@ extern "C"
     {
         return tego::translateExceptions([]() -> void
         {
-
+            // generate ed25519_public_key_t from ed25519_secret_key_t using ed25519_donna_pubkey
+            // ed25519_donna_pubkey(out_publicKey, privateKey);
         }, error);
     }
 
@@ -32,6 +50,13 @@ extern "C"
     {
         return tego::translateExceptions([]() -> void
         {
+            // https://gitweb.torproject.org/torspec.git/tree/rend-spec-v3.txt#n2135
+
+            // strip off .onion suffix from onion domain
+
+            // base32 decode onion domain
+
+            // public key is first 32 bytes
 
         }, error);
     }
@@ -43,7 +68,8 @@ extern "C"
     {
         return tego::translateExceptions([]() -> void
         {
-
+            // basically passthrough to ed25519_donna_sign
+            // ed25519_donna_sign(out_signature, message, messageLength, privateKey, publicKey);
         }, error);
     }
 
@@ -57,7 +83,8 @@ extern "C"
     {
         return tego::translateExceptions([]() -> void
         {
-
+        // basically passthrough to ed25519_donna_sign
+        // ed25519_donna_sign(out_signature, message, messageLength, privateKey, publicKey);
         }, error);
     }
 
@@ -81,6 +108,8 @@ extern "C"
     {
         return tego::translateExceptions([]() -> int
         {
+            // basically passthrough to ed25519_donna_open
+            // ed25519_donna_open(signature, message, messageLength, publicKey);
             return TEGO_FALSE;
         }, error, TEGO_FALSE);
     }

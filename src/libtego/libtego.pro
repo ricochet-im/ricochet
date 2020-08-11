@@ -42,12 +42,14 @@ HEADERS +=\
     include/tego/tego.h\
     include/tego/logger.hpp\
     source/error.hpp\
-    source/ed25519.hpp
+    source/ed25519.hpp\
+    source/utilities.hpp
 
 SOURCES +=\
     source/libtego.cpp\
     source/delete.cpp\
     source/error.cpp\
+    source/tor_stubs.cpp\
     source/ed25519.cpp\
     source/logger.cpp\
 
