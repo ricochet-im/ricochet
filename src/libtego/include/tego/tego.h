@@ -11,7 +11,10 @@ extern "C" {
 #define TEGO_TRUE  1
 #define TEGO_FALSE 0
 
+// number of bytes in an ed25519 signature
 #define TEGO_ED25519_SIGNATURE_LENGTH 64
+// length of an ED25519-V3 KeyBlob including null-terminator
+#define TEGO_ED25519_KEYBLOB_LENGTH 100
 
 typedef struct tego_error* tego_error_t;
 
@@ -36,7 +39,6 @@ typedef struct tego_ed25519_private_key* tego_ed25519_private_key_t;
 typedef struct tego_ed25519_public_key* tego_ed25519_public_key_t;
 typedef struct tego_ed25519_signature* tego_ed25519_signature_t;
 
-
 /*
  * Conversion method for converting the KeyBlob returned by
  * ADD_ONION command into an ed25519_private_key_t
@@ -49,6 +51,21 @@ typedef struct tego_ed25519_signature* tego_ed25519_signature_t;
 void tego_ed25519_private_key_from_ed25519_keyblob(
     tego_ed25519_private_key_t* out_privateKey,
     const char* keyBlob,
+    tego_error_t* error);
+
+/*
+ * Conversion method for converting an ed25519 private key
+ * to a null-terminated KeyBlob string for use with ADD_ONION
+ * command
+ *
+ * @param out_keyBlob : buffer to be filled with ed25519 KeyBlob in
+ *  the fomr "ED25519-V3:abcd1234..."
+ * @param privateKey : the private key to encode
+ * @param error : filled with a tego_error_t on error
+ */
+void tego_ed25519_keyblob_from_ed25519_private_key(
+    char out_keyBlob[TEGO_ED25519_KEYBLOB_LENGTH],
+    const tego_ed25519_private_key_t privateKey,
     tego_error_t* error);
 
 /*

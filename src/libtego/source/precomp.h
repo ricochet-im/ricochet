@@ -1,6 +1,7 @@
 // C headers
 
 // tor
+#define ALL_BUGS_ARE_FATAL
 #ifdef __cplusplus
 extern "C" {
 #endif // __cplusplus
