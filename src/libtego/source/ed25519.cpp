@@ -36,7 +36,39 @@ constexpr size_t TEGO_V3_SERVICE_ID_CHECKSUM_SRC_SIZE = TEGO_V3_SERVICE_ID_CHECK
 // offset for the version byte in the service id checksum source
 constexpr size_t TEGO_V3_SERVICE_ID_CHECKSUM_SRC_VERSION_OFFSET = TEGO_V3_SERVICE_ID_CHECKSUM_SRC_SIZE - 1;
 
+namespace tego
+{
+    void truncated_checksum_from_ed25519_public_key(
+        uint8_t out_truncatedChecksum[TEGO_V3_SERVICE_ID_CHECKSUM_SIZE],
+        const uint8_t (&publicKey)[ED25519_PUBKEY_LEN])
+    {
+        // build message for checksum
+        // prefix
+        uint8_t checksumSrc[TEGO_V3_SERVICE_ID_CHECKSUM_SRC_SIZE] = ".onion checksum";
+        // public key
+        std::copy(
+            std::begin(publicKey),
+            std::begin(publicKey) + sizeof(publicKey),
+            checksumSrc + TEGO_V3_SERVICE_ID_CHECKSUM_SRC_PUBLIC_KEY_OFFSET);
+        // version byte 0x03
+        checksumSrc[TEGO_V3_SERVICE_ID_CHECKSUM_SRC_VERSION_OFFSET] = 0x03;
 
+        // verify checksum
+        uint8_t checksum[BASE32_DIGEST_LEN] = {0};
+
+        // calculate sha256
+        // TODO: probably just call openssl APIs directly here rather than use tor's
+        // encapsulation
+        TEGO_THROW_IF_FALSE(crypto_digest256(
+            reinterpret_cast<char*>(checksum),
+            reinterpret_cast<const char*>(checksumSrc),
+            sizeof(checksumSrc),
+            DIGEST_SHA3_256) == 0);
+
+        out_truncatedChecksum[0] = checksum[0];
+        out_truncatedChecksum[1] = checksum[1];
+    }
+}
 
 extern "C"
 {
@@ -160,32 +192,17 @@ extern "C"
             // verify correct version byte
             TEGO_THROW_IF_FALSE(rawServiceId[TEGO_V3_SERVICE_ID_VERSION_OFFSET] == 0x03);
 
-            // build message for checksum
-            // prefix
-            uint8_t checksumSrc[TEGO_V3_SERVICE_ID_CHECKSUM_SRC_SIZE] = ".onion checksum";
-            // public key
-            std::copy(
-                std::begin(rawServiceId),
-                std::begin(rawServiceId) + ED25519_PUBKEY_LEN,
-                checksumSrc + TEGO_V3_SERVICE_ID_CHECKSUM_SRC_PUBLIC_KEY_OFFSET);
-            // version byte 0x03
-            checksumSrc[TEGO_V3_SERVICE_ID_CHECKSUM_SRC_VERSION_OFFSET] = 0x03;
+            // first part of the rawServiceId is the publicKey
+            auto& rawPublicKey = reinterpret_cast<uint8_t (&)[ED25519_PUBKEY_LEN]>(rawServiceId);
 
-            // verify checksum
-            uint8_t checksum[BASE32_DIGEST_LEN] = {0};
-
-            // calculate sha256
-            // TODO: probably just call openssl APIs directly here rather than use tor's
-            // encapsulation
-            TEGO_THROW_IF_FALSE(crypto_digest256(
-                reinterpret_cast<char*>(checksum),
-                reinterpret_cast<const char*>(checksumSrc),
-                sizeof(checksumSrc),
-                DIGEST_SHA3_256) == 0);
+            // calculate the truncated checksum for the public key
+            uint8_t truncatedChecksum[TEGO_V3_SERVICE_ID_CHECKSUM_SIZE] = {0};
+            tego::truncated_checksum_from_ed25519_public_key(truncatedChecksum, rawPublicKey);
 
             // verify the first two bytes of checksum in service id match our calculated checksum
-            TEGO_THROW_IF_FALSE(rawServiceId[TEGO_V3_SERVICE_ID_CHECKSUM_OFFSET    ] == checksum[0] &&
-                                rawServiceId[TEGO_V3_SERVICE_ID_CHECKSUM_OFFSET + 1] == checksum[1]);
+            TEGO_THROW_IF_FALSE(
+                rawServiceId[TEGO_V3_SERVICE_ID_CHECKSUM_OFFSET    ] == truncatedChecksum[0] &&
+                rawServiceId[TEGO_V3_SERVICE_ID_CHECKSUM_OFFSET + 1] == truncatedChecksum[1]);
 
             // copy over public key
             auto publicKey = std::make_unique<tego_ed25519_public_key>();
