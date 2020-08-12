@@ -121,6 +121,17 @@ void tego_ed25519_signature_from_data(
     tego_error_t* error);
 
 /*
+ * Get the signature and place it in length 64 byte buffer
+ *
+ * @param signature : a calculated message signature
+ * @param out_data : output buffer to write signature to
+ */
+void tego_ed25519_signature_get_data(
+    const tego_ed25519_signature_t signature,
+    uint8_t out_data[TEGO_ED25519_SIGNATURE_LENGTH],
+    tego_error_t* error);
+
+/*
  * Sign a message with ed25519 key-pair
  *
  * @param message: binary blob to sign
@@ -136,17 +147,6 @@ void tego_message_ed25519_sign(
     const tego_ed25519_public_key_t privateKey,
     const tego_ed25519_public_key_t publicKey,
     tego_ed25519_signature_t* out_signature,
-    tego_error_t* error);
-
-/*
- * Get the signature and place it in length 64 byte buffer
- *
- * @param signature : a calculated message signature
- * @param out_data : output buffer to write signature to
- */
-void tego_ed25519_signature_data(
-    const tego_ed25519_signature_t signature,
-    uint8_t out_data[TEGO_ED25519_SIGNATURE_LENGTH],
     tego_error_t* error);
 
 /*

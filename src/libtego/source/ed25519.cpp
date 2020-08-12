@@ -258,10 +258,35 @@ extern "C"
         const uint8_t data[TEGO_ED25519_SIGNATURE_LENGTH],
         tego_error_t* error)
     {
-        return tego::translateExceptions([]() -> void
+        return tego::translateExceptions([&]() -> void
         {
-            // basically passthrough to ed25519_donna_sign
-            // ed25519_donna_sign(out_signature, message, messageLength, privateKey, publicKey);
+            // verify arguments
+            TEGO_THROW_IF_FALSE(out_signature != nullptr);
+            TEGO_THROW_IF_FALSE(*out_signature == nullptr);
+            TEGO_THROW_IF_FALSE(data != nullptr);
+
+            // copy raw signature into signature struct
+            auto signature = std::make_unique<tego_ed25519_signature>();
+            auto& rdata = reinterpret_cast<const uint8_t(&)[TEGO_ED25519_SIGNATURE_LENGTH]>(data);
+            std::copy(std::begin(rdata), std::end(rdata), signature->data);
+
+            *out_signature = signature.release();
+
+        }, error);
+    }
+
+    void tego_ed25519_signature_get_data(
+        const tego_ed25519_signature_t signature,
+        uint8_t out_data[TEGO_ED25519_SIGNATURE_LENGTH],
+        tego_error_t* error)
+    {
+        return tego::translateExceptions([&]() -> void
+        {
+            TEGO_THROW_IF_FALSE(signature != nullptr);
+            TEGO_THROW_IF_FALSE(out_data != nullptr);
+
+            // get the data out of our signature type
+            std::copy(std::begin(signature->data), std::end(signature->data), out_data);
         }, error);
     }
 
@@ -277,17 +302,6 @@ extern "C"
         {
         // basically passthrough to ed25519_donna_sign
         // ed25519_donna_sign(out_signature, message, messageLength, privateKey, publicKey);
-        }, error);
-    }
-
-    void tego_ed25519_signature_data(
-        const tego_ed25519_signature_t signature,
-        uint8_t out_data[TEGO_ED25519_SIGNATURE_LENGTH],
-        tego_error_t* error)
-    {
-        return tego::translateExceptions([]() -> void
-        {
-
         }, error);
     }
 
