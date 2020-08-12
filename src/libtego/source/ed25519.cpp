@@ -169,6 +169,7 @@ extern "C"
     {
         return tego::translateExceptions([&]() -> void
         {
+            // verify arguments
             TEGO_THROW_IF_FALSE(out_publicKey != nullptr);
             TEGO_THROW_IF_FALSE(*out_publicKey == nullptr);
             TEGO_THROW_IF_FALSE(v3OnionAddress != nullptr);
@@ -211,6 +212,44 @@ extern "C"
                       publicKey->data);
 
             *out_publicKey = publicKey.release();
+        }, error);
+    }
+
+    void tego_v3_service_id_from_ed25519_public_key(
+        char out_v3ServiceId[TEGO_V3_SERVICE_ID_NULL_LENGTH],
+        const tego_ed25519_public_key_t publicKey,
+        tego_error_t* error)
+    {
+        return tego::translateExceptions([&]() -> void
+        {
+            // verify arguments
+            TEGO_THROW_IF_FALSE(out_v3ServiceId != nullptr);
+            TEGO_THROW_IF_FALSE(publicKey != nullptr);
+
+            // build the raw service id
+            uint8_t rawServiceId[TEGO_V3_SERVICE_ID_RAW_SIZE] = {0};
+
+            // copy over public key
+            std::copy(std::begin(publicKey->data),
+                      std::end(publicKey->data),
+                      rawServiceId);
+
+            // calculate turncated checksum and copy it into raw service id
+            uint8_t truncatedChecksum[TEGO_V3_SERVICE_ID_CHECKSUM_SIZE] = {0};
+            tego::truncated_checksum_from_ed25519_public_key(truncatedChecksum, publicKey->data);
+            std::copy(std::begin(truncatedChecksum),
+                      std::end(truncatedChecksum),
+                      rawServiceId + TEGO_V3_SERVICE_ID_CHECKSUM_OFFSET);
+
+            // version 3
+            rawServiceId[TEGO_V3_SERVICE_ID_VERSION_OFFSET] = 0x03;
+
+            // encode to base32
+            char v3ServiceId[TEGO_V3_SERVICE_ID_NULL_LENGTH] ={0};
+            base32_encode(v3ServiceId, sizeof(v3ServiceId), reinterpret_cast<const char*>(rawServiceId), sizeof(rawServiceId));
+
+            // copy to output buffer
+            std::copy(std::begin(v3ServiceId), std::end(v3ServiceId), out_v3ServiceId);
         }, error);
     }
 
