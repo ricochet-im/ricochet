@@ -31,11 +31,13 @@ TOR_SOURCE_DIR = $${TOR_ROOT_DIR}/src
 
 SOURCES +=\
     $${TOR_SOURCE_DIR}/ext/ed25519/donna/ed25519_tor.c\
-    $${TOR_SOURCE_DIR}/lib/encoding/binascii.c
+    $${TOR_SOURCE_DIR}/lib/encoding/binascii.c\
+    $${TOR_SOURCE_DIR}/lib/crypt_ops/crypto_digest_openssl.c
 
 INCLUDEPATH +=\
     $${TOR_ROOT_DIR}\
-    $${TOR_ROOT_DIR}/src
+    $${TOR_ROOT_DIR}/src\
+    $${TOR_ROOT_DIR}/src/ext
 
 # libtego
 HEADERS +=\

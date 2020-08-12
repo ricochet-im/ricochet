@@ -13,8 +13,10 @@ extern "C" {
 
 // number of bytes in an ed25519 signature
 #define TEGO_ED25519_SIGNATURE_LENGTH 64
-// length of an ED25519-V3 KeyBlob including null-terminator
-#define TEGO_ED25519_KEYBLOB_LENGTH 100
+// length of an ED25519-V3 KeyBlob including nullterminator
+#define TEGO_ED25519_KEYBLOB_NULL_LENGTH 100
+// length of a v3 service id including null terminator
+#define TEGO_V3_SERVICE_ID_NULL_LENGTH 57
 
 typedef struct tego_error* tego_error_t;
 
@@ -64,7 +66,7 @@ void tego_ed25519_private_key_from_ed25519_keyblob(
  * @param error : filled with a tego_error_t on error
  */
 void tego_ed25519_keyblob_from_ed25519_private_key(
-    char out_keyBlob[TEGO_ED25519_KEYBLOB_LENGTH],
+    char out_keyBlob[TEGO_ED25519_KEYBLOB_NULL_LENGTH],
     const tego_ed25519_private_key_t privateKey,
     tego_error_t* error);
 
@@ -85,12 +87,25 @@ void tego_ed25519_public_key_from_ed25519_private_key(
  * https://gitweb.torproject.org/torspec.git/tree/rend-spec-v3.txt
  *
  * @param out_publicKey : returned ed25519 public key
- * @param v3onionDomain : null terminated v3 onion domain including ".onion" suffix
+ * @param v3onionAddress : null terminated v3 onion address including ".onion" suffix
  * @param error : filled with a tego_error_t on error
  */
-void tego_ed25519_public_key_from_v3_onion_domain(
+void tego_ed25519_public_key_from_v3_onion_address(
     tego_ed25519_public_key_t* out_publicKey,
-    const char* v3OnionDomain,
+    const char* v3OnionAddress,
+    tego_error_t* error);
+
+/*
+ * Derive an onion's service id from its ed25519 public key per
+ * https://gitweb.torproject.org/torspec.git/tree/rend-spec-v3.txt
+ *
+ * @param out_v3ServiceId : returned service id
+ * @param publicKey : the public key input
+ * @param error : filled with a tego_error_t on error
+ */
+void tego_v3_service_id_from_ed25519_public_key(
+    char out_v3ServiceId[TEGO_V3_SERVICE_ID_NULL_LENGTH],
+    const tego_ed25519_public_key_t publicKey,
     tego_error_t* error);
 
 /*
