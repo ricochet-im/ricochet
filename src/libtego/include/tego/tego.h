@@ -193,7 +193,7 @@ size_t tego_ed25519_signature_to_data(
 void tego_message_ed25519_sign(
     const uint8_t* message,
     size_t messageLength,
-    const tego_ed25519_public_key_t privateKey,
+    const tego_ed25519_private_key_t privateKey,
     const tego_ed25519_public_key_t publicKey,
     tego_ed25519_signature_t* out_signature,
     tego_error_t* error);
