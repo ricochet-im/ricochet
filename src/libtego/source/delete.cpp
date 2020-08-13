@@ -18,6 +18,11 @@ extern "C"
         delete signature;
     }
 
+    void tego_v3_onion_service_id_delete(tego_v3_onion_service_id_t serviceId)
+    {
+        delete serviceId;
+    }
+
     void tego_error_delete(tego_error_t error)
     {
         delete error;

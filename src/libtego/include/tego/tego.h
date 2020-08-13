@@ -12,11 +12,11 @@ extern "C" {
 #define TEGO_FALSE 0
 
 // number of bytes in an ed25519 signature
-#define TEGO_ED25519_SIGNATURE_LENGTH 64
-// length of an ED25519-V3 KeyBlob including nullterminator
-#define TEGO_ED25519_KEYBLOB_NULL_LENGTH 100
-// length of a v3 service id including null terminator
-#define TEGO_V3_SERVICE_ID_NULL_LENGTH 57
+#define TEGO_ED25519_SIGNATURE_SIZE 64
+// length of a v3 service id string including null terminator
+#define TEGO_V3_ONION_SERVICE_ID_SIZE 57
+// length of an ed25519 keyblob string including null terminator
+#define TEGO_ED25519_KEYBLOB_SIZE 100
 
 typedef struct tego_error* tego_error_t;
 
@@ -40,19 +40,23 @@ void tego_uninitialize(tego_error_t* error);
 typedef struct tego_ed25519_private_key* tego_ed25519_private_key_t;
 typedef struct tego_ed25519_public_key* tego_ed25519_public_key_t;
 typedef struct tego_ed25519_signature* tego_ed25519_signature_t;
+typedef struct tego_v3_onion_service_id* tego_v3_onion_service_id_t;
 
 /*
- * Conversion method for converting the KeyBlob returned by
+ * Conversion method for converting the KeyBlob string returned by
  * ADD_ONION command into an ed25519_private_key_t
  *
  * @param out_privateKey : returned ed25519 private key
- * @param keyBlob : a null terminated ED25519 KeyBlob in the form
+ * @param keyBlob : an ED25519 KeyBlob string in the form
  *  "ED25519-V3:abcd1234..."
+ * @param keyBlobLength : number of characters in keyBlob not
+ *  counting the null terminator
  * @param error : filled with a tego_error_t on error
  */
 void tego_ed25519_private_key_from_ed25519_keyblob(
     tego_ed25519_private_key_t* out_privateKey,
     const char* keyBlob,
+    size_t keyBlobLength,
     tego_error_t* error);
 
 /*
@@ -61,12 +65,17 @@ void tego_ed25519_private_key_from_ed25519_keyblob(
  * command
  *
  * @param out_keyBlob : buffer to be filled with ed25519 KeyBlob in
- *  the fomr "ED25519-V3:abcd1234..."
+ *  the form "ED25519-V3:abcd1234...\0"
+ * @param keyBlobSize : size of out_keyBlob buffer in bytes, must be at
+ *  least 100 characters (99 for string + 1 for null terminator)
  * @param privateKey : the private key to encode
  * @param error : filled with a tego_error_t on error
+ * @return : the number of characters written (including null terminator)
+ *  to out_keyBlob
  */
-void tego_ed25519_keyblob_from_ed25519_private_key(
-    char out_keyBlob[TEGO_ED25519_KEYBLOB_NULL_LENGTH],
+size_t tego_ed25519_keyblob_from_ed25519_private_key(
+    char *out_keyBlob,
+    size_t keyBlobSize,
     const tego_ed25519_private_key_t privateKey,
     tego_error_t* error);
 
@@ -83,28 +92,62 @@ void tego_ed25519_public_key_from_ed25519_private_key(
     tego_error_t* error);
 
 /*
- * Extract public key from v3 onion domain per
+ * Construct a service id object from string. Validates
+ * the checksum and version byte per spec:
+ * https://gitweb.torproject.org/torspec.git/tree/rend-spec-v3.txt
+ *
+ * @param out_serviceId : returned v3 onion service id
+ * @param serviceIdString : a string beginning with a v3 service id
+ * @param serviceIdStringLength : length of the service id string not
+ *  counting the null terminator
+ * @param error : filled with a tego_error_t on error
+ */
+void tego_v3_onion_service_id_from_string(
+    tego_v3_onion_service_id_t* out_serviceId,
+    const char* serviceIdString,
+    size_t serviceIdStringLength,
+    tego_error_t* error);
+
+/*
+ * Serializes out a service id object as a null terminated string
+ * string to provided character buffer.
+ *
+ * @param serviceId : v3 onion service id object to serialize
+ * @param out_serviceIdString : destination buffer for string
+ * @param serviceIdStringSize : size of out_serviceIdString buffer in
+ *  bytes, must be at least 57 bytes (56 bytes for string + null
+ *  terminator)
+ * @param error : filled with a tego_error_t on error
+ */
+size_t tego_v3_onion_service_id_to_string(
+    const tego_v3_onion_service_id_t serviceId,
+    char* out_serviceIdString,
+    size_t serviceIdStringSize,
+    tego_error_t* error);
+
+/*
+ * Extract public key from v3 service id per
  * https://gitweb.torproject.org/torspec.git/tree/rend-spec-v3.txt
  *
  * @param out_publicKey : returned ed25519 public key
- * @param v3onionAddress : null terminated v3 onion address including ".onion" suffix
+ * @param serviceId : input service id
  * @param error : filled with a tego_error_t on error
  */
-void tego_ed25519_public_key_from_v3_onion_address(
+void tego_ed25519_public_key_from_v3_onion_service_id(
     tego_ed25519_public_key_t* out_publicKey,
-    const char* v3OnionAddress,
+    const tego_v3_onion_service_id_t serviceId,
     tego_error_t* error);
 
 /*
  * Derive an onion's service id from its ed25519 public key per
  * https://gitweb.torproject.org/torspec.git/tree/rend-spec-v3.txt
  *
- * @param out_v3ServiceId : returned service id
+ * @param out_serviceId : returned service id
  * @param publicKey : the public key input
  * @param error : filled with a tego_error_t on error
  */
-void tego_v3_service_id_from_ed25519_public_key(
-    char out_v3ServiceId[TEGO_V3_SERVICE_ID_NULL_LENGTH],
+void tego_v3_onion_service_id_from_ed25519_public_key(
+    tego_v3_onion_service_id_t* out_serviceId,
     const tego_ed25519_public_key_t publicKey,
     tego_error_t* error);
 
@@ -112,12 +155,14 @@ void tego_v3_service_id_from_ed25519_public_key(
  * Read in signature from length 64 byte buffer
  *
  * @param out_signature : returned ed25519 signature
- * @param data : 64 byte memory buffer holding signature
+ * @param data : source memory buffer holding signature
+ * @param dataSize : size of data in bytes, must be at least 64 bytes
  * @param error : filled with a tego_error_t on error
  */
 void tego_ed25519_signature_from_data(
     tego_ed25519_signature_t* out_signature,
-    const uint8_t data[TEGO_ED25519_SIGNATURE_LENGTH],
+    const uint8_t* data,
+    size_t dataSize,
     tego_error_t* error);
 
 /*
@@ -125,18 +170,22 @@ void tego_ed25519_signature_from_data(
  *
  * @param signature : a calculated message signature
  * @param out_data : output buffer to write signature to
+ * @param dataSize : size of data in bytes, must be at least 64 bytes
+ * @param error : filled with a tego_error_t on error
+ * @return : number of bytes written to out_data
  */
-void tego_ed25519_signature_get_data(
+size_t tego_ed25519_signature_to_data(
     const tego_ed25519_signature_t signature,
-    uint8_t out_data[TEGO_ED25519_SIGNATURE_LENGTH],
+    uint8_t* out_data,
+    size_t dataSize,
     tego_error_t* error);
 
 /*
- * Sign a message with ed25519 key-pair
+ * Sign a message with an ed25519 key-pair
  *
- * @param message: binary blob to sign
+ * @param message : binary blob to sign
  * @param messageLength : length of blob in bytes
- * @param privateKey: the ed25519 private key
+ * @param privateKey : the ed25519 private key
  * @param publicKey : the ed25519 public key
  * @param out_signature : the output signature
  * @param error : filled with a tego_error_t on error
@@ -174,6 +223,7 @@ int tego_ed25519_signature_verify(
 void tego_ed25519_private_key_delete(tego_ed25519_private_key_t);
 void tego_ed25519_public_key_delete(tego_ed25519_public_key_t);
 void tego_ed25519_signature_delete(tego_ed25519_signature_t);
+void tego_v3_onion_service_id_delete(tego_v3_onion_service_id_t);
 void tego_error_delete(tego_error_t);
 
 #ifdef __cplusplus
