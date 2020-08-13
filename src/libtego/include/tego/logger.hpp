@@ -9,6 +9,7 @@
 #include <typeinfo>
 #include <experimental/source_location>
 using std::experimental::source_location;
+#include <thread>
 
 // gnu
 #include <cxxabi.h>
@@ -26,7 +27,7 @@ public:
 
         auto& fs = get_stream();
 
-        fmt::print(fs, "[{:f}] ", get_timestamp());
+        fmt::print(fs, "[{:f}][{}] ", get_timestamp(), std::this_thread::get_id());
         fmt::print(fs, format, std::forward<ARGS>(args)...);
         fs << std::endl;
     }
@@ -38,7 +39,7 @@ public:
 
         auto& fs = get_stream();
 
-        fmt::print(fs, "[{:f}] ", get_timestamp());
+        fmt::print(fs, "[{:f}][{}] ", get_timestamp(), std::this_thread::get_id());
         fs << msg << std::endl;
     }
 
