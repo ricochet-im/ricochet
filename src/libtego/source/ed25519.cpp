@@ -246,7 +246,7 @@ extern "C"
 
             // encode to base32
             char v3ServiceId[TEGO_V3_SERVICE_ID_NULL_LENGTH] ={0};
-            base32_encode(v3ServiceId, sizeof(v3ServiceId), reinterpret_cast<const char*>(rawServiceId), sizeof(rawServiceId));
+            ::base32_encode(v3ServiceId, sizeof(v3ServiceId), reinterpret_cast<const char*>(rawServiceId), sizeof(rawServiceId));
 
             // copy to output buffer
             std::copy(std::begin(v3ServiceId), std::end(v3ServiceId), out_v3ServiceId);
@@ -298,10 +298,30 @@ extern "C"
         tego_ed25519_signature_t* out_signature,
         tego_error_t* error)
     {
-        return tego::translateExceptions([]() -> void
+        return tego::translateExceptions([&]() -> void
         {
-        // basically passthrough to ed25519_donna_sign
-        // ed25519_donna_sign(out_signature, message, messageLength, privateKey, publicKey);
+            // verify arguments
+            TEGO_THROW_IF_FALSE(message != nullptr);
+            TEGO_THROW_IF_FALSE(messageLength > 0);
+            TEGO_THROW_IF_FALSE(privateKey != nullptr);
+            TEGO_THROW_IF_FALSE(publicKey != nullptr);
+            TEGO_THROW_IF_FALSE(out_signature != nullptr);
+            TEGO_THROW_IF_FALSE(*out_signature == nullptr);
+
+            // calculate message signature
+            uint8_t signatureBuffer[TEGO_ED25519_SIGNATURE_LENGTH] = {0};
+            TEGO_THROW_IF_FALSE(
+                ::ed25519_donna_sign(
+                    signatureBuffer,
+                    message,
+                    messageLength,
+                    privateKey->data,
+                    publicKey->data));
+
+            auto signature = std::make_unique<tego_ed25519_signature>();
+            std::copy(std::begin(signatureBuffer), std::end(signatureBuffer), signature->data);
+
+            *out_signature = signature.release();
         }, error);
     }
 
@@ -312,10 +332,25 @@ extern "C"
         const tego_ed25519_public_key_t publicKey,
         tego_error_t* error)
     {
-        return tego::translateExceptions([]() -> int
+        return tego::translateExceptions([&]() -> int
         {
-            // basically passthrough to ed25519_donna_open
-            // ed25519_donna_open(signature, message, messageLength, publicKey);
+            // verify arguments
+            TEGO_THROW_IF_FALSE(signature != nullptr);
+            TEGO_THROW_IF_FALSE(message != nullptr);
+            TEGO_THROW_IF_FALSE(messageLength > 0);
+            TEGO_THROW_IF_FALSE(publicKey != nullptr);
+
+            // attempt to verify
+            auto result = ::ed25519_donna_open(
+                signature->data,
+                message,
+                messageLength,
+                publicKey->data);
+
+            // result will be 0 if valid, -1 if not
+            TEGO_THROW_IF_FALSE(result == 0 || result == -1);
+
+            if (result == 0) return TEGO_TRUE;
             return TEGO_FALSE;
         }, error, TEGO_FALSE);
     }
