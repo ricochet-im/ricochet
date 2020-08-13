@@ -2,7 +2,7 @@
 
 extern "C"
 {
-    void tego_initialize(tego_error_t* error)
+    void tego_initialize(tego_error_t** error)
     {
         return tego::translateExceptions([]() -> void
         {
@@ -10,7 +10,7 @@ extern "C"
         }, error);
     }
 
-    void tego_uninitialize(tego_error_t* error)
+    void tego_uninitialize(tego_error_t** error)
     {
         return tego::translateExceptions([]() -> void
         {

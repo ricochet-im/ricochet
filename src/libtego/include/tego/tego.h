@@ -18,7 +18,7 @@ extern "C" {
 // length of an ed25519 keyblob string including null terminator
 #define TEGO_ED25519_KEYBLOB_SIZE 100
 
-typedef struct tego_error* tego_error_t;
+typedef struct tego_error tego_error_t;
 
 /*
  * Get error message form tego_error
@@ -27,20 +27,20 @@ typedef struct tego_error* tego_error_t;
  * @return : null terminated string with error message whose
  *  lifetime is tied to the source tego_error_t
  */
-const char* tego_error_get_message(const tego_error_t error);
+const char* tego_error_get_message(const tego_error_t* error);
 
 // library init/uninit
-void tego_initialize(tego_error_t* error);
-void tego_uninitialize(tego_error_t* error);
+void tego_initialize(tego_error_t** error);
+void tego_uninitialize(tego_error_t** error);
 
 /*
  * v3 onion/ed25519 functionality
  */
 
-typedef struct tego_ed25519_private_key* tego_ed25519_private_key_t;
-typedef struct tego_ed25519_public_key* tego_ed25519_public_key_t;
-typedef struct tego_ed25519_signature* tego_ed25519_signature_t;
-typedef struct tego_v3_onion_service_id* tego_v3_onion_service_id_t;
+typedef struct tego_ed25519_private_key tego_ed25519_private_key_t;
+typedef struct tego_ed25519_public_key tego_ed25519_public_key_t;
+typedef struct tego_ed25519_signature tego_ed25519_signature_t;
+typedef struct tego_v3_onion_service_id tego_v3_onion_service_id_t;
 
 /*
  * Conversion method for converting the KeyBlob string returned by
@@ -54,10 +54,10 @@ typedef struct tego_v3_onion_service_id* tego_v3_onion_service_id_t;
  * @param error : filled with a tego_error_t on error
  */
 void tego_ed25519_private_key_from_ed25519_keyblob(
-    tego_ed25519_private_key_t* out_privateKey,
+    tego_ed25519_private_key_t** out_privateKey,
     const char* keyBlob,
     size_t keyBlobLength,
-    tego_error_t* error);
+    tego_error_t** error);
 
 /*
  * Conversion method for converting an ed25519 private key
@@ -76,8 +76,8 @@ void tego_ed25519_private_key_from_ed25519_keyblob(
 size_t tego_ed25519_keyblob_from_ed25519_private_key(
     char *out_keyBlob,
     size_t keyBlobSize,
-    const tego_ed25519_private_key_t privateKey,
-    tego_error_t* error);
+    const tego_ed25519_private_key_t* privateKey,
+    tego_error_t** error);
 
 /*
  * Calculate ed25519 public key from ed25519 private key
@@ -87,9 +87,9 @@ size_t tego_ed25519_keyblob_from_ed25519_private_key(
  * @param error : filled with a tego_error_t on error
  */
 void tego_ed25519_public_key_from_ed25519_private_key(
-    tego_ed25519_public_key_t* out_publicKey,
-    const tego_ed25519_private_key_t privateKey,
-    tego_error_t* error);
+    tego_ed25519_public_key_t** out_publicKey,
+    const tego_ed25519_private_key_t* privateKey,
+    tego_error_t** error);
 
 /*
  * Construct a service id object from string. Validates
@@ -103,10 +103,10 @@ void tego_ed25519_public_key_from_ed25519_private_key(
  * @param error : filled with a tego_error_t on error
  */
 void tego_v3_onion_service_id_from_string(
-    tego_v3_onion_service_id_t* out_serviceId,
+    tego_v3_onion_service_id_t** out_serviceId,
     const char* serviceIdString,
     size_t serviceIdStringLength,
-    tego_error_t* error);
+    tego_error_t** error);
 
 /*
  * Serializes out a service id object as a null terminated string
@@ -120,10 +120,10 @@ void tego_v3_onion_service_id_from_string(
  * @param error : filled with a tego_error_t on error
  */
 size_t tego_v3_onion_service_id_to_string(
-    const tego_v3_onion_service_id_t serviceId,
+    const tego_v3_onion_service_id_t* serviceId,
     char* out_serviceIdString,
     size_t serviceIdStringSize,
-    tego_error_t* error);
+    tego_error_t** error);
 
 /*
  * Extract public key from v3 service id per
@@ -134,9 +134,9 @@ size_t tego_v3_onion_service_id_to_string(
  * @param error : filled with a tego_error_t on error
  */
 void tego_ed25519_public_key_from_v3_onion_service_id(
-    tego_ed25519_public_key_t* out_publicKey,
-    const tego_v3_onion_service_id_t serviceId,
-    tego_error_t* error);
+    tego_ed25519_public_key_t** out_publicKey,
+    const tego_v3_onion_service_id_t* serviceId,
+    tego_error_t** error);
 
 /*
  * Derive an onion's service id from its ed25519 public key per
@@ -147,9 +147,9 @@ void tego_ed25519_public_key_from_v3_onion_service_id(
  * @param error : filled with a tego_error_t on error
  */
 void tego_v3_onion_service_id_from_ed25519_public_key(
-    tego_v3_onion_service_id_t* out_serviceId,
-    const tego_ed25519_public_key_t publicKey,
-    tego_error_t* error);
+    tego_v3_onion_service_id_t** out_serviceId,
+    const tego_ed25519_public_key_t* publicKey,
+    tego_error_t** error);
 
 /*
  * Read in signature from length 64 byte buffer
@@ -160,10 +160,10 @@ void tego_v3_onion_service_id_from_ed25519_public_key(
  * @param error : filled with a tego_error_t on error
  */
 void tego_ed25519_signature_from_data(
-    tego_ed25519_signature_t* out_signature,
+    tego_ed25519_signature_t** out_signature,
     const uint8_t* data,
     size_t dataSize,
-    tego_error_t* error);
+    tego_error_t** error);
 
 /*
  * Get the signature and place it in length 64 byte buffer
@@ -175,10 +175,10 @@ void tego_ed25519_signature_from_data(
  * @return : number of bytes written to out_data
  */
 size_t tego_ed25519_signature_to_data(
-    const tego_ed25519_signature_t signature,
+    const tego_ed25519_signature_t* signature,
     uint8_t* out_data,
     size_t dataSize,
-    tego_error_t* error);
+    tego_error_t** error);
 
 /*
  * Sign a message with an ed25519 key-pair
@@ -193,10 +193,10 @@ size_t tego_ed25519_signature_to_data(
 void tego_message_ed25519_sign(
     const uint8_t* message,
     size_t messageLength,
-    const tego_ed25519_private_key_t privateKey,
-    const tego_ed25519_public_key_t publicKey,
-    tego_ed25519_signature_t* out_signature,
-    tego_error_t* error);
+    const tego_ed25519_private_key_t* privateKey,
+    const tego_ed25519_public_key_t* publicKey,
+    tego_ed25519_signature_t** out_signature,
+    tego_error_t** error);
 
 /*
  * Verify a message's signature given a public key
@@ -210,21 +210,21 @@ void tego_message_ed25519_sign(
  *  verified or if an error occurs
  */
 int tego_ed25519_signature_verify(
-    const tego_ed25519_signature_t signature,
+    const tego_ed25519_signature_t* signature,
     const uint8_t* message,
     size_t messageLength,
-    const tego_ed25519_public_key_t publicKey,
-    tego_error_t* error);
+    const tego_ed25519_public_key_t* publicKey,
+    tego_error_t** error);
 
 /*
  Destructors for various tego types
  */
 
-void tego_ed25519_private_key_delete(tego_ed25519_private_key_t);
-void tego_ed25519_public_key_delete(tego_ed25519_public_key_t);
-void tego_ed25519_signature_delete(tego_ed25519_signature_t);
-void tego_v3_onion_service_id_delete(tego_v3_onion_service_id_t);
-void tego_error_delete(tego_error_t);
+void tego_ed25519_private_key_delete(tego_ed25519_private_key_t*);
+void tego_ed25519_public_key_delete(tego_ed25519_public_key_t*);
+void tego_ed25519_signature_delete(tego_ed25519_signature_t*);
+void tego_v3_onion_service_id_delete(tego_v3_onion_service_id_t*);
+void tego_error_delete(tego_error_t*);
 
 #ifdef __cplusplus
 }

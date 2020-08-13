@@ -10,7 +10,7 @@ struct tego_error
 
 namespace tego
 {
-    auto translateExceptions(auto&& fn, tego_error_t* out_error) noexcept(true) -> void
+    auto translateExceptions(auto&& fn, tego_error_t** out_error) noexcept(true) -> void
     {
         static_assert(std::is_same<void, decltype(fn())>::value);
 
@@ -28,7 +28,7 @@ namespace tego
         }
     }
 
-    auto translateExceptions(auto&& fn, tego_error_t* out_error, decltype(fn()) onErrorReturn) noexcept(true) -> decltype(fn())
+    auto translateExceptions(auto&& fn, tego_error_t** out_error, decltype(fn()) onErrorReturn) noexcept(true) -> decltype(fn())
     {
         try
         {
