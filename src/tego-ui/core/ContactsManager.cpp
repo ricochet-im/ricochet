@@ -123,6 +123,7 @@ void ContactsManager::contactDeleted(ContactUser *user)
 
 ContactUser *ContactsManager::lookupSecret(const QByteArray &secret) const
 {
+    // RAP: is this supposed to be a service id
     Q_ASSERT(secret.size() == 16);
 
     for (QList<ContactUser*>::ConstIterator it = pContacts.begin(); it != pContacts.end(); ++it)

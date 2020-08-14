@@ -56,7 +56,7 @@ QByteArray AddOnionCommand::build()
         out += " ";
         out += m_service->privateKey().encodedKeyBlob();
     } else {
-        out += " NEW:RSA1024";
+        out += " NEW:ED25519-V3";
     }
 
     foreach (const HiddenService::Target &target, m_service->targets()) {
@@ -74,23 +74,33 @@ QByteArray AddOnionCommand::build()
 
 void AddOnionCommand::onReply(int statusCode, const QByteArray &data)
 {
+    logger::trace();
     TorControlCommand::onReply(statusCode, data);
     if (statusCode != 250) {
         m_errorMessage = QString::fromLatin1(data);
         return;
     }
 
+    logger::trace();
     const char PRIVATE_KEY_EQUALS[] = "PrivateKey=";
 
+    logger::trace();
     if(data.startsWith(PRIVATE_KEY_EQUALS))
     {
+        logger::trace();
         CryptoKey key;
+        logger::trace();
         if(!key.loadFromKeyBlob(data.mid(static_strlen(PRIVATE_KEY_EQUALS))))
         {
             m_errorMessage = QStringLiteral("Key decoding failed");
             return;
         }
+        logger::trace();
         m_service->setPrivateKey(key);
+    }
+    else
+    {
+        logger::println("Data: {}", data);
     }
 }
 

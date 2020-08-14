@@ -37,6 +37,7 @@
 #include "utils/SecureRNG.h"
 #include "utils/CryptoKey.h"
 #include "utils/Useful.h"
+#include "utils/StringUtil.h"
 
 using namespace Protocol;
 

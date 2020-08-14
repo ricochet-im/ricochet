@@ -123,6 +123,9 @@ void TorSocket::connectivityChanged()
 void TorSocket::connectToHost(const QString &hostName, quint16 port, OpenMode openMode,
         NetworkLayerProtocol protocol)
 {
+    logger::trace();
+    logger::println("hostname: {}", hostName);
+
     m_host = hostName;
     m_port = port;
 

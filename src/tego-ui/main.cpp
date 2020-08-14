@@ -43,17 +43,45 @@ static bool initSettings(SettingsFile *settings, QLockFile **lockFile, QString &
 static bool importLegacySettings(SettingsFile *settings, const QString &oldPath);
 static void initTranslation();
 
-int main(int argc, char *argv[])
+int main(int argc, char *argv[]) try
 {
+    tego_initialize(tego::throw_on_error());
+
+#if 0
     try
     {
-        tego_initialize(tego::throw_on_error());
-    }
-    catch(std::exception& re)
-    {
-        logger::println("Exception : {}", re.what());
-    }
+        constexpr const char* testOnion =
+            "vww6ybal4bd7szmgncyruucpgfkqahzddi37ktceo3ah7ngmcopnpyyd.onion";
 
+        tego_v3_onion_service_id_t* originalServiceId = nullptr;
+        tego_v3_onion_service_id_from_string(
+            &originalServiceId,
+            testOnion,
+            std::strlen(testOnion),
+            tego::throw_on_error());
+
+        tego_ed25519_public_key_t* publicKey = nullptr;
+        tego_ed25519_public_key_from_v3_onion_service_id(
+            &publicKey,
+            originalServiceId,
+            tego::throw_on_error());
+
+        tego_v3_onion_service_id_t* calculatedServiceId = nullptr;
+        tego_v3_onion_service_id_from_ed25519_public_key(&calculatedServiceId, publicKey, tego::throw_on_error());
+
+        char serviceIdString[TEGO_V3_ONION_SERVICE_ID_SIZE] = {0};
+        tego_v3_onion_service_id_to_string(calculatedServiceId, serviceIdString, sizeof(serviceIdString), tego::throw_on_error());
+
+        logger::println("Onion Address: {}", testOnion);
+        logger::println("Verified Service Id: {}", serviceIdString);
+
+
+
+    } catch(std::exception& ex)
+    {
+        logger::println("Exception: {}", ex.what());
+    }
+#endif
     logger::println("Ricochet Start!");
 
     /* Disable rwx memory.
@@ -123,6 +151,11 @@ int main(int argc, char *argv[])
 
     return a.exec();
 }
+catch(std::exception& re)
+{
+    logger::println("Caught Exception {}", re.what());
+}
+
 
 static QString userConfigPath()
 {

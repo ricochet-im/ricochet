@@ -41,6 +41,8 @@ QT += core gui network quick widgets
 
 VERSION = 1.1.4
 
+CONFIG += ltcg
+
 # Use CONFIG+=no-hardened to disable compiler hardening options
 !CONFIG(no-hardened) {
     CONFIG += hardened

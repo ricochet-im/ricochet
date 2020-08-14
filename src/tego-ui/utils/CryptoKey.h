@@ -36,55 +36,29 @@
 class CryptoKey
 {
 public:
-    enum KeyType {
-        PrivateKey,
-        PublicKey
-    };
-
-    enum KeyFormat {
-        PEM,
-        DER,
-        ED25519_V3,
-    };
-
-    bool loadFromData(const QByteArray &data, KeyType type, KeyFormat format);
-    bool loadFromData(const QByteArray &data, KeyType type) {};
-    // load from tor's 'KeyBlob' format
+    // loads public key from service id
+    bool loadFromServiceId(const QByteArray &data);
+    // load private key from ed25519 KeyBlob format
     bool loadFromKeyBlob(const QByteArray& keyBlob);
+    // load from Service Id
+
     void clear();
 
-    bool isLoaded() const { return d.data() && d->key != 0; }
+    bool isLoaded() const { return privateKey_ != nullptr || publicKey_ != nullptr; }
     bool isPrivate() const;
 
-    QByteArray publicKeyDigest() const;
-    QByteArray encodedPrivateKey(KeyFormat format) const;
-    QByteArray encodedPublicKey(KeyFormat format) const;
     // write to tor's 'KeyBlob' format
     QByteArray encodedKeyBlob() const;
     QString torServiceID() const;
-    int bits() const;
 
-    // Calculate and sign SHA-256 digest of data using this key and PKCS #1 v2.0 padding
+    // sign data with our private key
     QByteArray signData(const QByteArray &data) const;
-    // Verify a signature as per signData
+    // verify data signature against public key
     bool verifyData(const QByteArray &data, QByteArray signature) const;
 
-    // Sign the input SHA-256 digest using this key and PKCS #1 v2.0 padding
-    QByteArray signSHA256(const QByteArray &digest) const;
-    // Verify a signature as per signSHA256
-    bool verifySHA256(const QByteArray &digest, QByteArray signature) const;
-
 private:
-    struct Data : public QSharedData
-    {
-        typedef struct rsa_st RSA;
-        RSA *key;
-
-        Data(RSA *k = 0) : key(k) { }
-        ~Data();
-    };
-
-    QExplicitlySharedDataPointer<Data> d;
+    std::shared_ptr<tego_ed25519_private_key_t> privateKey_;
+    std::shared_ptr<tego_ed25519_public_key_t> publicKey_;
 };
 
 QByteArray torControlHashedPassword(const QByteArray &password);
