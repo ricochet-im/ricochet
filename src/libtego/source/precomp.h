@@ -1,5 +1,8 @@
 // C headers
 
+// standard library
+#include <stddef.h>
+
 // tor
 #ifdef __cplusplus
 extern "C" {
@@ -26,7 +29,7 @@ extern "C" {
 // C++ headers
 #ifdef __cplusplus
 
-// stl
+// standard library
 #include <string_view>
 #include <cstdio>
 #include <stdexcept>
@@ -40,4 +43,4 @@ extern "C" {
 #include <QString>
 #include <QByteArray>
 
-#endif //__cplusplus
+#endif //__cplusplus#i

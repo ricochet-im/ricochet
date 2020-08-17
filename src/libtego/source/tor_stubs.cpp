@@ -24,6 +24,8 @@ extern "C"
         const char *fmt,
         ...)
     {
+        (void)func;
+        (void)fmt;
         throw std::runtime_error(
             fmt::format("tor assertion failed {}:{} : {}", fname, line, expr));
     }
@@ -32,13 +34,16 @@ extern "C"
     // ultimately goes to tor_assertion_failed which throws an exception
     void tor_abort_(void)
     {
-
+        throw std::runtime_error(__FUNCTION__);
     }
 
     // no-op swallow logging calls
     void log_fn_(int severity, log_domain_mask_t domain, const char *fn,
         const char *format, ...)
     {
-
+        (void)severity;
+        (void)domain;
+        (void)fn;
+        (void)format;
     }
 }
