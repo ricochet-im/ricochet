@@ -121,7 +121,7 @@ QByteArray CryptoKey::encodedKeyBlob() const
     tego_ed25519_keyblob_from_ed25519_private_key(keyBlob, sizeof(keyBlob), this->privateKey_.get(), tego::throw_on_error());
 
     logger::trace();
-    QByteArray retval = {keyBlob, TEGO_ED25519_KEYBLOB_SIZE};
+    QByteArray retval = {keyBlob, TEGO_ED25519_KEYBLOB_LENGTH};
     logger::println("Encoded KeyBlob: {}", retval);
     return retval;
 }

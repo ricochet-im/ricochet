@@ -193,33 +193,12 @@ void AuthHiddenServiceChannel::sendAuthMessage()
         return;
     }
 
-#ifdef RAP
-    QByteArray publicKey = d->privateKey.encodedPublicKey(CryptoKey::DER);
-    if (publicKey.size() > 150) {
-        BUG() << "Unexpected size for encoded public key";
-        closeChannel();
-        return;
-    }
-
-    QByteArray signature;
     QByteArray proofData = d->getProofData(d->privateKey.torServiceID());
-    if (!proofData.isEmpty()) {
-        QByteArray proofHMAC = QMessageAuthenticationCode::hash(proofData, d->clientCookie + d->serverCookie,
-                QCryptographicHash::Sha256);
-        signature = d->privateKey.signSHA256(proofHMAC);
-    }
+    auto signature = d->privateKey.signData(proofData);
 
-    if (signature.isEmpty()) {
-        BUG() << "Creating proof on AuthHiddenServiceChannel failed";
-        closeChannel();
-        return;
-    }
-#endif
     QScopedPointer<Data::AuthHiddenService::Proof> proof(new Data::AuthHiddenService::Proof);
-#ifdef RAP
-    proof->set_public_key(std::string(publicKey.constData(), publicKey.size()));
     proof->set_signature(std::string(signature.constData(), signature.size()));
-#endif
+
     proof->set_service_id(d->privateKey.torServiceID().toStdString());
 
     Data::AuthHiddenService::Packet message;
@@ -231,16 +210,20 @@ void AuthHiddenServiceChannel::sendAuthMessage()
 
 QByteArray AuthHiddenServiceChannelPrivate::getProofData(const QString &client)
 {
-    QByteArray serverHostname = connection->serverHostname().toLatin1().mid(0, 16);
+    QByteArray serverHostname = connection->serverHostname().toLatin1().mid(0, TEGO_V3_ONION_SERVICE_ID_LENGTH);
     QByteArray clientHostname = client.toLatin1();
 
-    // RAP: this will need to be v3 sized
-    if (clientHostname.size() != 16 || serverHostname.size() != 16) {
+    if (clientHostname.size() != TEGO_V3_ONION_SERVICE_ID_LENGTH || serverHostname.size() != TEGO_V3_ONION_SERVICE_ID_LENGTH) {
+        logger::println("clientHostname.size() : {}", clientHostname.size());
+        logger::println("serverHostname.size() : {}", serverHostname.size());
         BUG() << "AuthHiddenServiceChannel can't figure out the client and server hostnames";
         return QByteArray();
     }
 
-    return clientHostname + serverHostname;
+    auto proofData = clientHostname + serverHostname;
+    logger::println("proofData : {}", proofData);
+
+    return proofData;
 }
 
 void AuthHiddenServiceChannel::receivePacket(const QByteArray &packet)
@@ -280,54 +263,32 @@ void AuthHiddenServiceChannel::handleProof(const Data::AuthHiddenService::Proof 
         return;
     }
 
-#if RAP
-    QByteArray publicKeyData(message.public_key().c_str(), message.public_key().size());
     QByteArray signature(message.signature().c_str(), message.signature().size());
-#endif
-    std::string serviceId = message.service_id();
-    const auto hostname = QString::fromStdString(serviceId) + QStringLiteral(".onion");
-
-#if RAP
-    logger::println("publicKeyData:\n{}", publicKeyData);
-    logger::println("signature:\n{}", signature);
-#endif
-    logger::println("serivceId: {}", serviceId);
+    QByteArray serviceId(message.service_id().c_str(), message.service_id().size());
 
     QScopedPointer<Data::AuthHiddenService::Result> result(new Data::AuthHiddenService::Result);
-#if RAP
+
     result->set_accepted(false);
 
-    // Hidden services always use a 1024bit key. A valid signature will always be exactly 128 bytes.
+    logger::trace();
     CryptoKey publicKey;
-    if (signature.size() != 128) {
-        qWarning() << "Received invalid signature (size" << signature.size() << ") on" << type();
-    } else if (publicKeyData.size() > 150) {
-        qWarning() << "Received invalid public key (size" << publicKeyData.size() << ") on" << type();
-    } else if (!publicKey.loadFromData(publicKeyData, CryptoKey::PublicKey, CryptoKey::DER)) {
+    if(!publicKey.loadFromServiceId(serviceId)) {
+        logger::trace();
         qWarning() << "Unable to parse public key from" << type();
-    } else if (publicKey.bits() != 1024) {
-        qWarning() << "Received invalid public key (" << publicKey.bits() << "bits) on" << type();
-    } else {
-
-        bool ok = false;
-        QByteArray proofData = d->getProofData(publicKey.torServiceID());
-        if (!proofData.isEmpty()) {
-            QByteArray proofHMAC = QMessageAuthenticationCode::hash(proofData, d->clientCookie + d->serverCookie,
-                    QCryptographicHash::Sha256);
-            ok = publicKey.verifySHA256(proofHMAC, signature);
-        }
-
-        if (!ok) {
-            qWarning() << "Signature verification failed on" << type();
-            result->set_accepted(false);
-        } else {
-            result->set_accepted(true);
-            qDebug() << type() << "accepted inbound authentication for" << publicKey.torServiceID();
-        }
     }
-#else
-    result->set_accepted(true);
-#endif
+
+    logger::trace();
+    auto proofData = d->getProofData(serviceId);
+    if (publicKey.verifyData(proofData, signature)) {
+        logger::trace();
+        result->set_accepted(true);
+    } else {
+        logger::trace();
+        qWarning() << "Signature verification failed on" << type();
+    }
+    logger::trace();
+
+    const auto hostname = serviceId + ".onion";
 
     if (result->accepted()) {
         connection()->grantAuthentication(Connection::HiddenServiceAuth, hostname);
