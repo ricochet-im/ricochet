@@ -6,14 +6,10 @@
 #define TEGO_ED25519_KEYBLOB_HEADER "ED25519-V3:"
 // length of ed25519 KeyBlob header string not including null terminator
 constexpr size_t TEGO_ED25519_KEYBLOB_HEADER_LENGTH = tego::static_strlen(TEGO_ED25519_KEYBLOB_HEADER);
-// length of the ed25519 KeyBlob string not including null terminator
-constexpr size_t TEGO_ED25519_KEYBLOB_LENGTH = TEGO_ED25519_KEYBLOB_SIZE - 1;
 // length of ed25519 KeyBlob string not including null terminator
 constexpr size_t TEGO_ED25519_KEYBLOB_BASE64_LENGTH = 88;
 // number of bytes needed to encode KeyBlob including the null terminator
 constexpr size_t TEGO_ED25519_KEYBLOB_BASE64_SIZE = TEGO_ED25519_KEYBLOB_BASE64_LENGTH + 1;
-// length of a valid v3 service id string not including null terminator
-constexpr size_t TEGO_V3_ONION_SERVICE_ID_LENGTH = 56;
 // number of bytes the base32 encoded service id string decodes to
 constexpr size_t TEGO_V3_ONION_SERVICE_ID_RAW_SIZE = 35;
 // offset to public key in raw service id
@@ -385,7 +381,7 @@ extern "C"
                     message,
                     messageLength,
                     privateKey->data,
-                    publicKey->data));
+                    publicKey->data) == 0);
 
             auto signature = std::make_unique<tego_ed25519_signature>();
             std::copy(std::begin(signatureBuffer), std::end(signatureBuffer), signature->data);

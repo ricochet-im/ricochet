@@ -13,10 +13,14 @@ extern "C" {
 
 // number of bytes in an ed25519 signature
 #define TEGO_ED25519_SIGNATURE_SIZE 64
+// length of a valid v3 service id string not including null terminator
+#define TEGO_V3_ONION_SERVICE_ID_LENGTH 56
 // length of a v3 service id string including null terminator
-#define TEGO_V3_ONION_SERVICE_ID_SIZE 57
+#define TEGO_V3_ONION_SERVICE_ID_SIZE (TEGO_V3_ONION_SERVICE_ID_LENGTH + 1)
+// length of the ed25519 KeyBlob string not including null terminator
+#define TEGO_ED25519_KEYBLOB_LENGTH 99
 // length of an ed25519 keyblob string including null terminator
-#define TEGO_ED25519_KEYBLOB_SIZE 100
+#define TEGO_ED25519_KEYBLOB_SIZE (TEGO_ED25519_KEYBLOB_LENGTH + 1)
 
 typedef struct tego_error tego_error_t;
 
