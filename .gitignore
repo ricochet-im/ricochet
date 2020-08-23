@@ -32,7 +32,8 @@ config.tests/*/*
 !config.tests/*/*.pro
 !config.tests/*/*.cpp
 !config.tests/*/*.h
-ricochet-refresh
+ricochet
+src/ricochet.log
 build-tests*
 buildscripts/src/ricochet-refresh
 buildscripts/output
@@ -40,5 +41,8 @@ buildscripts/lib
 target_wrapper\.sh
 moc_predefs.h
 \.vscode/c_cpp_properties\.json
+
 \.vscode/
 notes/*
+
+ricochet-refresh
