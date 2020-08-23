@@ -13,3 +13,9 @@
 [submodule "buildscripts/src/libevent"]
 	path = buildscripts/src/libevent
 	url = https://github.com/libevent/libevent
+[submodule "src/extern/fmt"]
+	path = src/extern/fmt
+	url = https://github.com/fmtlib/fmt.git
+[submodule "src/extern/tor"]
+	path = src/extern/tor
+	url = https://git.torproject.org/tor.git
