@@ -23,8 +23,7 @@ src/tests/*/tst_*
 *.pb.cc
 packaging/installer/Qt
 packaging/installer/Output
-translation/*.qm
-src/tego-ui/translation/*.qm
+src/tego_ui/translation/*.qm
 config
 config.ricochet
 config.log
@@ -40,9 +39,10 @@ buildscripts/output
 buildscripts/lib
 target_wrapper\.sh
 moc_predefs.h
+moc_*.cpp
+qrc_*.cpp
+ricochet-refresh
+*.gch
 \.vscode/c_cpp_properties\.json
-
 \.vscode/
 notes/*
-
-ricochet-refresh
