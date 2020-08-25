@@ -1,4 +1,4 @@
-# Contribution Guideline
+# Contribution Guidelines
 
 We welcome contributions towards code, documentation, testing, and translation. This guide should help explain the ways you can contribute and how to go about it. 
 
@@ -18,7 +18,7 @@ Never made an open source contribution before? Wondering how contributions work 
 * Push your changes to your remote repository
 * Submit a pull request to the upstream tego-core repository
 * Provide a short description of the changes in the title of the pull request, reference the issue or bug number as well.
-* Provide more details of the changes in the pull description, in particular highlight any current weaknesses or outstanding problems. If your code has made changes to Crypto or protocol classes a detailed description of the changes and justification will be required. Please try to make pull requests for features separately - avoid bundling multiple issues or features into a single pull request. This makes code review easier and more managable.
+* Provide more details of the changes in the pull description, in particular highlight any current weaknesses or outstanding problems. If your code has made changes to Crypto or protocol classes a detailed description of the changes and justification will be required. Please try to make pull requests for features separately - avoid bundling multiple issues or features into a single pull request. This makes code review easier and more manageable.
 * A maintainer will review the pull request and provide feedback where appropriate. Please be patient, our maintainers are volunteers and only have a limited amount of time to work on the project.
 * Make changes to the pull request if the reviewing maintainer recommends them.
 
