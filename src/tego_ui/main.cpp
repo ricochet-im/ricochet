@@ -68,7 +68,7 @@ int main(int argc, char *argv[]) try
     }
 
     QApplication a(argc, argv);
-    a.setApplicationVersion(QLatin1String("1.1.4"));
+    a.setApplicationVersion(QLatin1String("3.0.0"));
     a.setOrganizationName(QStringLiteral("Ricochet"));
 
 #if !defined(Q_OS_WIN) && !defined(Q_OS_MAC)
