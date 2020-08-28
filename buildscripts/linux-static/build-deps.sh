@@ -102,6 +102,28 @@ pushd "$ROOT_SRC"
         -no-cups \
         -no-openssl \
         -no-qml-debug \
+        -no-feature-android-style-assets \
+        -no-feature-fontconfig \
+        -no-feature-appstore-compliant \
+        -no-feature-concurrent \
+        -no-feature-cross_compile \
+        -no-feature-framework \
+        -no-feature-future \
+        -no-feature-libudev \
+        -no-feature-network \
+        -no-feature-pkg-config \
+        -no-feature-posix_fallocate \
+        -no-feature-reduce_exports \
+        -no-feature-reduce_relocations \
+        -no-feature-release_tools \
+        -no-feature-rpath \
+        -no-feature-separate_debug_info \
+        -no-feature-shared \
+        -no-feature-simulator_and_device \
+        -no-feature-sql \
+        -no-feature-system-zlib \
+        -no-feature-testlib \ 
+        -no-feature-xml \
         -nomake examples \
         -nomake tests \
         -opensource \
