@@ -46,4 +46,11 @@ extern "C"
         (void)fn;
         (void)format;
     }
+
+#ifdef _WIN32
+    const char* tor_fix_source_file(const char* fname)
+    {
+	   return fname;
+    }
+#endif
 }

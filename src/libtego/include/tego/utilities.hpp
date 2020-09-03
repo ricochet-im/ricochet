@@ -34,7 +34,8 @@ namespace tego
     };
 
 
-    auto make_scope_exit(auto&& func) ->
+    template<typename FUNC>
+    auto make_scope_exit(FUNC&& func) ->
         scope_exit<typename std::remove_reference<decltype(func)>::type>
     {
         return {std::move(func)};

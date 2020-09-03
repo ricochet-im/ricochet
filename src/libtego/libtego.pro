@@ -7,12 +7,6 @@ TEMPLATE = lib
 TARGET = tego
 
 CONFIG += staticlib
-# enable link time optimization/code generation
-# prevents undefined-reference errors for missing symbols in unused functions
-CONFIG += ltcg
-# g++ flags
-QMAKE_CXXFLAGS += --std=c++2a
-QMAKE_CXXFLAGS += -fconcepts
 
 # setup precompiled headers
 CONFIG += precompile_header
@@ -46,10 +40,10 @@ INCLUDEPATH +=\
 HEADERS +=\
     include/tego/tego.h\
     include/tego/logger.hpp\
+    include/tego/utilities.hpp\
     source/orconfig.h\
     source/error.hpp\
-    source/ed25519.hpp\
-    source/utilities.hpp
+    source/ed25519.hpp
 
 SOURCES +=\
     source/libtego.cpp\
@@ -65,3 +59,5 @@ INCLUDEPATH +=\
     include\
     source\
     $${TOR_INCLUDE_DIR}
+
+include($${QMAKE_INCLUDES}/openssl.pri)

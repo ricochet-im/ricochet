@@ -1,18 +1,3 @@
-[submodule "buildscripts/src/openssl"]
-	path = buildscripts/src/openssl
-	url = https://github.com/openssl/openssl.git
-[submodule "buildscripts/src/tor"]
-	path = buildscripts/src/tor
-	url = https://git.torproject.org/tor.git
-[submodule "buildscripts/src/protobuf"]
-	path = buildscripts/src/protobuf
-	url = https://github.com/google/protobuf.git
-[submodule "buildscripts/src/qt5"]
-	path = buildscripts/src/qt5
-	url = https://github.com/qtproject/qt5.git
-[submodule "buildscripts/src/libevent"]
-	path = buildscripts/src/libevent
-	url = https://github.com/libevent/libevent
 [submodule "src/extern/fmt"]
 	path = src/extern/fmt
 	url = https://github.com/fmtlib/fmt.git

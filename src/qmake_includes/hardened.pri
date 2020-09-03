@@ -17,31 +17,31 @@ HARDENED_MINGW_64ASLR_FLAGS = -Wl,--dynamicbase -Wl,--high-entropy-va
 
 
 # Run tests and apply options where possible
-CONFIG(hardened) {
-    # mingw is always PIC, and complains about the flag
-    !mingw:HARDEN_FLAGS = -fPIC
+# CONFIG(hardened) {
+#     # mingw is always PIC, and complains about the flag
+#     !mingw:HARDEN_FLAGS = -fPIC
 
-    CONFIG(debug,debug|release): qtCompileTest(sanitize):HARDEN_FLAGS += $$HARDENED_SANITIZE_FLAGS
-    qtCompileTest(sanitize-ubsan):HARDEN_FLAGS += $$HARDENED_SANITIZE_UBSAN_FLAGS
-    qtCompileTest(sanitize-ubsan-more):HARDEN_FLAGS += $$HARDENED_SANITIZE_UBSAN_MORE_FLAGS
-    qtCompileTest(vtable-verify):HARDEN_FLAGS += $$HARDENED_VTABLE_VERIFY_FLAGS
+#     CONFIG(debug,debug|release): qtCompileTest(sanitize):HARDEN_FLAGS += $$HARDENED_SANITIZE_FLAGS
+#     qtCompileTest(sanitize-ubsan):HARDEN_FLAGS += $$HARDENED_SANITIZE_UBSAN_FLAGS
+#     qtCompileTest(sanitize-ubsan-more):HARDEN_FLAGS += $$HARDENED_SANITIZE_UBSAN_MORE_FLAGS
+#     qtCompileTest(vtable-verify):HARDEN_FLAGS += $$HARDENED_VTABLE_VERIFY_FLAGS
 
-    qtCompileTest(stack-protector-strong) {
-        HARDEN_FLAGS += $$HARDENED_STACK_PROTECTOR_STRONG_FLAGS
-    } else {
-        qtCompileTest(stack-protector):HARDEN_FLAGS += $$HARDENED_STACK_PROTECTOR_FLAGS
-    }
+#     qtCompileTest(stack-protector-strong) {
+#         HARDEN_FLAGS += $$HARDENED_STACK_PROTECTOR_STRONG_FLAGS
+#     } else {
+#         qtCompileTest(stack-protector):HARDEN_FLAGS += $$HARDENED_STACK_PROTECTOR_FLAGS
+#     }
 
-    mingw {
-        qtCompileTest(mingw-64aslr):QMAKE_LFLAGS *= $$HARDENED_MINGW_64ASLR_FLAGS
-        QMAKE_LFLAGS *= -Wl,--nxcompat -Wl,--dynamicbase
-    }
+#     mingw {
+#         qtCompileTest(mingw-64aslr):QMAKE_LFLAGS *= $$HARDENED_MINGW_64ASLR_FLAGS
+#         QMAKE_LFLAGS *= -Wl,--nxcompat -Wl,--dynamicbase
+#     }
 
-    QMAKE_CXXFLAGS *= $$HARDEN_FLAGS
-    QMAKE_LFLAGS *= $$HARDEN_FLAGS
+#     QMAKE_CXXFLAGS *= $$HARDEN_FLAGS
+#     QMAKE_LFLAGS *= $$HARDEN_FLAGS
 
-    # _FORTIFY_SOURCE requires -O, so only use on release builds
-    CONFIG(release,debug|release):QMAKE_CXXFLAGS *= -D_FORTIFY_SOURCE=2
-    # Linux specific
-    unix:!macx:QMAKE_LFLAGS *= -pie -Wl,-z,relro,-z,now
-}
+#     # _FORTIFY_SOURCE requires -O, so only use on release builds
+#     CONFIG(release,debug|release):QMAKE_CXXFLAGS *= -D_FORTIFY_SOURCE=2
+#     # Linux specific
+#     unix:!macx:QMAKE_LFLAGS *= -pie -Wl,-z,relro,-z,now
+# }
