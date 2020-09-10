@@ -44,7 +44,7 @@ TEMPLATE = app
 
 QT += core gui network quick widgets
 
-VERSION = 1.1.4
+VERSION = 3.0.0
 
 
 # Use CONFIG+=no-hardened to disable compiler hardening options
