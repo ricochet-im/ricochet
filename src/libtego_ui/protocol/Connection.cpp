@@ -34,8 +34,6 @@
 #include "ControlChannel.h"
 #include "utils/Useful.h"
 
-#include <QRandomGenerator>
-
 using namespace Protocol;
 
 Connection::Connection(QTcpSocket *socket, Direction direction)

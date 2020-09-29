@@ -38,7 +38,6 @@
 #include "utils/CryptoKey.h"
 #include "utils/SecureRNG.h"
 #include "utils/Settings.h"
-#include <QRandomGenerator>
 
 static bool initSettings(SettingsFile *settings, QLockFile **lockFile, QString &errorMessage);
 static bool importLegacySettings(SettingsFile *settings, const QString &oldPath);
