@@ -38,6 +38,7 @@
 #include "utils/CryptoKey.h"
 #include "utils/SecureRNG.h"
 #include "utils/Settings.h"
+#include <QRandomGenerator>
 
 static bool initSettings(SettingsFile *settings, QLockFile **lockFile, QString &errorMessage);
 static bool importLegacySettings(SettingsFile *settings, const QString &oldPath);
@@ -98,7 +99,7 @@ int main(int argc, char *argv[]) try
     /* Seed the OpenSSL RNG */
     if (!SecureRNG::seed())
         qFatal("Failed to initialize RNG");
-    qsrand(SecureRNG::randomInt(UINT_MAX));
+    QRandomGenerator::global()->seed(SecureRNG::randomInt(UINT_MAX));
 
     /* Tor control manager */
     Tor::TorManager *torManager = Tor::TorManager::instance();
