@@ -98,7 +98,6 @@ int main(int argc, char *argv[]) try
     /* Seed the OpenSSL RNG */
     if (!SecureRNG::seed())
         qFatal("Failed to initialize RNG");
-    QRandomGenerator::global()->seed(SecureRNG::randomInt(UINT_MAX));
 
     /* Tor control manager */
     Tor::TorManager *torManager = Tor::TorManager::instance();
