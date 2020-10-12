@@ -23,9 +23,9 @@ in the in our project? Here's a quick rundown!
 - Fork the repository associated with the issue to your local GitHub
   organization. This means that you will have a copy of the repository under
   your-GitHub-username/tego-core.
-- Clone the repository to your local machine using git clone
-  https://github.com/github-username/tego-core.git.
-- Create a new branch for your fix using git checkout -b branch-name-here.
+- Clone the repository to your local machine using `git clone
+  https://github.com/github-username/tego-core.git`.
+- Create a new branch for your fix using `git checkout -b branch-name-here`.
 - Make the appropriate changes for the issue you are trying to address or the
   feature that you want to add.
 - If you are new to Git or GitHub see
