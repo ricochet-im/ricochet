@@ -4,7 +4,7 @@ import QtQuick.Layouts 1.0
 
 ApplicationWindow {
     id: addContactWindow
-    width: 400
+    width: 620
     height: 300
     minimumWidth: width
     maximumWidth: width
@@ -56,7 +56,7 @@ ApplicationWindow {
             Layout.fillWidth: true
             readOnly: true
             text: userIdentity.contactID
-            horizontalAlignment: Qt.AlignHCenter
+            horizontalAlignment: Qt.AlignLeft
         }
 
         Item { height: 1 }

@@ -23,6 +23,7 @@
 #include <QSettings>
 #include <QStandardPaths>
 #include <QTranslator>
+#include <QRandomGenerator>
 
 // tego
 #include <tego/tego.hpp>

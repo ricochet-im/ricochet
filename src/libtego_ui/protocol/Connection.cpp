@@ -465,7 +465,7 @@ int ConnectionPrivate::availableOutboundChannelId()
 
     // Find an unused id, trying a maximum of 100 times, using a random step to avoid collision
     for (int i = 0; i < 100 && channels.contains(nextOutboundChannelId); i++) {
-        nextOutboundChannelId += 1 + (qrand() % 200);
+        nextOutboundChannelId += 1 + (QRandomGenerator::global()->bounded(200));
         if (evenNumbered)
             nextOutboundChannelId += nextOutboundChannelId % 2;
         if (nextOutboundChannelId > maxId)
