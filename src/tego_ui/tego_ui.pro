@@ -44,8 +44,9 @@ TEMPLATE = app
 
 QT += core gui network quick widgets
 
-VERSION = 3.0.0
+VERSION = 3.0.0a
 
+DEFINES += "TEGO_VERSION=$${VERSION}"
 
 # Use CONFIG+=no-hardened to disable compiler hardening options
 !CONFIG(no-hardened) {
