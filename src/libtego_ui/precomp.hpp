@@ -1,8 +1,14 @@
+#include <QtGlobal>
+
 // C headers
 
 // os
 #ifdef Q_OS_WIN
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
 #include <wincrypt.h>
+// workaround because protobuffer defines a GetMessage function
+#undef GetMessage
 #endif
 
 // standard library

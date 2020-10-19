@@ -19,9 +19,6 @@
 /* The size of `void *', as computed by sizeof. */
 #define SIZEOF_VOID_P 8
 
-/* defined if we have the fallthrough attribute. */
-#define HAVE_ATTR_FALLTHROUGH 1
-
 /* Define to 1 if you have the `EVP_sha3_256' function. */
 #define HAVE_EVP_SHA3_256 1
 

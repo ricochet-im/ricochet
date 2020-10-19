@@ -37,15 +37,16 @@ QMAKE_INCLUDES = $${PWD}/../qmake_includes
 
 include($${QMAKE_INCLUDES}/artifacts.pri)
 include($${QMAKE_INCLUDES}/compiler_flags.pri)
-
+include($${QMAKE_INCLUDES}/linker_flags.pri)
 
 TARGET = ricochet-refresh
 TEMPLATE = app
 
 QT += core gui network quick widgets
 
-VERSION = 3.0.0
+VERSION = 3.0.0a
 
+DEFINES += "TEGO_VERSION=$${VERSION}"
 
 # Use CONFIG+=no-hardened to disable compiler hardening options
 !CONFIG(no-hardened) {
