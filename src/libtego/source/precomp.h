@@ -1,7 +1,26 @@
+#include <QtGlobal>
+
 // C headers
+
+// os
+#ifdef Q_OS_WIN
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#include <wincrypt.h>
+// workaround because protobuffer defines a GetMessage function
+#undef GetMessage
+#endif
 
 // standard library
 #include <stddef.h>
+
+// openssl
+#include <openssl/crypto.h>
+#include <openssl/rand.h>
+#include <openssl/err.h>
+#include <openssl/bn.h>
+#include <openssl/bio.h>
+#include <openssl/pem.h>
 
 // tor
 #ifdef __cplusplus
@@ -41,5 +60,64 @@ extern "C" {
 // Qt
 #include <QString>
 #include <QByteArray>
+
+// libtego_ui Qt
+#include <QAbstractListModel>
+#include <QBuffer>
+#include <QClipboard>
+#include <QCoreApplication>
+#include <QDateTime>
+#include <QDebug>
+#include <QElapsedTimer>
+#include <QExplicitlySharedDataPointer>
+#include <QFileInfo>
+#include <QFlags>
+#include <QGuiApplication>
+#include <QHash>
+#include <QJsonDocument>
+#include <QJsonParseError>
+#include <QJsonValue>
+#include <QList>
+#include <QLocale>
+#include <QMap>
+#include <QMessageAuthenticationCode>
+#include <QMetaType>
+#include <QNetworkAccessManager>
+#include <QNetworkProxy>
+#include <QPair>
+#include <QPointer>
+#include <QProcess>
+#include <QPushButton>
+#include <QQmlApplicationEngine>
+#include <QQmlContext>
+#include <QQmlEngine>
+#include <QQmlNetworkAccessManagerFactory>
+#include <QQueue>
+#include <QQuickItem>
+#include <QRegularExpression>
+#include <QRegularExpressionValidator>
+#include <QSaveFile>
+#include <QScopedPointer>
+#include <QScreen>
+#include <QSet>
+#include <QSharedData>
+#include <QSharedPointer>
+#include <QString>
+#include <QStringList>
+#include <QTcpServer>
+#include <QTcpSocket>
+#include <QtDebug>
+#include <QtEndian>
+#include <QtGlobal>
+#include <QTime>
+#include <QTimer>
+#ifdef Q_OS_MAC
+#   include <QtMac>
+#endif // Q_OS_MAC
+#include <QtQml>
+#include <QUrl>
+#include <QVariant>
+#include <QVariantMap>
+#include <QVector>
 
 #endif //__cplusplus#i
