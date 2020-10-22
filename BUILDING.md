@@ -1,3 +1,19 @@
+## New Building
+
+### Linux
+
+Clone
+
+Download and install the prebuilt Qt 5.15 ( https://www.qt.io/download-qt-installer ) and add bin directory containing 'qmake' to your PATH environment variable.
+
+#### Debian
+
+Install the following development packages:
+
+```sh
+apt-get install build-essential libssl-dev pkg-config libprotobuf-dev protobuf-compiler libgl-dev
+```
+
 ## Building Ricochet Refresh
 
 These instructions are intended for people who wish to build or modify Ricochet Refresh from source. Most users should [download releases](https://github.com/blueprint-freespeech/ricochet-refresh/releases) instead.
