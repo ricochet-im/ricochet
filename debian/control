@@ -1,7 +1,7 @@
 Source: ricochet-refresh
 Section: net
 Priority: optional
-Maintainer: Marco Simonelli <msimonelli@protonmail.com>
+Maintainer: Blueprint For Freespeech <ricochet@blueprintforfreespeech.net>
 Build-Depends: debhelper (>= 9), pkg-config, libevent-dev, libssl-dev, libprotobuf-dev, protobuf-compiler, qtbase5-dev, qtdeclarative5-dev, qttools5-dev-tools, tor, make
 Standards-Version: 4.4.1
 Homepage: https://ricochetrefresh.net/
