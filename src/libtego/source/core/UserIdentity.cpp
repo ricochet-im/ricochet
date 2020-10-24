@@ -36,6 +36,7 @@
 #include "core/ContactIDValidator.h"
 #include "protocol/Connection.h"
 #include "utils/Useful.h"
+#include "utils/Settings.h"
 
 using namespace Protocol;
 

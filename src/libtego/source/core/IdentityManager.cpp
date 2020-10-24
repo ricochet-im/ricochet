@@ -33,6 +33,7 @@
 #include "IdentityManager.h"
 #include "ContactIDValidator.h"
 #include "core/OutgoingContactRequest.h"
+#include "utils/Settings.h"
 
 IdentityManager *identityManager = 0;
 

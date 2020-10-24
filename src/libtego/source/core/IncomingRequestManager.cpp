@@ -36,6 +36,7 @@
 #include "OutgoingContactRequest.h"
 #include "ContactIDValidator.h"
 #include "utils/Useful.h"
+#include "utils/Settings.h"
 #include "protocol/Connection.h"
 #include "protocol/ContactRequestChannel.h"
 

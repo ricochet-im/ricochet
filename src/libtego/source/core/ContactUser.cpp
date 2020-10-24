@@ -35,6 +35,7 @@
 #include "ContactsManager.h"
 #include "utils/SecureRNG.h"
 #include "utils/Useful.h"
+#include "utils/Settings.h"
 #include "core/ContactIDValidator.h"
 #include "core/OutgoingContactRequest.h"
 #include "core/ConversationModel.h"
@@ -159,50 +160,6 @@ void ContactUser::updateOutgoingSocket()
         connect(m_outgoingSocket, &Protocol::OutboundConnector::ready, this,
             [this]() {
                 assignConnection(m_outgoingSocket->takeConnection());
-            }
-        );
-
-        /* As an ugly hack, because Ricochet 1.0.x versions have no way to notify about
-         * protocol issues, and it's not feasible to support both protocols for this
-         * tiny upgrade period:
-         *
-         * The first time we make an outgoing connection to an existing contact, if they
-         * are using the old version, send a chat message that lets them know about the
-         * new version, then disconnect. This message is only sent once per contact.
-         *
-         * XXX: This logic should be removed an appropriate amount of time after the new
-         * protocol has been released.
-         */
-        connect(m_outgoingSocket, &Protocol::OutboundConnector::oldVersionNegotiated, this,
-            [this](QTcpSocket *socket) {
-                if (m_settings->read("sentUpgradeNotification").toBool())
-                    return;
-                QByteArray secret = m_settings->read<Base64Encode>("remoteSecret");
-                if (secret.size() != 16)
-                    return;
-
-                static const char upgradeMessage[] =
-                    "[automatic message] I'm using a newer version of Ricochet that is not "
-                    "compatible with yours. This is a one-time change to help improve Ricochet. "
-                    "See https://ricochet.im/upgrade for instructions on getting the latest "
-                    "version. Once you have upgraded, I will be able to see your messages again.";
-                uchar command[] = {
-                    0x00, 0x00, 0x10, 0x00, 0x00, 0x01, 0x00,
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
-                };
-
-                qToBigEndian(quint16(sizeof(upgradeMessage) + 7), command);
-                qToBigEndian(quint16(sizeof(upgradeMessage) - 1), command + sizeof(command) - sizeof(quint16));
-
-                QByteArray data;
-                data.append((char)0x00);
-                data.append(secret);
-                data.append(reinterpret_cast<const char*>(command), sizeof(command));
-                data.append(upgradeMessage);
-                socket->write(data);
-
-                m_settings->write("sentUpgradeNotification", true);
-                updateStatus();
             }
         );
     }

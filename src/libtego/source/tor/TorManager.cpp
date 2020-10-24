@@ -34,7 +34,6 @@
 #include "TorProcess.h"
 #include "TorControl.h"
 #include "GetConfCommand.h"
-#include "utils/Settings.h"
 
 using namespace Tor;
 
@@ -144,77 +143,42 @@ void TorManager::start()
         emit errorChanged();
     }
 
-    SettingsObject settings(QStringLiteral("tor"));
-
-    // If a control port is defined by config or environment, skip launching tor
-    if (!settings.read("controlPort").isUndefined() ||
-        !qEnvironmentVariableIsEmpty("TOR_CONTROL_PORT"))
-    {
-        QHostAddress address(settings.read("controlAddress").toString());
-        quint16 port = (quint16)settings.read("controlPort").toInt();
-        QByteArray password = settings.read("controlPassword").toString().toLatin1();
-
-        if (!qEnvironmentVariableIsEmpty("TOR_CONTROL_HOST"))
-            address = QHostAddress(QString::fromLatin1(qgetenv("TOR_CONTROL_HOST")));
-
-        if (!qEnvironmentVariableIsEmpty("TOR_CONTROL_PORT")) {
-            bool ok = false;
-            port = qgetenv("TOR_CONTROL_PORT").toUShort(&ok);
-            if (!ok)
-                port = 0;
-        }
-
-        if (!qEnvironmentVariableIsEmpty("TOR_CONTROL_PASSWD"))
-            password = qgetenv("TOR_CONTROL_PASSWD");
-
-        if (!port) {
-            d->setError(QStringLiteral("Invalid control port settings from environment or configuration"));
-            return;
-        }
-
-        if (address.isNull())
-            address = QHostAddress::LocalHost;
-
-        d->control->setAuthPassword(password);
-        d->control->connect(address, port);
-    } else {
-        // Launch a bundled Tor instance
-        QString executable = d->torExecutablePath();
-        if (executable.isEmpty()) {
-            d->setError(QStringLiteral("Cannot find tor executable"));
-            return;
-        }
-
-        if (!d->process) {
-            d->process = new TorProcess(this);
-            connect(d->process, SIGNAL(stateChanged(int)), d, SLOT(processStateChanged(int)));
-            connect(d->process, SIGNAL(errorMessageChanged(QString)), d,
-                    SLOT(processErrorChanged(QString)));
-            connect(d->process, SIGNAL(logMessage(QString)), d, SLOT(processLogMessage(QString)));
-        }
-
-        if (!QFile::exists(d->dataDir) && !d->createDataDir(d->dataDir)) {
-            d->setError(QStringLiteral("Cannot write data location: %1").arg(d->dataDir));
-            return;
-        }
-
-        QString defaultTorrc = d->dataDir + QStringLiteral("default_torrc");
-        if (!QFile::exists(defaultTorrc) && !d->createDefaultTorrc(defaultTorrc)) {
-            d->setError(QStringLiteral("Cannot write data files: %1").arg(defaultTorrc));
-            return;
-        }
-
-        QFile torrc(d->dataDir + QStringLiteral("torrc"));
-        if (!torrc.exists() || torrc.size() == 0) {
-            d->configNeeded = true;
-            emit configurationNeededChanged();
-        }
-
-        d->process->setExecutable(executable);
-        d->process->setDataDir(d->dataDir);
-        d->process->setDefaultTorrc(defaultTorrc);
-        d->process->start();
+    // Launch a bundled Tor instance
+    QString executable = d->torExecutablePath();
+    if (executable.isEmpty()) {
+        d->setError(QStringLiteral("Cannot find tor executable"));
+        return;
     }
+
+    if (!d->process) {
+        d->process = new TorProcess(this);
+        connect(d->process, SIGNAL(stateChanged(int)), d, SLOT(processStateChanged(int)));
+        connect(d->process, SIGNAL(errorMessageChanged(QString)), d,
+                SLOT(processErrorChanged(QString)));
+        connect(d->process, SIGNAL(logMessage(QString)), d, SLOT(processLogMessage(QString)));
+    }
+
+    if (!QFile::exists(d->dataDir) && !d->createDataDir(d->dataDir)) {
+        d->setError(QStringLiteral("Cannot write data location: %1").arg(d->dataDir));
+        return;
+    }
+
+    QString defaultTorrc = d->dataDir + QStringLiteral("default_torrc");
+    if (!QFile::exists(defaultTorrc) && !d->createDefaultTorrc(defaultTorrc)) {
+        d->setError(QStringLiteral("Cannot write data files: %1").arg(defaultTorrc));
+        return;
+    }
+
+    QFile torrc(d->dataDir + QStringLiteral("torrc"));
+    if (!torrc.exists() || torrc.size() == 0) {
+        d->configNeeded = true;
+        emit configurationNeededChanged();
+    }
+
+    d->process->setExecutable(executable);
+    d->process->setDataDir(d->dataDir);
+    d->process->setDefaultTorrc(defaultTorrc);
+    d->process->start();
 }
 
 void TorManagerPrivate::processStateChanged(int state)
@@ -270,18 +234,13 @@ void TorManagerPrivate::getConfFinished()
 
 QString TorManagerPrivate::torExecutablePath() const
 {
-    SettingsObject settings(QStringLiteral("tor"));
-    QString path = settings.read("executablePath").toString();
-    if (!path.isEmpty())
-        return path;
-
 #ifdef Q_OS_WIN
     QString filename(QStringLiteral("/tor.exe"));
 #else
     QString filename(QStringLiteral("/tor"));
 #endif
 
-    path = qApp->applicationDirPath();
+    QString path = qApp->applicationDirPath();
     if (QFile::exists(path + filename))
         return path + filename;
 

@@ -33,7 +33,6 @@
 #ifndef CONTACTUSER_H
 #define CONTACTUSER_H
 
-#include "utils/Settings.h"
 #include "protocol/Connection.h"
 
 class UserIdentity;
@@ -62,7 +61,6 @@ class ContactUser : public QObject
     Q_PROPERTY(QString contactID READ contactID CONSTANT)
     Q_PROPERTY(Status status READ status NOTIFY statusChanged)
     Q_PROPERTY(OutgoingContactRequest *contactRequest READ contactRequest NOTIFY statusChanged)
-    Q_PROPERTY(SettingsObject *settings READ settings CONSTANT)
     Q_PROPERTY(ConversationModel *conversation READ conversation CONSTANT)
 
     friend class ContactsManager;
@@ -102,7 +100,7 @@ public:
 
     Status status() const { return m_status; }
 
-    SettingsObject *settings();
+    class SettingsObject *settings();
 
     Q_INVOKABLE void deleteContact();
 
@@ -151,7 +149,7 @@ private:
     Status m_status;
     quint16 m_lastReceivedChatID;
     OutgoingContactRequest *m_contactRequest;
-    SettingsObject *m_settings;
+    class SettingsObject *m_settings;
     ConversationModel *m_conversation;
 
     /* See ContactsManager::addContact */

@@ -33,8 +33,6 @@
 #ifndef OUTGOINGCONTACTREQUEST_H
 #define OUTGOINGCONTACTREQUEST_H
 
-#include "utils/Settings.h"
-
 class ContactUser;
 class ContactRequestClient;
 
@@ -93,7 +91,7 @@ private slots:
     void requestStatusChanged(int status);
 
 private:
-    SettingsObject *m_settings;
+    class SettingsObject *m_settings;
 
     void setStatus(Status newStatus);
     void removeRequest();

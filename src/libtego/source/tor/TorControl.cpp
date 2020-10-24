@@ -39,7 +39,6 @@
 #include "GetConfCommand.h"
 #include "AddOnionCommand.h"
 #include "utils/StringUtil.h"
-#include "utils/Settings.h"
 #include "utils/PendingOperation.h"
 
 Tor::TorControl *torControl = 0;
@@ -390,18 +389,7 @@ void TorControlPrivate::getTorInfo()
     QList<QByteArray> keys;
     keys << QByteArray("status/circuit-established") << QByteArray("status/bootstrap-phase");
 
-    /* If these are set in the config, they override the automatic behavior. */
-    SettingsObject settings(QStringLiteral("tor"));
-    QHostAddress forceAddress(settings.read("socksAddress").toString());
-    quint16 port = (quint16)settings.read("socksPort").toInt();
-
-    if (!forceAddress.isNull() && port) {
-        qDebug() << "torctrl: Using manually specified SOCKS connection settings";
-        socksAddress = forceAddress;
-        socksPort = port;
-        emit q->connectivityChanged();
-    } else
-        keys << QByteArray("net/listeners/socks");
+    keys << QByteArray("net/listeners/socks");
 
     socket->sendCommand(command, command->build(keys));
 }
@@ -464,19 +452,9 @@ void TorControlPrivate::publishServices()
     if (services.isEmpty())
         return;
 
-    SettingsObject settings(QStringLiteral("tor"));
-    if (settings.read("neverPublishServices").toBool())
-    {
-        qDebug() << "torctrl: Skipping service publication because neverPublishService is enabled";
-
-        /* Call servicePublished under the assumption that they're published externally. */
-        for (QList<HiddenService*>::Iterator it = services.begin(); it != services.end(); ++it)
-            (*it)->servicePublished();
-
-        return;
-    }
-
-    Q_ASSERT(q->torVersionAsNewAs(QStringLiteral("0.2.7")));
+    // v3 works in all supported tor versions:
+    // https://trac.torproject.org/projects/tor/wiki/org/teams/NetworkTeam/CoreTorReleases
+    Q_ASSERT(q->torVersionAsNewAs(QStringLiteral("0.3.5")));
 
     foreach (HiddenService *service, services) {
         if (service->hostname().isEmpty())

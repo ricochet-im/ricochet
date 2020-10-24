@@ -37,6 +37,7 @@
 #include "IncomingRequestManager.h"
 #include "utils/Useful.h"
 #include "protocol/ContactRequestChannel.h"
+#include "utils/Settings.h"
 
 OutgoingContactRequest *OutgoingContactRequest::createNewRequest(ContactUser *user, const QString &myNickname,
                                                                  const QString &message)

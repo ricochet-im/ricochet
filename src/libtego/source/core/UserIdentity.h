@@ -68,7 +68,6 @@ class UserIdentity : public QObject
     Q_PROPERTY(QString contactID READ contactID NOTIFY contactIDChanged)
     Q_PROPERTY(bool isOnline READ isServiceOnline NOTIFY statusChanged)
     Q_PROPERTY(ContactsManager *contacts READ getContacts CONSTANT)
-    Q_PROPERTY(SettingsObject *settings READ settings CONSTANT)
 
 public:
     const int uniqueID;
@@ -91,7 +90,7 @@ public:
     bool isServiceOnline() const;
     Tor::HiddenService *hiddenService() const { return m_hiddenService; }
 
-    SettingsObject *settings();
+    class SettingsObject *settings();
 
     /* Take ownership of an inbound connection. Returns the shared pointer to
      * the connection, and releases the reference held by UserIdentity. */
@@ -110,7 +109,7 @@ private slots:
     void onIncomingConnection();
 
 private:
-    SettingsObject *m_settings;
+    class SettingsObject *m_settings;
     Tor::HiddenService *m_hiddenService;
     QTcpServer *m_incomingServer;
     QVector<QSharedPointer<Protocol::Connection>> m_incomingConnections;

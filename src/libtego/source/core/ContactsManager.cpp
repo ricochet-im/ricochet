@@ -35,6 +35,7 @@
 #include "OutgoingContactRequest.h"
 #include "ContactIDValidator.h"
 #include "ConversationModel.h"
+#include "utils/Settings.h"
 
 ContactsManager *contactsManager = 0;
 
