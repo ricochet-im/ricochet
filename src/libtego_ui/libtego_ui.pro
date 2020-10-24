@@ -22,12 +22,14 @@ CONFIG += precompile_header
 PRECOMPILED_HEADER = precomp.hpp
 
 SOURCES += \
+    libtego_callbacks.cpp \
     ui/ContactsModel.cpp \
     ui/LanguagesModel.cpp \
     ui/LinkedText.cpp \
     ui/MainWindow.cpp \
 
 HEADERS += \
+    libtego_callbacks.hpp \
     ui/ContactsModel.h \
     ui/LanguagesModel.h \
     ui/LinkedText.h \

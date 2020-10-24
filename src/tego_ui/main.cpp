@@ -32,12 +32,16 @@
  */
 
 #include "ui/MainWindow.h"
+
+// TODO: these includes need to go
 #include "core/IdentityManager.h"
 #include "tor/TorManager.h"
 #include "tor/TorControl.h"
 #include "utils/CryptoKey.h"
 #include "utils/SecureRNG.h"
 #include "utils/Settings.h"
+
+#include <libtego_callbacks.hpp>
 
 static bool initSettings(SettingsFile *settings, QLockFile **lockFile, QString &errorMessage);
 static bool importLegacySettings(SettingsFile *settings, const QString &oldPath);
@@ -49,6 +53,8 @@ int main(int argc, char *argv[]) try
     auto tego_cleanup = tego::make_scope_exit([]() -> void {
         tego_uninitialize(tego::throw_on_error());
     });
+
+    init_libtego_callbacks();
 
    /* Disable rwx memory.
        This will also ensure full PAX/Grsecurity protections. */
