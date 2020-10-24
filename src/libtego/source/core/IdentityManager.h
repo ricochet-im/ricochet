@@ -34,14 +34,14 @@
 #define IDENTITYMANAGER_H
 
 #include "UserIdentity.h"
-
+// TODO: this needs to go entirely, we do not have multiple simultaneous UserIdentity objects
 class IdentityManager : public QObject
 {
     Q_OBJECT
     Q_DISABLE_COPY(IdentityManager)
 
 public:
-    explicit IdentityManager(QObject *parent = 0);
+    explicit IdentityManager(bool createNewIdentity, QObject *parent = 0);
     ~IdentityManager();
 
     const QList<UserIdentity*> &identities() const { return m_identities; }
@@ -69,7 +69,6 @@ private:
     QList<UserIdentity*> m_identities;
     int highestID;
 
-    void loadFromSettings();
     void addIdentity(UserIdentity *identity);
 };
 

@@ -33,16 +33,22 @@
 #include "IdentityManager.h"
 #include "ContactIDValidator.h"
 #include "core/OutgoingContactRequest.h"
-#include "utils/Settings.h"
 
 IdentityManager *identityManager = 0;
 
-IdentityManager::IdentityManager(QObject *parent)
+IdentityManager::IdentityManager(bool createNewIdentity, QObject *parent)
     : QObject(parent), highestID(-1)
 {
     identityManager = this;
 
-    loadFromSettings();
+    if (createNewIdentity)
+    {
+        createIdentity();
+    }
+    else
+    {
+        addIdentity(new UserIdentity(0, this));
+    }
 }
 
 IdentityManager::~IdentityManager()
@@ -64,20 +70,6 @@ void IdentityManager::addIdentity(UserIdentity *identity)
             SLOT(onIncomingRequestRemoved(IncomingContactRequest*)));
 
     emit identityAdded(identity);
-}
-
-void IdentityManager::loadFromSettings()
-{
-    SettingsObject settings;
-    if (settings.read("identity") != QJsonValue::Undefined)
-    {
-        addIdentity(new UserIdentity(0, this));
-    }
-    else
-    {
-        /* No identities exist (probably inital run); create one */
-        createIdentity();
-    }
 }
 
 UserIdentity *IdentityManager::createIdentity()

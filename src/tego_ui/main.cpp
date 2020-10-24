@@ -119,7 +119,9 @@ int main(int argc, char *argv[]) try
     torManager->start();
 
     /* Identities */
-    identityManager = new IdentityManager;
+    const auto createNewIdentity = (SettingsObject().read("identity") == QJsonValue::Undefined);
+
+    identityManager = new IdentityManager(createNewIdentity);
     QScopedPointer<IdentityManager> scopedIdentityManager(identityManager);
 
     /* Window */
