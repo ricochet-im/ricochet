@@ -1,3 +1,12 @@
+# WORK IN PROGRESS PROJECT REPOSITORY - NOT FOR PRODUCTION USE
+
+## Tego-Core
+Tego-Core is the work in progress repository for Ricochet Refresh. We are in the process of making significant changes to Ricochet Refresh to implement V3 Onion Service support as well as some exciting new features. The change to V3 Onion Services will not be backwards compatible with V2, which is the version currently implemented in Ricochet Refresh. As such, we are keeping development separate until we are ready to release a V3 Onion Services version of Ricochet Refresh. 
+
+As noted above, this is a work in progress repository and should not be used in production. Security protocols may not be fully implemented or tested during the development process. 
+
+Existing README is continued below.
+
 ## R<sup>2</sup>: Ricochet Refresh
 Ricochet Refresh is the new updated version of Ricochet, supported by Blueprint for Free Speech.. We are a non-government, not-for-profit organisation working to safeguard the freedom of expression for whistleblowers, activists, and everybody else, worldwide. To find out more, check out our profile, or head to [http://blueprintforfreespeech.net]. Blueprint was the original sponsor of Ricochet, written by developer J. Brooks.
 
