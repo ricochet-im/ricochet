@@ -47,7 +47,8 @@ HEADERS +=\
     include/tego/utilities.hpp\
     source/orconfig.h\
     source/error.hpp\
-    source/ed25519.hpp
+    source/ed25519.hpo\
+    source/libtego.hpp
 
 SOURCES +=\
     source/libtego.cpp\

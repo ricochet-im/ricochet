@@ -49,9 +49,11 @@ static void initTranslation();
 
 int main(int argc, char *argv[]) try
 {
-    tego_initialize(tego::throw_on_error());
-    auto tego_cleanup = tego::make_scope_exit([]() -> void {
-        tego_uninitialize(tego::throw_on_error());
+    tego_context_t* tegoContext = nullptr;
+    tego_initialize(&tegoContext, tego::throw_on_error());
+
+    auto tego_cleanup = tego::make_scope_exit([=]() -> void {
+        tego_uninitialize(tegoContext, tego::throw_on_error());
     });
 
     init_libtego_callbacks();
