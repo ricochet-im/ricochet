@@ -1,0 +1,1 @@
+../../source/protocol/ChatChannel.h

@@ -30,7 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "MainWindow.h"
+#include "ui/MainWindow.h"
 #include "core/UserIdentity.h"
 #include "core/IncomingRequestManager.h"
 #include "core/OutgoingContactRequest.h"
@@ -40,7 +40,7 @@
 #include "tor/TorControl.h"
 #include "tor/TorManager.h"
 #include "tor/TorProcess.h"
-#include "ContactsModel.h"
+#include "ui/ContactsModel.h"
 #include "ui/LinkedText.h"
 #include "utils/Settings.h"
 #include "utils/PendingOperation.h"
@@ -72,7 +72,7 @@ public:
         /* Either of these is sufficient to cause any network request to fail.
          * Both of them should be redundant, because createRequest below also
          * blackholes every request (and crashes for assert builds). */
-        
+
         /* XXX: setNetworkAccessible is deprecated */
         setNetworkAccessible(QNetworkAccessManager::NotAccessible);
         setProxy(QNetworkProxy(QNetworkProxy::Socks5Proxy, QLatin1String("0.0.0.0"), 0));

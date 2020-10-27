@@ -30,6 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "utils/PendingOperation.h"
 #include "TorControl.h"
 #include "TorControlSocket.h"
 #include "HiddenService.h"
@@ -39,7 +40,6 @@
 #include "GetConfCommand.h"
 #include "AddOnionCommand.h"
 #include "utils/StringUtil.h"
-#include "utils/PendingOperation.h"
 
 Tor::TorControl *torControl = 0;
 

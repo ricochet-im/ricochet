@@ -1,6 +1,5 @@
 INCLUDEPATH +=\
     $${PWD}/include\
-    $${PWD}/source\
     $${PWD}/../extern/fmt/include
 
 

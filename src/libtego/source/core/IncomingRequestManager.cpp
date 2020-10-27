@@ -33,6 +33,7 @@
 #include "IdentityManager.h"
 #include "IncomingRequestManager.h"
 #include "ContactsManager.h"
+#include "ContactUser.h"
 #include "OutgoingContactRequest.h"
 #include "ContactIDValidator.h"
 #include "utils/Useful.h"
@@ -169,18 +170,25 @@ void IncomingRequestManager::removeRequest(IncomingContactRequest *request)
 
 void IncomingRequestManager::addRejectedHost(const QByteArray &hostname)
 {
+// TODO: migrate this to libtego_ui
+#if 0
     SettingsObject *settings = contacts->identity->settings();
     QJsonArray blacklist = settings->read<QJsonArray>("hostnameBlacklist");
     if (!blacklist.contains(QString::fromLatin1(hostname))) {
         blacklist.append(QString::fromLatin1(hostname));
         settings->write("hostnameBlacklist", blacklist);
     }
+#endif
 }
 
 bool IncomingRequestManager::isHostnameRejected(const QByteArray &hostname) const
 {
+// TODO: migrate this to libtego_ui
+#if 0
     QJsonArray blacklist = contacts->identity->settings()->read<QJsonArray>("hostnameBlacklist");
     return blacklist.contains(QString::fromLatin1(hostname));
+#endif
+    return false;
 }
 
 IncomingContactRequest::IncomingContactRequest(IncomingRequestManager *m, const QByteArray &h

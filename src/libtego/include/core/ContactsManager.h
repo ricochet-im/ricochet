@@ -1,0 +1,1 @@
+../../source/core/ContactsManager.h

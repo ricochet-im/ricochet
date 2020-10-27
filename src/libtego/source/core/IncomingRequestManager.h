@@ -33,14 +33,13 @@
 #ifndef INCOMINGREQUESTMANAGER_H
 #define INCOMINGREQUESTMANAGER_H
 
-#include "protocol/Connection.h"
-
 class IncomingRequestManager;
 class ContactsManager;
 class ContactUser;
 
 namespace Protocol {
     class ContactRequestChannel;
+    class Connection;
 }
 
 class IncomingContactRequest : public QObject

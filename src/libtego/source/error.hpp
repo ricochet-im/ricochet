@@ -2,6 +2,7 @@
 
 #define TEGO_THROW_IF_FALSE_MSG(B, MSG) if (!(B)) { throw std::runtime_error(fmt::format("assertion failed {}:{} : {}", __FILE__, __LINE__, MSG)); }
 #define TEGO_THROW_IF_FALSE(B) TEGO_THROW_IF_FALSE_MSG(B, #B)
+#define TEGO_THROW_IF_NULL(PTR) TEGO_THROW_IF_FALSE_MSG((PTR != nullptr), #PTR " may not be null")
 
 struct tego_error
 {

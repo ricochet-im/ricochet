@@ -33,7 +33,6 @@
 #ifndef IDENTITYMANAGER_H
 #define IDENTITYMANAGER_H
 
-#include "UserIdentity.h"
 // TODO: this needs to go entirely, we do not have multiple simultaneous UserIdentity objects
 class IdentityManager : public QObject
 {
@@ -44,34 +43,34 @@ public:
     explicit IdentityManager(bool createNewIdentity, QObject *parent = 0);
     ~IdentityManager();
 
-    const QList<UserIdentity*> &identities() const { return m_identities; }
-    UserIdentity *lookupNickname(const QString &nickname) const;
-    UserIdentity *lookupHostname(const QString &hostname) const;
-    UserIdentity *lookupUniqueID(int uniqueID) const;
+    const QList<class UserIdentity*> &identities() const { return m_identities; }
+    class UserIdentity *lookupNickname(const QString &nickname) const;
+    class UserIdentity *lookupHostname(const QString &hostname) const;
+    class UserIdentity *lookupUniqueID(int uniqueID) const;
 
-    UserIdentity *createIdentity();
+    class UserIdentity *createIdentity();
 
 signals:
-    void identityAdded(UserIdentity *identity);
-    void contactAdded(ContactUser *user, UserIdentity *identity);
-    void contactDeleted(ContactUser *user, UserIdentity *identity);
-    void outgoingRequestAdded(OutgoingContactRequest *request, UserIdentity *identity);
-    void incomingRequestAdded(IncomingContactRequest *request, UserIdentity *identity);
-    void incomingRequestRemoved(IncomingContactRequest *request, UserIdentity *identity);
+    void identityAdded(class UserIdentity *identity);
+    void contactAdded(class ContactUser *user, class UserIdentity *identity);
+    void contactDeleted(class ContactUser *user, class UserIdentity *identity);
+    void outgoingRequestAdded(class OutgoingContactRequest *request, class UserIdentity *identity);
+    void incomingRequestAdded(class IncomingContactRequest *request, class UserIdentity *identity);
+    void incomingRequestRemoved(class IncomingContactRequest *request, class UserIdentity *identity);
 
 private slots:
-    void onContactAdded(ContactUser *user);
-    void onOutgoingRequest(OutgoingContactRequest *request);
-    void onIncomingRequest(IncomingContactRequest *request);
-    void onIncomingRequestRemoved(IncomingContactRequest *request);
+    void onContactAdded(class ContactUser *user);
+    void onOutgoingRequest(class OutgoingContactRequest *request);
+    void onIncomingRequest(class IncomingContactRequest *request);
+    void onIncomingRequestRemoved(class IncomingContactRequest *request);
 
 private:
-    QList<UserIdentity*> m_identities;
+    QList<class UserIdentity*> m_identities;
     int highestID;
 
-    void addIdentity(UserIdentity *identity);
+    void addIdentity(class UserIdentity *identity);
 };
 
-extern IdentityManager *identityManager;
+extern class IdentityManager* identityManager;
 
 #endif // IDENTITYMANAGER_H

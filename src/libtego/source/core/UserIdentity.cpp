@@ -34,6 +34,7 @@
 #include "tor/TorControl.h"
 #include "tor/HiddenService.h"
 #include "core/ContactIDValidator.h"
+#include "core/ContactUser.h"
 #include "protocol/Connection.h"
 #include "utils/Useful.h"
 #include "utils/Settings.h"
@@ -115,11 +116,6 @@ void UserIdentity::setupService()
 
     m_hiddenService->addTarget(9878, m_incomingServer->serverAddress(), m_incomingServer->serverPort());
     torControl->addHiddenService(m_hiddenService);
-}
-
-SettingsObject *UserIdentity::settings()
-{
-    return m_settings;
 }
 
 QString UserIdentity::hostname() const

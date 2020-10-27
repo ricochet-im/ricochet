@@ -90,8 +90,6 @@ public:
     bool isServiceOnline() const;
     Tor::HiddenService *hiddenService() const { return m_hiddenService; }
 
-    class SettingsObject *settings();
-
     /* Take ownership of an inbound connection. Returns the shared pointer to
      * the connection, and releases the reference held by UserIdentity. */
     QSharedPointer<Protocol::Connection> takeIncomingConnection(Protocol::Connection *connection);

@@ -32,6 +32,7 @@
 
 #include "IdentityManager.h"
 #include "ContactIDValidator.h"
+#include "ContactUser.h"
 #include "core/OutgoingContactRequest.h"
 
 IdentityManager *identityManager = 0;
@@ -47,6 +48,7 @@ IdentityManager::IdentityManager(bool createNewIdentity, QObject *parent)
     }
     else
     {
+        // TODO: pass down contactRequests etc
         addIdentity(new UserIdentity(0, this));
     }
 }

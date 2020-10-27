@@ -33,8 +33,7 @@
 #ifndef CONTACTSMANAGER_H
 #define CONTACTSMANAGER_H
 
-#include "ContactUser.h"
-#include "IncomingRequestManager.h"
+#include "core/IncomingRequestManager.h"
 
 class OutgoingContactRequest;
 class UserIdentity;

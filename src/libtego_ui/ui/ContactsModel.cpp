@@ -33,6 +33,9 @@
 #include "ContactsModel.h"
 #include "core/IdentityManager.h"
 #include "core/ContactsManager.h"
+#include "core/ContactUser.h"
+#include "core/UserIdentity.h"
+#include "protocol/Connection.h"
 
 inline bool contactSort(const ContactUser *c1, const ContactUser *c2)
 {

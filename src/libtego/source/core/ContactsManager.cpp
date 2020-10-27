@@ -36,6 +36,7 @@
 #include "ContactIDValidator.h"
 #include "ConversationModel.h"
 #include "utils/Settings.h"
+#include "protocol/ChatChannel.h"
 
 ContactsManager *contactsManager = 0;
 
