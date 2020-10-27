@@ -512,7 +512,6 @@ void tego_context_send_chat_request(
     const tego_user_id_t* user,
     tego_error_t** error);
 
-// add user to our blocked list
 /*
  * Prevent the given user from message the host
  *
@@ -524,6 +523,21 @@ void tego_context_block_user(
     tego_context_t* context,
     const tego_user_id_t* user,
     tego_error_t** error);
+
+/*
+ * Forget about a given user, said user will be removed
+ * from all internal lists and will be needed to be re-added
+ * to chat
+ *
+ * @param context : the current tego context
+ * @param user : the user to forget
+ * @param error : filled on error
+ */
+
+void tego_context_forget_user(
+    tego_context_t* context,
+    const tego_user_id_t* user,
+    tego_error_t* error);
 
 //
 // callbacks for frontend to respond to events
