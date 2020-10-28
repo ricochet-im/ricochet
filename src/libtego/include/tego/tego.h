@@ -619,7 +619,7 @@ void tego_context_set_tor_state_changed_callback(
 
 void tego_context_set_tor_log_received_callback(
     tego_context_t* context,
-    tego_tor_state_changed_callback_t,
+    tego_tor_log_received_callback_t,
     tego_error_t** error);
 
 void tego_context_set_chat_request_received_callback(
