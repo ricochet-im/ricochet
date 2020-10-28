@@ -48,7 +48,8 @@ HEADERS +=\
     source/orconfig.h\
     source/error.hpp\
     source/ed25519.hpo\
-    source/libtego.hpp
+    source/context.hpp\
+    source/signals.hpp
 
 SOURCES +=\
     source/libtego.cpp\
@@ -57,6 +58,8 @@ SOURCES +=\
     source/tor_stubs.cpp\
     source/ed25519.cpp\
     source/logger.cpp\
+    source/context.cpp\
+    source/signals.cpp
 
 
 # external

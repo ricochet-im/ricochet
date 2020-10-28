@@ -1,6 +1,8 @@
-#include "libtego.hpp"
 #include "error.hpp"
-
+#include "context.hpp"
+//
+// Exports
+//
 extern "C"
 {
     void tego_initialize(tego_context_t** out_context, tego_error_t** error)

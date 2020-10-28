@@ -52,6 +52,8 @@ extern "C" {
 #include <cstdio>
 #include <stdexcept>
 #include <memory>
+#include <thread>
+#include <mutex>
 
 // fmt
 #include <fmt/format.h>
