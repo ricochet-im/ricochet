@@ -33,6 +33,8 @@
 #ifndef TORCONTROL_H
 #define TORCONTROL_H
 
+#include "utils/PendingOperation.h"
+
 class QNetworkProxy;
 
 namespace Tor
@@ -107,7 +109,7 @@ public:
     QVariantMap bootstrapStatus() const;
     Q_INVOKABLE QObject *getConfiguration(const QString &options);
     Q_INVOKABLE QObject *setConfiguration(const QVariantMap &options);
-    Q_INVOKABLE class PendingOperation *saveConfiguration();
+    Q_INVOKABLE PendingOperation *saveConfiguration();
 
 signals:
     void statusChanged(int newStatus, int oldStatus);
