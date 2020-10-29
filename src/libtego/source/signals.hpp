@@ -34,49 +34,68 @@ namespace tego
     private:
         std::unique_ptr<void, void(*)(void*)> data_ = {nullptr, nullptr};
         void (*callback_)(void* data) = nullptr;
-        void (*delete_)(void* data) = nullptr;
     };
 
-    enum class signal_handle : size_t
-    {
-        tor_state_changed,
-        tor_log_received,
-        chat_request_received,
-        message_received,
-        user_status_changed,
-
-        count
-    };
-
+    /*
+     * The callback_register class keeps track of provided user callbacks
+     * and lets us register them via register_X functions. Libtego internals
+     * trigger callbacks by way of the emit_EVENT functions. The callback
+     * registry is per-tego_context
+     */
 
     class callback_registry
     {
     public:
         callback_registry(tego_context* context);
 
-        tego_tor_state_changed_callback_t tor_state_changed_ = nullptr;
-        void register_tor_state_changed(tego_tor_state_changed_callback_t cb)
-        {
-            tor_state_changed_ = cb;
-        }
-        template<typename... ARGS>
-        void emit_tor_state_changed(ARGS&&... args)
-        {
-            if (tor_state_changed_ != nullptr)
-            {
-                type_erased_callback tec = type_erased_callback{
-                    [=,callback=tor_state_changed_]() -> void
-                    {
-                        callback(std::forward<ARGS>(args)...);
-                    }
-                };
-                context_->callback_queue_->push_back(std::move(tec));
+        /*
+         * Each callback X has a register_X function, an emit_X function, and
+         * a cleanup_X_args function
+         */
+        #define TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(EVENT, ...)\
+        private:\
+            tego_##EVENT##_callback_t EVENT##_ = nullptr;\
+            static void cleanup_##EVENT##_args(__VA_ARGS__);\
+        public:\
+            void register_##EVENT(tego_##EVENT##_callback_t cb)\
+            {\
+                EVENT##_ = cb;\
+            }\
+            template<typename... ARGS>\
+            void emit_##EVENT(ARGS&&... args)\
+            {\
+                if (EVENT##_ != nullptr) {\
+                    push_back(\
+                        [=, context=context_, callback=EVENT##_]() mutable -> void\
+                        {\
+                            callback(context, std::forward<ARGS>(args)...);\
+                            cleanup_##EVENT##_args(std::forward<ARGS>(args)...);\
+                        }\
+                    );\
+                }\
             }
-        }
+
+        TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(tor_state_changed);
+        TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(tor_log_received);
+        TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(chat_request_received);
+        TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(message_received);
+        TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(user_status_changed);
+        TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(new_identity_created, tego_ed25519_private_key_t*);
+
     private:
+        // cleanup overload for parameters passed into callback
+        template<typename T>
+        static void cleanup(T param)
+        {
+            if constexpr (std::is_pointer_v<T>)
+            {
+                delete param;
+            }
+        };
+
+        void push_back(type_erased_callback&&);
         tego_context* context_ = nullptr;
     };
-
 
     /*
      * callback_queue holds onto a queue of callbacks. Libtego internals

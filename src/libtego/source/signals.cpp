@@ -1,5 +1,7 @@
 #include "signals.hpp"
 #include "context.hpp"
+#include "error.hpp"
+#include "ed25519.hpp"
 
 namespace tego
 {
@@ -13,21 +15,39 @@ namespace tego
         this->data_ = std::move(that.data_);
         this->callback_ = that.callback_;
         that.callback_ = nullptr;
-        this->delete_ = that.delete_;
-        that.delete_ = nullptr;
 
         return *this;
     }
+
 
     void type_erased_callback::invoke()
     {
         this->callback_(this->data_.get());
     }
 
+    //
+    // Callback Registery
+    //
+
     callback_registry::callback_registry(tego_context* context)
     : context_(context)
     {
+        TEGO_THROW_IF_NULL(context);
+    }
 
+    void callback_registry::push_back(type_erased_callback&& callback)
+    {
+        this->context_->callback_queue_.push_back(std::move(callback));
+    }
+
+    //
+    // Callback Register Arg Cleanup Functions
+    //
+
+    void callback_registry::cleanup_new_identity_created_args(
+        tego_ed25519_private_key_t* privateKey)
+    {
+        delete privateKey;
     }
 
     //
@@ -44,15 +64,17 @@ namespace tego
 
         auto& self = ctx->callback_queue_;
 
-        // we use double buffering to ensure we can enqueue callbacks
-        // while we are executing previously enqueued ones
+        // we use double buffering to ensure we can enqueue tasks
+        // without blocking while we are executing previously
+        // enqueued tasks
         decltype(self.pending_callbacks_) local_queue;
 
-        // we keep spinning until
-
+        // we keep spinning until termination is signaled
         while(!self.terminating_)
         {
             // acquire the queue's lock and swap our queues
+            // the backend can now keep emitting callbacks
+            // while we work through our queue of old ones
             {
                 std::lock_guard<std::mutex> lock(self.mutex_);
                 std::swap(local_queue, self.pending_callbacks_);
@@ -79,7 +101,7 @@ namespace tego
     }, context)
     , pending_callbacks_()
     {
-
+        // empty constructor
     }
 
     callback_queue::~callback_queue()
@@ -100,3 +122,29 @@ namespace tego
     }
 }
 
+//
+// Implementation of our exposed callback setters
+//
+
+extern "C"
+{
+    #define TEGO_DEFINE_CALLBACK_SETTER(EVENT)\
+    void tego_context_set_##EVENT##_callback(\
+        tego_context_t* context,\
+        tego_##EVENT##_callback_t callback,\
+        tego_error_t** error)\
+    {\
+        return tego::translateExceptions([=]() -> void\
+        {\
+            TEGO_THROW_IF_NULL(context);\
+            context->callback_registry_.register_##EVENT(callback);\
+        }, error);\
+    }
+
+    TEGO_DEFINE_CALLBACK_SETTER(tor_state_changed);
+    TEGO_DEFINE_CALLBACK_SETTER(tor_log_received);
+    TEGO_DEFINE_CALLBACK_SETTER(chat_request_received);
+    TEGO_DEFINE_CALLBACK_SETTER(message_received);
+    TEGO_DEFINE_CALLBACK_SETTER(user_status_changed);
+    TEGO_DEFINE_CALLBACK_SETTER(new_identity_created);
+}

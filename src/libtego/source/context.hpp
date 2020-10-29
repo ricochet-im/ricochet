@@ -9,8 +9,10 @@ public:
 
     tego::callback_registry callback_registry_;
     tego::callback_queue callback_queue_;
-    // anythign that touches internal state shoudl do so through
-    // this 'global' (per context) mutex
+    // anythign that touches internal state should do so through
+    // this 'global' (actually per tego_context) mutex
     std::mutex mutex_;
 private:
 };
+
+extern tego_context_t* g_tego_context;
