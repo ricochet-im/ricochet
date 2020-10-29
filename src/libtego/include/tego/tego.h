@@ -596,7 +596,6 @@ typedef void (*tego_message_received_callback_t)(
     const char* message,
     size_t messageLength);
 
-// fired when a user's status changes
 /*
  * Callback fired when a user's status changes
  *
@@ -608,6 +607,18 @@ typedef void (*tego_user_status_changed_callback_t)(
     tego_context_t* context,
     const tego_user_id_t* user,
     tego_user_status_t status);
+
+/*
+ * Callback fired when tor creates a new onion service for
+ * the host
+ *
+ * @param context : the current tego context
+ * @param privateKey : the host's private key
+ */
+typedef void (*tego_new_identity_created_callback_t)(
+    tego_context_t* context,
+    const tego_ed25519_private_key_t* privateKey);
+
 /*
  * Setters for various callbacks
  */
@@ -636,6 +647,12 @@ void tego_context_set_user_status_changed_callback(
     tego_context_t* context,
     tego_user_status_changed_callback_t,
     tego_error_t** error);
+
+void tego_context_set_new_identity_created_callback(
+    tego_context_t* context,
+    tego_new_identity_created_callback_t,
+    tego_error_t** error);
+
 
 /*
  Destructors for various tego types

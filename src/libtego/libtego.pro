@@ -47,7 +47,7 @@ HEADERS +=\
     include/tego/utilities.hpp\
     source/orconfig.h\
     source/error.hpp\
-    source/ed25519.hpo\
+    source/ed25519.hpp\
     source/context.hpp\
     source/signals.hpp
 
@@ -64,8 +64,8 @@ SOURCES +=\
 
 # external
 INCLUDEPATH +=\
-    include\
     source\
+    include\
     $${TOR_INCLUDE_DIR}
 
 #
