@@ -37,19 +37,19 @@
 
 IdentityManager *identityManager = 0;
 
-IdentityManager::IdentityManager(bool createNewIdentity, QObject *parent)
+IdentityManager::IdentityManager(const QString& serviceID, QObject *parent)
     : QObject(parent), highestID(-1)
 {
     identityManager = this;
 
-    if (createNewIdentity)
+    if (serviceID.isEmpty())
     {
         createIdentity();
     }
     else
     {
         // TODO: pass down contactRequests etc
-        addIdentity(new UserIdentity(0, this));
+        addIdentity(new UserIdentity(0, serviceID, this));
     }
 }
 

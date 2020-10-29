@@ -39,9 +39,13 @@
 #include "utils/Useful.h"
 #include "utils/Settings.h"
 
+#include "signals.hpp"
+#include "context.hpp"
+#include "ed25519.hpp"
+
 using namespace Protocol;
 
-UserIdentity::UserIdentity(int id, QObject *parent)
+UserIdentity::UserIdentity(int id, const QString& serviceID, QObject *parent)
     : QObject(parent)
     , uniqueID(id)
     , contacts(this)
@@ -52,7 +56,7 @@ UserIdentity::UserIdentity(int id, QObject *parent)
     m_settings = new SettingsObject(QStringLiteral("identity"), this);
     connect(m_settings, &SettingsObject::modified, this, &UserIdentity::onSettingsModified);
 
-    setupService();
+    setupService(serviceID);
 
     contacts.loadFromSettings();
 }
@@ -67,13 +71,13 @@ UserIdentity *UserIdentity::createIdentity(int uniqueID)
     SettingsObject settings(QStringLiteral("identity"));
     settings.write("initializing", true);
 
-    return new UserIdentity(uniqueID);
+    return new UserIdentity(uniqueID, "");
 }
 
 // TODO: Handle the error cases of this function in a useful way
-void UserIdentity::setupService()
+void UserIdentity::setupService(const QString& serviceID)
 {
-    QString keyData = m_settings->read("serviceKey").toString();
+    QString keyData = serviceID;
 
     if (!keyData.isEmpty()) {
         CryptoKey key;
@@ -90,7 +94,17 @@ void UserIdentity::setupService()
         connect(m_hiddenService, &Tor::HiddenService::privateKeyChanged, this,
             [&]() {
                 QString key = QString::fromLatin1(m_hiddenService->privateKey().encodedKeyBlob());
-                m_settings->write("serviceKey", key);
+                const QByteArray rawKey = key.toUtf8();
+
+                // convert keyblob string to tego_ed25519_private key
+                std::unique_ptr<tego_ed25519_private_key_t> privateKey;
+                tego_ed25519_private_key_from_ed25519_keyblob(
+                    tego::out(privateKey),
+                    rawKey.data(),
+                    rawKey.size(),
+                    tego::throw_on_error());
+
+                g_tego_context->callback_registry_.emit_new_identity_created(privateKey.release());
             }
         );
     }

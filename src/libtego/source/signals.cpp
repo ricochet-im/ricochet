@@ -60,8 +60,6 @@ namespace tego
     , mutex_({})
     , worker_([](tego_context* ctx) -> void
     {
-        logger::trace();
-
         auto& self = ctx->callback_queue_;
 
         // we use double buffering to ensure we can enqueue tasks

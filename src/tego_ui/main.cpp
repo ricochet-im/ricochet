@@ -49,15 +49,6 @@ static void initTranslation();
 
 int main(int argc, char *argv[]) try
 {
-    tego_context_t* tegoContext = nullptr;
-    tego_initialize(&tegoContext, tego::throw_on_error());
-
-    auto tego_cleanup = tego::make_scope_exit([=]() -> void {
-        tego_uninitialize(tegoContext, tego::throw_on_error());
-    });
-
-    init_libtego_callbacks();
-
    /* Disable rwx memory.
        This will also ensure full PAX/Grsecurity protections. */
     qputenv("QV4_FORCE_INTERPRETER",  "1");
@@ -76,6 +67,16 @@ int main(int argc, char *argv[]) try
     }
 
     QApplication a(argc, argv);
+
+    tego_context_t* tegoContext = nullptr;
+    tego_initialize(&tegoContext, tego::throw_on_error());
+
+    auto tego_cleanup = tego::make_scope_exit([=]() -> void {
+        tego_uninitialize(tegoContext, tego::throw_on_error());
+    });
+
+    init_libtego_callbacks(tegoContext);
+
 #ifdef TEGO_VERSION
 #   define XSTR(X) STR(X)
 #   define STR(X) #X
@@ -121,9 +122,14 @@ int main(int argc, char *argv[]) try
     torManager->start();
 
     /* Identities */
-    const auto createNewIdentity = (SettingsObject().read("identity") == QJsonValue::Undefined);
+    // const auto createNewIdentity = (SettingsObject().read("identity") == QJsonValue::Undefined);
+    QString serviceID = []()
+    {
+        auto settings = SettingsObject(QStringLiteral("identity"), nullptr);
+        return settings.read<QString>("serviceKey");
+    }();
 
-    identityManager = new IdentityManager(createNewIdentity);
+    identityManager = new IdentityManager(serviceID);
     QScopedPointer<IdentityManager> scopedIdentityManager(identityManager);
 
     /* Window */

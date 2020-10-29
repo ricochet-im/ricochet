@@ -33,8 +33,8 @@
 #ifndef PROTOCOL_CHATCHANNEL_H
 #define PROTOCOL_CHATCHANNEL_H
 
-#include "Channel.h"
-#include "ChatChannel.pb.h"
+#include "protocol/Channel.h"
+#include "protocol/ChatChannel.pb.h"
 
 namespace Protocol
 {

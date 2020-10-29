@@ -51,6 +51,9 @@ namespace tego
         /*
          * Each callback X has a register_X function, an emit_X function, and
          * a cleanup_X_args function
+         *
+         * It is assumed that a callback always sends over the tego_context_t* as
+         * the first argument
          */
         #define TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(EVENT, ...)\
         private:\
@@ -83,16 +86,6 @@ namespace tego
         TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(new_identity_created, tego_ed25519_private_key_t*);
 
     private:
-        // cleanup overload for parameters passed into callback
-        template<typename T>
-        static void cleanup(T param)
-        {
-            if constexpr (std::is_pointer_v<T>)
-            {
-                delete param;
-            }
-        };
-
         void push_back(type_erased_callback&&);
         tego_context* context_ = nullptr;
     };

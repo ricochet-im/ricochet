@@ -73,7 +73,7 @@ public:
     const int uniqueID;
     ContactsManager contacts;
 
-    explicit UserIdentity(int uniqueID, QObject *parent = 0);
+    explicit UserIdentity(int uniqueID, const QString& serviceID, QObject *parent = 0);
 
     /* Properties */
     int getUniqueID() const { return uniqueID; }
@@ -115,7 +115,7 @@ private:
     static UserIdentity *createIdentity(int uniqueID);
 
     void handleIncomingAuthedConnection(Protocol::Connection *connection);
-    void setupService();
+    void setupService(const QString& serviceID);
 };
 
 Q_DECLARE_METATYPE(UserIdentity*)
