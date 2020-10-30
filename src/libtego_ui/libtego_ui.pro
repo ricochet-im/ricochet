@@ -11,41 +11,11 @@ QT += core gui network quick widgets
 
 CONFIG(release,debug|release):DEFINES += QT_NO_DEBUG_OUTPUT QT_NO_WARNING_OUTPUT
 
-INCLUDEPATH += $${PWD}
-INCLUDEPATH += $${PWD}/../extern/fmt/include
+# INCLUDEPATH += $${PWD}
+# INCLUDEPATH += $${PWD}/../extern/fmt/include
 
-include($${PWD}/../libtego/libtego.pri)
-
-win32|mac {
-    # For mac, this is necessary because homebrew does not link openssl .pc to
-    # /usr/local/lib/pkgconfig (presumably because it used to be a system
-    # package).
-    #
-    # Unfortunately, it is no longer really a system package, and we really
-    # need to know where it is.
-    isEmpty(OPENSSLDIR): error(You must pass OPENSSLDIR=path/to/openssl to qmake on this platform)
-}
-
-unix {
-    !isEmpty(OPENSSLDIR) {
-        INCLUDEPATH += $${OPENSSLDIR}/include
-        LIBS += -L$${OPENSSLDIR}/lib -lcrypto
-    } else {
-        CONFIG += link_pkgconfig
-        PKGCONFIG += libcrypto
-    }
-}
-win32 {
-    INCLUDEPATH += $${OPENSSLDIR}/include
-
-    win32-g++ {
-        LIBS += -L$${OPENSSLDIR}/lib -lcrypto
-    } else {
-        LIBS += -L$${OPENSSLDIR}/lib -llibeay32
-    }
-
-    # required by openssl
-    LIBS += -luser32 -lgdi32 -ladvapi32
+macx {
+    QT += macextras
 }
 
 CONFIG += precompile_header
@@ -141,3 +111,6 @@ PROTOS += \
     protocol/AuthHiddenService.proto \
     protocol/ChatChannel.proto \
     protocol/ContactRequestChannel.proto
+
+include($${QMAKE_INCLUDES}/openssl.pri)
+include($${PWD}/../libtego/libtego.pri)

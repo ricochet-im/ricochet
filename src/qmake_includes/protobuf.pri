@@ -8,35 +8,53 @@
 
 PROTOC = protoc
 
-unix {
-    PKG_CONFIG = $$pkgConfigExecutable()
+# unix {
+#     PKG_CONFIG = $$pkgConfigExecutable()
 
-    # All our dependency resolution depends on pkg-config. If it isn't
-    # available, the errors we will get subsequently are a lot more cryptic than
-    # this.
-    !system($$PKG_CONFIG --version 2>&1 > /dev/null) {
-        error("pkg-config executable is not available. please install it so I can find dependencies.")
+#     # All our dependency resolution depends on pkg-config. If it isn't
+#     # available, the errors we will get subsequently are a lot more cryptic than
+#     # this.
+#     !system($$PKG_CONFIG --version 2>&1 > /dev/null) {
+#         error("pkg-config executable is not available. please install it so I can find dependencies.")
+#     }
+
+#     !contains(QT_CONFIG, no-pkg-config) {
+#         CONFIG += link_pkgconfig
+#         PKGCONFIG += protobuf
+#     } else {
+#         # Some SDK builds (e.g. OS X 5.4.1) are no-pkg-config, so try to hack the linker flags in.
+#         QMAKE_LFLAGS += $$system($$PKG_CONFIG --libs protobuf)
+#     }
+
+#     gcc|clang {
+#         # Add -isystem for protobuf includes to suppress some loud compiler warnings in their headers
+#         PROTOBUF_CFLAGS = $$system($$PKG_CONFIG --cflags protobuf)
+#         PROTOBUF_CFLAGS ~= s/^(?!-I).*//g
+#         PROTOBUF_CFLAGS ~= s/^-I(.*)/-isystem \\1/g
+#         QMAKE_CXXFLAGS += $$PROTOBUF_CFLAGS
+#     }
+# }
+
+# win32 {
+#     isEmpty(PROTOBUFDIR):error(You must pass PROTOBUFDIR=path/to/protobuf to qmake on this platform)
+#     INCLUDEPATH += $${PROTOBUFDIR}/include
+#     LIBS += -L$${PROTOBUFDIR}/lib -lprotobuf
+#     contains(QMAKE_HOST.os,Windows):PROTOC = $${PROTOBUFDIR}/bin/protoc.exe
+# }
+
+isEmpty(PROTOBUFDIR) {
+    error(You must pass PROTOBUFDIR=path/to/protobuf to qmake on this platform)
+    win32 {
+
     }
+    unix:!macx {
 
-    !contains(QT_CONFIG, no-pkg-config) {
-        CONFIG += link_pkgconfig
-        PKGCONFIG += protobuf
-    } else {
-        # Some SDK builds (e.g. OS X 5.4.1) are no-pkg-config, so try to hack the linker flags in.
-        QMAKE_LFLAGS += $$system($$PKG_CONFIG --libs protobuf)
     }
+    macx {
 
-    gcc|clang {
-        # Add -isystem for protobuf includes to suppress some loud compiler warnings in their headers
-        PROTOBUF_CFLAGS = $$system($$PKG_CONFIG --cflags protobuf)
-        PROTOBUF_CFLAGS ~= s/^(?!-I).*//g
-        PROTOBUF_CFLAGS ~= s/^-I(.*)/-isystem \\1/g
-        QMAKE_CXXFLAGS += $$PROTOBUF_CFLAGS
     }
 }
-
-win32 {
-    isEmpty(PROTOBUFDIR):error(You must pass PROTOBUFDIR=path/to/protobuf to qmake on this platform)
+else {
     INCLUDEPATH += $${PROTOBUFDIR}/include
     LIBS += -L$${PROTOBUFDIR}/lib -lprotobuf
     contains(QMAKE_HOST.os,Windows):PROTOC = $${PROTOBUFDIR}/bin/protoc.exe

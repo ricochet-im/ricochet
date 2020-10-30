@@ -6,5 +6,9 @@ SUBDIRS = \
     libtego \
     libtego_ui \
     tego_ui \
-    tests \
+
+# macx can't build tests for somereason, stub out for now
+!macx {
+    SUBDIRS += tests \
+}
 

@@ -68,7 +68,14 @@ int main(int argc, char *argv[]) try
     }
 
     QApplication a(argc, argv);
-    a.setApplicationVersion(QLatin1String("1.1.4"));
+#ifdef TEGO_VERSION
+#   define XSTR(X) STR(X)
+#   define STR(X) #X
+#   define TEGO_VERSION_STR XSTR(TEGO_VERSION)
+#else
+#   define TEGO_VERSION_STR "devbuild"
+#endif
+    a.setApplicationVersion(QLatin1String(TEGO_VERSION_STR));
     a.setOrganizationName(QStringLiteral("Ricochet"));
 
 #if !defined(Q_OS_WIN) && !defined(Q_OS_MAC)
@@ -98,7 +105,6 @@ int main(int argc, char *argv[]) try
     /* Seed the OpenSSL RNG */
     if (!SecureRNG::seed())
         qFatal("Failed to initialize RNG");
-    qsrand(SecureRNG::randomInt(UINT_MAX));
 
     /* Tor control manager */
     Tor::TorManager *torManager = Tor::TorManager::instance();

@@ -20,7 +20,7 @@ void TestContactIDValidator::test_validate()
     int pos = 0;
     QCOMPARE(validator.validate(text, pos), QValidator::Invalid);
 
-    text = "ricochet:iou53ffunpweuzy5";
+    text = "ricochet:kmhee7bfsixluoummhu7rkjx6vlxksneflromksrdhhi7n5ks3ckygqd";
     pos = 0;
     QCOMPARE(validator.validate(text, pos), QValidator::Acceptable);
 }
