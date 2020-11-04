@@ -109,7 +109,7 @@ ApplicationWindow {
             property QtObject currentContact: (visible && width > 0) ? contactList.selectedContact : null
             onCurrentContactChanged: {
                 if (currentContact !== null) {
-                    show(currentContact.uniqueID, Qt.resolvedUrl("ChatPage.qml"),
+                    show(currentContact.contactID, Qt.resolvedUrl("ChatPage.qml"),
                          { 'contact': currentContact });
                 } else {
                     currentKey = ""

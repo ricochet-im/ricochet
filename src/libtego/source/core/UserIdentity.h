@@ -73,7 +73,7 @@ public:
     const int uniqueID;
     ContactsManager contacts;
 
-    explicit UserIdentity(int uniqueID, const QString& serviceID, QObject *parent = 0);
+    explicit UserIdentity(int uniqueID, const QString& serviceID, const QVector<QString>& contactHostnames, QObject *parent = 0);
 
     /* Properties */
     int getUniqueID() const { return uniqueID; }

@@ -37,7 +37,7 @@
 
 IdentityManager *identityManager = 0;
 
-IdentityManager::IdentityManager(const QString& serviceID, QObject *parent)
+IdentityManager::IdentityManager(const QString& serviceID, const QVector<QString>& contactHostnames, QObject *parent)
     : QObject(parent), highestID(-1)
 {
     identityManager = this;
@@ -49,7 +49,7 @@ IdentityManager::IdentityManager(const QString& serviceID, QObject *parent)
     else
     {
         // TODO: pass down contactRequests etc
-        addIdentity(new UserIdentity(0, serviceID, this));
+        addIdentity(new UserIdentity(0, serviceID, contactHostnames, this));
     }
 }
 

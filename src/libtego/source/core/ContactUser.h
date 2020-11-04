@@ -55,7 +55,6 @@ class ContactUser : public QObject
     Q_DISABLE_COPY(ContactUser)
     Q_ENUMS(Status)
 
-    Q_PROPERTY(int uniqueID READ getUniqueID CONSTANT)
     Q_PROPERTY(UserIdentity* identity READ getIdentity CONSTANT)
     Q_PROPERTY(QString nickname READ nickname WRITE setNickname NOTIFY nicknameChanged)
     Q_PROPERTY(QString contactID READ contactID CONSTANT)
@@ -77,9 +76,8 @@ public:
     };
 
     UserIdentity * const identity;
-    const int uniqueID;
 
-    explicit ContactUser(UserIdentity *identity, int uniqueID, QObject *parent = 0);
+    explicit ContactUser(UserIdentity *identity, const QString& hostname, QObject *parent = 0);
     virtual ~ContactUser();
 
     const QSharedPointer<Protocol::Connection> &connection() { return m_connection; }
@@ -89,7 +87,6 @@ public:
     ConversationModel *conversation() { return m_conversation; }
 
     UserIdentity *getIdentity() const { return identity; }
-    int getUniqueID() const { return uniqueID; }
 
     QString nickname() const;
     /* Hostname is in the onion hostname format, i.e. it ends with .onion */
@@ -151,9 +148,10 @@ private:
     OutgoingContactRequest *m_contactRequest;
     class SettingsObject *m_settings;
     ConversationModel *m_conversation;
+    mutable QString m_hostname;
 
     /* See ContactsManager::addContact */
-    static ContactUser *addNewContact(UserIdentity *identity, int id);
+    static ContactUser *addNewContact(UserIdentity *identity, const QString& contactHostname);
 
     void loadContactRequest();
     void updateOutgoingSocket();

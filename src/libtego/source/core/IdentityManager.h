@@ -41,7 +41,7 @@ class IdentityManager : public QObject
 
 public:
     // serviceID : string ED25519-V3 keyblob pulled from config.json, or empty string to create one
-    explicit IdentityManager(const QString& serviceID, QObject *parent = 0);
+    explicit IdentityManager(const QString& serviceID, const QVector<QString>& contactHostnames, QObject *parent = 0);
     ~IdentityManager();
 
     const QList<class UserIdentity*> &identities() const { return m_identities; }

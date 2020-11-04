@@ -45,7 +45,7 @@
 
 using namespace Protocol;
 
-UserIdentity::UserIdentity(int id, const QString& serviceID, QObject *parent)
+UserIdentity::UserIdentity(int id, const QString& serviceID, const QVector<QString>& contactHostnames, QObject *parent)
     : QObject(parent)
     , uniqueID(id)
     , contacts(this)
@@ -57,8 +57,7 @@ UserIdentity::UserIdentity(int id, const QString& serviceID, QObject *parent)
     connect(m_settings, &SettingsObject::modified, this, &UserIdentity::onSettingsModified);
 
     setupService(serviceID);
-
-    contacts.loadFromSettings();
+    contacts.loadFromSettings(contactHostnames);
 }
 
 UserIdentity *UserIdentity::createIdentity(int uniqueID)
@@ -71,7 +70,7 @@ UserIdentity *UserIdentity::createIdentity(int uniqueID)
     SettingsObject settings(QStringLiteral("identity"));
     settings.write("initializing", true);
 
-    return new UserIdentity(uniqueID, "");
+    return new UserIdentity(uniqueID, "", {});
 }
 
 // TODO: Handle the error cases of this function in a useful way
@@ -250,7 +249,7 @@ void UserIdentity::handleIncomingAuthedConnection(Connection *conn)
         return;
     }
 
-    qDebug() << "Incoming connection authenticated as contact" << user->uniqueID << "with hostname" << clientName;
+    qDebug() << "Incoming connection authenticated as contact" << user->nickname() << "with hostname" << clientName;
     user->assignConnection(connPtr);
 }
 

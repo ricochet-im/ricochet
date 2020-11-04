@@ -327,7 +327,7 @@ void IncomingContactRequest::accept(ContactUser *user)
     // Create the contact if necessary
     if (!user) {
         Q_ASSERT(!nickname().isEmpty());
-        user = manager->contacts->addContact(nickname());
+        user = manager->contacts->addContact(QString::fromLatin1(m_hostname), nickname());
         user->setHostname(QString::fromLatin1(m_hostname));
     }
 

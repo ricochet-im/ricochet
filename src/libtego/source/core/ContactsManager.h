@@ -61,7 +61,6 @@ public:
     ContactUser *lookupSecret(const QByteArray &secret) const;
     ContactUser *lookupHostname(const QString &hostname) const;
     ContactUser *lookupNickname(const QString &nickname) const;
-    ContactUser *lookupUniqueID(int uniqueID) const;
 
     /* Create a new user and a contact request for that user. Use this instead of addContact.
      * Note that contactID should be an ricochet: ID. */
@@ -69,11 +68,11 @@ public:
                                                   const QString &myNickname, const QString &message);
 
     /* addContact will add the contact, but does not create a request. Use createContactRequest */
-    ContactUser *addContact(const QString &nickname);
+    ContactUser *addContact(const QString& hostname, const QString &nickname);
 
     static QString hostnameFromID(const QString &ID);
 
-    void loadFromSettings();
+    void loadFromSettings(const QVector<QString>& contactHostnames);
 
     int globalUnreadCount() const;
 
@@ -91,7 +90,6 @@ private slots:
 
 private:
     QList<ContactUser*> pContacts;
-    int highestID;
 
     void connectSignals(ContactUser *user);
 };

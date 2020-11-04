@@ -129,7 +129,21 @@ int main(int argc, char *argv[]) try
         return settings.read<QString>("serviceKey");
     }();
 
-    identityManager = new IdentityManager(serviceID);
+    QVector<QString> contactHostnames = []()
+    {
+        auto settings = SettingsObject(QStringLiteral("contacts"));
+        QVector<QString> retval;
+
+        foreach (const QString &serviceId, settings.data().keys())
+        {
+            auto currentHostname = QString(serviceId).append(".onion");
+            retval.push_back(currentHostname);
+        }
+
+        return retval;
+    }();
+
+    identityManager = new IdentityManager(serviceID, contactHostnames);
     QScopedPointer<IdentityManager> scopedIdentityManager(identityManager);
 
     /* Window */

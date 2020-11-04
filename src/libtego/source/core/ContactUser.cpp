@@ -42,10 +42,9 @@
 #include "tor/HiddenService.h"
 #include "protocol/OutboundConnector.h"
 
-ContactUser::ContactUser(UserIdentity *ident, int id, QObject *parent)
+ContactUser::ContactUser(UserIdentity *ident, const QString& hostname, QObject *parent)
     : QObject(parent)
     , identity(ident)
-    , uniqueID(id)
     , m_connection(0)
     , m_outgoingSocket(0)
     , m_status(Offline)
@@ -53,10 +52,13 @@ ContactUser::ContactUser(UserIdentity *ident, int id, QObject *parent)
     , m_contactRequest(0)
     , m_settings(0)
     , m_conversation(0)
+    , m_hostname(hostname)
 {
-    Q_ASSERT(uniqueID >= 0);
+    Q_ASSERT(hostname.endsWith(".onion"));
 
-    m_settings = new SettingsObject(QStringLiteral("contacts.%1").arg(uniqueID));
+    const auto serviceId = hostname.chopped(tego::static_strlen(".onion"));
+
+    m_settings = new SettingsObject(QStringLiteral("contacts.%1").arg(serviceId));
     connect(m_settings, &SettingsObject::modified, this, &ContactUser::onSettingsModified);
 
     m_conversation = new ConversationModel(this);
@@ -86,11 +88,9 @@ void ContactUser::loadContactRequest()
     }
 }
 
-ContactUser *ContactUser::addNewContact(UserIdentity *identity, int id)
+ContactUser *ContactUser::addNewContact(UserIdentity *identity, const QString& contactHostname)
 {
-    ContactUser *user = new ContactUser(identity, id);
-    user->settings()->write("whenCreated", QDateTime::currentDateTime());
-
+    ContactUser *user = new ContactUser(identity, contactHostname);
     return user;
 }
 
@@ -109,8 +109,6 @@ void ContactUser::updateStatus()
         newStatus = Online;
     } else if (settings()->read("rejected").toBool()) {
         newStatus = RequestRejected;
-    } else if (settings()->read("sentUpgradeNotification").toBool()) {
-        newStatus = Outdated;
     } else {
         newStatus = Offline;
     }
@@ -179,7 +177,7 @@ void ContactUser::onConnected()
     m_settings->write("lastConnected", QDateTime::currentDateTime());
 
     if (m_contactRequest && m_connection->purpose() == Protocol::Connection::Purpose::OutboundRequest) {
-        qDebug() << "Sending contact request for" << uniqueID << nickname();
+        qDebug() << "Sending contact request for " << m_hostname << " " << nickname();
         m_contactRequest->sendRequest(m_connection);
     }
 
@@ -210,7 +208,7 @@ void ContactUser::onConnected()
 
 void ContactUser::onDisconnected()
 {
-    qDebug() << "Contact" << uniqueID << "disconnected";
+    qDebug() << "Contact" << m_hostname << "disconnected";
     m_settings->write("lastConnected", QDateTime::currentDateTime());
 
     if (m_connection) {
@@ -246,7 +244,11 @@ void ContactUser::setNickname(const QString &nickname)
 
 QString ContactUser::hostname() const
 {
-    return m_settings->read("hostname").toString();
+    if (m_hostname.isEmpty())
+    {
+        m_hostname = m_settings->read("hostname").toString();
+    }
+    return m_hostname;
 }
 
 quint16 ContactUser::port() const
@@ -266,6 +268,8 @@ void ContactUser::setHostname(const QString &hostname)
     if (!hostname.endsWith(QLatin1String(".onion")))
         fh.append(QLatin1String(".onion"));
 
+    m_hostname = hostname;
+
     m_settings->write("hostname", fh);
     updateOutgoingSocket();
 }
@@ -275,7 +279,7 @@ void ContactUser::deleteContact()
     /* Anything that uses ContactUser is required to either respond to the contactDeleted signal
      * synchronously, or make use of QWeakPointer. */
 
-    qDebug() << "Deleting contact" << uniqueID;
+    qDebug() << "Deleting contact" << m_hostname;
 
     if (m_contactRequest) {
         qDebug() << "Cancelling request associated with contact to be deleted";
@@ -425,7 +429,7 @@ void ContactUser::assignConnection(const QSharedPointer<Protocol::Connection> &c
         return;
     }
 
-    qDebug() << "Assigned" << (isOutbound ? "outbound" : "inbound") << "connection to contact" << uniqueID;
+    qDebug() << "Assigned" << (isOutbound ? "outbound" : "inbound") << "connection to contact" << m_hostname;
 
     if (m_contactRequest && isOutbound) {
         if (!connection->setPurpose(Protocol::Connection::Purpose::OutboundRequest)) {
@@ -435,7 +439,7 @@ void ContactUser::assignConnection(const QSharedPointer<Protocol::Connection> &c
         }
     } else {
         if (m_contactRequest && !isOutbound) {
-            qDebug() << "Implicitly accepting outgoing contact request for" << uniqueID << "due to incoming connection";
+            qDebug() << "Implicitly accepting outgoing contact request for" << m_hostname << "due to incoming connection";
             m_contactRequest->accept();
         }
 

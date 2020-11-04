@@ -35,51 +35,39 @@
 #include "OutgoingContactRequest.h"
 #include "ContactIDValidator.h"
 #include "ConversationModel.h"
-#include "utils/Settings.h"
 #include "protocol/ChatChannel.h"
 
 ContactsManager *contactsManager = 0;
 
 ContactsManager::ContactsManager(UserIdentity *id)
-    : identity(id), incomingRequests(this), highestID(-1)
+    : identity(id), incomingRequests(this)
 {
     contactsManager = this;
 }
 
-void ContactsManager::loadFromSettings()
+void ContactsManager::loadFromSettings(const QVector<QString>& contactHostnames)
 {
-    SettingsObject settings(QStringLiteral("contacts"));
-    foreach (const QString &key, settings.data().keys())
+    for(const QString& hostname : contactHostnames)
     {
-        bool ok = false;
-        int id = key.toInt(&ok);
-        if (!ok)
-        {
-            qWarning() << "Ignoring contact" << key << " with a non-integer ID";
-            continue;
-        }
-
-        ContactUser *user = new ContactUser(identity, id, this);
+        ContactUser *user = new ContactUser(identity, hostname, this);
         connectSignals(user);
         pContacts.append(user);
         emit contactAdded(user);
-        highestID = qMax(id, highestID);
     }
 
     incomingRequests.loadRequests();
 }
 
-ContactUser *ContactsManager::addContact(const QString &nickname)
+ContactUser *ContactsManager::addContact(const QString& hostname, const QString &nickname)
 {
     Q_ASSERT(!nickname.isEmpty());
 
-    highestID++;
-    ContactUser *user = ContactUser::addNewContact(identity, highestID);
+    ContactUser *user = ContactUser::addNewContact(identity, hostname);
     user->setParent(this);
     user->setNickname(nickname);
     connectSignals(user);
 
-    qDebug() << "Added new contact" << nickname << "with ID" << user->uniqueID;
+    qDebug() << "Added new contact" << hostname << "(" << nickname << ")";
 
     pContacts.append(user);
     emit contactAdded(user);
@@ -104,7 +92,8 @@ ContactUser *ContactsManager::createContactRequest(const QString &contactid, con
     }
 
     bool b = blockSignals(true);
-    ContactUser *user = addContact(nickname);
+    const auto contactHostname = ContactIDValidator::hostnameFromID(contactid);
+    ContactUser *user = addContact(contactHostname, nickname);
     blockSignals(b);
     if (!user)
         return user;
@@ -121,19 +110,6 @@ ContactUser *ContactsManager::createContactRequest(const QString &contactid, con
 void ContactsManager::contactDeleted(ContactUser *user)
 {
     pContacts.removeOne(user);
-}
-
-ContactUser *ContactsManager::lookupSecret(const QByteArray &secret) const
-{
-    Q_ASSERT(secret.size() == 16);
-
-    for (QList<ContactUser*>::ConstIterator it = pContacts.begin(); it != pContacts.end(); ++it)
-    {
-        if (secret == (*it)->settings()->read<Base64Encode>("localSecret"))
-            return *it;
-    }
-
-    return 0;
 }
 
 ContactUser *ContactsManager::lookupHostname(const QString &hostname) const
@@ -159,17 +135,6 @@ ContactUser *ContactsManager::lookupNickname(const QString &nickname) const
     for (QList<ContactUser*>::ConstIterator it = pContacts.begin(); it != pContacts.end(); ++it)
     {
         if (QString::compare(nickname, (*it)->nickname(), Qt::CaseInsensitive) == 0)
-            return *it;
-    }
-
-    return 0;
-}
-
-ContactUser *ContactsManager::lookupUniqueID(int uniqueID) const
-{
-    for (QList<ContactUser*>::ConstIterator it = pContacts.begin(); it != pContacts.end(); ++it)
-    {
-        if ((*it)->uniqueID == uniqueID)
             return *it;
     }
 
