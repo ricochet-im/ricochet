@@ -15,4 +15,5 @@ public:
 private:
 };
 
+// short term use a singleton here
 extern tego_context_t* g_tego_context;

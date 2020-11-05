@@ -170,6 +170,7 @@ void IncomingRequestManager::removeRequest(IncomingContactRequest *request)
 
 void IncomingRequestManager::addRejectedHost(const QByteArray &hostname)
 {
+    logger::trace();
 // TODO: migrate this to libtego_ui
 #if 0
     SettingsObject *settings = contacts->identity->settings();
@@ -183,6 +184,7 @@ void IncomingRequestManager::addRejectedHost(const QByteArray &hostname)
 
 bool IncomingRequestManager::isHostnameRejected(const QByteArray &hostname) const
 {
+    logger::trace();
 // TODO: migrate this to libtego_ui
 #if 0
     QJsonArray blacklist = contacts->identity->settings()->read<QJsonArray>("hostnameBlacklist");
@@ -355,6 +357,8 @@ void IncomingContactRequest::accept(ContactUser *user)
 
 void IncomingContactRequest::reject()
 {
+    logger::trace();
+
     qDebug() << "Rejecting contact request from" << m_hostname;
 
     using namespace Protocol::Data::ContactRequest;

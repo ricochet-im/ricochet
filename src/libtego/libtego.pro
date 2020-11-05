@@ -49,7 +49,8 @@ HEADERS +=\
     source/error.hpp\
     source/ed25519.hpp\
     source/context.hpp\
-    source/signals.hpp
+    source/signals.hpp\
+    source/user.hpp
 
 SOURCES +=\
     source/libtego.cpp\
@@ -59,7 +60,8 @@ SOURCES +=\
     source/ed25519.cpp\
     source/logger.cpp\
     source/context.cpp\
-    source/signals.cpp
+    source/signals.cpp\
+    source/user.cpp
 
 
 # external

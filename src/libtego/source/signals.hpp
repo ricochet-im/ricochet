@@ -82,7 +82,7 @@ namespace tego
         TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(tor_log_received);
         TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(chat_request_received);
         TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(message_received);
-        TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(user_status_changed);
+        TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(user_status_changed, tego_user_id_t*, tego_user_status_t);
         TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(new_identity_created, tego_ed25519_private_key_t*);
 
     private:

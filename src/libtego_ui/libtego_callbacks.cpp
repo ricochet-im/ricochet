@@ -45,6 +45,38 @@ namespace
     // libtego callbacks
     //
 
+    void on_user_status_changed(
+        tego_context_t*,
+        const tego_user_id_t* userId,
+        tego_user_status_t status)
+    {
+        logger::trace();
+
+        std::unique_ptr<tego_v3_onion_service_id> serviceId;
+        tego_user_id_get_v3_onion_service_id(userId, tego::out(serviceId), tego::throw_on_error());
+
+        char serviceIdRaw[TEGO_V3_ONION_SERVICE_ID_SIZE] = {0};
+        tego_v3_onion_service_id_to_string(serviceId.get(), serviceIdRaw, sizeof(serviceIdRaw), tego::throw_on_error());
+
+        logger::println("user status changed -> service id : {}, status : {}", serviceIdRaw, (int)status);
+
+        QString serviceIdString(serviceIdRaw);
+        push_task([=]() -> void
+        {
+            constexpr auto ContactUser_RequestPending = 2;
+            if (status == ContactUser_RequestPending)
+            {
+                SettingsObject so(QStringLiteral("contacts.%1").arg(serviceIdString));
+                so.write("request.status", 1);
+            }
+            else
+            {
+                // delete the request block entirely like in OutgoingContactRequest::removeRequest
+                // so.unset("request");
+            }
+        });
+    }
+
     void on_new_identity_created(
         tego_context_t*,
         const tego_ed25519_private_key_t* privateKey)
@@ -80,6 +112,11 @@ void init_libtego_callbacks(tego_context_t* context)
     //
     // register each of our callbacks with libtego
     //
+
+    tego_context_set_user_status_changed_callback(
+        context,
+        &on_user_status_changed,
+        tego::throw_on_error());
 
     tego_context_set_new_identity_created_callback(
         context,

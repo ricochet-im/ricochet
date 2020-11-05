@@ -9,6 +9,8 @@ extern "C"
     {
         return tego::translateExceptions([=]() -> void
         {
+            logger::println("init");
+
             TEGO_THROW_IF_NULL(out_context);
 
             auto context = std::make_unique<tego_context>();

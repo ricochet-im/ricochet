@@ -66,6 +66,47 @@ namespace tego
     }
 }
 
+tego_v3_onion_service_id::tego_v3_onion_service_id(
+    const char* serviceIdString,
+    size_t serviceIdStringLength)
+{
+    TEGO_THROW_IF_NULL(serviceIdString);
+    TEGO_THROW_IF_FALSE(serviceIdStringLength >= TEGO_V3_ONION_SERVICE_ID_LENGTH);
+
+    std::string_view serviceIdView(serviceIdString, TEGO_V3_ONION_SERVICE_ID_LENGTH);
+    uint8_t rawServiceId[TEGO_V3_ONION_SERVICE_ID_RAW_SIZE] = {0};
+
+    // base32 decode service serviceId
+    const auto bytesDecoded = ::base32_decode(
+        reinterpret_cast<char*>(rawServiceId),
+        sizeof(rawServiceId),
+        serviceIdView.data(),
+        serviceIdView.size());
+    TEGO_THROW_IF_FALSE(bytesDecoded == sizeof(rawServiceId));
+
+    // verify correct version byte
+    TEGO_THROW_IF_FALSE(rawServiceId[TEGO_V3_ONION_SERVICE_ID_VERSION_OFFSET] == 0x03);
+
+    // first part of the rawServiceId is the publicKey
+    auto& rawPublicKey = reinterpret_cast<uint8_t (&)[ED25519_PUBKEY_LEN]>(rawServiceId);
+
+    // calculate the truncated checksum for the public key
+    uint8_t truncatedChecksum[TEGO_V3_ONION_SERVICE_ID_CHECKSUM_SIZE] = {0};
+    tego::truncated_checksum_from_ed25519_public_key(truncatedChecksum, rawPublicKey);
+
+    // verify the first two bytes of checksum in service id match our calculated checksum
+    TEGO_THROW_IF_FALSE(
+        rawServiceId[TEGO_V3_ONION_SERVICE_ID_CHECKSUM_OFFSET    ] == truncatedChecksum[0] &&
+        rawServiceId[TEGO_V3_ONION_SERVICE_ID_CHECKSUM_OFFSET + 1] == truncatedChecksum[1]);
+
+    // copy to our internal buffer
+    std::copy(std::begin(serviceIdView), std::end(serviceIdView), this->data);
+}
+
+//
+// Exports
+//
+
 extern "C"
 {
     void tego_ed25519_private_key_from_ed25519_keyblob(
@@ -175,41 +216,8 @@ extern "C"
         {
             TEGO_THROW_IF_FALSE(out_serviceId != nullptr);
             TEGO_THROW_IF_FALSE(*out_serviceId == nullptr);
-            TEGO_THROW_IF_FALSE(serviceIdString != nullptr);
-            TEGO_THROW_IF_FALSE(serviceIdStringLength >= TEGO_V3_ONION_SERVICE_ID_LENGTH);
 
-            std::string_view serviceIdView(serviceIdString, TEGO_V3_ONION_SERVICE_ID_LENGTH);
-            uint8_t rawServiceId[TEGO_V3_ONION_SERVICE_ID_RAW_SIZE] = {0};
-
-            // base32 decode service id
-            const auto bytesDecoded = ::base32_decode(
-                reinterpret_cast<char*>(rawServiceId),
-                sizeof(rawServiceId),
-                serviceIdView.data(),
-                serviceIdView.size());
-            TEGO_THROW_IF_FALSE(bytesDecoded == sizeof(rawServiceId));
-
-            // verify correct version byte
-            TEGO_THROW_IF_FALSE(rawServiceId[TEGO_V3_ONION_SERVICE_ID_VERSION_OFFSET] == 0x03);
-
-            // first part of the rawServiceId is the publicKey
-            auto& rawPublicKey = reinterpret_cast<uint8_t (&)[ED25519_PUBKEY_LEN]>(rawServiceId);
-
-            // calculate the truncated checksum for the public key
-            uint8_t truncatedChecksum[TEGO_V3_ONION_SERVICE_ID_CHECKSUM_SIZE] = {0};
-            tego::truncated_checksum_from_ed25519_public_key(truncatedChecksum, rawPublicKey);
-
-            // verify the first two bytes of checksum in service id match our calculated checksum
-            TEGO_THROW_IF_FALSE(
-                rawServiceId[TEGO_V3_ONION_SERVICE_ID_CHECKSUM_OFFSET    ] == truncatedChecksum[0] &&
-                rawServiceId[TEGO_V3_ONION_SERVICE_ID_CHECKSUM_OFFSET + 1] == truncatedChecksum[1]);
-
-            // verified checksum, copy service id string to new service id object
-            auto serviceId = std::make_unique<tego_v3_onion_service_id>();
-            std::copy(std::begin(serviceIdView), std::end(serviceIdView), serviceId->data);
-            // write null terminator
-            serviceId->data[TEGO_V3_ONION_SERVICE_ID_LENGTH] = 0;
-
+            auto serviceId = std::make_unique<tego_v3_onion_service_id>(serviceIdString, serviceIdStringLength);
             *out_serviceId = serviceId.release();
         }, error);
     }

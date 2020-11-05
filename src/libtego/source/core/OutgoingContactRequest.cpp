@@ -39,24 +39,29 @@
 #include "protocol/ContactRequestChannel.h"
 #include "utils/Settings.h"
 
+#include "ed25519.hpp"
+#include "context.hpp"
+#include "user.hpp"
+
 OutgoingContactRequest *OutgoingContactRequest::createNewRequest(ContactUser *user, const QString &myNickname,
                                                                  const QString &message)
 {
     Q_ASSERT(!user->contactRequest());
 
     SettingsObject *settings = user->settings();
-    settings->write("request.status", static_cast<int>(Pending));
     settings->write("request.myNickname", myNickname);
     settings->write("request.message", message);
 
-    user->loadContactRequest();
+    user->createContactRequest();
     Q_ASSERT(user->contactRequest());
+    user->contactRequest()->setStatus(Pending);
     return user->contactRequest();
 }
 
 OutgoingContactRequest::OutgoingContactRequest(ContactUser *u)
     : QObject(u), user(u)
     , m_settings(new SettingsObject(u->settings(), QStringLiteral("request"), this))
+    , m_status(Pending)
 {
     emit user->identity->contacts.outgoingRequestAdded(this);
 
@@ -80,7 +85,7 @@ QString OutgoingContactRequest::message() const
 
 OutgoingContactRequest::Status OutgoingContactRequest::status() const
 {
-    return static_cast<Status>(m_settings->read("status").toInt());
+    return m_status;
 }
 
 QString OutgoingContactRequest::rejectMessage() const
@@ -94,7 +99,7 @@ void OutgoingContactRequest::setStatus(Status newStatus)
     if (newStatus == oldStatus)
         return;
 
-    m_settings->write("status", static_cast<int>(newStatus));
+    m_status = newStatus;
     emit statusChanged(newStatus, oldStatus);
 }
 
@@ -178,6 +183,7 @@ void OutgoingContactRequest::accept()
 
 void OutgoingContactRequest::reject(bool error, const QString &reason)
 {
+    logger::println("reject -> error : {}, reason '{}'", error, reason);
     m_settings->write("rejectMessage", reason);
     setStatus(error ? Error : Rejected);
 

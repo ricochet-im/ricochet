@@ -92,6 +92,7 @@ private slots:
 
 private:
     class SettingsObject *m_settings;
+    Status m_status;
 
     void setStatus(Status newStatus);
     void removeRequest();

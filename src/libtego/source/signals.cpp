@@ -2,6 +2,7 @@
 #include "context.hpp"
 #include "error.hpp"
 #include "ed25519.hpp"
+#include "user.hpp"
 
 namespace tego
 {
@@ -48,6 +49,13 @@ namespace tego
         tego_ed25519_private_key_t* privateKey)
     {
         delete privateKey;
+    }
+
+    void callback_registry::cleanup_user_status_changed_args(
+        tego_user_id_t* user,
+        tego_user_status_t)
+    {
+        delete user;
     }
 
     //

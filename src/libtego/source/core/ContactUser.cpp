@@ -42,6 +42,10 @@
 #include "tor/HiddenService.h"
 #include "protocol/OutboundConnector.h"
 
+#include "ed25519.hpp"
+#include "context.hpp"
+#include "user.hpp"
+
 ContactUser::ContactUser(UserIdentity *ident, const QString& hostname, QObject *parent)
     : QObject(parent)
     , identity(ident)
@@ -80,12 +84,17 @@ void ContactUser::loadContactRequest()
         return;
 
     if (m_settings->read("request.status") != QJsonValue::Undefined) {
-        m_contactRequest = new OutgoingContactRequest(this);
-        connect(m_contactRequest, &OutgoingContactRequest::statusChanged, this, &ContactUser::updateStatus);
-        connect(m_contactRequest, &OutgoingContactRequest::removed, this, &ContactUser::requestRemoved);
-        connect(m_contactRequest, &OutgoingContactRequest::accepted, this, &ContactUser::requestAccepted);
-        updateStatus();
+        this->createContactRequest();
     }
+}
+
+void ContactUser::createContactRequest()
+{
+    m_contactRequest = new OutgoingContactRequest(this);
+    connect(m_contactRequest, &OutgoingContactRequest::statusChanged, this, &ContactUser::updateStatus);
+    connect(m_contactRequest, &OutgoingContactRequest::removed, this, &ContactUser::requestRemoved);
+    connect(m_contactRequest, &OutgoingContactRequest::accepted, this, &ContactUser::requestAccepted);
+    updateStatus();
 }
 
 ContactUser *ContactUser::addNewContact(UserIdentity *identity, const QString& contactHostname)
@@ -117,6 +126,16 @@ void ContactUser::updateStatus()
         return;
 
     m_status = newStatus;
+    {
+        // convert our hostname to just the service id raw string
+        auto serviceIdString = this->hostname().chopped(tego::static_strlen(".onion")).toUtf8();
+        // ensure valid service id
+        auto serviceId = std::make_unique<tego_v3_onion_service_id>(serviceIdString.data(), serviceIdString.size());
+        // create user id object from service id
+        auto userId = std::make_unique<tego_user_id>(*serviceId.get());
+
+        g_tego_context->callback_registry_.emit_user_status_changed(userId.release(), (tego_user_status_t)newStatus);
+    }
     emit statusChanged();
 
     updateOutgoingSocket();
