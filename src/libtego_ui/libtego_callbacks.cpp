@@ -45,6 +45,29 @@ namespace
     // libtego callbacks
     //
 
+    void on_chat_request_response_received(
+        tego_context_t*,
+        const tego_user_id_t* userId,
+        tego_bool_t requestAccepted)
+    {
+        std::unique_ptr<tego_v3_onion_service_id> serviceId;
+        tego_user_id_get_v3_onion_service_id(userId, tego::out(serviceId), tego::throw_on_error());
+
+        char serviceIdRaw[TEGO_V3_ONION_SERVICE_ID_SIZE] = {0};
+        tego_v3_onion_service_id_to_string(serviceId.get(), serviceIdRaw, sizeof(serviceIdRaw), tego::throw_on_error());
+
+        QString serviceIdString(serviceIdRaw);
+        push_task([=]() -> void
+        {
+            logger::trace();
+            if (requestAccepted) {
+                // delete the request block entirely like in OutgoingContactRequest::removeRequest			
+                SettingsObject so(QStringLiteral("contacts.%1").arg(serviceIdString));
+                so.unset("request");
+            }
+        });
+    }
+
     void on_user_status_changed(
         tego_context_t*,
         const tego_user_id_t* userId,
@@ -68,11 +91,6 @@ namespace
             {
                 SettingsObject so(QStringLiteral("contacts.%1").arg(serviceIdString));
                 so.write("request.status", 1);
-            }
-            else
-            {
-                // delete the request block entirely like in OutgoingContactRequest::removeRequest
-                // so.unset("request");
             }
         });
     }
@@ -112,6 +130,11 @@ void init_libtego_callbacks(tego_context_t* context)
     //
     // register each of our callbacks with libtego
     //
+
+    tego_context_set_chat_request_response_received_callback(
+        context,
+        &on_chat_request_response_received,
+        tego::throw_on_error());
 
     tego_context_set_user_status_changed_callback(
         context,

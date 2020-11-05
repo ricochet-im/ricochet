@@ -85,6 +85,11 @@ void ContactsManager::connectSignals(ContactUser *user)
 ContactUser *ContactsManager::createContactRequest(const QString &contactid, const QString &nickname,
                                                    const QString &myNickname, const QString &message)
 {
+    logger::println("contactId : {}", contactid);
+    logger::println("nickname : {}", nickname);
+    logger::println("myNickname : {}", myNickname);
+    logger::println("message : {}", message);
+
     QString hostname = ContactIDValidator::hostnameFromID(contactid);
     if (hostname.isEmpty() || lookupHostname(contactid) || lookupNickname(nickname))
     {

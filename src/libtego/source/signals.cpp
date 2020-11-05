@@ -45,10 +45,11 @@ namespace tego
     // Callback Register Arg Cleanup Functions
     //
 
-    void callback_registry::cleanup_new_identity_created_args(
-        tego_ed25519_private_key_t* privateKey)
+    void callback_registry::cleanup_chat_request_response_received_args(
+        tego_user_id_t* user,
+        tego_bool_t)
     {
-        delete privateKey;
+        delete user;
     }
 
     void callback_registry::cleanup_user_status_changed_args(
@@ -57,6 +58,14 @@ namespace tego
     {
         delete user;
     }
+
+    void callback_registry::cleanup_new_identity_created_args(
+        tego_ed25519_private_key_t* privateKey)
+    {
+        delete privateKey;
+    }
+
+
 
     //
     // Callback Queue

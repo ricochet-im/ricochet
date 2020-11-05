@@ -68,6 +68,7 @@ ContactUser::ContactUser(UserIdentity *ident, const QString& hostname, QObject *
     m_conversation = new ConversationModel(this);
     m_conversation->setContact(this);
 
+    // TODO: this is where we load old requests
     loadContactRequest();
     updateStatus();
     updateOutgoingSocket();
@@ -84,13 +85,15 @@ void ContactUser::loadContactRequest()
         return;
 
     if (m_settings->read("request.status") != QJsonValue::Undefined) {
-        this->createContactRequest();
+        // TODO: we need to pass down the connection message (and also the sender) from frontned to here
+        this->createContactRequest("");
     }
 }
 
-void ContactUser::createContactRequest()
+void ContactUser::createContactRequest(const QString& msg)
 {
-    m_contactRequest = new OutgoingContactRequest(this);
+    m_contactRequest = new OutgoingContactRequest(this, msg);
+
     connect(m_contactRequest, &OutgoingContactRequest::statusChanged, this, &ContactUser::updateStatus);
     connect(m_contactRequest, &OutgoingContactRequest::removed, this, &ContactUser::requestRemoved);
     connect(m_contactRequest, &OutgoingContactRequest::accepted, this, &ContactUser::requestAccepted);

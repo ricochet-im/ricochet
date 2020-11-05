@@ -653,6 +653,11 @@ void tego_context_set_chat_request_received_callback(
     tego_chat_request_received_callback_t,
     tego_error_t** error);
 
+void tego_context_set_chat_request_response_received_callback(
+    tego_context_t* context,
+    tego_chat_request_response_received_callback_t,
+    tego_error_t** error);
+
 void tego_context_set_message_received_callback(
     tego_context_t* context,
     tego_message_received_callback_t,

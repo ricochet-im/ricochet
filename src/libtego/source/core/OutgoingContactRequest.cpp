@@ -37,31 +37,30 @@
 #include "IncomingRequestManager.h"
 #include "utils/Useful.h"
 #include "protocol/ContactRequestChannel.h"
-#include "utils/Settings.h"
 
 #include "ed25519.hpp"
 #include "context.hpp"
 #include "user.hpp"
 
+// TODO: currently myNickname is not actually passed down, and message needs to be saved somewhere for when
+// we shutdown without a request being responded to
 OutgoingContactRequest *OutgoingContactRequest::createNewRequest(ContactUser *user, const QString &myNickname,
                                                                  const QString &message)
 {
+    logger::println("Nickname : '{}', Message: '{}'", myNickname, message);
+
     Q_ASSERT(!user->contactRequest());
 
-    SettingsObject *settings = user->settings();
-    settings->write("request.myNickname", myNickname);
-    settings->write("request.message", message);
-
-    user->createContactRequest();
+    user->createContactRequest(message);
     Q_ASSERT(user->contactRequest());
     user->contactRequest()->setStatus(Pending);
     return user->contactRequest();
 }
 
-OutgoingContactRequest::OutgoingContactRequest(ContactUser *u)
+OutgoingContactRequest::OutgoingContactRequest(ContactUser *u, const QString& msg)
     : QObject(u), user(u)
-    , m_settings(new SettingsObject(u->settings(), QStringLiteral("request"), this))
     , m_status(Pending)
+    , m_message(msg)
 {
     emit user->identity->contacts.outgoingRequestAdded(this);
 
@@ -75,12 +74,12 @@ OutgoingContactRequest::~OutgoingContactRequest()
 
 QString OutgoingContactRequest::myNickname() const
 {
-    return m_settings->read("myNickname").toString();
+    return m_myNickname;
 }
 
 QString OutgoingContactRequest::message() const
 {
-    return m_settings->read("message").toString();
+    return m_message;
 }
 
 OutgoingContactRequest::Status OutgoingContactRequest::status() const
@@ -90,7 +89,7 @@ OutgoingContactRequest::Status OutgoingContactRequest::status() const
 
 QString OutgoingContactRequest::rejectMessage() const
 {
-    return m_settings->read("rejectMessage").toString();
+    return "Fake Reject Message";
 }
 
 void OutgoingContactRequest::setStatus(Status newStatus)
@@ -100,6 +99,21 @@ void OutgoingContactRequest::setStatus(Status newStatus)
         return;
 
     m_status = newStatus;
+
+    if (m_status == Accepted || m_status == Error || m_status == Rejected)
+    {
+        // convert our hostname to just the service id raw string
+        auto serviceIdString = user->hostname().chopped(tego::static_strlen(".onion")).toUtf8();
+        // ensure valid service id
+        auto serviceId = std::make_unique<tego_v3_onion_service_id>(serviceIdString.data(), serviceIdString.size());
+        // create user id object from service id
+        auto userId = std::make_unique<tego_user_id>(*serviceId.get());
+
+        tego_bool_t requestAccepted = ((m_status == Accepted) ? TEGO_TRUE : TEGO_FALSE);
+
+        g_tego_context->callback_registry_.emit_chat_request_response_received(userId.release(), requestAccepted);
+    }
+
     emit statusChanged(newStatus, oldStatus);
 }
 
@@ -152,6 +166,7 @@ void OutgoingContactRequest::sendRequest(const QSharedPointer<Protocol::Connecti
 
     if (!message().isEmpty())
         channel->setMessage(message());
+    // TODO: this is never set
     if (!myNickname().isEmpty())
         channel->setNickname(myNickname());
 
@@ -170,7 +185,7 @@ void OutgoingContactRequest::removeRequest()
     }
 
     /* Clear the request settings */
-    m_settings->undefine();
+    logger::trace();
     emit removed();
 }
 
@@ -184,7 +199,8 @@ void OutgoingContactRequest::accept()
 void OutgoingContactRequest::reject(bool error, const QString &reason)
 {
     logger::println("reject -> error : {}, reason '{}'", error, reason);
-    m_settings->write("rejectMessage", reason);
+    logger::trace();
+
     setStatus(error ? Error : Rejected);
 
     if (user->connection()) {

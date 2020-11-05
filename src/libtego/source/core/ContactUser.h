@@ -154,7 +154,7 @@ private:
     static ContactUser *addNewContact(UserIdentity *identity, const QString& contactHostname);
 
     void loadContactRequest();
-    void createContactRequest();
+    void createContactRequest(const QString& msg);
     void updateOutgoingSocket();
 
     void clearConnection();

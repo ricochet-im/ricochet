@@ -66,7 +66,7 @@ public:
 
     ContactUser * const user;
 
-    OutgoingContactRequest(ContactUser *user);
+    OutgoingContactRequest(ContactUser *user, const QString &message);
     virtual ~OutgoingContactRequest();
 
     QString myNickname() const;
@@ -91,8 +91,9 @@ private slots:
     void requestStatusChanged(int status);
 
 private:
-    class SettingsObject *m_settings;
     Status m_status;
+    QString m_myNickname;
+    QString m_message;
 
     void setStatus(Status newStatus);
     void removeRequest();
