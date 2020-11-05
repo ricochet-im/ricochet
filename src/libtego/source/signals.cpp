@@ -150,6 +150,7 @@ extern "C"
     TEGO_DEFINE_CALLBACK_SETTER(tor_state_changed);
     TEGO_DEFINE_CALLBACK_SETTER(tor_log_received);
     TEGO_DEFINE_CALLBACK_SETTER(chat_request_received);
+    TEGO_DEFINE_CALLBACK_SETTER(chat_request_response_received);
     TEGO_DEFINE_CALLBACK_SETTER(message_received);
     TEGO_DEFINE_CALLBACK_SETTER(user_status_changed);
     TEGO_DEFINE_CALLBACK_SETTER(new_identity_created);

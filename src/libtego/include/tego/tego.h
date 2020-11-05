@@ -10,6 +10,7 @@ extern "C" {
 
 #define TEGO_TRUE  1
 #define TEGO_FALSE 0
+typedef int32_t tego_bool_t;
 
 #define TEGO_FLAG(N) (1 << N)
 
@@ -583,7 +584,21 @@ typedef void (*tego_chat_request_received_callback_t)(
     size_t messageLength);
 
 /*
- * Callback received when the host receives a message from another user
+ * Callback fired when the host receives a response to their sent chat request
+ *
+ * @param context : the current tego context
+ * @param sender : the user responding to our chat request
+ * @param acceptedRequest : TEGO_TRUE if request accepted, TEGO_FALSE if rejected
+ */
+
+typedef void (*tego_chat_request_response_received_callback_t)(
+    tego_context_t* context,
+    const tego_user_id_t* sender,
+    tego_bool_t acceptedRequest);
+
+
+/*
+ * Callback fired when the host receives a message from another user
  *
  * @param context : the current tego context
  * @param sender : the user that sent host the message
