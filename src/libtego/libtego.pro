@@ -48,6 +48,7 @@ HEADERS +=\
     source/orconfig.h\
     source/error.hpp\
     source/ed25519.hpp\
+    source/globals.hpp\
     source/context.hpp\
     source/signals.hpp\
     source/user.hpp
@@ -59,6 +60,7 @@ SOURCES +=\
     source/tor_stubs.cpp\
     source/ed25519.cpp\
     source/logger.cpp\
+    source/globals.cpp\
     source/context.cpp\
     source/signals.cpp\
     source/user.cpp

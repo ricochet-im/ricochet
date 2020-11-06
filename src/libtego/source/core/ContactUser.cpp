@@ -45,6 +45,7 @@
 #include "ed25519.hpp"
 #include "context.hpp"
 #include "user.hpp"
+#include "globals.hpp"
 
 ContactUser::ContactUser(UserIdentity *ident, const QString& hostname, QObject *parent)
     : QObject(parent)
@@ -137,7 +138,7 @@ void ContactUser::updateStatus()
         // create user id object from service id
         auto userId = std::make_unique<tego_user_id>(*serviceId.get());
 
-        g_tego_context->callback_registry_.emit_user_status_changed(userId.release(), (tego_user_status_t)newStatus);
+        tego::g_globals.context->callback_registry_.emit_user_status_changed(userId.release(), (tego_user_status_t)newStatus);
     }
     emit statusChanged();
 

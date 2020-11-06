@@ -41,6 +41,7 @@
 #include "ed25519.hpp"
 #include "context.hpp"
 #include "user.hpp"
+#include "globals.hpp"
 
 // TODO: currently myNickname is not actually passed down, and message needs to be saved somewhere for when
 // we shutdown without a request being responded to
@@ -111,7 +112,7 @@ void OutgoingContactRequest::setStatus(Status newStatus)
 
         tego_bool_t requestAccepted = ((m_status == Accepted) ? TEGO_TRUE : TEGO_FALSE);
 
-        g_tego_context->callback_registry_.emit_chat_request_response_received(userId.release(), requestAccepted);
+        tego::g_globals.context->callback_registry_.emit_chat_request_response_received(userId.release(), requestAccepted);
     }
 
     emit statusChanged(newStatus, oldStatus);

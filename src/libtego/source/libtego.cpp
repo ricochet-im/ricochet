@@ -1,5 +1,7 @@
 #include "error.hpp"
 #include "context.hpp"
+#include "globals.hpp"
+
 //
 // Exports
 //
@@ -12,9 +14,12 @@ extern "C"
             logger::println("init");
 
             TEGO_THROW_IF_NULL(out_context);
+            TEGO_THROW_IF_FALSE(tego::g_globals.context.get() == nullptr);
 
-            auto context = std::make_unique<tego_context>();
-            *out_context = context.release();
+            // create and save off singleton context
+            tego::g_globals.context = std::make_unique<tego_context>();
+            *out_context = tego::g_globals.context.get();
+
         }, error);
     }
 
@@ -24,7 +29,7 @@ extern "C"
         {
             if (context)
             {
-                delete context;
+                tego::g_globals.context.reset(nullptr);
             }
         }, error);
     }

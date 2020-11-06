@@ -42,6 +42,7 @@
 #include "signals.hpp"
 #include "context.hpp"
 #include "ed25519.hpp"
+#include "globals.hpp"
 
 using namespace Protocol;
 
@@ -103,7 +104,7 @@ void UserIdentity::setupService(const QString& serviceID)
                     rawKey.size(),
                     tego::throw_on_error());
 
-                g_tego_context->callback_registry_.emit_new_identity_created(privateKey.release());
+                tego::g_globals.context->callback_registry_.emit_new_identity_created(privateKey.release());
             }
         );
     }
