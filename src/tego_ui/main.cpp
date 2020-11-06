@@ -44,7 +44,6 @@
 #include <libtego_callbacks.hpp>
 
 static bool initSettings(SettingsFile *settings, QLockFile **lockFile, QString &errorMessage);
-static bool importLegacySettings(SettingsFile *settings, const QString &oldPath);
 static void initTranslation();
 
 int main(int argc, char *argv[]) try
@@ -156,6 +155,7 @@ int main(int argc, char *argv[]) try
 catch(std::exception& re)
 {
     qDebug() << "Caught Exception: " << re.what();
+    return -1;
 }
 
 
@@ -262,104 +262,9 @@ static bool initSettings(SettingsFile *settings, QLockFile **lockFile, QString &
         return false;
     }
 
-    if (settings->root()->data().isEmpty()) {
-        QString filePath = dir.filePath(QStringLiteral("Torsion.ini"));
-        if (!QFile::exists(filePath))
-            filePath = dir.filePath(QStringLiteral("ricochet.ini"));
-        if (QFile::exists(filePath))
-            importLegacySettings(settings, filePath);
-    }
     // if still empty, load defaults here
     if (settings->root()->data().isEmpty()) {
         loadDefaultSettings(settings);
-    }
-
-    return true;
-}
-
-static void copyKeys(QSettings &old, SettingsObject *object)
-{
-    foreach (const QString &key, old.childKeys()) {
-        QVariant value = old.value(key);
-        if ((QMetaType::Type)value.type() == QMetaType::QDateTime)
-            object->write(key, value.toDateTime());
-        else if ((QMetaType::Type)value.type() == QMetaType::QByteArray)
-            object->write(key, Base64Encode(value.toByteArray()));
-        else
-            object->write(key, value.toString());
-    }
-}
-
-static bool importLegacySettings(SettingsFile *settings, const QString &oldPath)
-{
-    QSettings old(oldPath, QSettings::IniFormat);
-    SettingsObject *root = settings->root();
-    QVariant value;
-
-    qDebug() << "Importing legacy format settings from" << oldPath;
-
-    if (!(value = old.value(QStringLiteral("tor/controlIp"))).isNull())
-        root->write("tor.controlAddress", value.toString());
-    if (!(value = old.value(QStringLiteral("tor/controlPort"))).isNull())
-        root->write("tor.controlPort", value.toInt());
-    if (!(value = old.value(QStringLiteral("tor/authPassword"))).isNull())
-        root->write("tor.controlPassword", value.toString());
-    if (!(value = old.value(QStringLiteral("tor/socksIp"))).isNull())
-        root->write("tor.socksAddress", value.toString());
-    if (!(value = old.value(QStringLiteral("tor/socksPort"))).isNull())
-        root->write("tor.socksPort", value.toInt());
-    if (!(value = old.value(QStringLiteral("tor/executablePath"))).isNull())
-        root->write("tor.executablePath", value.toString());
-    if (!(value = old.value(QStringLiteral("core/neverPublishService"))).isNull())
-        root->write("tor.neverPublishServices", value.toBool());
-    if (!(value = old.value(QStringLiteral("identity/0/dataDirectory"))).isNull())
-        root->write("identity.dataDirectory", value.toString());
-    if (!(value = old.value(QStringLiteral("identity/0/createNewService"))).isNull())
-        root->write("identity.initializing", value.toBool());
-    if (!(value = old.value(QStringLiteral("core/listenIp"))).isNull())
-        root->write("identity.localListenAddress", value.toString());
-    if (!(value = old.value(QStringLiteral("core/listenPort"))).isNull())
-        root->write("identity.localListenPort", value.toInt());
-
-    {
-        old.beginGroup(QStringLiteral("contacts"));
-        QStringList ids = old.childGroups();
-        foreach (const QString &id, ids) {
-            old.beginGroup(id);
-            SettingsObject userObject(root, QStringLiteral("contacts.%1").arg(id));
-
-            copyKeys(old, &userObject);
-
-            if (old.childGroups().contains(QStringLiteral("request"))) {
-                old.beginGroup(QStringLiteral("request"));
-                QStringList requestKeys = old.childKeys();
-                foreach (const QString &key, requestKeys)
-                    userObject.write(QStringLiteral("request.") + key, old.value(key).toString());
-                old.endGroup();
-            }
-
-            old.endGroup();
-        }
-        old.endGroup();
-    }
-
-    {
-        old.beginGroup(QStringLiteral("contactRequests"));
-        QStringList contacts = old.childGroups();
-
-        foreach (const QString &hostname, contacts) {
-            old.beginGroup(hostname);
-            SettingsObject requestObject(root, QStringLiteral("contactRequests.%1").arg(hostname));
-            copyKeys(old, &requestObject);
-            old.endGroup();
-        }
-
-        old.endGroup();
-    }
-
-    if (!(value = old.value(QStringLiteral("core/hostnameBlacklist"))).isNull()) {
-        QStringList blacklist = value.toStringList();
-        root->write("identity.hostnameBlacklist", QJsonArray::fromStringList(blacklist));
     }
 
     return true;
