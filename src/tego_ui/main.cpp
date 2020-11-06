@@ -38,7 +38,6 @@
 #include "tor/TorManager.h"
 #include "tor/TorControl.h"
 #include "utils/CryptoKey.h"
-#include "utils/SecureRNG.h"
 #include "utils/Settings.h"
 
 #include <libtego_callbacks.hpp>
@@ -103,16 +102,10 @@ int main(int argc, char *argv[]) try
 
     initTranslation();
 
-    /* Initialize OpenSSL's allocator */
-#if OPENSSL_VERSION_NUMBER < 0x10100000L || defined(LIBRESSL_VERSION_NUMBER)
-    CRYPTO_malloc_init();
-#else
-    OPENSSL_malloc_init();
-#endif
+
 
     /* Seed the OpenSSL RNG */
-    if (!SecureRNG::seed())
-        qFatal("Failed to initialize RNG");
+
 
     /* Tor control manager */
     Tor::TorManager *torManager = Tor::TorManager::instance();

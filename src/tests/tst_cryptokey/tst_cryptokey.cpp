@@ -41,7 +41,6 @@
 
 // libtego_ui
 #include <utils/CryptoKey.h>
-#include <utils/SecureRNG.h>
 
 class TestCryptoKey : public QObject
 {
