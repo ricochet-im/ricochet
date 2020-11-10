@@ -33,6 +33,9 @@
 #include "SetConfCommand.h"
 #include "utils/StringUtil.h"
 
+#include "globals.hpp"
+using tego::g_globals;
+
 using namespace Tor;
 
 SetConfCommand::SetConfCommand()
@@ -102,5 +105,7 @@ void SetConfCommand::onFinished(int statusCode)
         emit setConfSucceeded();
     else
         emit setConfFailed(statusCode);
+
+    g_globals.context->callback_registry_.emit_update_tor_daemon_config_succeeded(isSuccessful() ? TEGO_TRUE : TEGO_FALSE);
 }
 

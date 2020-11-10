@@ -78,7 +78,12 @@ namespace tego
                 }\
             }
 
+        TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(tor_error_occurred, tego_tor_error_origin_t, tego_error_t*);
         TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(tor_state_changed);
+        TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(update_tor_daemon_config_succeeded, tego_bool_t);
+        TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(tor_control_status_changed, tego_tor_control_status_t);
+        TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(tor_daemon_status_changed, tego_tor_daemon_status_t);
+        TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(tor_bootstrap_status_changed, int32_t, tego_tor_bootstrap_tag_t);
         TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(tor_log_received);
         TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(chat_request_received);
         TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(chat_request_response_received, tego_user_id_t*, tego_bool_t);
@@ -108,8 +113,10 @@ namespace tego
 
         std::atomic_bool terminating_;
         std::mutex mutex_;
-        std::thread worker_;
         // this queue is protected by mutex_ within worker_ thread and callback_queue methods
         std::vector<type_erased_callback> pending_callbacks_;
+
+		// worker thread must be last so that other members are init'd before thread runs
+        std::thread worker_;
     };
 }

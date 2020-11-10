@@ -27,6 +27,8 @@ SOURCES += \
     ui/LanguagesModel.cpp \
     ui/LinkedText.cpp \
     ui/MainWindow.cpp \
+    shims/TorControl.cpp\
+    shims/TorCommand.cpp
 
 HEADERS += \
     libtego_callbacks.hpp \
@@ -34,6 +36,8 @@ HEADERS += \
     ui/LanguagesModel.h \
     ui/LinkedText.h \
     ui/MainWindow.h \
+    shims/TorControl.h\
+    shims/TorCommand.h
 
 include($${QMAKE_INCLUDES}/protobuf.pri)
 include($${QMAKE_INCLUDES}/openssl.pri)

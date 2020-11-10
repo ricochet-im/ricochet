@@ -60,6 +60,7 @@ class TorControl : public QObject
     Q_PROPERTY(bool hasOwnership READ hasOwnership NOTIFY hasOwnershipChanged)
 
 public:
+    // control status
     enum Status
     {
         Error = -1,
@@ -69,6 +70,7 @@ public:
         Connected
     };
 
+    // daemon status
     enum TorStatus
     {
         TorUnknown,
@@ -111,6 +113,9 @@ public:
     Q_INVOKABLE QObject *setConfiguration(const QVariantMap &options);
     Q_INVOKABLE PendingOperation *saveConfiguration();
 
+	// TODO: remove this once frontend no longer needs TorControl
+    static TorControl* instance();
+
 signals:
     void statusChanged(int newStatus, int oldStatus);
     void torStatusChanged(int newStatus, int oldStatus);
@@ -133,7 +138,4 @@ private:
 };
 
 }
-
-extern Tor::TorControl *torControl;
-
 #endif // TORCONTROLMANAGER_H

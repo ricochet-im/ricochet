@@ -30,6 +30,13 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "signals.hpp"
+#include "context.hpp"
+#include "ed25519.hpp"
+#include "globals.hpp"
+
+using tego::g_globals;
+
 #include "UserIdentity.h"
 #include "tor/TorControl.h"
 #include "tor/HiddenService.h"
@@ -38,11 +45,6 @@
 #include "protocol/Connection.h"
 #include "utils/Useful.h"
 #include "utils/Settings.h"
-
-#include "signals.hpp"
-#include "context.hpp"
-#include "ed25519.hpp"
-#include "globals.hpp"
 
 using namespace Protocol;
 
@@ -104,7 +106,7 @@ void UserIdentity::setupService(const QString& serviceID)
                     rawKey.size(),
                     tego::throw_on_error());
 
-                tego::g_globals.context->callback_registry_.emit_new_identity_created(privateKey.release());
+                g_globals.context->callback_registry_.emit_new_identity_created(privateKey.release());
             }
         );
     }
@@ -129,7 +131,7 @@ void UserIdentity::setupService(const QString& serviceID)
     connect(m_incomingServer, &QTcpServer::newConnection, this, &UserIdentity::onIncomingConnection);
 
     m_hiddenService->addTarget(9878, m_incomingServer->serverAddress(), m_incomingServer->serverPort());
-    torControl->addHiddenService(m_hiddenService);
+    g_globals.context->torControl->addHiddenService(m_hiddenService);
 }
 
 QString UserIdentity::hostname() const

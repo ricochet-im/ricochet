@@ -30,6 +30,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "globals.hpp"
+using tego::g_globals;
+
 #include "TorSocket.h"
 #include "TorControl.h"
 
@@ -42,7 +45,7 @@ TorSocket::TorSocket(QObject *parent)
     , m_maxInterval(900)
     , m_connectAttempts(0)
 {
-    connect(torControl, SIGNAL(connectivityChanged()), SLOT(connectivityChanged()));
+    connect(g_globals.context->torControl, SIGNAL(connectivityChanged()), SLOT(connectivityChanged()));
     connect(&m_connectTimer, SIGNAL(timeout()), SLOT(reconnect()));
     connect(this, SIGNAL(disconnected()), SLOT(onFailed()));
     connect(this, SIGNAL(error(QAbstractSocket::SocketError)), SLOT(onFailed()));
@@ -98,7 +101,7 @@ int TorSocket::reconnectInterval()
 
 void TorSocket::reconnect()
 {
-    if (!torControl->hasConnectivity() || !reconnectEnabled())
+    if (!g_globals.context->torControl->hasConnectivity() || !reconnectEnabled())
         return;
 
     m_connectTimer.stop();
@@ -110,8 +113,8 @@ void TorSocket::reconnect()
 
 void TorSocket::connectivityChanged()
 {
-    if (torControl->hasConnectivity()) {
-        setProxy(torControl->connectionProxy());
+    if (g_globals.context->torControl->hasConnectivity()) {
+        setProxy(g_globals.context->torControl->connectionProxy());
         if (state() == QAbstractSocket::UnconnectedState)
             reconnect();
     } else {
@@ -126,11 +129,11 @@ void TorSocket::connectToHost(const QString &hostName, quint16 port, OpenMode op
     m_host = hostName;
     m_port = port;
 
-    if (!torControl->hasConnectivity())
+    if (!g_globals.context->torControl->hasConnectivity())
         return;
 
-    if (proxy() != torControl->connectionProxy())
-        setProxy(torControl->connectionProxy());
+    if (proxy() != g_globals.context->torControl->connectionProxy())
+        setProxy(g_globals.context->torControl->connectionProxy());
 
     QAbstractSocket::connectToHost(hostName, port, openMode, protocol);
 }

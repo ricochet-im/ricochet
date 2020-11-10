@@ -41,6 +41,10 @@
 #include "AddOnionCommand.h"
 #include "utils/StringUtil.h"
 
+#include "globals.hpp"
+#include "signals.hpp"
+using tego::g_globals;
+
 Tor::TorControl *torControl = 0;
 
 using namespace Tor;
@@ -126,6 +130,9 @@ void TorControlPrivate::setStatus(TorControl::Status n)
 
     emit q->statusChanged(status, old);
 
+    g_globals.context->callback_registry_.emit_tor_control_status_changed(
+        static_cast<tego_tor_control_status_t>(status));
+
     if (status == TorControl::Connected && old < TorControl::Connected)
         emit q->connected();
     else if (status < TorControl::Connected && old >= TorControl::Connected)
@@ -141,6 +148,9 @@ void TorControlPrivate::setTorStatus(TorControl::TorStatus n)
     torStatus = n;
     emit q->torStatusChanged(torStatus, old);
     emit q->connectivityChanged();
+
+    g_globals.context->callback_registry_.emit_tor_daemon_status_changed(
+        static_cast<tego_tor_daemon_status_t>(torStatus));
 
     if (torStatus == TorControl::TorReady && socksAddress.isNull()) {
         // Request info again to read the SOCKS port
@@ -526,6 +536,15 @@ void TorControlPrivate::updateBootstrap(const QList<QByteArray> &data)
         bootstrapStatus[key.toLower()] = value;
     }
 
+	// these functions just access 'bootstrapStatus' and parse out the relevant keys
+	// a bit roundabout but better than duplicating the tag parsing logic
+    auto progress = g_globals.context->get_tor_bootstrap_progress();
+    auto tag = g_globals.context->get_tor_bootstrap_tag();
+
+    g_globals.context->callback_registry_.emit_tor_bootstrap_status_changed(
+        progress,
+        tag);
+
     qDebug() << bootstrapStatus;
     emit q->bootstrapStatusChanged();
 }
@@ -692,6 +711,11 @@ bool TorControl::torVersionAsNewAs(const QString &match) const
 
     // Versions are equal, up to the length of match
     return true;
+}
+
+TorControl* TorControl::instance()
+{
+    return g_globals.context->torControl;
 }
 
 #include "TorControl.moc"

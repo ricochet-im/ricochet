@@ -7,7 +7,7 @@ import "utils.js" as Utils
 Item {
     anchors.fill: parent
 
-    property var bootstrap: torInstance.control.bootstrapStatus
+    property var bootstrap: torControl.bootstrapStatus
 
     Column {
         id: info
@@ -25,9 +25,9 @@ Item {
             Label { text: qsTr("Running:") }
             Label { font.bold: true; Layout.fillWidth: true; text: (torInstance.process ? (torInstance.process.state == TorProcess.Ready ? qsTr("Yes") : qsTr("No")) : qsTr("External")) }
             Label { text: qsTr("Control connected:") }
-            Label { font.bold: true; Layout.fillWidth: true; text: ((torInstance.control.status == TorControl.Connected) ? qsTr("Yes") : qsTr("No")) }
+            Label { font.bold: true; Layout.fillWidth: true; text: ((torControl.status == TorControl.Connected) ? qsTr("Yes") : qsTr("No")) }
             Label { text: qsTr("Circuits established:") }
-            Label { font.bold: true; text: ((torInstance.control.torStatus == TorControl.TorReady) ? qsTr("Yes") : qsTr("No")) }
+            Label { font.bold: true; text: ((torControl.torStatus == TorControl.TorReady) ? qsTr("Yes") : qsTr("No")) }
             Label { text: qsTr("Hidden service:") }
             Label { font.bold: true; text: (userIdentity.isOnline ? qsTr("Online") : qsTr("Offline")) }
             Label { text: qsTr("Version:") }
@@ -63,8 +63,8 @@ Item {
             property string errorMessage: {
                 if (torInstance.hasError)
                     return torInstance.errorMessage
-                else if (torInstance.control.errorMessage != "")
-                    return torInstance.control.errorMessage
+                else if (torControl.errorMessage != "")
+                    return torControl.errorMessage
                 else if (bootstrap.warning !== undefined)
                     return bootstrap.warning
                 else

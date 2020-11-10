@@ -335,14 +335,38 @@ void tego_context_get_users(
     size_t* out_usersCount,
     tego_error_t** error);
 
+//
+// Tor Config
+//
+
 // struct that will contain configuration information for running the tor daemon
-typedef struct tego_tor_configuration tego_tor_configuration_t;
+typedef struct tego_tor_launch_config tego_tor_launch_config_t;
 
-//
-// tor functions
-//
+/*
+ * Init a default tor configuration struct
+ *
+ * @param out_launchConfig : destination to write pointer to empty tor configuration
+ * @apram error : filled on error
+ */
+void tego_tor_launch_config_initialize(
+    tego_tor_launch_config_t** out_launchConfig,
+    tego_error_t** error);
 
-// start tor daemon with given tor configuration
+/*
+ * Set the root directory for the tor daemon to save/read settings
+ *
+ * @param torConfig : config struct to save to
+ * @param dataDirectory : our desired data directory
+ * @param dataDirectoryLength : length of dataDirectory string not counting the
+ *  null termiantor
+ * @param error : filled on error
+ */
+void tego_tor_launch_config_set_data_directory(
+    tego_tor_launch_config_t* launchConfig,
+    const char* dataDirectory,
+    size_t dataDirectoryLength,
+    tego_error_t** error);
+
 /*
  * Start an instance of the tor daemon and associate it with the given context
  *
@@ -352,7 +376,13 @@ typedef struct tego_tor_configuration tego_tor_configuration_t;
  */
 void tego_context_start_tor(
     tego_context_t* context,
-    const tego_tor_configuration* torConfig,
+    const tego_tor_launch_config* torConfig,
+    tego_error_t** error);
+
+typedef struct tego_tor_daemon_config tego_tor_daemon_config_t;
+
+void tego_tor_daemon_config_initialize(
+    tego_tor_daemon_config_t** out_config,
     tego_error_t** error);
 
 /*
@@ -363,11 +393,20 @@ void tego_context_start_tor(
  * @param torConfig : tor configuration params
  * @param error : filled on error
  */
-void tego_context_update_tor_configuration(
+void tego_context_update_tor_daemon_config(
     tego_context_t* context,
-    const tego_tor_configuration* torConfig,
+    const tego_tor_daemon_config_t* torConfig,
     tego_error_t** error);
 
+/*
+ * Save the courrent tor configuration to disk
+ *
+ * @param context : the current tego context
+ * @param error : filled on error
+ */
+void tego_context_save_tor_daemon_config(
+    tego_context_t* context,
+    tego_error_t** error);
 /*
  * Stops tor daemon associated with a given tego context
  *
@@ -440,7 +479,7 @@ size_t tego_context_get_tor_logs(
  *
  * @param context : the curent tego context
  * @param error : filled on error
- * @return : the versio string for the context's running tor daemon
+ * @return : the version string for the context's running tor daemon
  */
 const char* tego_context_get_tor_version_string(
     const tego_context_t* context,
@@ -468,8 +507,109 @@ void tego_context_get_tor_state_flags(
     tego_tor_state_flags_t* out_stateFlags,
     tego_error_t** error);
 
+// corresponds to Ricochet's Tor::TorControl::Status enum
+typedef enum
+{
+    tego_tor_control_status_error = -1,
+    tego_tor_control_status_not_connected,
+    tego_tor_control_status_connecting,
+    tego_tor_control_status_authenticating,
+    tego_tor_control_status_connected,
+} tego_tor_control_status_t;
+
+/*
+ * Get the current status of our tor control channel
+ *
+ * @param context : the current tego context
+ * @param out_status : destination to save control status
+ * @param error : filled on error
+ */
+void tego_context_get_tor_control_status(
+    const tego_context_t* context,
+    tego_tor_control_status_t* out_status,
+    tego_error_t** error);
+
+// corresponds to Ricochet's Tor::TorControl::TorStatus enum
+typedef enum
+{
+    tego_tor_daemon_status_unknown,
+    tego_tor_daemon_status_offline,
+    tego_tor_daemon_status_ready,
+} tego_tor_daemon_status_t;
+
+/*
+ * Get the current status of the tor daemon
+ *
+ * @param context : the current tego context
+ * @param out_status : out_status destination to save daemon status
+ * @param error : filled on error
+ */
+void tego_context_get_tor_daemon_status(
+    const tego_context_t* context,
+    tego_tor_daemon_status_t* out_status,
+    tego_error_t** error);
+
+// see https://gitweb.torproject.org/torspec.git/tree/control-spec.txt#n3867
+typedef enum
+{
+    tego_tor_bootstrap_tag_invalid = -1,
+    tego_tor_bootstrap_tag_starting,
+    tego_tor_bootstrap_tag_conn_pt,
+    tego_tor_bootstrap_tag_conn_done_pt,
+    tego_tor_bootstrap_tag_conn_proxy,
+    tego_tor_bootstrap_tag_conn_done_proxy,
+    tego_tor_bootstrap_tag_conn,
+    tego_tor_bootstrap_tag_conn_done,
+    tego_tor_bootstrap_tag_handshake,
+    tego_tor_bootstrap_tag_handshake_done,
+    tego_tor_bootstrap_tag_onehop_create,
+    tego_tor_bootstrap_tag_requesting_status,
+    tego_tor_bootstrap_tag_loading_status,
+    tego_tor_bootstrap_tag_loading_keys,
+    tego_tor_bootstrap_tag_requesting_descriptors,
+    tego_tor_bootstrap_tag_loading_descriptors,
+    tego_tor_bootstrap_tag_enough_dirinfo,
+    tego_tor_bootstrap_tag_ap_conn_pt_summary,
+    tego_tor_bootstrap_tag_ap_conn_done_pt,
+    tego_tor_bootstrap_tag_ap_conn_proxy,
+    tego_tor_bootstrap_tag_ap_conn_done_proxy,
+    tego_tor_bootstrap_tag_ap_conn,
+    tego_tor_bootstrap_tag_ap_conn_done,
+    tego_tor_bootstrap_tag_ap_handshake,
+    tego_tor_bootstrap_tag_ap_handshake_done,
+    tego_tor_bootstrap_tag_circuit_create,
+    tego_tor_bootstrap_tag_done,
+
+    tego_tor_bootstrap_tag_count
+} tego_tor_bootstrap_tag_t;
+
+/*
+ * Get the summary string associated with the given bootstrap tag
+ *
+ * @param tag : the tag to get the summary of
+ * @param error : filled on error
+ * @return : utf8 null-terminated summary string, NULL on error
+ */
+const char* tego_tor_bootstrap_tag_to_summary(
+    tego_tor_bootstrap_tag_t tag,
+    tego_error_t** error);
+
+/*
+ * Get the current bootstrap status and progress
+ *
+ * @param context : the current tego context
+ * @param out_progress : destination to save progress as a percent, 0 to 100
+ * @param out_tag : destination to save bootstrap tag
+ * @param error : filled on error
+ */
+void tego_context_get_tor_bootstrap_status(
+    const tego_context_t* context,
+    int32_t* out_progress,
+    tego_tor_bootstrap_tag_t* out_tag,
+    tego_error_t** error);
+
 //
-// tego chat methods
+// Tego Chat Methods
 //
 
 /*
@@ -541,9 +681,32 @@ void tego_context_forget_user(
     tego_error_t* error);
 
 //
-// callbacks for frontend to respond to events
-// provides no guarantees on what thread they are running on or thread safety
+// Callbacks for frontend to respond to events
+// Provides no guarantees on what thread they are running on or thread safety
+// All parameters (such as tego_error_t*) are automatically destroyed after user
+//  callback is invoked, so duplicate/marshall data as necessary
 //
+
+// TODO: remove the origin param once we better understand how errors are routed through the UI
+// temporarily used by the error callback
+typedef enum
+{
+    tego_tor_error_origin_control,
+    tego_tor_error_origin_manager,
+} tego_tor_error_origin_t;
+
+/*
+ * Callback fired when an error relating to Tor occurs, unrelated to an existing
+ * execution context (ie a function being called)
+ *
+ * @param context : the current tego context
+ * @param origin : which legacy Qt component the error came from
+ * @param error : error containing our message
+ */
+typedef void (*tego_tor_error_occurred_callback_t)(
+    tego_context_t* context,
+    tego_tor_error_origin_t origin,
+    const tego_error_t* error);
 
 /*
  * Callback fired when the one of the tor state flags changes
@@ -555,7 +718,49 @@ typedef void (*tego_tor_state_changed_callback_t)(
     tego_context_t* context,
     tego_tor_state_flags_t stateFlags);
 
-// fired when a log from tor daemon arrives
+/*
+ * TODO: this should go away and only exists for the ricochet Qt UI :(
+ *  saving the daemon config should probably just be synchrynous
+ * Callback fired after we attempt to save the tor configuration
+ *
+ * @param context : the current tego context
+ * @param out_success : where the result is saved, TEGO_TRUE on success, else TEGO_FALSE
+ */
+typedef void (*tego_update_tor_daemon_config_succeeded_callback_t)(
+    tego_context_t* context,
+    tego_bool_t success);
+
+/*
+ * Callback fired when the tor control port status has changed
+ *
+ * @param context : the current tego context
+ * @param status : the new control status
+ */
+typedef void (*tego_tor_control_status_changed_callback_t)(
+    tego_context_t* contxt,
+    tego_tor_control_status_t status);
+
+/*
+ * Callback fired when the tor daemon's status changes
+ *
+ * @param context : the current tego context
+ * @param status : the new daemon status
+ */
+typedef void (*tego_tor_daemon_status_changed_callback_t)(
+    tego_context_t* context,
+    tego_tor_daemon_status_t status);
+
+/*
+ * Callback fired when tor's bootstrap status changes
+ *
+ * @param context : the current tego context
+ * @param progress : the bootstrap progress percent
+ * @param tag : the bootstrap tag
+ */
+typedef void (*tego_tor_bootstrap_status_changed_callback_t)(
+    tego_context_t* context,
+    int32_t progress,
+    tego_tor_bootstrap_tag_t tag);
 
 /*
  * Callback fired when a log entry is received from the tor daemon
@@ -638,9 +843,34 @@ typedef void (*tego_new_identity_created_callback_t)(
  * Setters for various callbacks
  */
 
+void tego_context_set_tor_error_occurred_callback(
+    tego_context_t* context,
+    tego_tor_error_occurred_callback_t,
+    tego_error_t** error);
+
 void tego_context_set_tor_state_changed_callback(
     tego_context_t* context,
     tego_tor_state_changed_callback_t,
+    tego_error_t** error);
+
+void tego_context_set_update_tor_daemon_config_succeeded_callback(
+    tego_context_t* context,
+    tego_update_tor_daemon_config_succeeded_callback_t,
+    tego_error_t** error);
+
+void tego_context_set_tor_control_status_changed_callback(
+    tego_context_t* context,
+    tego_tor_control_status_changed_callback_t,
+    tego_error_t** error);
+
+void tego_context_set_tor_daemon_status_changed_callback(
+    tego_context_t* context,
+    tego_tor_daemon_status_changed_callback_t,
+    tego_error_t** error);
+
+void tego_context_set_tor_bootstrap_status_changed_callback(
+    tego_context_t* context,
+    tego_tor_bootstrap_status_changed_callback_t,
     tego_error_t** error);
 
 void tego_context_set_tor_log_received_callback(
@@ -691,8 +921,8 @@ void tego_v3_onion_service_id_delete(tego_v3_onion_service_id_t*);
 void tego_user_id_delete(tego_user_id_t*);
 
 // tor
-void tego_tor_configuration_delete(tego_tor_configuration_t*);
-
+void tego_tor_launch_config_delete(tego_tor_launch_config_t*);
+void tego_tor_daemon_config_delete(tego_tor_daemon_config_t*);
 
 #ifdef __cplusplus
 }

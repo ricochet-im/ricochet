@@ -45,6 +45,30 @@ namespace tego
     // Callback Register Arg Cleanup Functions
     //
 
+    void callback_registry::cleanup_tor_error_occurred_args(
+        tego_tor_error_origin_t,
+        tego_error_t* error)
+    {
+        delete error;
+    }
+
+    void callback_registry::cleanup_update_tor_daemon_config_succeeded_args(
+        tego_bool_t)
+    { }
+
+    void callback_registry::cleanup_tor_control_status_changed_args(
+       tego_tor_control_status_t)
+    { }
+
+    void callback_registry::cleanup_tor_daemon_status_changed_args(
+       tego_tor_daemon_status_t)
+    { }
+
+    void callback_registry::cleanup_tor_bootstrap_status_changed_args(
+       int32_t,
+       tego_tor_bootstrap_tag_t)
+    { }
+
     void callback_registry::cleanup_chat_request_response_received_args(
         tego_user_id_t* user,
         tego_bool_t)
@@ -65,8 +89,6 @@ namespace tego
         delete privateKey;
     }
 
-
-
     //
     // Callback Queue
     //
@@ -74,7 +96,8 @@ namespace tego
     callback_queue::callback_queue(tego_context* context)
     : context_(context)
     , terminating_(false)
-    , mutex_({})
+    , mutex_()
+    , pending_callbacks_()
     , worker_([](tego_context* ctx) -> void
     {
         auto& self = ctx->callback_queue_;
@@ -114,7 +137,6 @@ namespace tego
         }
 
     }, context)
-    , pending_callbacks_()
     {
         // empty constructor
     }
@@ -156,7 +178,12 @@ extern "C"
         }, error);\
     }
 
+    TEGO_DEFINE_CALLBACK_SETTER(tor_error_occurred);
     TEGO_DEFINE_CALLBACK_SETTER(tor_state_changed);
+    TEGO_DEFINE_CALLBACK_SETTER(update_tor_daemon_config_succeeded);
+    TEGO_DEFINE_CALLBACK_SETTER(tor_control_status_changed);
+    TEGO_DEFINE_CALLBACK_SETTER(tor_daemon_status_changed);
+    TEGO_DEFINE_CALLBACK_SETTER(tor_bootstrap_status_changed);
     TEGO_DEFINE_CALLBACK_SETTER(tor_log_received);
     TEGO_DEFINE_CALLBACK_SETTER(chat_request_received);
     TEGO_DEFINE_CALLBACK_SETTER(chat_request_response_received);

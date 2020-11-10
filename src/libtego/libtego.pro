@@ -51,6 +51,7 @@ HEADERS +=\
     source/globals.hpp\
     source/context.hpp\
     source/signals.hpp\
+    source/tor.hpp\
     source/user.hpp
 
 SOURCES +=\
@@ -63,6 +64,7 @@ SOURCES +=\
     source/globals.cpp\
     source/context.cpp\
     source/signals.cpp\
+    source/tor.cpp\
     source/user.cpp
 
 

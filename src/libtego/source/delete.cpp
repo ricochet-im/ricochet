@@ -1,30 +1,21 @@
 #include "ed25519.hpp"
 #include "error.hpp"
+#include "context.hpp"
+#include "tor.hpp"
 
 extern "C"
 {
-    void tego_ed25519_private_key_delete(tego_ed25519_private_key_t* privateKey)
-    {
-        delete privateKey;
+    #define TEGO_DELETE_IMPL(TYPE)\
+    void TYPE##_delete(TYPE##_t* obj)\
+    {\
+        delete obj;\
     }
 
-    void tego_ed25519_public_key_delete(tego_ed25519_public_key_t* publicKey)
-    {
-        delete publicKey;
-    }
-
-    void tego_ed25519_signature_delete(tego_ed25519_signature_t* signature)
-    {
-        delete signature;
-    }
-
-    void tego_v3_onion_service_id_delete(tego_v3_onion_service_id_t* serviceId)
-    {
-        delete serviceId;
-    }
-
-    void tego_error_delete(tego_error_t* error)
-    {
-        delete error;
-    }
+    TEGO_DELETE_IMPL(tego_ed25519_private_key);
+    TEGO_DELETE_IMPL(tego_ed25519_public_key);
+    TEGO_DELETE_IMPL(tego_ed25519_signature);
+    TEGO_DELETE_IMPL(tego_v3_onion_service_id);
+    TEGO_DELETE_IMPL(tego_error);
+    TEGO_DELETE_IMPL(tego_tor_launch_config);
+    TEGO_DELETE_IMPL(tego_tor_daemon_config);
 }

@@ -102,16 +102,22 @@ int main(int argc, char *argv[]) try
 
     initTranslation();
 
+    // start Tor
+    {
+        std::unique_ptr<tego_tor_launch_config_t> launchConfig;
+        tego_tor_launch_config_initialize(tego::out(launchConfig), tego::throw_on_error());
+
+        auto rawFilePath = (QFileInfo(settings->filePath()).path() + QStringLiteral("/tor/")).toUtf8();
+        tego_tor_launch_config_set_data_directory(
+            launchConfig.get(),
+            rawFilePath.data(),
+            rawFilePath.size(),
+            tego::throw_on_error());
+
+        tego_context_start_tor(tegoContext, launchConfig.get(), tego::throw_on_error());
+    }
 
 
-    /* Seed the OpenSSL RNG */
-
-
-    /* Tor control manager */
-    Tor::TorManager *torManager = Tor::TorManager::instance();
-    torManager->setDataDirectory(QFileInfo(settings->filePath()).path() + QStringLiteral("/tor/"));
-    torControl = torManager->control();
-    torManager->start();
 
     /* Identities */
     // const auto createNewIdentity = (SettingsObject().read("identity") == QJsonValue::Undefined);
@@ -140,7 +146,7 @@ int main(int argc, char *argv[]) try
 
     /* Window */
     QScopedPointer<MainWindow> w(new MainWindow);
-    if (!w->showUI())
+    if (!w->showUI(tegoContext))
         return 1;
 
     return a.exec();
