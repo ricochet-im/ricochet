@@ -122,4 +122,13 @@ extern "C" {
 #include <QVariantMap>
 #include <QVector>
 
+namespace tego
+{
+    template<typename T, size_t N>
+    constexpr size_t countof(T (&)[N])
+    {
+        return N;
+    }
+}
+
 #endif //__cplusplus#i
