@@ -6,7 +6,7 @@
 
 void logger::trace(const source_location& loc)
 {
-    println("{}({})", loc.file_name(), loc.line());
+    println("{}:{} -> {}(...)", loc.file_name(), loc.line(), loc.function_name());
 }
 
 std::ofstream& logger::get_stream()
