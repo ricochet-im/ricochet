@@ -381,8 +381,137 @@ void tego_context_start_tor(
 
 typedef struct tego_tor_daemon_config tego_tor_daemon_config_t;
 
+/*
+ * Returns a tor daemon config struct with default params
+ *
+ * @param out_config : destination for config
+ * @param error : filled on error
+ */
 void tego_tor_daemon_config_initialize(
     tego_tor_daemon_config_t** out_config,
+    tego_error_t** error);
+
+/*
+ * Set the DisableNetwork flag (see Tor Manual :
+ *  www.torproject.org/docs/tor-manual.html )
+ *
+ * @param config : config to update
+ * @param disableNetwork : TEGO_TRUE or TEGO_FALSE
+ * @param error : filled on error
+ */
+void tego_tor_daemon_config_set_disable_network(
+    tego_tor_daemon_config_t* config,
+    tego_bool_t disableNetwork,
+    tego_error_t** error);
+
+/*
+ * Set up SOCKS4 proxy params, overwrites any existing
+ * proxy settings
+ *
+ * @param config : config to update
+ * @param address : proxy addess as encoded utf8 string
+ * @param addressLength : length of the address not counting
+ *  the null terminator
+ * @param port : proxy port, 0 not allowed
+ * @param error : filled on error
+ */
+void tego_tor_daemon_config_set_proxy_socks4(
+    tego_tor_daemon_config_t* config,
+    const char* address,
+    size_t addressLength,
+    uint16_t port,
+    tego_error_t** error);
+
+/*
+ * Set up SOCKS5 proxy params, overwrites any existing
+ * proxy settings
+ *
+ * @param config : config to update
+ * @param address : proxy addess encoded as utf8 string
+ * @param addressLength : length of the address not counting
+ *  any NULL terminator
+ * @param port : proxy port, 0 not allowed
+ * @param username : authentication username encoded as utf8
+ *  string, may be NULL or empty string if not needed
+ * @param usernameLength : length of username string not counting
+ *  any NULL terminator
+ * @param password : authentication password encoded as utf8
+ *  string, may be NULL or empty string if not needed
+ * @param passwordLength : lenght of the password string not
+ *  counting any NULL terminator
+ * @param error : filled on error
+ */
+void tego_tor_daemon_config_set_proxy_socks5(
+    tego_tor_daemon_config_t* config,
+    const char* address,
+    size_t addressLength,
+    uint16_t port,
+    const char* username,
+    size_t usernameLength,
+    const char* password,
+    size_t passwordLength,
+    tego_error_t** error);
+
+/*
+ * Set up HTTPS proxy params, overwrites any existing
+ * proxy settings
+ *
+ * @param config : config to update
+ * @param address : proxy addess encoded as utf8 string
+ * @param addressLength : length of the address not counting
+ *  any NULL terminator
+ * @param port : proxy port, 0 not allowed
+ * @param username : authentication username encoded as utf8
+ *  string, may be NULL or empty string if not needed
+ * @param usernameLength : length of username string not counting
+ *  any NULL terminator
+ * @param password : authentication password encoded as utf8
+ *  string, may be NULL or empty string if not needed
+ * @param passwordLength : lenght of the password string not
+ *  counting any NULL terminator
+ * @param error : filled on error
+ */
+void tego_tor_daemon_config_set_proxy_https(
+    tego_tor_daemon_config_t* config,
+    const char* address,
+    size_t addressLength,
+    uint16_t port,
+    const char* username,
+    size_t usernameLength,
+    const char* password,
+    size_t passwordLength,
+    tego_error_t** error);
+
+/*
+ * Set the allowed ports the tor daemon may use
+ *
+ * @param config : config to update
+ * @param ports : array of allowed ports
+ * @param portsCount : the number of ports in list
+ * @param error : filled on error
+ */
+void tego_tor_daemon_config_set_allowed_ports(
+    tego_tor_daemon_config_t* config,
+    const uint16_t* ports,
+    size_t portsCount,
+    tego_error_t** error);
+
+/*
+ * Set the list of bridges for tor to use
+ *
+ * @param config : config to update
+ * @param bridges : array of utf8 encoded bridge strings
+ * @param bridgeLengths : array of lengths of the strings stored
+ *  in 'bridges', does not include any NULL terminators
+ * @param bridgeCount : the number of bridge strings being
+ *  passed in
+ * @param error : filled on error
+ */
+void tego_tor_daemon_config_set_bridges(
+    tego_tor_daemon_config_t* config,
+    const char** bridges,
+    size_t* bridgeLengths,
+    size_t bridgeCount,
     tego_error_t** error);
 
 /*

@@ -36,7 +36,6 @@
 // TODO: these includes need to go
 #include "core/IdentityManager.h"
 #include "tor/TorManager.h"
-#include "tor/TorControl.h"
 #include "utils/CryptoKey.h"
 #include "utils/Settings.h"
 

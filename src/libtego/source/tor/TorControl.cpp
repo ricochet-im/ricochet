@@ -713,10 +713,5 @@ bool TorControl::torVersionAsNewAs(const QString &match) const
     return true;
 }
 
-TorControl* TorControl::instance()
-{
-    return g_globals.context->torControl;
-}
-
 #include "TorControl.moc"
 

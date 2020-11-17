@@ -1,6 +1,7 @@
 #include "context.hpp"
 #include "error.hpp"
 #include "globals.hpp"
+#include "tor.hpp"
 
 using tego::g_globals;
 
@@ -60,7 +61,7 @@ tego_tor_bootstrap_tag_t tego_context::get_tor_bootstrap_tag() const
     auto bootstrapTag = bootstrapStatus["tag"].toString();
 
     // see https://gitweb.torproject.org/torspec.git/tree/control-spec.txt#n3867
-    // TODO: optimize this function if you're bored
+    // TODO: optimize this function if you're bored, could do binary search rather than linear search
     constexpr static const char* tagList[] =
     {
         "starting",
@@ -124,9 +125,97 @@ void tego_context::update_tor_daemon_config(const tego_tor_daemon_config_t* daem
             'FascistFirewall': null, 'FirewallPorts': null
 #endif
 
-    QVariantMap config;
-    config["DisableNetwork"] = "0";
-    this->torControl->setConfiguration(config);
+    const auto& config = *daemonConfig;
+
+    QVariantMap vm;
+
+    // init the tor settings we can modify here
+    constexpr static auto configKeys =
+    {
+        "DisableNetwork",
+        "Socks4Proxy",
+        "Socks5Proxy",
+        "Socks5ProxyUsername",
+        "Socks5ProxyPassword",
+        "HTTPSProxy",
+        "HTTPSProxyAuthenticator",
+        "ReachableAddresses",
+        "Bridge",
+        "UseBridges",
+    };
+    for(const auto& currentKey : configKeys)
+    {
+        vm[currentKey] = "";
+    }
+
+
+    // set disable network flag
+    if (config.disableNetwork.has_value()) {
+        vm["DisableNetwork"] = (config.disableNetwork.value() ? "1" : "0");
+    }
+
+    // set proxy info
+    switch(config.proxy.type)
+    {
+        case tego_proxy_type_none: break;
+        case tego_proxy_type_socks4:
+        {
+            vm["Socks4Proxy"] = QString::fromStdString(fmt::format("{}:{}", config.proxy.address, config.proxy.port));
+        }
+        break;
+        case tego_proxy_type_socks5:
+        {
+            vm["Socks5Proxy"] = QString::fromStdString(fmt::format("{}:{}", config.proxy.address, config.proxy.port));
+            if (!config.proxy.username.empty())
+            {
+                vm["Socks5ProxyUsername"] = QString::fromStdString(config.proxy.username);
+            }
+            if (!config.proxy.password.empty())
+            {
+                vm["Socks5ProxyPassword"] = QString::fromStdString(config.proxy.password);
+            }
+        }
+        break;
+        case tego_proxy_type_https:
+        {
+            vm["HTTPSProxy"] = QString::fromStdString(fmt::format("{}:{}", config.proxy.address, config.proxy.port));
+            if (!config.proxy.username.empty() || !config.proxy.password.empty())
+            {
+                vm["HTTPSProxyAuthenticator"] = QString::fromStdString(fmt::format("{}:{}", config.proxy.username, config.proxy.password));
+            }
+        }
+        break;
+    }
+
+    // set firewall ports
+    if (config.allowedPorts.size() > 0)
+    {
+        std::stringstream ss;
+
+        auto it = config.allowedPorts.begin();
+
+        ss << fmt::format("*:{}", *it);
+        for(++it; it < config.allowedPorts.end(); ++it)
+        {
+            ss << fmt::format(", *:{}", *it);
+        }
+
+        vm["ReachableAddresses"] = QString::fromStdString(ss.str());
+    }
+
+    // set bridges
+    if (config.bridges.size() > 0)
+    {
+        QVariantList bridges;
+        for(const auto& currentBridge : config.bridges)
+        {
+            bridges.append(QString::fromStdString(currentBridge));
+        }
+        vm["Bridge"] = bridges;
+        vm["UseBridges"] = "1";
+    }
+
+    this->torControl->setConfiguration(vm);
 }
 
 void tego_context::save_tor_daemon_config()

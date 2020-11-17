@@ -25,46 +25,15 @@ Column {
     }
 
     function save() {
-        // null value is reset
-        var conf = {
-            'Socks4Proxy': null, 'Socks5Proxy': null, 'Socks5ProxyUsername': null,
-            'Socks5ProxyPassword': null, 'HTTPSProxy': null, 'HTTPSProxyAuthenticator': null,
-            'ReachableAddresses': null, 'Bridge': null, 'UseBridges': null, 'DisableNetwork': '0',
-            // These are not set anymore, but are included here to clear old configurations
-            'FascistFirewall': null, 'FirewallPorts': null
-        }
-
-        if (proxyType === "socks4") {
-            conf['Socks4Proxy'] = proxyAddress + ":" + proxyPort
-        } else if (proxyType === "socks5") {
-            conf['Socks5Proxy'] = proxyAddress + ":" + proxyPort
-            if (proxyUsername.length > 0)
-                conf['Socks5ProxyUsername'] = proxyUsername
-            if (proxyPassword.length > 0)
-                conf['Socks5ProxyPassword'] = proxyPassword
-        } else if (proxyType === "https") {
-            conf['HTTPSProxy'] = proxyAddress + ":" + proxyPort
-            if (proxyUsername.length > 0 || proxyPassword.length > 0)
-                conf['HTTPSProxyAuthenticator'] = proxyUsername + ":" + proxyPassword
-        }
-
-        if (allowedPorts.length > 0) {
-            // Prepend *: to port-only fields
-            var ports = allowedPorts.split(',')
-            for (var i = 0; i < ports.length; i++) {
-                ports[i] = ports[i].trim()
-                if (ports[i].indexOf(':') < 0 && ports[i].indexOf('.') < 0) {
-                    ports[i] = "*:" + ports[i]
-                }
-            }
-
-            conf['ReachableAddresses'] = ports.join(', ')
-        }
-
-        if (bridges.length > 0) {
-            conf['Bridge'] = bridges.split('\n')
-            conf['UseBridges'] = "1"
-        }
+        var conf = {};
+        conf.disableNetwork = "0";
+        conf.proxyType = proxyType;
+        conf.proxyAddress = proxyAddress;
+        conf.proxyPort = proxyPort;
+        conf.proxyUsername = proxyUsername;
+        conf.proxyPassword = proxyPassword;
+        conf.allowedPorts = allowedPorts.trim().length > 0 ? allowedPorts.trim().split(',') : [];
+        conf.bridges = bridges.trim().length > 0 ? bridges.trim().split('\n') : [];
 
         var command = torControl.setConfiguration(conf)
         command.finished.connect(function() {

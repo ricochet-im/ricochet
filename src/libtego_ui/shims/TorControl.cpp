@@ -13,19 +13,156 @@ namespace shims
         logger::trace();
         Q_ASSERT(this->m_setConfigurationCommand == nullptr);
 
-        std::unique_ptr<tego_tor_daemon_config_t> daemonConfig;
-
         // create command shim yuck
         auto setConfigurationCommand = new TorControlCommand();
         QQmlEngine::setObjectOwnership(setConfigurationCommand, QQmlEngine::CppOwnership);
 
         this->m_setConfigurationCommand = setConfigurationCommand;
 
+        std::unique_ptr<tego_tor_daemon_config_t> daemonConfig;
         tego_tor_daemon_config_initialize(
             tego::out(daemonConfig),
             tego::throw_on_error());
 
-        // TODO: fill out daemon config
+        //
+        // see TorConfigurationPage.xml
+        //
+
+        // disable network
+        if (auto it = options.find("disableNetwork"); it != options.end())
+        {
+            const auto disableNetwork = options.value("disableNetwork").toInt();
+            Q_ASSERT(disableNetwork == TEGO_FALSE || disableNetwork == TEGO_TRUE);
+
+            tego_tor_daemon_config_set_disable_network(
+                daemonConfig.get(),
+                static_cast<tego_bool_t>(disableNetwork),
+                tego::throw_on_error());
+        }
+
+        // proxy
+        if (auto it = options.find("proxyType"); it != options.end() && *it != "")
+        {
+            Q_ASSERT(options.contains("proxyAddress"));
+            Q_ASSERT(options.contains("proxyPort"));
+
+            // we always need these params
+            const auto proxyAddress = options.value("proxyAddress").toString().toUtf8();
+            const auto proxyPort = options.value("proxyPort").toInt();
+
+            // ensure vali proxy type
+            const auto& proxyType = *it;
+            Q_ASSERT(proxyType == "socks4" || proxyType == "socks5" || proxyType == "https");
+
+            // handle socks4
+            if (proxyType == "socks4") {
+
+                Q_ASSERT(proxyPort > 0 && proxyPort < 65536);
+
+                tego_tor_daemon_config_set_proxy_socks4(
+                    daemonConfig.get(),
+                    proxyAddress.data(),
+                    proxyAddress.size(),
+                    static_cast<uint16_t>(proxyPort),
+                    tego::throw_on_error());
+            }
+            // handle socks5 and https
+            else if (proxyType == "socks5" || proxyType == "https")
+            {
+                Q_ASSERT(options.contains("proxyUsername"));
+                Q_ASSERT(options.contains("proxyPassword"));
+
+                const auto proxyUsername = options.value("proxyUsername").toString().toUtf8();
+                const auto proxyPassword = options.value("proxyPassword").toString().toUtf8();
+
+                if (proxyType == "socks5")
+                {
+                    tego_tor_daemon_config_set_proxy_socks5(
+                        daemonConfig.get(),
+                        proxyAddress.data(),
+                        proxyAddress.size(),
+                        static_cast<uint16_t>(proxyPort),
+                        proxyUsername.data(),
+                        proxyUsername.size(),
+                        proxyPassword.data(),
+                        proxyPassword.size(),
+                        tego::throw_on_error());
+                }
+                else if (proxyType == "https")
+                {
+                    tego_tor_daemon_config_set_proxy_https(
+                        daemonConfig.get(),
+                        proxyAddress.data(),
+                        proxyAddress.size(),
+                        static_cast<uint16_t>(proxyPort),
+                        proxyUsername.data(),
+                        proxyUsername.size(),
+                        proxyPassword.data(),
+                        proxyPassword.size(),
+                        tego::throw_on_error());
+                }
+            }
+        }
+
+        // allowed ports
+        if (auto it = options.find("allowedPorts"); it != options.end())
+        {
+            auto portList = it->toList();
+
+            if (portList.size() > 0)
+            {
+                std::vector<uint16_t> ports;
+                ports.reserve(portList.size());
+
+                // convert port list
+                for(const auto& v : portList)
+                {
+                    auto currentPort = v.toInt();
+                    Q_ASSERT(currentPort > 0 && currentPort < 65536);
+                    ports.push_back(static_cast<uint16_t>(currentPort));
+                }
+
+                tego_tor_daemon_config_set_allowed_ports(
+                    daemonConfig.get(),
+                    ports.data(),
+                    ports.size(),
+                    tego::throw_on_error());
+            }
+        }
+
+        // bridges
+        if (auto it = options.find("bridges"); it != options.end())
+        {
+            auto bridgeList = it->toList();
+            std::vector<std::string> bridgeStrings;
+            bridgeStrings.reserve(bridgeList.size());
+
+            for(auto& v : bridgeList)
+            {
+                auto currentBridge = v.toString();
+                bridgeStrings.push_back(currentBridge.toStdString());
+            }
+            const size_t bridgeCount = bridgeStrings.size();
+            if (bridgeCount > 0)
+            {
+                // copy over raw
+                const char* rawBridges[bridgeCount] = {0};
+                size_t rawBridgeLengths[bridgeCount] = {0};
+                for(size_t i = 0; i < bridgeStrings.size(); ++i)
+                {
+                    const auto& currentBridgeString = bridgeStrings[i];
+                    rawBridges[i] = currentBridgeString.data();
+                    rawBridgeLengths[i] = currentBridgeString.size();
+                }
+
+                tego_tor_daemon_config_set_bridges(
+                    daemonConfig.get(),
+                    rawBridges,
+                    rawBridgeLengths,
+                    bridgeCount,
+                    tego::throw_on_error());
+            }
+        }
 
         tego_context_update_tor_daemon_config(
             context,

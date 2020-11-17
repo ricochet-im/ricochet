@@ -113,9 +113,6 @@ public:
     Q_INVOKABLE QObject *setConfiguration(const QVariantMap &options);
     Q_INVOKABLE PendingOperation *saveConfiguration();
 
-	// TODO: remove this once frontend no longer needs TorControl
-    static TorControl* instance();
-
 signals:
     void statusChanged(int newStatus, int oldStatus);
     void torStatusChanged(int newStatus, int oldStatus);

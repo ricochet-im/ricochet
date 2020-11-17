@@ -54,6 +54,9 @@ extern "C" {
 #include <memory>
 #include <thread>
 #include <mutex>
+#include <set>
+#include <sstream>
+#include <optional>
 
 // fmt
 #include <fmt/format.h>

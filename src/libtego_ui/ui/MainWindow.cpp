@@ -37,7 +37,6 @@
 #include "core/IdentityManager.h"
 #include "core/ContactIDValidator.h"
 #include "core/ConversationModel.h"
-#include "tor/TorControl.h"
 #include "tor/TorManager.h"
 #include "tor/TorProcess.h"
 #include "ui/ContactsModel.h"
