@@ -7,6 +7,7 @@ using tego::g_globals;
 
 #include "tor/TorControl.h"
 #include "tor/TorManager.h"
+#include "tor/TorProcess.h"
 
 //
 // Tego Context
@@ -16,17 +17,52 @@ tego_context::tego_context()
 : callback_registry_(this)
 , callback_queue_(this)
 {
-
+    this->torManager = Tor::TorManager::instance();
+    this->torControl = torManager->control();
 }
 
 void tego_context::start_tor(const tego_tor_launch_config_t* config)
 {
     TEGO_THROW_IF_NULL(config);
 
-    this->torManager = Tor::TorManager::instance();
     this->torManager->setDataDirectory(config->dataDirectory.data());
-    this->torControl = torManager->control();
     this->torManager->start();
+}
+
+bool tego_context::get_tor_daemon_configured() const
+{
+    TEGO_THROW_IF_NULL(this->torManager);
+
+    return !this->torManager->configurationNeeded();
+}
+
+size_t tego_context::get_tor_logs_size() const
+{
+    size_t retval = 0;
+    for(const auto& msg : this->get_tor_logs())
+    {
+        retval += msg.size() + 1;
+    }
+    return retval;
+}
+
+const std::vector<std::string>& tego_context::get_tor_logs() const
+{
+    TEGO_THROW_IF_NULL(this->torManager);
+
+    auto logMessages = this->torManager->logMessages();
+    TEGO_THROW_IF_FALSE(logMessages.size() >= 0);
+
+    // see if we need to update our local copy
+    if(static_cast<size_t>(logMessages.size()) != this->torLogs.size())
+    {
+        for(size_t i = this->torLogs.size(); i < static_cast<size_t>(logMessages.size()); i++)
+        {
+            this->torLogs.push_back(std::move(logMessages[i].toStdString()));
+        }
+    }
+
+    return this->torLogs;
 }
 
 const char* tego_context::get_tor_version_string() const
@@ -48,10 +84,45 @@ tego_tor_control_status_t tego_context::get_tor_control_status() const
     return static_cast<tego_tor_control_status_t>(this->torControl->status());
 }
 
-tego_tor_daemon_status_t tego_context::get_tor_daemon_status() const
+tego_tor_process_status_t tego_context::get_tor_process_status() const
+{
+    TEGO_THROW_IF_NULL(this->torManager);
+
+    auto torProcess = this->torManager->process();
+    if (torProcess == nullptr)
+    {
+        return tego_tor_process_status_external;
+    }
+
+    switch(torProcess->state())
+    {
+        case Tor::TorProcess::Failed:
+            return tego_tor_process_status_failed;
+        case Tor::TorProcess::NotStarted:
+            return tego_tor_process_status_not_started;
+        case Tor::TorProcess::Starting:
+            return tego_tor_process_status_starting;
+        case Tor::TorProcess::Connecting:
+            // fall through, Connecting is really control status and not used by frontend explicitly
+        case Tor::TorProcess::Ready:
+            return tego_tor_process_status_running;
+    }
+
+    return tego_tor_process_status_unknown;
+}
+
+tego_tor_network_status_t tego_context::get_tor_network_status() const
 {
     TEGO_THROW_IF_NULL(this->torControl);
-    return static_cast<tego_tor_daemon_status_t>(this->torControl->torStatus());
+    switch(this->torControl->torStatus())
+    {
+        case Tor::TorControl::TorOffline:
+            return tego_tor_network_status_offline;
+        case Tor::TorControl::TorReady:
+            return tego_tor_network_status_ready;
+        default:
+            return tego_tor_network_status_unknown;
+    }
 }
 
 tego_tor_bootstrap_tag_t tego_context::get_tor_bootstrap_tag() const
@@ -115,15 +186,6 @@ int32_t tego_context::get_tor_bootstrap_progress() const
 void tego_context::update_tor_daemon_config(const tego_tor_daemon_config_t* daemonConfig)
 {
     TEGO_THROW_IF_NULL(this->torControl);
-    // TODO: fill in our settings
-    logger::trace();
-#if 0
-            'Socks4Proxy': null, 'Socks5Proxy': null, 'Socks5ProxyUsername': null,
-            'Socks5ProxyPassword': null, 'HTTPSProxy': null, 'HTTPSProxyAuthenticator': null,
-            'ReachableAddresses': null, 'Bridge': null, 'UseBridges': null, 'DisableNetwork': '0',
-            // These are not set anymore, but are included here to clear old configurations
-            'FascistFirewall': null, 'FirewallPorts': null
-#endif
 
     const auto& config = *daemonConfig;
 
@@ -147,7 +209,6 @@ void tego_context::update_tor_daemon_config(const tego_tor_daemon_config_t* daem
     {
         vm[currentKey] = "";
     }
-
 
     // set disable network flag
     if (config.disableNetwork.has_value()) {
@@ -293,6 +354,76 @@ extern "C"
         }, error);
     }
 
+    void tego_context_get_tor_daemon_configured(
+        const tego_context_t* context,
+        tego_bool_t* out_configured,
+        tego_error_t** error)
+    {
+        return tego::translateExceptions([=]() -> void
+        {
+            TEGO_THROW_IF_NULL(context);
+            TEGO_THROW_IF_NULL(out_configured);
+
+            *out_configured = TEGO_FALSE;
+
+            if(context->get_tor_daemon_configured())
+            {
+                *out_configured = TEGO_TRUE;
+            }
+        }, error);
+    };
+
+    size_t tego_context_get_tor_logs_size(
+        const tego_context_t* context,
+        tego_error_t** error)
+    {
+        return tego::translateExceptions([=]() -> size_t
+        {
+            TEGO_THROW_IF_NULL(context);
+
+            return context->get_tor_logs_size();
+        }, error, 0);
+    }
+
+
+    size_t tego_context_get_tor_logs(
+        const tego_context_t* context,
+        char* out_logBuffer,
+        size_t logBufferSize,
+        tego_error_t** error)
+    {
+        return tego::translateExceptions([=]() -> size_t
+        {
+            TEGO_THROW_IF_NULL(context);
+            TEGO_THROW_IF_FALSE(out_logBuffer);
+
+            // get our tor logs
+            const auto& logs = context->get_tor_logs();
+            size_t logsSize = context->get_tor_logs_size();
+
+            // create temporary buffer to copy each line into
+            std::vector<char> logBuffer;
+            logBuffer.reserve(logsSize);
+
+            // copy each log and separate by new lines '\n'
+            for(const auto& line : logs)
+            {
+                std::copy(line.begin(), line.end(), std::back_inserter(logBuffer));
+                logBuffer.push_back('\n');
+            }
+            // append null terminator
+            logBuffer.push_back(0);
+
+            // finally copy at most logBufferSize bytes from logBuffer
+            size_t copyCount = std::min(logBufferSize, logBuffer.size());
+            std::copy(logBuffer.begin(), logBuffer.begin() + copyCount, out_logBuffer);
+            // always write null terminator at the end
+            out_logBuffer[copyCount - 1] = 0;
+
+            return copyCount;
+        }, error, 0);
+    }
+
     const char* tego_context_get_tor_version_string(
         const tego_context_t* context,
         tego_error_t** error)
@@ -320,9 +451,9 @@ extern "C"
         }, error);
     }
 
-    void tego_context_get_tor_daemon_status(
+    void tego_context_get_tor_process_status(
         const tego_context_t* context,
-        tego_tor_daemon_status_t* out_status,
+        tego_tor_process_status_t* out_status,
         tego_error_t** error)
     {
         return tego::translateExceptions([=]() -> void
@@ -330,7 +461,22 @@ extern "C"
             TEGO_THROW_IF_NULL(context);
             TEGO_THROW_IF_NULL(out_status);
 
-            auto status = context->get_tor_daemon_status();
+            const auto status = context->get_tor_process_status();
+            *out_status = status;
+        }, error);
+    }
+
+    void tego_context_get_tor_network_status(
+        const tego_context_t* context,
+        tego_tor_network_status_t* out_status,
+        tego_error_t** error)
+    {
+        return tego::translateExceptions([=]() -> void
+        {
+            TEGO_THROW_IF_NULL(context);
+            TEGO_THROW_IF_NULL(out_status);
+
+            auto status = context->get_tor_network_status();
             *out_status = status;
         }, error);
     }

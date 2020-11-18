@@ -211,14 +211,24 @@ namespace shims
 
     TorControl::TorStatus TorControl::torStatus() const
     {
-        tego_tor_daemon_status_t status;
-        tego_context_get_tor_daemon_status(
+        tego_tor_network_status_t status;
+        tego_context_get_tor_network_status(
             context,
             &status,
             tego::throw_on_error());
 
         logger::trace();
-        return static_cast<TorControl::TorStatus>(status);
+        switch(status)
+        {
+            case tego_tor_network_status_unknown:
+                return TorControl::TorUnknown;
+            case tego_tor_network_status_ready:
+                return TorControl::TorReady;
+            case tego_tor_network_status_offline:
+                return TorControl::TorOffline;
+            default:
+                return TorControl::TorError;
+        }
     }
 
     QVariantMap TorControl::bootstrapStatus() const

@@ -37,8 +37,6 @@
 #include "core/IdentityManager.h"
 #include "core/ContactIDValidator.h"
 #include "core/ConversationModel.h"
-#include "tor/TorManager.h"
-#include "tor/TorProcess.h"
 #include "ui/ContactsModel.h"
 #include "ui/LinkedText.h"
 #include "utils/Settings.h"
@@ -48,6 +46,7 @@
 
 // shim replacements
 #include "shims/TorControl.h"
+#include "shims/TorManager.h"
 
 MainWindow *uiMain = 0;
 
@@ -112,7 +111,6 @@ MainWindow::MainWindow(QObject *parent)
     qmlRegisterUncreatableType<IncomingContactRequest>("im.ricochet", 1, 0, "IncomingContactRequest", QString());
     qmlRegisterUncreatableType<OutgoingContactRequest>("im.ricochet", 1, 0, "OutgoingContactRequest", QString());
     qmlRegisterUncreatableType<shims::TorControl>("im.ricochet", 1, 0, "TorControl", QString());
-    qmlRegisterUncreatableType<Tor::TorProcess>("im.ricochet", 1, 0, "TorProcess", QString());
     qmlRegisterType<ConversationModel>("im.ricochet", 1, 0, "ConversationModel");
     qmlRegisterType<ContactsModel>("im.ricochet", 1, 0, "ContactsModel");
     qmlRegisterType<ContactIDValidator>("im.ricochet", 1, 0, "ContactIDValidator");
@@ -127,14 +125,13 @@ MainWindow::~MainWindow()
 {
 }
 
-bool MainWindow::showUI(tego_context_t* context)
+bool MainWindow::showUI()
 {
     Q_ASSERT(!identityManager->identities().isEmpty());
     qml->rootContext()->setContextProperty(QLatin1String("userIdentity"), identityManager->identities()[0]);
 
-    shims::TorControl::torControl = new shims::TorControl(context);
     qml->rootContext()->setContextProperty(QLatin1String("torControl"), shims::TorControl::torControl);
-    qml->rootContext()->setContextProperty(QLatin1String("torInstance"), Tor::TorManager::instance());
+    qml->rootContext()->setContextProperty(QLatin1String("torInstance"), shims::TorManager::torManager);
     qml->rootContext()->setContextProperty(QLatin1String("uiMain"), this);
 
     qml->load(QUrl(QLatin1String("qrc:/ui/main.qml")));

@@ -382,6 +382,19 @@ void tego_context_start_tor(
 typedef struct tego_tor_daemon_config tego_tor_daemon_config_t;
 
 /*
+ * Determine whether the tor daemon has an existing torrc and
+ * is already configured
+ *
+ * @param context : the current tego context
+ * @param out_configured : destination for result, TEGO_TRUE if has config, else TEGO_FALSE
+ * @param error : filled on error
+ */
+void tego_context_get_tor_daemon_configured(
+    const tego_context_t* context,
+    tego_bool_t* out_configured,
+    tego_error_t** error);
+
+/*
  * Returns a tor daemon config struct with default params
  *
  * @param out_config : destination for config
@@ -587,6 +600,18 @@ void tego_context_stop_service(
     tego_error_t** error);
 
 /*
+ * Returns the number of charactres required (including null) to
+ * write out the tor logs
+ *
+ * @param context : the current tego context
+ * @param error : filled on error
+ * @return : the number of characters required
+ */
+size_t tego_context_get_tor_logs_size(
+    const tego_context_t* context,
+    tego_error_t** error);
+
+/*
  * Fill the passed in buffer with the tor daemon's logs, each entry delimitted
  * by newline character '\n'
  *
@@ -658,24 +683,46 @@ void tego_context_get_tor_control_status(
     tego_tor_control_status_t* out_status,
     tego_error_t** error);
 
-// corresponds to Ricochet's Tor::TorControl::TorStatus enum
 typedef enum
 {
-    tego_tor_daemon_status_unknown,
-    tego_tor_daemon_status_offline,
-    tego_tor_daemon_status_ready,
-} tego_tor_daemon_status_t;
+    tego_tor_process_status_unknown,
+    tego_tor_process_status_external,
+    tego_tor_process_status_not_started,
+    tego_tor_process_status_starting,
+    tego_tor_process_status_running,
+    tego_tor_process_status_failed,
+} tego_tor_process_status_t;
 
 /*
- * Get the current status of the tor daemon
+ * Get the current status of the tor daemon process
  *
  * @param context : the current tego context
- * @param out_status : out_status destination to save daemon status
+ * @param out_status : destination to write process status
  * @param error : filled on error
  */
-void tego_context_get_tor_daemon_status(
+void tego_context_get_tor_process_status(
     const tego_context_t* context,
-    tego_tor_daemon_status_t* out_status,
+    tego_tor_process_status_t* out_status,
+    tego_error_t** error);
+
+typedef enum
+{
+    tego_tor_network_status_unknown,
+    tego_tor_network_status_ready,
+    tego_tor_network_status_offline,
+} tego_tor_network_status_t;
+
+/*
+ * Get the current status of the tor daemon's connection
+ * to the tor network
+ *
+ * @param context : the current tego context
+ * @param out_status : destination to save network status
+ * @param error : filled on error
+ */
+void tego_context_get_tor_network_status(
+    const tego_context_t* context,
+    tego_tor_network_status_t* out_status,
     tego_error_t** error);
 
 // see https://gitweb.torproject.org/torspec.git/tree/control-spec.txt#n3867
@@ -747,7 +794,7 @@ void tego_context_get_tor_bootstrap_status(
  * @param context : the current tego context
  * @param user : the user to send a message to
  * @param mesage : utf8 text message to send
- * @param messageLength : length of message including null-terminator
+ * @param messageLength : length of message not including null-terminator
  * @param error : filled on error
  */
 void tego_context_send_message(
@@ -870,14 +917,24 @@ typedef void (*tego_tor_control_status_changed_callback_t)(
     tego_tor_control_status_t status);
 
 /*
- * Callback fired when the tor daemon's status changes
+ * Callback fired when the tor daemon process' status changes
  *
  * @param context : the current tego context
- * @param status : the new daemon status
+ * @param status : the new process status
  */
-typedef void (*tego_tor_daemon_status_changed_callback_t)(
+typedef void (*tego_tor_process_status_changed_callback_t)(
     tego_context_t* context,
-    tego_tor_daemon_status_t status);
+    tego_tor_process_status_t status);
+
+/*
+ * Callback fired when the tor daemon's network status changes
+ *
+ * @param context : the current tego context
+ * @param status : the new network status
+ */
+typedef void (*tego_tor_network_status_changed_callback_t)(
+    tego_context_t* context,
+    tego_tor_network_status_t status);
 
 /*
  * Callback fired when tor's bootstrap status changes
@@ -896,7 +953,7 @@ typedef void (*tego_tor_bootstrap_status_changed_callback_t)(
  *
  * @param context : the current tego context
  * @param message : a null-terminated log entry string
- * @param messageLength : length of the message including null-terminator
+ * @param messageLength : length of the message not including null-terminator
  */
 typedef void (*tego_tor_log_received_callback_t)(
     tego_context_t* context,
@@ -909,7 +966,7 @@ typedef void (*tego_tor_log_received_callback_t)(
  * @param context : the current tego context
  * @param sender : the user that wants to chat
  * @param message : null-terminated message string received from the requesting user
- * @param messageLength : length of the message including null-terminator
+ * @param messageLength : length of the message not including null-terminator
  */
 typedef void (*tego_chat_request_received_callback_t)(
     tego_context_t* context,
@@ -937,7 +994,7 @@ typedef void (*tego_chat_request_response_received_callback_t)(
  * @param context : the current tego context
  * @param sender : the user that sent host the message
  * @param message : null-terminated message string
- * @param messageLength : length of the message including null-terminator
+ * @param messageLength : length of the message not including null-terminator
  */
 typedef void (*tego_message_received_callback_t)(
     tego_context_t* context,
@@ -992,9 +1049,14 @@ void tego_context_set_tor_control_status_changed_callback(
     tego_tor_control_status_changed_callback_t,
     tego_error_t** error);
 
-void tego_context_set_tor_daemon_status_changed_callback(
+void tego_context_set_tor_process_status_changed_callback(
     tego_context_t* context,
-    tego_tor_daemon_status_changed_callback_t,
+    tego_tor_process_status_changed_callback_t,
+    tego_error_t** error);
+
+void tego_context_set_tor_network_status_changed_callback(
+    tego_context_t* context,
+    tego_tor_network_status_changed_callback_t,
     tego_error_t** error);
 
 void tego_context_set_tor_bootstrap_status_changed_callback(

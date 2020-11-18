@@ -1,8 +1,11 @@
 #include "utils/Settings.h"
 #include "shims/TorControl.h"
+#include "shims/TorManager.h"
 
 namespace
 {
+    constexpr int consumeInterval = 10;
+
     // data
     std::unique_ptr<QTimer> taskTimer;
     std::vector<std::function<void()>> taskQueue;
@@ -32,6 +35,9 @@ namespace
 
         // clear out our queue
         localTaskQueue.clear();
+
+		// schedule us to run again
+	    QTimer::singleShot(consumeInterval, &consume_tasks);
     }
 
     template<typename FUNC>
@@ -65,7 +71,7 @@ namespace
                 break;
                 case tego_tor_error_origin_manager:
                 {
-
+                    shims::TorManager::torManager->setErrorMessage(errorMsg);
                 }
                 break;
             }
@@ -99,14 +105,49 @@ namespace
         });
     }
 
-    void on_tor_daemon_status_changed(
+    void on_tor_process_status_changed(
         tego_context_t*,
-        tego_tor_daemon_status_t status)
+        tego_tor_process_status_t status)
     {
         push_task([=]() -> void
         {
-            logger::println("new daemon status : {}", status);
-            shims::TorControl::torControl->setTorStatus(static_cast<shims::TorControl::TorStatus>(status));
+            logger::println("new process status : {}", status);
+            auto torManger = shims::TorManager::torManager;
+            switch(status)
+            {
+                case tego_tor_process_status_running:
+                    torManger->setRunning("Yes");
+                    break;
+                case tego_tor_process_status_external:
+                    torManger->setRunning("External");
+                    break;
+                default:
+                    torManger->setRunning("No");
+                    break;
+            }
+        });
+    }
+
+    void on_tor_network_status_changed(
+        tego_context_t*,
+        tego_tor_network_status_t status)
+    {
+        push_task([=]() -> void
+        {
+            logger::println("new network status : {}", status);
+            auto torControl = shims::TorControl::torControl;
+            switch(status)
+            {
+                case tego_tor_network_status_unknown:
+                    torControl->setTorStatus(shims::TorControl::TorUnknown);
+                    break;
+                case tego_tor_network_status_ready:
+                    torControl->setTorStatus(shims::TorControl::TorReady);
+                    break;
+                case tego_tor_network_status_offline:
+                    torControl->setTorStatus(shims::TorControl::TorOffline);
+                    break;
+            }
         });
     }
 
@@ -120,6 +161,19 @@ namespace
             logger::println("bootstrap status : {{ progress : {}, tag : {} }}", progress, (int)tag);
             auto torControl = shims::TorControl::torControl;
             emit torControl->bootstrapStatusChanged();
+        });
+    }
+
+    void on_tor_log_received(
+        tego_context_t*,
+        const char* message,
+        size_t messageLength)
+    {
+        auto messageString = QString::fromUtf8(message, messageLength);
+        push_task([=]()-> void
+        {
+            auto torManager = shims::TorManager::torManager;
+            emit torManager->logMessage(messageString);
         });
     }
 
@@ -197,13 +251,7 @@ namespace
 
 void init_libtego_callbacks(tego_context_t* context)
 {
-    taskTimer = std::make_unique<QTimer>();
-    // fire every 10 ms
-    taskTimer->setInterval(10);
-    taskTimer->setSingleShot(false);
-    QObject::connect(taskTimer.get(), &QTimer::timeout, &consume_tasks);
-
-    taskTimer->start();
+    QTimer::singleShot(consumeInterval, &consume_tasks);
 
     //
     // register each of our callbacks with libtego
@@ -224,14 +272,24 @@ void init_libtego_callbacks(tego_context_t* context)
         &on_tor_control_status_changed,
         tego::throw_on_error());
 
-    tego_context_set_tor_daemon_status_changed_callback(
+    tego_context_set_tor_process_status_changed_callback(
         context,
-        &on_tor_daemon_status_changed,
+        &on_tor_process_status_changed,
+        tego::throw_on_error());
+
+    tego_context_set_tor_network_status_changed_callback(
+        context,
+        &on_tor_network_status_changed,
         tego::throw_on_error());
 
     tego_context_set_tor_bootstrap_status_changed_callback(
         context,
         &on_tor_bootstrap_status_changed,
+        tego::throw_on_error());
+
+    tego_context_set_tor_log_received_callback(
+        context,
+        &on_tor_log_received,
         tego::throw_on_error());
 
     tego_context_set_chat_request_response_received_callback(
@@ -248,5 +306,4 @@ void init_libtego_callbacks(tego_context_t* context)
         context,
         &on_new_identity_created,
         tego::throw_on_error());
-
 }

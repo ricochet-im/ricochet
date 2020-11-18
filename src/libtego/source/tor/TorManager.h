@@ -53,6 +53,7 @@ class TorManager : public QObject
     Q_PROPERTY(bool hasError READ hasError NOTIFY errorChanged)
     Q_PROPERTY(QString errorMessage READ errorMessage NOTIFY errorChanged)
     Q_PROPERTY(QString dataDirectory READ dataDirectory WRITE setDataDirectory)
+    Q_PROPERTY(QString running READ running NOTIFY runningChanged)
 
 public:
     explicit TorManager(QObject *parent = 0);
@@ -68,16 +69,18 @@ public:
     bool configurationNeeded() const;
 
     QStringList logMessages() const;
+    QString running() const;
 
     bool hasError() const;
     QString errorMessage() const;
-
 public slots:
     void start();
 
 signals:
     void configurationNeededChanged();
     void errorChanged();
+    void logMessage(const QString &message);
+    void runningChanged();
 
 private:
     TorManagerPrivate *d;

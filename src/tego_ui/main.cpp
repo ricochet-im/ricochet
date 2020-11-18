@@ -35,11 +35,13 @@
 
 // TODO: these includes need to go
 #include "core/IdentityManager.h"
-#include "tor/TorManager.h"
-#include "utils/CryptoKey.h"
 #include "utils/Settings.h"
 
 #include <libtego_callbacks.hpp>
+
+// shim replacements
+#include "shims/TorControl.h"
+#include "shims/TorManager.h"
 
 static bool initSettings(SettingsFile *settings, QLockFile **lockFile, QString &errorMessage);
 static void initTranslation();
@@ -71,6 +73,10 @@ int main(int argc, char *argv[]) try
     auto tego_cleanup = tego::make_scope_exit([=]() -> void {
         tego_uninitialize(tegoContext, tego::throw_on_error());
     });
+
+    // init our shims
+    shims::TorControl::torControl = new shims::TorControl(tegoContext);
+    shims::TorManager::torManager = new shims::TorManager(tegoContext);
 
     init_libtego_callbacks(tegoContext);
 
@@ -145,7 +151,7 @@ int main(int argc, char *argv[]) try
 
     /* Window */
     QScopedPointer<MainWindow> w(new MainWindow);
-    if (!w->showUI(tegoContext))
+    if (!w->showUI())
         return 1;
 
     return a.exec();

@@ -54,7 +54,7 @@ public:
     explicit MainWindow(QObject *parent = 0);
     ~MainWindow();
 
-    bool showUI(tego_context_t* context);
+    bool showUI();
 
     QString aboutText() const;
     QString version() const;

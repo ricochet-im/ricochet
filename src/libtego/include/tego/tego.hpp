@@ -15,6 +15,7 @@
 
 // libtego
 #include <tego/utilities.hpp>
+#define ENABLE_TEGO_LOGGER
 #include <tego/logger.hpp>
 
 namespace tego
@@ -29,6 +30,7 @@ namespace tego
         {
             if (error_ != nullptr)
             {
+                logger::println("exception thrown : {}", tego_error_get_message(error_));
                 std::runtime_error ex(tego_error_get_message(error_));
                 tego_error_delete(error_);
                 error_ = nullptr;

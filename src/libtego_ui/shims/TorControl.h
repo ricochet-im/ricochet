@@ -31,6 +31,7 @@ namespace shims
 
         enum TorStatus
         {
+            TorError = -1,
             TorUnknown,
             TorOffline,
             TorReady

@@ -10,7 +10,7 @@ TextArea {
     wrapMode: TextEdit.Wrap
 
     Connections {
-        target: torInstance.process
+        target: torInstance
         function onLogMessage(message) {
             logDisplay.append(message)
         }

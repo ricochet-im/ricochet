@@ -41,6 +41,7 @@
 #include "AddOnionCommand.h"
 #include "utils/StringUtil.h"
 
+#include "error.hpp"
 #include "globals.hpp"
 #include "signals.hpp"
 using tego::g_globals;
@@ -149,8 +150,19 @@ void TorControlPrivate::setTorStatus(TorControl::TorStatus n)
     emit q->torStatusChanged(torStatus, old);
     emit q->connectivityChanged();
 
-    g_globals.context->callback_registry_.emit_tor_daemon_status_changed(
-        static_cast<tego_tor_daemon_status_t>(torStatus));
+    switch(torStatus)
+    {
+        case TorControl::TorUnknown:
+            g_globals.context->callback_registry_.emit_tor_network_status_changed(tego_tor_network_status_unknown);
+            break;
+        case TorControl::TorOffline:
+            g_globals.context->callback_registry_.emit_tor_network_status_changed(tego_tor_network_status_offline);
+            break;
+        case TorControl::TorReady:
+            g_globals.context->callback_registry_.emit_tor_network_status_changed(tego_tor_network_status_ready);
+            break;
+    }
+
 
     if (torStatus == TorControl::TorReady && socksAddress.isNull()) {
         // Request info again to read the SOCKS port
@@ -164,6 +176,12 @@ void TorControlPrivate::setError(const QString &message)
     setStatus(TorControl::Error);
 
     qWarning() << "torctrl: Error:" << errorMessage;
+
+    auto tegoError = std::make_unique<tego_error>();
+    tegoError->message = message.toStdString();
+    g_globals.context->callback_registry_.emit_tor_error_occurred(
+        tego_tor_error_origin_control,
+        tegoError.release());
 
     socket->abort();
 

@@ -23,7 +23,7 @@ Item {
             columns: 4
             width: parent.width
             Label { text: qsTr("Running:") }
-            Label { font.bold: true; Layout.fillWidth: true; text: (torInstance.process ? (torInstance.process.state == TorProcess.Ready ? qsTr("Yes") : qsTr("No")) : qsTr("External")) }
+            Label { font.bold: true; Layout.fillWidth: true; text: qsTr(torInstance.running) }
             Label { text: qsTr("Control connected:") }
             Label { font.bold: true; Layout.fillWidth: true; text: ((torControl.status == TorControl.Connected) ? qsTr("Yes") : qsTr("No")) }
             Label { text: qsTr("Circuits established:") }
@@ -90,7 +90,7 @@ Item {
             bottom: parent.bottom
             margins: 8
         }
-        visible: torInstance.process !== null
+        visible: torInstance.running != "External"
     }
 }
 

@@ -35,6 +35,11 @@
 #include "TorControl.h"
 #include "GetConfCommand.h"
 
+#include "error.hpp"
+#include "signals.hpp"
+#include "globals.hpp"
+using tego::g_globals;
+
 using namespace Tor;
 
 namespace Tor
@@ -126,6 +131,19 @@ QStringList TorManager::logMessages() const
     return d->logMessages;
 }
 
+QString TorManager::running() const
+{
+    if (d->process)
+    {
+        if (d->process->state() == TorProcess::Ready)
+        {
+            return "Yes";
+        }
+        return "No";
+    }
+    return "External";
+}
+
 bool TorManager::hasError() const
 {
     return !d->errorMessage.isEmpty();
@@ -141,6 +159,11 @@ void TorManager::start()
     if (!d->errorMessage.isEmpty()) {
         d->errorMessage.clear();
         emit errorChanged();
+
+        auto tegoError = std::make_unique<tego_error>();
+        g_globals.context->callback_registry_.emit_tor_error_occurred(
+            tego_tor_error_origin_manager,
+            tegoError.release());
     }
 
     // Launch a bundled Tor instance
@@ -188,6 +211,24 @@ void TorManagerPrivate::processStateChanged(int state)
         control->setAuthPassword(process->controlPassword());
         control->connect(process->controlHost(), process->controlPort());
     }
+
+    switch(state)
+    {
+        case TorProcess::NotStarted:
+            logger::trace();
+            g_globals.context->callback_registry_.emit_tor_process_status_changed(tego_tor_process_status_not_started);
+            break;
+        case TorProcess::Starting:
+            logger::trace();
+            g_globals.context->callback_registry_.emit_tor_process_status_changed(tego_tor_process_status_starting);
+            break;
+        case TorProcess::Ready:
+            logger::trace();
+            g_globals.context->callback_registry_.emit_tor_process_status_changed(tego_tor_process_status_running);
+            break;
+    }
+
+    emit q->runningChanged();
 }
 
 void TorManagerPrivate::processErrorChanged(const QString &errorMessage)
@@ -202,6 +243,23 @@ void TorManagerPrivate::processLogMessage(const QString &message)
     if (logMessages.size() >= 50)
         logMessages.takeFirst();
     logMessages.append(message);
+
+    emit q->logMessage(message);
+
+    // marshall message out of the QString into our own char buffer
+    auto utf8 = message.toUtf8();
+
+    const auto msgLength = utf8.size();
+    const auto msgSize = msgLength + 1;
+    auto msg = std::make_unique<char[]>(msgSize);
+
+    // copy utf8 string to our own buffer
+    std::copy(utf8.begin(), utf8.end(), msg.get());
+    Q_ASSERT(msg[msgLength] == 0);
+
+    g_globals.context->callback_registry_.emit_tor_log_received(
+        msg.release(),
+        msgLength);
 }
 
 void TorManagerPrivate::controlStatusChanged(int status)
@@ -280,6 +338,13 @@ void TorManagerPrivate::setError(const QString &message)
 {
     errorMessage = message;
     emit q->errorChanged();
+
+    auto tegoError = std::make_unique<tego_error>();
+    tegoError->message = message.toStdString();
+
+    g_globals.context->callback_registry_.emit_tor_error_occurred(
+        tego_tor_error_origin_manager,
+        tegoError.release());
 }
 
 #include "TorManager.moc"
