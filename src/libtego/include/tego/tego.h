@@ -639,28 +639,6 @@ const char* tego_context_get_tor_version_string(
     const tego_context_t* context,
     tego_error_t** error);
 
-// various tor state flags currently exposed in ricochet ui
-typedef enum
-{
-    tego_tor_state_none                 = 0,
-    tego_tor_state_running              = TEGO_FLAG(0),
-    tego_tor_state_control_connected    = TEGO_FLAG(1),
-    tego_tor_state_circuits_established = TEGO_FLAG(2),
-    tego_tor_state_onion_service_online = TEGO_FLAG(3),
-} tego_tor_state_flags_t;
-
-/*
- * Get current tor state flags
- *
- * @param context : the current tego context
- * @param out_stateFlags : destination to save flags
- * @param error : filled on error
- */
-void tego_context_get_tor_state_flags(
-    const tego_context_t* context,
-    tego_tor_state_flags_t* out_stateFlags,
-    tego_error_t** error);
-
 // corresponds to Ricochet's Tor::TorControl::Status enum
 typedef enum
 {
@@ -788,6 +766,28 @@ void tego_context_get_tor_bootstrap_status(
 // Tego Chat Methods
 //
 
+// state of the host user, encapsulates all of the tor daemon launch,
+// network connection, and onion service creation into 'connecting'
+typedef enum
+{
+    tego_host_user_state_unknown,
+    tego_host_user_state_offline,
+    tego_host_user_state_connecting,
+    tego_host_user_state_online,
+} tego_host_user_state_t;
+
+/*
+ * Get the current state of the host user
+ *
+ * @param context : the current tego context
+ * @param out_state : destination to save state
+ * @param error : filled  on error
+ */
+void tego_context_get_host_user_state(
+    const tego_context_t* context,
+    tego_host_user_state_t* out_state,
+    tego_error_t** error);
+
 /*
  * Send a text message from the host to the given user
  *
@@ -885,16 +885,6 @@ typedef void (*tego_tor_error_occurred_callback_t)(
     const tego_error_t* error);
 
 /*
- * Callback fired when the one of the tor state flags changes
- *
- * @param context : the current tego context
- * @param stateFlogs : the current state flags for our context's tor instance
- */
-typedef void (*tego_tor_state_changed_callback_t)(
-    tego_context_t* context,
-    tego_tor_state_flags_t stateFlags);
-
-/*
  * TODO: this should go away and only exists for the ricochet Qt UI :(
  *  saving the daemon config should probably just be synchrynous
  * Callback fired after we attempt to save the tor configuration
@@ -959,6 +949,16 @@ typedef void (*tego_tor_log_received_callback_t)(
     tego_context_t* context,
     const char* message,
     size_t messageLength);
+
+/*
+ * Callback fired when the host user state changes
+ *
+ * @param context : the current tego context
+ * @param state : the current host user state
+ */
+typedef void (*tego_host_user_state_changed_callback_t)(
+    tego_context_t* context,
+    tego_host_user_state_t state);
 
 /*
  * Callback fired when the host receives a chat request from another user
@@ -1034,11 +1034,6 @@ void tego_context_set_tor_error_occurred_callback(
     tego_tor_error_occurred_callback_t,
     tego_error_t** error);
 
-void tego_context_set_tor_state_changed_callback(
-    tego_context_t* context,
-    tego_tor_state_changed_callback_t,
-    tego_error_t** error);
-
 void tego_context_set_update_tor_daemon_config_succeeded_callback(
     tego_context_t* context,
     tego_update_tor_daemon_config_succeeded_callback_t,
@@ -1067,6 +1062,11 @@ void tego_context_set_tor_bootstrap_status_changed_callback(
 void tego_context_set_tor_log_received_callback(
     tego_context_t* context,
     tego_tor_log_received_callback_t,
+    tego_error_t** error);
+
+void tego_context_set_host_user_state_changed_callback(
+    tego_context_t* context,
+    tego_host_user_state_changed_callback_t,
     tego_error_t** error);
 
 void tego_context_set_chat_request_received_callback(

@@ -80,6 +80,10 @@ namespace tego
         delete[] message;
     }
 
+    void callback_registry::cleanup_host_user_state_changed_args(
+        tego_host_user_state_t)
+    { }
+
     void callback_registry::cleanup_chat_request_response_received_args(
         tego_user_id_t* user,
         tego_bool_t)
@@ -190,13 +194,13 @@ extern "C"
     }
 
     TEGO_DEFINE_CALLBACK_SETTER(tor_error_occurred);
-    TEGO_DEFINE_CALLBACK_SETTER(tor_state_changed);
     TEGO_DEFINE_CALLBACK_SETTER(update_tor_daemon_config_succeeded);
     TEGO_DEFINE_CALLBACK_SETTER(tor_control_status_changed);
     TEGO_DEFINE_CALLBACK_SETTER(tor_process_status_changed);
     TEGO_DEFINE_CALLBACK_SETTER(tor_network_status_changed);
     TEGO_DEFINE_CALLBACK_SETTER(tor_bootstrap_status_changed);
     TEGO_DEFINE_CALLBACK_SETTER(tor_log_received);
+    TEGO_DEFINE_CALLBACK_SETTER(host_user_state_changed);
     TEGO_DEFINE_CALLBACK_SETTER(chat_request_received);
     TEGO_DEFINE_CALLBACK_SETTER(chat_request_response_received);
     TEGO_DEFINE_CALLBACK_SETTER(message_received);

@@ -79,6 +79,8 @@ UserIdentity *UserIdentity::createIdentity(int uniqueID)
 // TODO: Handle the error cases of this function in a useful way
 void UserIdentity::setupService(const QString& serviceID)
 {
+    g_globals.context->set_host_user_state(tego_host_user_state_offline);
+
     QString keyData = serviceID;
 
     if (!keyData.isEmpty()) {
@@ -110,6 +112,8 @@ void UserIdentity::setupService(const QString& serviceID)
             }
         );
     }
+
+    g_globals.context->set_host_user_state(tego_host_user_state_connecting);
 
     Q_ASSERT(m_hiddenService);
     connect(m_hiddenService, SIGNAL(statusChanged(int,int)), SLOT(onStatusChanged(int,int)));

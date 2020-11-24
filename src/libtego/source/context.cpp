@@ -286,6 +286,22 @@ void tego_context::save_tor_daemon_config()
     this->torControl->saveConfiguration();
 }
 
+void tego_context::set_host_user_state(tego_host_user_state_t state)
+{
+    if (state == hostUserState)
+    {
+        return;
+    }
+
+    this->hostUserState = state;
+    this->callback_registry_.emit_host_user_state_changed(state);
+}
+
+tego_host_user_state_t tego_context::get_host_user_state() const
+{
+    return this->hostUserState;
+}
+
 //
 // Exports
 //
@@ -498,6 +514,21 @@ extern "C"
 
             *out_progress = progress;
             *out_tag = tag;
+        }, error);
+    }
+
+    void tego_context_get_host_user_state(
+        const tego_context_t* context,
+        tego_host_user_state_t* out_state,
+        tego_error_t** error)
+    {
+        return tego::translateExceptions([=]() -> void
+        {
+            TEGO_THROW_IF_NULL(context);
+            TEGO_THROW_IF_NULL(out_state);
+
+            auto state = context->get_host_user_state();
+            *out_state = state;
         }, error);
     }
 

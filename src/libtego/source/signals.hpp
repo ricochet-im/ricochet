@@ -79,13 +79,13 @@ namespace tego
             }
 
         TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(tor_error_occurred, tego_tor_error_origin_t, tego_error_t*);
-        TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(tor_state_changed);
         TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(update_tor_daemon_config_succeeded, tego_bool_t);
         TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(tor_control_status_changed, tego_tor_control_status_t);
         TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(tor_process_status_changed, tego_tor_process_status_t);
         TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(tor_network_status_changed, tego_tor_network_status_t);
         TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(tor_bootstrap_status_changed, int32_t, tego_tor_bootstrap_tag_t);
         TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(tor_log_received, char*, size_t);
+        TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(host_user_state_changed, tego_host_user_state_t);
         TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(chat_request_received);
         TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(chat_request_response_received, tego_user_id_t*, tego_bool_t);
         TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(message_received);

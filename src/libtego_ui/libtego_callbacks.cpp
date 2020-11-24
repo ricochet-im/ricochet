@@ -1,6 +1,7 @@
 #include "utils/Settings.h"
 #include "shims/TorControl.h"
 #include "shims/TorManager.h"
+#include "shims/UserIdentity.h"
 
 namespace
 {
@@ -100,7 +101,7 @@ namespace
     {
         push_task([=]() -> void
         {
-            logger::println("new status : {}", status);
+            logger::println("new control status : {}", status);
             shims::TorControl::torControl->setStatus(static_cast<shims::TorControl::Status>(status));
         });
     }
@@ -174,6 +175,28 @@ namespace
         {
             auto torManager = shims::TorManager::torManager;
             emit torManager->logMessage(messageString);
+        });
+    }
+
+    void on_host_user_state_changed(
+        tego_context_t*,
+        tego_host_user_state_t state)
+    {
+        logger::println("new host user state : {}", state);
+        push_task([=]() -> void
+        {
+            auto userIdentity = shims::UserIdentity::userIdentity;
+            switch(state)
+            {
+                case tego_host_user_state_offline:
+                    userIdentity->setOnline(false);
+                    break;
+                case tego_host_user_state_online:
+                    userIdentity->setOnline(true);
+                    break;
+                default:
+                    break;
+            }
         });
     }
 
@@ -290,6 +313,11 @@ void init_libtego_callbacks(tego_context_t* context)
     tego_context_set_tor_log_received_callback(
         context,
         &on_tor_log_received,
+        tego::throw_on_error());
+
+    tego_context_set_host_user_state_changed_callback(
+        context,
+        &on_host_user_state_changed,
         tego::throw_on_error());
 
     tego_context_set_chat_request_response_received_callback(

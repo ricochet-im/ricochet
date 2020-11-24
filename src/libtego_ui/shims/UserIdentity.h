@@ -30,6 +30,8 @@ namespace shims
         QString contactID() const;
         ContactsManager* getContacts() const;
 
+        void setOnline(bool);
+
         static UserIdentity* userIdentity;
     signals:
         void statusChanged();
@@ -42,5 +44,7 @@ namespace shims
 
     private:
         tego_context_t *context;
+
+        bool online;
     };
 }

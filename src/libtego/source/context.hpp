@@ -27,6 +27,8 @@ public:
     tego_tor_bootstrap_tag_t get_tor_bootstrap_tag() const;
     void update_tor_daemon_config(const tego_tor_daemon_config_t* config);
     void save_tor_daemon_config();
+    void set_host_user_state(tego_host_user_state_t state);
+    tego_host_user_state_t get_host_user_state() const;
 
     tego::callback_registry callback_registry_;
     tego::callback_queue callback_queue_;
@@ -40,4 +42,5 @@ public:
     mutable std::string torVersion;
 private:
     mutable std::vector<std::string> torLogs;
+    tego_host_user_state_t hostUserState = tego_host_user_state_unknown;
 };

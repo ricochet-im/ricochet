@@ -16,13 +16,13 @@ namespace shims
         Q_ASSERT(identityManager->identities().size() == 1);
         auto userIdentity = identityManager->identities().first();
 
-        connect(
-            userIdentity,
-            &::UserIdentity::statusChanged,
-            [self=this]()
-            {
-                emit self->statusChanged();
-            });
+        // connect(
+        //     userIdentity,
+        //     &::UserIdentity::statusChanged,
+        //     [self=this]()
+        //     {
+        //         emit self->statusChanged();
+        //     });
 
         connect(
             userIdentity->getContacts()->incomingRequestManager(),
@@ -53,8 +53,11 @@ namespace shims
     bool UserIdentity::isServiceOnline() const
     {
         logger::trace();
-        auto userIdentity = identityManager->identities().first();
-        return userIdentity->isServiceOnline();
+
+        auto state = tego_host_user_state_unknown;
+        tego_context_get_host_user_state(context, &state, tego::throw_on_error());
+
+        return state == tego_host_user_state_online;
     }
 
     void UserIdentity::createContactRequest(
@@ -86,5 +89,11 @@ namespace shims
         logger::trace();
         auto userIdentity = identityManager->identities().first();
         return userIdentity->getContacts();
+    }
+
+    void UserIdentity::setOnline(bool online)
+    {
+        this->online = online;
+        emit this->statusChanged();
     }
 }

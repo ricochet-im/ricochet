@@ -143,7 +143,9 @@ void TorControlPrivate::setStatus(TorControl::Status n)
 void TorControlPrivate::setTorStatus(TorControl::TorStatus n)
 {
     if (n == torStatus)
+    {
         return;
+    }
 
     TorControl::TorStatus old = torStatus;
     torStatus = n;
@@ -164,9 +166,17 @@ void TorControlPrivate::setTorStatus(TorControl::TorStatus n)
     }
 
 
-    if (torStatus == TorControl::TorReady && socksAddress.isNull()) {
-        // Request info again to read the SOCKS port
-        getTorInfo();
+    if (torStatus == TorControl::TorReady)
+{
+        if (socksAddress.isNull())
+        {
+            // Request info again to read the SOCKS port
+            getTorInfo();
+        }
+        else
+        {
+            g_globals.context->set_host_user_state(tego_host_user_state_online);
+        }
     }
 }
 
@@ -456,6 +466,7 @@ void TorControlPrivate::getTorInfoReply()
 
     if (command->get(QByteArray("status/circuit-established")).toInt() == 1) {
         qDebug() << "torctrl: Tor indicates that circuits have been established; state is TorReady";
+        g_globals.context->set_host_user_state(tego_host_user_state_online);
         setTorStatus(TorControl::TorReady);
     } else {
         setTorStatus(TorControl::TorOffline);
