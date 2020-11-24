@@ -27,7 +27,7 @@ ApplicationWindow {
         if (!fields.hasValidRequest)
             return
 
-        userIdentity.contacts.createContactRequest(fields.contactId.text, fields.name.text, "", fields.message.text)
+        userIdentity.createContactRequest(fields.contactId.text, fields.name.text, "", fields.message.text)
         close()
     }
 

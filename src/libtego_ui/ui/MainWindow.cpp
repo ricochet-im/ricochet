@@ -47,6 +47,7 @@
 // shim replacements
 #include "shims/TorControl.h"
 #include "shims/TorManager.h"
+#include "shims/UserIdentity.h"
 
 MainWindow *uiMain = 0;
 
@@ -105,7 +106,7 @@ MainWindow::MainWindow(QObject *parent)
     qml->setNetworkAccessManagerFactory(new NetworkAccessBlockingFactory);
 
     qmlRegisterUncreatableType<ContactUser>("im.ricochet", 1, 0, "ContactUser", QString());
-    qmlRegisterUncreatableType<UserIdentity>("im.ricochet", 1, 0, "UserIdentity", QString());
+    qmlRegisterUncreatableType<shims::UserIdentity>("im.ricochet", 1, 0, "UserIdentity", QString());
     qmlRegisterUncreatableType<ContactsManager>("im.ricochet", 1, 0, "ContactsManager", QString());
     qmlRegisterUncreatableType<IncomingRequestManager>("im.ricochet", 1, 0, "IncomingRequestManager", QString());
     qmlRegisterUncreatableType<IncomingContactRequest>("im.ricochet", 1, 0, "IncomingContactRequest", QString());
@@ -128,8 +129,7 @@ MainWindow::~MainWindow()
 bool MainWindow::showUI()
 {
     Q_ASSERT(!identityManager->identities().isEmpty());
-    qml->rootContext()->setContextProperty(QLatin1String("userIdentity"), identityManager->identities()[0]);
-
+    qml->rootContext()->setContextProperty(QLatin1String("userIdentity"), shims::UserIdentity::userIdentity);
     qml->rootContext()->setContextProperty(QLatin1String("torControl"), shims::TorControl::torControl);
     qml->rootContext()->setContextProperty(QLatin1String("torInstance"), shims::TorManager::torManager);
     qml->rootContext()->setContextProperty(QLatin1String("uiMain"), this);

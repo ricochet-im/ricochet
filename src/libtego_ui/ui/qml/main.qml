@@ -77,7 +77,7 @@ QtObject {
 
     property list<QtObject> data: [
         Connections {
-            target: userIdentity.contacts.incomingRequests
+            target: userIdentity
             function onRequestAdded(request) {
                 var object = createDialog("ContactRequestDialog.qml", { 'request': request })
                 object.visible = true
@@ -125,7 +125,7 @@ QtObject {
             running: true
             repeat: false
             onTriggered: {
-                var pendingRequests = userIdentity.contacts.incomingRequests.requests
+                var pendingRequests = userIdentity.requests
                 for (var i = 0; i < pendingRequests.length; i++) {
                     var object = createDialog("ContactRequestDialog.qml", { 'request': pendingRequests[i] })
                     object.visible = true

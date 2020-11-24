@@ -80,4 +80,11 @@ namespace shims
         auto userIdentity = identityManager->identities().first();
         return userIdentity->contactID();
     }
+
+    ContactsManager* UserIdentity::getContacts() const
+    {
+        logger::trace();
+        auto userIdentity = identityManager->identities().first();
+        return userIdentity->getContacts();
+    }
 }
