@@ -16,14 +16,6 @@ namespace shims
         Q_ASSERT(identityManager->identities().size() == 1);
         auto userIdentity = identityManager->identities().first();
 
-        // connect(
-        //     userIdentity,
-        //     &::UserIdentity::statusChanged,
-        //     [self=this]()
-        //     {
-        //         emit self->statusChanged();
-        //     });
-
         connect(
             userIdentity->getContacts()->incomingRequestManager(),
             &::IncomingRequestManager::requestAdded,
@@ -55,7 +47,7 @@ namespace shims
         logger::trace();
 
         auto state = tego_host_user_state_unknown;
-        tego_context_get_host_user_state(context, &state, tego::throw_on_error());
+        tego_context_get_host_user_state(this->context, &state, tego::throw_on_error());
 
         return state == tego_host_user_state_online;
     }
@@ -79,9 +71,20 @@ namespace shims
 
     QString UserIdentity::contactID() const
     {
-        logger::trace();
-        auto userIdentity = identityManager->identities().first();
-        return userIdentity->contactID();
+        // get host user id and convert to the ricochet:blahlah format
+        std::unique_ptr<tego_user_id_t> userId;
+        tego_context_get_host_user_id(this->context, tego::out(userId), tego::throw_on_error());
+
+        std::unique_ptr<tego_v3_onion_service_id_t> serviceId;
+        tego_user_id_get_v3_onion_service_id(userId.get(), tego::out(serviceId), tego::throw_on_error());
+
+        char serviceIdString[TEGO_V3_ONION_SERVICE_ID_SIZE] = {0};
+        tego_v3_onion_service_id_to_string(serviceId.get(), serviceIdString, sizeof(serviceIdString), tego::throw_on_error());
+
+        QString contactId;
+        QTextStream(&contactId) << "ricochet:" << serviceIdString;
+
+        return contactId;
     }
 
     ContactsManager* UserIdentity::getContacts() const

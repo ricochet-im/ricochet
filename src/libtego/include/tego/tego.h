@@ -267,17 +267,52 @@ void tego_user_id_get_v3_onion_service_id(
     tego_v3_onion_service_id_t** out_serviceId,
     tego_error_t** error);
 
-// TODO: figure out which statuses we need later
-typedef enum
-{
-    tego_user_status_none    = 0,
-    tego_user_status_online  = TEGO_FLAG(0),
-    tego_user_status_offline = TEGO_FLAG(1),
-} tego_user_status_t;
-
 //
 // contacts/user methods
 //
+
+/*
+ * Get the host's user_id (derived from private key)
+ *
+ * @param context : the current tego context
+ * @param out_hostUser : returned user id
+ * @param error : filled on error
+ */
+void tego_context_get_host_user_id(
+    const tego_context_t* context,
+    tego_user_id_t** out_hostUser,
+    tego_error_t** error);
+
+// state of the host user, encapsulates all of the tor daemon launch,
+// network connection, and onion service creation into 'connecting'
+// TODO: squish these into the tego_user_status_t ?
+typedef enum
+{
+    tego_host_user_state_unknown,
+    tego_host_user_state_offline,
+    tego_host_user_state_connecting,
+    tego_host_user_state_online,
+} tego_host_user_state_t;
+
+/*
+ * Get the current state of the host user
+ *
+ * @param context : the current tego context
+ * @param out_state : destination to save state
+ * @param error : filled  on error
+ */
+void tego_context_get_host_user_state(
+    const tego_context_t* context,
+    tego_host_user_state_t* out_state,
+    tego_error_t** error);
+
+// TODO: figure out which statuses we need later
+typedef enum
+{
+    tego_user_status_none,
+    tego_user_status_online,
+    tego_user_status_offline,
+} tego_user_status_t;
 
 /*
  * Get a user's current user status
@@ -296,6 +331,7 @@ void tego_context_get_user_status(
 // enum for user type
 typedef enum
 {
+
     tego_user_type_allowed, // in our contact list
     tego_user_type_blocked, // in our block list
     tego_user_type_pending, // users the host has added but who have not replied yet
@@ -579,18 +615,6 @@ void tego_context_start_service(
     tego_error_t** error);
 
 /*
- * Get the host's private key
- *
- * @param context : the current tego context
- * @param out_hostPrivateKey : the returned private key
- * @param error : filled on error
- */
-void tego_context_get_host_private_key(
-    tego_context_t* context,
-    tego_ed25519_private_key_t** out_hostPrivateKey,
-    tego_error_t** error);
-
-/*
  * Stop tego's onion service associated with the given context
  *
  * @param context : the current tego context
@@ -765,28 +789,6 @@ void tego_context_get_tor_bootstrap_status(
 //
 // Tego Chat Methods
 //
-
-// state of the host user, encapsulates all of the tor daemon launch,
-// network connection, and onion service creation into 'connecting'
-typedef enum
-{
-    tego_host_user_state_unknown,
-    tego_host_user_state_offline,
-    tego_host_user_state_connecting,
-    tego_host_user_state_online,
-} tego_host_user_state_t;
-
-/*
- * Get the current state of the host user
- *
- * @param context : the current tego context
- * @param out_state : destination to save state
- * @param error : filled  on error
- */
-void tego_context_get_host_user_state(
-    const tego_context_t* context,
-    tego_host_user_state_t* out_state,
-    tego_error_t** error);
 
 /*
  * Send a text message from the host to the given user

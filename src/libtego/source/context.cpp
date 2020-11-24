@@ -2,12 +2,15 @@
 #include "error.hpp"
 #include "globals.hpp"
 #include "tor.hpp"
+#include "user.hpp"
+#include "ed25519.hpp"
 
 using tego::g_globals;
 
 #include "tor/TorControl.h"
 #include "tor/TorManager.h"
 #include "tor/TorProcess.h"
+#include "core/UserIdentity.h"
 
 //
 // Tego Context
@@ -297,6 +300,19 @@ void tego_context::set_host_user_state(tego_host_user_state_t state)
     this->callback_registry_.emit_host_user_state_changed(state);
 }
 
+std::unique_ptr<tego_user_id_t> tego_context::get_host_user_id() const
+{
+    TEGO_THROW_IF_NULL(this->identityManager);
+    auto userIdentity = this->identityManager->identities().first();
+
+    auto hostname = userIdentity->hostname().toUtf8();
+    logger::println("hostname : {}", hostname);
+
+    tego_v3_onion_service_id serviceId(hostname.data(), TEGO_V3_ONION_SERVICE_ID_LENGTH);
+
+    return std::make_unique<tego_user_id_t>(serviceId);
+}
+
 tego_host_user_state_t tego_context::get_host_user_state() const
 {
     return this->hostUserState;
@@ -514,6 +530,43 @@ extern "C"
 
             *out_progress = progress;
             *out_tag = tag;
+        }, error);
+    }
+
+    void tego_context_start_service(
+        tego_context_t* context,
+        const tego_ed25519_private_key_t* hostPrivateKey,
+        const tego_user_id_t** userBuffer,
+        const tego_user_type_t** userTypeBuffer,
+        size_t userCount,
+        tego_error_t** error)
+    {
+        return tego::translateExceptions([=]() -> void
+        {
+            (void)hostPrivateKey;
+            (void)userBuffer;
+            (void)userTypeBuffer;
+
+            // TODO: actually populate the identity manager with the pased in info
+
+            TEGO_THROW_IF_NULL(context);
+            // save off the singleton on our context
+            context->identityManager = identityManager;
+        }, error);
+    }
+
+    void tego_context_get_host_user_id(
+        const tego_context_t* context,
+        tego_user_id_t** out_hostUser,
+        tego_error_t** error)
+    {
+        return tego::translateExceptions([=]() -> void
+        {
+            TEGO_THROW_IF_NULL(context);
+            TEGO_THROW_IF_NULL(out_hostUser);
+
+            auto hostUser = context->get_host_user_id();
+            *out_hostUser = hostUser.release();
         }, error);
     }
 

@@ -2,9 +2,11 @@
 
 #include "signals.hpp"
 #include "tor.hpp"
+#include "user.hpp"
 
 #include "tor/TorControl.h"
 #include "tor/TorManager.h"
+#include "core/IdentityManager.h"
 
 //
 // Tego Context
@@ -28,6 +30,7 @@ public:
     void update_tor_daemon_config(const tego_tor_daemon_config_t* config);
     void save_tor_daemon_config();
     void set_host_user_state(tego_host_user_state_t state);
+    std::unique_ptr<tego_user_id_t> get_host_user_id() const;
     tego_host_user_state_t get_host_user_state() const;
 
     tego::callback_registry callback_registry_;
@@ -36,9 +39,11 @@ public:
     // this 'global' (actually per tego_context) mutex
     std::mutex mutex_;
 
-    // TODO: figure out ownership of these Qt Tor types
+    // TODO: figure out ownership of these Qt types
     Tor::TorManager* torManager = nullptr;
     Tor::TorControl* torControl = nullptr;
+    IdentityManager* identityManager = nullptr;
+
     mutable std::string torVersion;
 private:
     mutable std::vector<std::string> torLogs;

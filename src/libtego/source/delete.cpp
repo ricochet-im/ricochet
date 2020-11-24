@@ -18,4 +18,5 @@ extern "C"
     TEGO_DELETE_IMPL(tego_error);
     TEGO_DELETE_IMPL(tego_tor_launch_config);
     TEGO_DELETE_IMPL(tego_tor_daemon_config);
+    TEGO_DELETE_IMPL(tego_user_id);
 }

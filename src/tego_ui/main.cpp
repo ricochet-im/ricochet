@@ -148,6 +148,14 @@ int main(int argc, char *argv[]) try
     identityManager = new IdentityManager(serviceID, contactHostnames);
     QScopedPointer<IdentityManager> scopedIdentityManager(identityManager);
 
+    tego_context_start_service(
+        tegoContext,
+        nullptr,
+        nullptr,
+        nullptr,
+        0,
+        tego::throw_on_error());
+
     // init our shims
     shims::UserIdentity::userIdentity = new shims::UserIdentity(tegoContext);
 
