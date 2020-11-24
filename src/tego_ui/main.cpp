@@ -42,6 +42,7 @@
 // shim replacements
 #include "shims/TorControl.h"
 #include "shims/TorManager.h"
+#include "shims/UserIdentity.h"
 
 static bool initSettings(SettingsFile *settings, QLockFile **lockFile, QString &errorMessage);
 static void initTranslation();
@@ -74,10 +75,6 @@ int main(int argc, char *argv[]) try
         tego_uninitialize(tegoContext, tego::throw_on_error());
     });
 
-    // init our shims
-    shims::TorControl::torControl = new shims::TorControl(tegoContext);
-    shims::TorManager::torManager = new shims::TorManager(tegoContext);
-
     init_libtego_callbacks(tegoContext);
 
 #ifdef TEGO_VERSION
@@ -107,6 +104,10 @@ int main(int argc, char *argv[]) try
 
     initTranslation();
 
+    // init our tor shims
+    shims::TorControl::torControl = new shims::TorControl(tegoContext);
+    shims::TorManager::torManager = new shims::TorManager(tegoContext);
+
     // start Tor
     {
         std::unique_ptr<tego_tor_launch_config_t> launchConfig;
@@ -121,8 +122,6 @@ int main(int argc, char *argv[]) try
 
         tego_context_start_tor(tegoContext, launchConfig.get(), tego::throw_on_error());
     }
-
-
 
     /* Identities */
     // const auto createNewIdentity = (SettingsObject().read("identity") == QJsonValue::Undefined);
@@ -148,6 +147,9 @@ int main(int argc, char *argv[]) try
 
     identityManager = new IdentityManager(serviceID, contactHostnames);
     QScopedPointer<IdentityManager> scopedIdentityManager(identityManager);
+
+    // init our shims
+    shims::UserIdentity::userIdentity = new shims::UserIdentity(tegoContext);
 
     /* Window */
     QScopedPointer<MainWindow> w(new MainWindow);

@@ -33,7 +33,6 @@ FocusScope {
 
             ContactIDValidator {
                 id: idValidator
-                notContactOfIdentity: userIdentity
 
                 onFailed: {
                     var contact

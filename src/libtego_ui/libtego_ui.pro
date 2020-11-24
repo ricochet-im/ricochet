@@ -29,7 +29,8 @@ SOURCES += \
     ui/MainWindow.cpp \
     shims/TorControl.cpp\
     shims/TorCommand.cpp\
-    shims/TorManager.cpp
+    shims/TorManager.cpp\
+    shims/UserIdentity.cpp
 
 HEADERS += \
     libtego_callbacks.hpp \
@@ -39,7 +40,8 @@ HEADERS += \
     ui/MainWindow.h \
     shims/TorControl.h\
     shims/TorCommand.h\
-    shims/TorManager.h
+    shims/TorManager.h\
+    shims/UserIdentity.h
 
 include($${QMAKE_INCLUDES}/protobuf.pri)
 include($${QMAKE_INCLUDES}/openssl.pri)

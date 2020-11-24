@@ -41,8 +41,6 @@ class ContactsModel : public QAbstractListModel
     Q_OBJECT
     Q_DISABLE_COPY(ContactsModel)
 
-    Q_PROPERTY(UserIdentity* identity READ identity WRITE setIdentity NOTIFY identityChanged)
-
 public:
     enum
     {
@@ -52,9 +50,6 @@ public:
     };
 
     explicit ContactsModel(QObject *parent = 0);
-
-    UserIdentity *identity() const { return m_identity; }
-    void setIdentity(UserIdentity *identity);
 
     Q_INVOKABLE QModelIndex indexOfContact(ContactUser *user) const;
     Q_INVOKABLE int rowOfContact(ContactUser *user) const { return indexOfContact(user).row(); }
@@ -73,6 +68,8 @@ private slots:
     void contactRemoved(ContactUser *user);
 
 private:
+    void setIdentity();
+
     UserIdentity *m_identity;
     QList<ContactUser*> contacts;
 

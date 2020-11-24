@@ -30,6 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "IdentityManager.h"
 #include "ContactIDValidator.h"
 #include "utils/StringUtil.h"
 
@@ -38,7 +39,8 @@
 static thread_local QRegularExpression regex(QStringLiteral("(torsion|ricochet):([a-z2-7]{56})"));
 
 ContactIDValidator::ContactIDValidator(QObject *parent)
-    : QRegularExpressionValidator(parent), m_uniqueIdentity(0)
+    : QRegularExpressionValidator(parent)
+    , m_uniqueIdentity(identityManager->identities()[0])
 {
     setRegularExpression(regex);
 }

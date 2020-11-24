@@ -45,14 +45,15 @@ inline bool contactSort(const ContactUser *c1, const ContactUser *c2)
 }
 
 ContactsModel::ContactsModel(QObject *parent)
-    : QAbstractListModel(parent), m_identity(0)
+    : QAbstractListModel(parent)
+    , m_identity(identityManager->identities()[0])
 {
+    this->setIdentity();
 }
 
-void ContactsModel::setIdentity(UserIdentity *identity)
+void ContactsModel::setIdentity()
 {
-    if (identity == m_identity)
-        return;
+    Q_ASSERT(m_identity != nullptr);
 
     beginResetModel();
 
@@ -65,12 +66,10 @@ void ContactsModel::setIdentity(UserIdentity *identity)
         disconnect(&m_identity->contacts, 0, this, 0);
     }
 
-    m_identity = identity;
-
     if (m_identity) {
-        connect(&identity->contacts, SIGNAL(contactAdded(ContactUser*)), SLOT(contactAdded(ContactUser*)));
+        connect(&m_identity->contacts, SIGNAL(contactAdded(ContactUser*)), SLOT(contactAdded(ContactUser*)));
 
-        contacts = identity->contacts.contacts();
+        contacts = m_identity->contacts.contacts();
         std::sort(contacts.begin(), contacts.end(), contactSort);
 
         foreach (ContactUser *user, contacts)

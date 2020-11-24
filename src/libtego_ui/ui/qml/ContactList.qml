@@ -14,7 +14,6 @@ ScrollView {
         },
         ContactsModel {
             id: contactsModel
-            identity: userIdentity
         }
     ]
 
