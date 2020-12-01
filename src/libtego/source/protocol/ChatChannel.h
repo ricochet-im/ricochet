@@ -50,7 +50,6 @@ public:
 
     explicit ChatChannel(Direction direction, Connection *connection);
 
-    bool sendChatMessage(QString text, QDateTime time, MessageId &id);
     bool sendChatMessageWithId(QString text, QDateTime time, MessageId id);
 
 signals:
@@ -64,7 +63,6 @@ protected:
 
 private:
     QSet<MessageId> pendingMessages;
-    MessageId lastMessageId;
 
     void handleChatMessage(const Data::Chat::ChatMessage &message);
     void handleChatAcknowledge(const Data::Chat::ChatAcknowledge &message);

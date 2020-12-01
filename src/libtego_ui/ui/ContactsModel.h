@@ -33,8 +33,13 @@
 #ifndef CONTACTSMODEL_H
 #define CONTACTSMODEL_H
 
-class UserIdentity;
-class ContactUser;
+
+namespace shims
+{
+    class UserIdentity;
+    class ContactUser;
+}
+
 
 class ContactsModel : public QAbstractListModel
 {
@@ -51,9 +56,9 @@ public:
 
     explicit ContactsModel(QObject *parent = 0);
 
-    Q_INVOKABLE QModelIndex indexOfContact(ContactUser *user) const;
-    Q_INVOKABLE int rowOfContact(ContactUser *user) const { return indexOfContact(user).row(); }
-    Q_INVOKABLE ContactUser *contact(int row) const;
+    Q_INVOKABLE QModelIndex indexOfContact(shims::ContactUser *user) const;
+    Q_INVOKABLE int rowOfContact(shims::ContactUser *user) const { return indexOfContact(user).row(); }
+    Q_INVOKABLE shims::ContactUser *contact(int row) const;
 
     virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
     virtual QHash<int,QByteArray> roleNames() const;
@@ -63,17 +68,17 @@ signals:
     void identityChanged();
 
 private slots:
-    void updateUser(ContactUser *user = 0);
-    void contactAdded(ContactUser *user);
-    void contactRemoved(ContactUser *user);
+    void updateUser(shims::ContactUser *user = 0);
+    void contactAdded(shims::ContactUser *user);
+    void contactRemoved(shims::ContactUser *user);
 
 private:
     void setIdentity();
 
-    UserIdentity *m_identity;
-    QList<ContactUser*> contacts;
+    shims::UserIdentity *m_identity;
+    QList<shims::ContactUser*> contacts;
 
-    void connectSignals(ContactUser *user);
+    void connectSignals(shims::ContactUser *user);
 };
 
 #endif // CONTACTSMODEL_H

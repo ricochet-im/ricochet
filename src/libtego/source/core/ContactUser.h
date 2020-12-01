@@ -101,6 +101,8 @@ public:
 
     Q_INVOKABLE void deleteContact();
 
+    std::unique_ptr<tego_user_id_t> toTegoUserId() const;
+
 public slots:
     /* Assign a connection to this user
      *

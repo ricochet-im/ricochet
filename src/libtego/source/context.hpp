@@ -32,6 +32,13 @@ public:
     void set_host_user_state(tego_host_user_state_t state);
     std::unique_ptr<tego_user_id_t> get_host_user_id() const;
     tego_host_user_state_t get_host_user_state() const;
+    void send_chat_request(
+        const tego_user_id_t* user,
+        const char* message,
+        size_t messageLength);
+    tego_message_id_t send_message(
+        const tego_user_id_t* user,
+        const std::string& message);
 
     tego::callback_registry callback_registry_;
     tego::callback_queue callback_queue_;
@@ -46,6 +53,9 @@ public:
 
     mutable std::string torVersion;
 private:
+    class ContactUser* getContactUser(const tego_user_id_t*);
+
+
     mutable std::vector<std::string> torLogs;
     tego_host_user_state_t hostUserState = tego_host_user_state_unknown;
 };

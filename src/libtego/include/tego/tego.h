@@ -790,6 +790,11 @@ void tego_context_get_tor_bootstrap_status(
 // Tego Chat Methods
 //
 
+// milliseconds since 1970-01-01T00:00:00 utc.
+typedef uint64_t tego_time_t;
+// unique (per user) identifier
+typedef uint64_t tego_message_id_t;
+
 /*
  * Send a text message from the host to the given user
  *
@@ -797,6 +802,7 @@ void tego_context_get_tor_bootstrap_status(
  * @param user : the user to send a message to
  * @param mesage : utf8 text message to send
  * @param messageLength : length of message not including null-terminator
+ * @param out_id : filled with assigned message id for callbacks
  * @param error : filled on error
  */
 void tego_context_send_message(
@@ -804,6 +810,7 @@ void tego_context_send_message(
     tego_user_id_t* user,
     const char* message,
     size_t messageLength,
+    tego_message_id_t* out_id,
     tego_error_t** error);
 
 /*
@@ -824,11 +831,15 @@ void tego_context_confirm_chat_request(
  *
  * @param context : the current tego context
  * @param user : the user we want to chat with
+ * @param mesage : utf8 text greeting message to send
+ * @param messageLength : length of message not including null-terminator
  * @param error : filled on error
  */
 void tego_context_send_chat_request(
     tego_context_t* context,
     const tego_user_id_t* user,
+    const char* message,
+    size_t messageLength,
     tego_error_t** error);
 
 /*
@@ -995,14 +1006,33 @@ typedef void (*tego_chat_request_response_received_callback_t)(
  *
  * @param context : the current tego context
  * @param sender : the user that sent host the message
+ * @param timestamp : the time the message was sent
+ * @param messageId : id of the message received
  * @param message : null-terminated message string
  * @param messageLength : length of the message not including null-terminator
  */
 typedef void (*tego_message_received_callback_t)(
     tego_context_t* context,
     const tego_user_id_t* sender,
+    tego_time_t timestamp,
+    tego_message_id_t messageId,
     const char* message,
     size_t messageLength);
+
+/*
+ * Callback fired when a chat message is received an acknowledge
+ * by the recipient
+ *
+ * @param context : the current tego context
+ * @param userId : the user the message was sent to
+ * @param messageId : id of the message being acknowledged
+ * @param messageAccepted : TEGO_TRUE if accepted, TEGO_FALSE otherwise
+ */
+typedef void (*tego_message_acknowledged_callback_t)(
+    tego_context_t* context,
+    const tego_user_id_t* userId,
+    tego_message_id_t messageId,
+    tego_bool_t messageAccepted);
 
 /*
  * Callback fired when a user's status changes
@@ -1084,6 +1114,11 @@ void tego_context_set_chat_request_response_received_callback(
 void tego_context_set_message_received_callback(
     tego_context_t* context,
     tego_message_received_callback_t,
+    tego_error_t** error);
+
+void tego_context_set_message_acknowledged_callback(
+    tego_context_t* context,
+    tego_message_acknowledged_callback_t,
     tego_error_t** error);
 
 void tego_context_set_user_status_changed_callback(

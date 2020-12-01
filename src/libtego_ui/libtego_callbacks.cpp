@@ -2,7 +2,7 @@
 #include "shims/TorControl.h"
 #include "shims/TorManager.h"
 #include "shims/UserIdentity.h"
-
+#include "shims/ConversationModel.h"
 namespace
 {
     constexpr int consumeInterval = 10;
@@ -47,6 +47,29 @@ namespace
         // acquire lock on the queue and push our received functor
         std::lock_guard<std::mutex> lock(taskQueueLock);
         taskQueue.push_back(std::move(func));
+    }
+
+    // converts the our tego_user_id_t to ricochet's contactId in the form ricochet:serviceidserviceidserviceid...
+    QString tegoUserIdToContactId(const tego_user_id_t* user)
+    {
+        std::unique_ptr<tego_v3_onion_service_id> serviceId;
+        tego_user_id_get_v3_onion_service_id(user, tego::out(serviceId), tego::throw_on_error());
+
+        char serviceIdRaw[TEGO_V3_ONION_SERVICE_ID_SIZE] = {0};
+        tego_v3_onion_service_id_to_string(serviceId.get(), serviceIdRaw, sizeof(serviceIdRaw), tego::throw_on_error());
+
+        QString contactId = QString("ricochet:") + QString::fromUtf8(serviceIdRaw, TEGO_V3_ONION_SERVICE_ID_LENGTH);
+
+        return contactId;
+    }
+
+    shims::ContactUser* contactUserFromContactId(const QString& contactId)
+    {
+        auto userIdentity = shims::UserIdentity::userIdentity;
+        auto contactsManager = userIdentity->getContacts();
+
+        auto contactUser = contactsManager->getShimContactByContactId(contactId);
+        return contactUser;
     }
 
     //
@@ -250,6 +273,52 @@ namespace
         });
     }
 
+    void on_message_received(
+        tego_context_t*,
+        const tego_user_id_t* sender,
+        tego_time_t timestamp,
+        tego_message_id_t messageId,
+        const char* message,
+        size_t messageLength)
+    {
+        auto contactId = tegoUserIdToContactId(sender);
+        auto messageString = QString::fromUtf8(message, messageLength);
+
+        push_task([=]() -> void
+        {
+            auto contactUser = contactUserFromContactId(contactId);
+            Q_ASSERT(contactUser != nullptr);
+            auto conversationModel = contactUser->conversation();
+            Q_ASSERT(conversationModel != nullptr);
+
+            conversationModel->messageReceived(messageId, QDateTime::fromMSecsSinceEpoch(timestamp), messageString);
+        });
+    }
+
+    void on_message_acknowledged(
+        tego_context_t*,
+        const tego_user_id_t* userId,
+        tego_message_id_t messageId,
+        tego_bool_t messageAccepted)
+    {
+        logger::trace();
+        logger::println(" userId : {}", (void*)userId);
+        logger::println(" messageId : {}", messageId);
+        logger::println(" messageAccepted : {}", messageAccepted);
+
+        QString contactId = tegoUserIdToContactId(userId);
+        push_task([=]() -> void
+        {
+            logger::trace();
+            auto contactsManager = shims::UserIdentity::userIdentity->getContacts();
+            auto contactUser = contactsManager->getShimContactByContactId(contactId);
+            logger::println("contactUser : {}", (void*)contactUser);
+            logger::println("contactId : {}", contactUser->contactID());
+            auto conversationModel = contactUser->conversation();
+            conversationModel->messageAcknowledged(messageId, static_cast<bool>(messageAccepted));
+        });
+    }
+
     void on_new_identity_created(
         tego_context_t*,
         const tego_ed25519_private_key_t* privateKey)
@@ -274,6 +343,7 @@ namespace
 
 void init_libtego_callbacks(tego_context_t* context)
 {
+    // start triggering our consume queue
     QTimer::singleShot(consumeInterval, &consume_tasks);
 
     //
@@ -328,6 +398,16 @@ void init_libtego_callbacks(tego_context_t* context)
     tego_context_set_user_status_changed_callback(
         context,
         &on_user_status_changed,
+        tego::throw_on_error());
+
+    tego_context_set_message_received_callback(
+        context,
+        &on_message_received,
+        tego::throw_on_error());
+
+    tego_context_set_message_acknowledged_callback(
+        context,
+        &on_message_acknowledged,
         tego::throw_on_error());
 
     tego_context_set_new_identity_created_callback(

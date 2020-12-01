@@ -91,6 +91,26 @@ namespace tego
         delete user;
     }
 
+    void callback_registry::cleanup_message_received_args(
+        tego_user_id_t* user,
+        tego_time_t,
+        tego_message_id_t,
+        char* message,
+        size_t)
+    {
+        delete user;
+        delete[] message;
+    }
+
+
+    void callback_registry::cleanup_message_acknowledged_args(
+        tego_user_id_t* user,
+        tego_message_id_t,
+        tego_bool_t)
+    {
+        delete user;
+    }
+
     void callback_registry::cleanup_user_status_changed_args(
         tego_user_id_t* user,
         tego_user_status_t)
@@ -204,6 +224,7 @@ extern "C"
     TEGO_DEFINE_CALLBACK_SETTER(chat_request_received);
     TEGO_DEFINE_CALLBACK_SETTER(chat_request_response_received);
     TEGO_DEFINE_CALLBACK_SETTER(message_received);
+    TEGO_DEFINE_CALLBACK_SETTER(message_acknowledged);
     TEGO_DEFINE_CALLBACK_SETTER(user_status_changed);
     TEGO_DEFINE_CALLBACK_SETTER(new_identity_created);
 }

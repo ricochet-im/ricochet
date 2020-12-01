@@ -76,7 +76,7 @@ public:
     virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
 
 public slots:
-    void sendMessage(const QString &text);
+    tego_message_id_t sendMessage(const QString &text);
     void clear();
 
 signals:
@@ -107,6 +107,10 @@ private:
     ContactUser *m_contact;
     QList<MessageData> messages;
     int m_unreadCount;
+
+    // The peer might use recent message IDs between connections to handle
+    // re-send. Start at a random ID to reduce chance of collisions, then increment
+    MessageId lastMessageId;
 
     int indexOfIdentifier(MessageId identifier, bool isOutgoing) const;
     void prune();

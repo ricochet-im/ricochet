@@ -33,7 +33,6 @@
 #include "ChatChannel.h"
 #include "Channel_p.h"
 #include "Connection.h"
-#include "utils/SecureRNG.h"
 #include "utils/Useful.h"
 
 using namespace Protocol;
@@ -41,9 +40,6 @@ using namespace Protocol;
 ChatChannel::ChatChannel(Direction direction, Connection *connection)
     : Channel(QStringLiteral("im.ricochet.chat"), direction, connection)
 {
-    // The peer might use recent message IDs between connections to handle
-    // re-send. Start at a random ID to reduce chance of collisions, then increment
-    lastMessageId = SecureRNG::randomInt(UINT32_MAX);
 }
 
 bool ChatChannel::allowInboundChannelRequest(const Data::Control::OpenChannel *request, Data::Control::ChannelResult *result)
@@ -99,11 +95,6 @@ void ChatChannel::receivePacket(const QByteArray &packet)
     }
 }
 
-bool ChatChannel::sendChatMessage(QString text, QDateTime time, MessageId &id)
-{
-    id = ++lastMessageId;
-    return sendChatMessageWithId(text, time, id);
-}
 
 bool ChatChannel::sendChatMessageWithId(QString text, QDateTime time, MessageId id)
 {

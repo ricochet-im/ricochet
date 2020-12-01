@@ -1,8 +1,8 @@
 #pragma once
 
-#include "core/ContactsManager.h"
 #include "core/IncomingRequestManager.h"
 
+#include "ContactsManager.h"
 namespace shims
 {
     class UserIdentity : public QObject
@@ -17,22 +17,19 @@ namespace shims
         // this originally had a contactIDChanged signal
         Q_PROPERTY(QString contactID READ contactID CONSTANT)
         // needed in MainWindow.qml
-        Q_PROPERTY(ContactsManager *contacts READ getContacts CONSTANT)
+        Q_PROPERTY(shims::ContactsManager *contacts READ getContacts CONSTANT)
     public:
         UserIdentity(tego_context_t* context);
+
         QList<QObject*> requestObjects() const;
         bool isServiceOnline() const;
-        void createContactRequest(
-            const QString &contactID,
-            const QString &nickname,
-            const QString &myNickname,
-            const QString &message);
         QString contactID() const;
-        ContactsManager* getContacts() const;
+        ContactsManager* getContacts();
 
         void setOnline(bool);
 
         static UserIdentity* userIdentity;
+        shims::ContactsManager contacts;
     signals:
         void statusChanged();
         // used in main.qml
@@ -44,7 +41,6 @@ namespace shims
 
     private:
         tego_context_t *context;
-
         bool online;
     };
 }

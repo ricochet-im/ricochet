@@ -131,13 +131,7 @@ void ContactUser::updateStatus()
 
     m_status = newStatus;
     {
-        // convert our hostname to just the service id raw string
-        auto serviceIdString = this->hostname().chopped(tego::static_strlen(".onion")).toUtf8();
-        // ensure valid service id
-        auto serviceId = std::make_unique<tego_v3_onion_service_id>(serviceIdString.data(), serviceIdString.size());
-        // create user id object from service id
-        auto userId = std::make_unique<tego_user_id>(*serviceId.get());
-
+        auto userId = this->toTegoUserId();
         tego::g_globals.context->callback_registry_.emit_user_status_changed(userId.release(), (tego_user_status_t)newStatus);
     }
     emit statusChanged();
@@ -498,3 +492,14 @@ void ContactUser::clearConnection()
     m_connection.clear();
 }
 
+std::unique_ptr<tego_user_id_t> ContactUser::toTegoUserId() const
+{
+        // convert our hostname to just the service id raw string
+        auto serviceIdString = this->hostname().chopped(tego::static_strlen(".onion")).toUtf8();
+        // ensure valid service id
+        auto serviceId = std::make_unique<tego_v3_onion_service_id>(serviceIdString.data(), serviceIdString.size());
+        // create user id object from service id
+        auto userId = std::make_unique<tego_user_id>(*serviceId.get());
+
+        return userId;
+}

@@ -30,7 +30,13 @@ SOURCES += \
     shims/TorControl.cpp\
     shims/TorCommand.cpp\
     shims/TorManager.cpp\
-    shims/UserIdentity.cpp
+    shims/UserIdentity.cpp\
+    shims/ContactsManager.cpp\
+    shims/ContactUser.cpp\
+    shims/ConversationModel.cpp\
+    shims/IncomingContactRequest.cpp\
+    shims/IncomingRequestManager.cpp\
+    shims/OutgoingContactRequest.cpp
 
 HEADERS += \
     libtego_callbacks.hpp \
@@ -41,7 +47,13 @@ HEADERS += \
     shims/TorControl.h\
     shims/TorCommand.h\
     shims/TorManager.h\
-    shims/UserIdentity.h
+    shims/UserIdentity.h\
+    shims/ContactsManager.h\
+    shims/ContactUser.h\
+    shims/ConversationModel.h\
+    shims/IncomingContactRequest.h\
+    shims/IncomingRequestManager.h\
+    shims/OutgoingContactRequest.h
 
 include($${QMAKE_INCLUDES}/protobuf.pri)
 include($${QMAKE_INCLUDES}/openssl.pri)

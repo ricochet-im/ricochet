@@ -31,12 +31,10 @@
  */
 
 #include "ui/MainWindow.h"
-#include "core/UserIdentity.h"
 #include "core/IncomingRequestManager.h"
 #include "core/OutgoingContactRequest.h"
-#include "core/IdentityManager.h"
 #include "core/ContactIDValidator.h"
-#include "core/ConversationModel.h"
+
 #include "ui/ContactsModel.h"
 #include "ui/LinkedText.h"
 #include "utils/Settings.h"
@@ -48,6 +46,9 @@
 #include "shims/TorControl.h"
 #include "shims/TorManager.h"
 #include "shims/UserIdentity.h"
+#include "shims/ContactsManager.h"
+#include "shims/ContactUser.h"
+#include "shims/ConversationModel.h"
 
 MainWindow *uiMain = 0;
 
@@ -105,21 +106,22 @@ MainWindow::MainWindow(QObject *parent)
     qml = new QQmlApplicationEngine(this);
     qml->setNetworkAccessManagerFactory(new NetworkAccessBlockingFactory);
 
-    qmlRegisterUncreatableType<ContactUser>("im.ricochet", 1, 0, "ContactUser", QString());
+    // TODO: shim ContactUser and ContactsManager next, then complete UserIdentity shim
+    qmlRegisterUncreatableType<shims::ContactUser>("im.ricochet", 1, 0, "ContactUser", QString());
     qmlRegisterUncreatableType<shims::UserIdentity>("im.ricochet", 1, 0, "UserIdentity", QString());
-    qmlRegisterUncreatableType<ContactsManager>("im.ricochet", 1, 0, "ContactsManager", QString());
-    qmlRegisterUncreatableType<IncomingRequestManager>("im.ricochet", 1, 0, "IncomingRequestManager", QString());
-    qmlRegisterUncreatableType<IncomingContactRequest>("im.ricochet", 1, 0, "IncomingContactRequest", QString());
-    qmlRegisterUncreatableType<OutgoingContactRequest>("im.ricochet", 1, 0, "OutgoingContactRequest", QString());
+    qmlRegisterUncreatableType<shims::ContactsManager>("im.ricochet", 1, 0, "ContactsManager", QString());
+    qmlRegisterUncreatableType<::IncomingRequestManager>("im.ricochet", 1, 0, "IncomingRequestManager", QString());
+    qmlRegisterUncreatableType<::IncomingContactRequest>("im.ricochet", 1, 0, "IncomingContactRequest", QString());
+    qmlRegisterUncreatableType<::OutgoingContactRequest>("im.ricochet", 1, 0, "OutgoingContactRequest", QString());
     qmlRegisterUncreatableType<shims::TorControl>("im.ricochet", 1, 0, "TorControl", QString());
-    qmlRegisterType<ConversationModel>("im.ricochet", 1, 0, "ConversationModel");
-    qmlRegisterType<ContactsModel>("im.ricochet", 1, 0, "ContactsModel");
-    qmlRegisterType<ContactIDValidator>("im.ricochet", 1, 0, "ContactIDValidator");
-    qmlRegisterType<SettingsObject>("im.ricochet", 1, 0, "Settings");
-    qmlRegisterSingletonType<LinkedText>("im.ricochet", 1, 0, "LinkedText", linkedtext_singleton);
-    qmlRegisterType<LanguagesModel>("im.ricochet", 1, 0, "LanguagesModel");
+    qmlRegisterType<shims::ConversationModel>("im.ricochet", 1, 0, "ConversationModel");
+    qmlRegisterType<::ContactsModel>("im.ricochet", 1, 0, "ContactsModel");
+    qmlRegisterType<::ContactIDValidator>("im.ricochet", 1, 0, "ContactIDValidator");
+    qmlRegisterType<::SettingsObject>("im.ricochet", 1, 0, "Settings");
+    qmlRegisterSingletonType<::LinkedText>("im.ricochet", 1, 0, "LinkedText", linkedtext_singleton);
+    qmlRegisterType<::LanguagesModel>("im.ricochet", 1, 0, "LanguagesModel");
 
-    qRegisterMetaType<PendingOperation*>();
+    qRegisterMetaType<::PendingOperation*>();
 }
 
 MainWindow::~MainWindow()
@@ -128,7 +130,6 @@ MainWindow::~MainWindow()
 
 bool MainWindow::showUI()
 {
-    Q_ASSERT(!identityManager->identities().isEmpty());
     qml->rootContext()->setContextProperty(QLatin1String("userIdentity"), shims::UserIdentity::userIdentity);
     qml->rootContext()->setContextProperty(QLatin1String("torControl"), shims::TorControl::torControl);
     qml->rootContext()->setContextProperty(QLatin1String("torInstance"), shims::TorManager::torManager);
@@ -176,7 +177,7 @@ QVariantMap MainWindow::screens() const
 }
 
 /* QMessageBox implementation for Qt <5.2 */
-bool MainWindow::showRemoveContactDialog(ContactUser *user)
+bool MainWindow::showRemoveContactDialog(shims::ContactUser *user)
 {
     if (!user)
         return false;

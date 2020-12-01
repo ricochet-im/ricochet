@@ -11,6 +11,8 @@ using tego::g_globals;
 #include "tor/TorManager.h"
 #include "tor/TorProcess.h"
 #include "core/UserIdentity.h"
+#include "core/ContactUser.h"
+#include "core/ConversationModel.h"
 
 //
 // Tego Context
@@ -306,8 +308,6 @@ std::unique_ptr<tego_user_id_t> tego_context::get_host_user_id() const
     auto userIdentity = this->identityManager->identities().first();
 
     auto hostname = userIdentity->hostname().toUtf8();
-    logger::println("hostname : {}", hostname);
-
     tego_v3_onion_service_id serviceId(hostname.data(), TEGO_V3_ONION_SERVICE_ID_LENGTH);
 
     return std::make_unique<tego_user_id_t>(serviceId);
@@ -317,6 +317,54 @@ tego_host_user_state_t tego_context::get_host_user_state() const
 {
     return this->hostUserState;
 }
+
+void tego_context::send_chat_request(
+    const tego_user_id_t* user,
+    const char* message,
+    size_t messageLength)
+{
+    TEGO_THROW_IF_NULL(this->identityManager);
+    auto userIdentity = this->identityManager->identities().first();
+    auto contactsManager = userIdentity->getContacts();
+
+    contactsManager->createContactRequest(
+        QString::fromStdString(fmt::format("ricochet:{}", user->serviceId.data)),
+        QString(),
+        QString(),
+        (messageLength == 0) ? QString() : QString::fromUtf8(message, messageLength));
+}
+
+tego_message_id_t tego_context::send_message(
+    const tego_user_id_t* user,
+    const std::string& message)
+{
+    TEGO_THROW_IF_NULL(user);
+    TEGO_THROW_IF_FALSE(message.size() > 0)
+
+    auto contactUser = getContactUser(user);
+    auto conversationModel = contactUser->conversation();
+
+    return conversationModel->sendMessage(QString::fromStdString(message));
+}
+
+//
+// tego_context private methods
+//
+
+ContactUser* tego_context::getContactUser(const tego_user_id_t* user)
+{
+    TEGO_THROW_IF_NULL(user);
+    TEGO_THROW_IF_NULL(identityManager);
+
+    auto contactsManager = identityManager->identities().first()->getContacts();
+    auto contactUser = contactsManager->lookupHostname(
+        QString::fromUtf8(
+            user->serviceId.data,
+            TEGO_V3_ONION_SERVICE_ID_LENGTH));
+
+    return contactUser;
+}
+
 
 //
 // Exports
@@ -607,6 +655,46 @@ extern "C"
             TEGO_THROW_IF_NULL(context);
 
             context->save_tor_daemon_config();
+        }, error);
+    }
+
+    void tego_context_send_chat_request(
+        tego_context_t* context,
+        const tego_user_id_t* user,
+        const char* message,
+        size_t messageLength,
+        tego_error_t** error)
+    {
+        return tego::translateExceptions([=]() -> void
+        {
+            TEGO_THROW_IF_NULL(context);
+            TEGO_THROW_IF_NULL(user);
+            TEGO_THROW_IF_FALSE(message != nullptr || messageLength == 0);
+
+            context->send_chat_request(user, message, messageLength);
+        }, error);
+    }
+
+    void tego_context_send_message(
+        tego_context_t* context,
+        tego_user_id_t* user,
+        const char* message,
+        size_t messageLength,
+        tego_message_id_t* out_id,
+        tego_error_t** error)
+    {
+        return tego::translateExceptions([=]() -> void
+        {
+            TEGO_THROW_IF_NULL(context);
+            TEGO_THROW_IF_NULL(user);
+            TEGO_THROW_IF_NULL(message);
+            TEGO_THROW_IF_FALSE(messageLength > 0);
+
+            auto id = context->send_message(user, std::string(message, messageLength));
+            if (out_id != nullptr)
+            {
+                *out_id = id;
+            }
         }, error);
     }
 }

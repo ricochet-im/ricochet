@@ -33,8 +33,10 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-class ContactUser;
-class UserIdentity;
+namespace shims
+{
+    class ContactUser;
+}
 class IncomingContactRequest;
 class OutgoingContactRequest;
 class QQmlApplicationEngine;
@@ -60,7 +62,7 @@ public:
     QString version() const;
     QVariantMap screens() const;
 
-    Q_INVOKABLE bool showRemoveContactDialog(ContactUser *user);
+    Q_INVOKABLE bool showRemoveContactDialog(shims::ContactUser *user);
 
     // Find parent window of a QQuickItem; exposed as property after Qt 5.4
     Q_INVOKABLE QQuickWindow *findParentWindow(QQuickItem *item);

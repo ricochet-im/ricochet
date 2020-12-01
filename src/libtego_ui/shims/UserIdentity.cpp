@@ -1,8 +1,8 @@
 #include "core/IncomingRequestManager.h"
 #include "core/IdentityManager.h"
-#include "core/ContactsManager.h"
 #include "core/UserIdentity.h"
 
+#include "ContactsManager.h"
 #include "UserIdentity.h"
 
 shims::UserIdentity* shims::UserIdentity::userIdentity = nullptr;
@@ -10,7 +10,10 @@ shims::UserIdentity* shims::UserIdentity::userIdentity = nullptr;
 namespace shims
 {
     UserIdentity::UserIdentity(tego_context_t* context)
-    : context(context)
+    : contacts(context)
+    , context(context)
+    , online(false)
+
     {
         // wire up slots to forward
         Q_ASSERT(identityManager->identities().size() == 1);
@@ -52,23 +55,6 @@ namespace shims
         return state == tego_host_user_state_online;
     }
 
-    void UserIdentity::createContactRequest(
-            const QString &contactID,
-            const QString &nickname,
-            const QString &myNickname,
-            const QString &message)
-    {
-        logger::trace();
-        auto userIdentity = identityManager->identities().first();
-        auto contactsManager = userIdentity->getContacts();
-
-        contactsManager->createContactRequest(
-            contactID,
-            nickname,
-            myNickname,
-            message);
-    }
-
     QString UserIdentity::contactID() const
     {
         // get host user id and convert to the ricochet:blahlah format
@@ -87,11 +73,10 @@ namespace shims
         return contactId;
     }
 
-    ContactsManager* UserIdentity::getContacts() const
+    shims::ContactsManager* UserIdentity::getContacts()
     {
         logger::trace();
-        auto userIdentity = identityManager->identities().first();
-        return userIdentity->getContacts();
+        return &contacts;
     }
 
     void UserIdentity::setOnline(bool online)

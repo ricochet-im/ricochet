@@ -30,14 +30,21 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "globals.hpp"
+using tego::g_globals;
+
 #include "ConversationModel.h"
 #include "protocol/Connection.h"
 #include "protocol/ChatChannel.h"
+#include "utils/SecureRNG.h"
 
 ConversationModel::ConversationModel(QObject *parent)
     : QAbstractListModel(parent)
     , m_contact(0)
+    , messages({})
     , m_unreadCount(0)
+    , lastMessageId(SecureRNG::randomInt(UINT32_MAX))
+
 {
 }
 
@@ -84,12 +91,12 @@ void ConversationModel::setContact(ContactUser *contact)
     emit contactChanged();
 }
 
-void ConversationModel::sendMessage(const QString &text)
+tego_message_id_t ConversationModel::sendMessage(const QString &text)
 {
     if (text.isEmpty())
-        return;
+        return 0;
 
-    MessageData message(text, QDateTime::currentDateTime(), 0, Queued);
+    MessageData message(text, QDateTime::currentDateTime(), lastMessageId++, Queued);
 
     if (m_contact->connection()) {
         auto channel = m_contact->connection()->findChannel<Protocol::ChatChannel>(Protocol::Channel::Outbound);
@@ -103,12 +110,10 @@ void ConversationModel::sendMessage(const QString &text)
         }
 
         if (channel && channel->isOpened()) {
-            MessageId id = 0;
-            if (channel->sendChatMessage(text, QDateTime(), id))
+            if (channel->sendChatMessageWithId(text, QDateTime(), message.identifier))
                 message.status = Sending;
             else
                 message.status = Error;
-            message.identifier = id;
             message.attemptCount++;
         }
     }
@@ -117,6 +122,8 @@ void ConversationModel::sendMessage(const QString &text)
     messages.prepend(message);
     endInsertRows();
     prune();
+
+    return static_cast<tego_message_id_t>(message.identifier);
 }
 
 void ConversationModel::sendQueuedMessages()
@@ -153,11 +160,8 @@ void ConversationModel::sendQueuedMessages()
     for (int i = messages.size() - 1; i >= 0; i--) {
         if (messages[i].status == Queued) {
             qDebug() << "Sending queued chat message";
-            bool ok = false;
-            if (messages[i].identifier)
-                ok = channel->sendChatMessageWithId(messages[i].text, messages[i].time, messages[i].identifier);
-            else
-                ok = channel->sendChatMessage(messages[i].text, messages[i].time, messages[i].identifier);
+            bool ok = channel->sendChatMessageWithId(messages[i].text, messages[i].time, messages[i].identifier);
+
             if (ok)
                 messages[i].status = Sending;
             else
@@ -203,6 +207,19 @@ void ConversationModel::messageReceived(const QString &text, const QDateTime &ti
 
     m_unreadCount++;
     emit unreadCountChanged();
+
+    {
+        // convert QString to raw utf8
+        auto utf8Text = text.toUtf8();
+        auto rawText = std::make_unique<char[]>(utf8Text.size() + 1);
+        std::copy(utf8Text.begin(), utf8Text.end(), rawText.get());
+
+        auto userId = this->m_contact->toTegoUserId();
+
+        logger::println("Received Message : {}", rawText.get());
+
+        g_globals.context->callback_registry_.emit_message_received(userId.release(), time.toMSecsSinceEpoch(), static_cast<tego_message_id_t>(id), rawText.release(), utf8Text.size());
+    }
 }
 
 void ConversationModel::messageAcknowledged(MessageId id, bool accepted)
@@ -214,6 +231,17 @@ void ConversationModel::messageAcknowledged(MessageId id, bool accepted)
     MessageData &data = messages[row];
     data.status = accepted ? Delivered : Error;
     emit dataChanged(index(row, 0), index(row, 0));
+
+    {
+        // convert our hostname to just the service id raw string
+        auto serviceIdString = m_contact->hostname().left(TEGO_V3_ONION_SERVICE_ID_LENGTH).toUtf8();
+        // ensure valid service id
+        auto serviceId = std::make_unique<tego_v3_onion_service_id>(serviceIdString.data(), serviceIdString.size());
+        // create user id object from service id
+        auto userId = std::make_unique<tego_user_id>(*serviceId.get());
+
+        g_globals.context->callback_registry_.emit_message_acknowledged(userId.release(), static_cast<tego_message_id_t>(id), (accepted ? TEGO_TRUE : TEGO_FALSE));
+    }
 }
 
 void ConversationModel::outboundChannelClosed()
