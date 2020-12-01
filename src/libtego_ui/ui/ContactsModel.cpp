@@ -40,9 +40,9 @@
 
 inline bool contactSort(const shims::ContactUser *c1, const shims::ContactUser *c2)
 {
-    if (c1->status() != c2->status())
-        return c1->status() < c2->status();
-    return c1->nickname().localeAwareCompare(c2->nickname()) < 0;
+    if (c1->getStatus() != c2->getStatus())
+        return c1->getStatus() < c2->getStatus();
+    return c1->getNickname().localeAwareCompare(c2->getNickname()) < 0;
 }
 
 ContactsModel::ContactsModel(QObject *parent)
@@ -184,11 +184,11 @@ QVariant ContactsModel::data(const QModelIndex &index, int role) const
     {
     case Qt::DisplayRole:
     case Qt::EditRole:
-        return user->nickname();
+        return user->getNickname();
     case PointerRole:
         return QVariant::fromValue(user);
     case StatusRole:
-        return user->status();
+        return user->getStatus();
     }
 
     return QVariant();

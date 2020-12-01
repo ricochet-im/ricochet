@@ -14,9 +14,9 @@ namespace shims
         Q_DISABLE_COPY(ContactUser)
         Q_ENUMS(Status)
 
-        Q_PROPERTY(QString nickname READ nickname WRITE setNickname NOTIFY nicknameChanged)
-        Q_PROPERTY(QString contactID READ contactID CONSTANT)
-        Q_PROPERTY(Status status READ status NOTIFY statusChanged)
+        Q_PROPERTY(QString nickname READ getNickname WRITE setNickname NOTIFY nicknameChanged)
+        Q_PROPERTY(QString contactID READ getContactID CONSTANT)
+        Q_PROPERTY(Status status READ getStatus NOTIFY statusChanged)
         Q_PROPERTY(OutgoingContactRequest *contactRequest READ contactRequest NOTIFY statusChanged)
         Q_PROPERTY(shims::ConversationModel *conversation READ conversation CONSTANT)
 
@@ -34,15 +34,15 @@ namespace shims
 
         ContactUser(tego_context_t* context, ::ContactUser*);
 
-        QString nickname() const;
-        QString contactID() const;
-        Status status() const;
+        QString getNickname() const;
+        QString getContactID() const;
+        Status getStatus() const;
         OutgoingContactRequest *contactRequest();
         shims::ConversationModel *conversation();
 
     public slots:
         void setNickname(const QString &nickname);
-		
+
     signals:
         void nicknameChanged();
         void statusChanged();
@@ -52,6 +52,8 @@ namespace shims
         tego_context_t* context;
         ::ContactUser* contactUser;
         shims::ConversationModel* conversationModel;
+
+        QString nickname;
 
         friend class shims::ConversationModel;
     };

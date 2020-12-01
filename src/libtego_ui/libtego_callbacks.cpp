@@ -312,8 +312,6 @@ namespace
             logger::trace();
             auto contactsManager = shims::UserIdentity::userIdentity->getContacts();
             auto contactUser = contactsManager->getShimContactByContactId(contactId);
-            logger::println("contactUser : {}", (void*)contactUser);
-            logger::println("contactId : {}", contactUser->contactID());
             auto conversationModel = contactUser->conversation();
             conversationModel->messageAcknowledged(messageId, static_cast<bool>(messageAccepted));
         });

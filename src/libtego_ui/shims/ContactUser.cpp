@@ -30,17 +30,17 @@ namespace shims
         conversationModel->setContact(this);
     }
 
-    QString ContactUser::nickname() const
+    QString ContactUser::getNickname() const
     {
         return contactUser->nickname();
     }
 
-    QString ContactUser::contactID() const
+    QString ContactUser::getContactID() const
     {
         return contactUser->contactID();
     }
 
-    ContactUser::Status ContactUser::status() const
+    ContactUser::Status ContactUser::getStatus() const
     {
         return static_cast<ContactUser::Status>(contactUser->status());
     }

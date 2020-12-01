@@ -44,7 +44,7 @@ namespace shims
             case StatusRole: return message.status;
 
             case SectionRole: {
-                if (contact()->status() == ContactUser::Online)
+                if (contact()->getStatus() == ContactUser::Online)
                     return QString();
                 if (index.row() < messages.size() - 1) {
                     const MessageData &next = messages[index.row()+1];
@@ -95,7 +95,7 @@ namespace shims
     void ConversationModel::sendMessage(const QString &text)
     {
         // convert the 'contactId' to tego_user_id_t
-        auto ricochetId = contactUser->contactID().right(TEGO_V3_ONION_SERVICE_ID_LENGTH).toUtf8();
+        auto ricochetId = contactUser->getContactID().right(TEGO_V3_ONION_SERVICE_ID_LENGTH).toUtf8();
 
         std::unique_ptr<tego_v3_onion_service_id_t> serviceId;
         tego_v3_onion_service_id_from_string(

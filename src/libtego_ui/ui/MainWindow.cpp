@@ -182,8 +182,8 @@ bool MainWindow::showRemoveContactDialog(shims::ContactUser *user)
     if (!user)
         return false;
     QMessageBox::StandardButton btn = QMessageBox::question(0,
-        tr("Remove %1").arg(user->nickname()),
-        tr("Do you want to permanently remove %1?").arg(user->nickname()));
+        tr("Remove %1").arg(user->getNickname()),
+        tr("Do you want to permanently remove %1?").arg(user->getNickname()));
     return btn == QMessageBox::Yes;
 }
 

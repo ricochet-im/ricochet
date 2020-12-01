@@ -75,7 +75,7 @@ namespace shims
     {
         for(auto cu : this->contacts())
         {
-            if (cu->contactID() == contactId)
+            if (cu->getContactID() == contactId)
             {
                 logger::trace();
                 return cu;
