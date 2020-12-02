@@ -72,7 +72,7 @@ public:
         Offline,
         RequestPending,
         RequestRejected,
-        Outdated
+        Outdated    // this doesn't seem to actually be used
     };
 
     UserIdentity * const identity;

@@ -377,11 +377,129 @@ tego_message_id_t tego_context::send_message(
     return conversationModel->sendMessage(QString::fromStdString(message));
 }
 
+tego_user_type_t tego_context::get_user_type(tego_user_id_t const* user) const
+{
+    auto contactUser = this->getContactUser(user);
+    if (contactUser != nullptr)
+    {
+        auto const status = contactUser->status();
+        switch(status)
+        {
+            case ContactUser::Online:
+            case ContactUser::Offline:
+                return tego_user_type_allowed;
+            case ContactUser::RequestPending:
+                return tego_user_type_pending;
+            case ContactUser::RequestRejected:
+                return tego_user_type_rejected;
+            default:
+                TEGO_THROW_MSG("Unknown ContactUser::Status : {}", (int)status);
+                break;
+        }
+    }
+
+    // next check for requesting users
+    auto userIdentity = this->identityManager->identities().first();
+    auto contactsManager = userIdentity->getContacts();
+    auto incomingRequestManager = contactsManager->incomingRequestManager();
+
+    auto hostname = QByteArray::fromStdString(fmt::format("{}.onion", user->serviceId.data));
+
+    // search for the user's serviceId on the incoming request manager
+    auto contactRequest = incomingRequestManager->requestFromHostname(hostname);
+    if (contactRequest != nullptr)
+    {
+        return tego_user_type_requesting;
+    }
+
+    // see if the user is blocked
+    if(incomingRequestManager->isHostnameRejected(hostname))
+    {
+        return tego_user_type_blocked;
+    }
+
+    // finally see if the user matches the host
+    if (hostname == userIdentity->hostname().toUtf8())
+    {
+        return tego_user_type_host;
+    }
+
+    TEGO_THROW_MSG("Unknown user with service id : '{}'", user->serviceId.data);
+}
+
+size_t tego_context::get_user_count() const
+{
+    TEGO_THROW_IF_NULL(this->identityManager);
+    auto userIdentity = this->identityManager->identities().first();
+    auto contactsManager = userIdentity->getContacts();
+
+    return contactsManager->contacts().size();
+}
+
+std::vector<tego_user_id_t*> tego_context::get_users() const
+{
+    TEGO_THROW_IF_NULL(this->identityManager);
+    auto userIdentity = this->identityManager->identities().first();
+    auto contactsManager = userIdentity->getContacts();
+    auto incomingRequestManager = contactsManager->incomingRequestManager();
+
+    std::vector<std::unique_ptr<tego_user_id_t>> managedUsers;
+    std::vector<tego_user_id_t*> users;
+
+    // helper function to from hostname to tego_user_id_t
+    auto hostnameToTegoUserId = [](QString const& hostname) -> std::unique_ptr<tego_user_id_t>
+    {
+         // convert our hostname to just the service id raw string
+        auto serviceIdString = hostname.left(TEGO_V3_ONION_SERVICE_ID_LENGTH).toUtf8();
+        // ensure valid service id
+        auto serviceId = std::make_unique<tego_v3_onion_service_id>(serviceIdString.data(), serviceIdString.size());
+        // create user id object from service id
+        auto userId = std::make_unique<tego_user_id>(*serviceId.get());
+
+        return userId;
+    };
+
+    // first iterate through our explicit users
+    for(auto contactUser : contactsManager->contacts())
+    {
+        auto userId = hostnameToTegoUserId(contactUser->hostname());
+
+        users.push_back(userId.get());
+        managedUsers.push_back(std::move(userId));
+    }
+
+    // next add our implicit 'incomingContactRequest' users
+    for(auto incomingContactRequest : incomingRequestManager->requests())
+    {
+        auto userId = hostnameToTegoUserId(incomingContactRequest->hostname());
+
+        users.push_back(userId.get());
+        managedUsers.push_back(std::move(userId));
+    }
+
+    // next add our blocked users
+    for(auto rejectedHostname : incomingRequestManager->getRejectedHostnames())
+    {
+        auto userId = hostnameToTegoUserId(rejectedHostname);
+
+        users.push_back(userId.get());
+        managedUsers.push_back(std::move(userId));
+    }
+
+    // we got this far, release these ptrs from memory management
+    for(auto& mu : managedUsers)
+    {
+        mu.release();
+    }
+
+    return users;
+}
+
 //
 // tego_context private methods
 //
 
-ContactUser* tego_context::getContactUser(const tego_user_id_t* user)
+ContactUser* tego_context::getContactUser(tego_user_id_t const* user) const
 {
     TEGO_THROW_IF_NULL(user);
     TEGO_THROW_IF_NULL(identityManager);
@@ -683,6 +801,62 @@ extern "C"
             TEGO_THROW_IF_NULL(context);
 
             context->save_tor_daemon_config();
+        }, error);
+    }
+
+    void tego_context_get_user_type(
+        const tego_context_t* context,
+        const tego_user_id_t* user,
+        tego_user_type_t* out_type,
+        tego_error_t** error)
+    {
+        return tego::translateExceptions([=]() -> void
+        {
+            TEGO_THROW_IF_NULL(context);
+            TEGO_THROW_IF_NULL(user);
+            TEGO_THROW_IF_NULL(out_type);
+
+            auto type = context->get_user_type(user);
+            *out_type = type;
+        }, error);
+    }
+
+    void tego_context_get_user_count(
+        const tego_context_t* context,
+        size_t* out_userCount,
+        tego_error_t** error)
+    {
+        return tego::translateExceptions([=]() -> void
+        {
+            TEGO_THROW_IF_NULL(context);
+            TEGO_THROW_IF_NULL(out_userCount);
+
+            auto count = context->get_user_count();
+            *out_userCount = count;
+        }, error);
+    }
+
+    void tego_context_get_users(
+        const tego_context_t* context,
+        tego_user_id_t** out_usersBuffer,
+        size_t usersBufferLength,
+        size_t* out_userCount,
+        tego_error_t** error)
+    {
+        return tego::translateExceptions([=]() -> void
+        {
+            TEGO_THROW_IF_NULL(context);
+            TEGO_THROW_IF_NULL(out_usersBuffer);
+            TEGO_THROW_IF_NULL(out_userCount);
+
+            auto users = context->get_users();
+            const auto userCount = std::min(users.size(), usersBufferLength);
+            for(size_t i = 0; i < userCount; ++i)
+            {
+                out_usersBuffer[i] = users[i];
+            }
+            *out_userCount = userCount;
+
         }, error);
     }
 

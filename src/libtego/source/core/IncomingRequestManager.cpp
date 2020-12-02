@@ -193,6 +193,12 @@ bool IncomingRequestManager::isHostnameRejected(const QByteArray &hostname) cons
     return false;
 }
 
+// TODO: implement lol
+QList<QByteArray> IncomingRequestManager::getRejectedHostnames() const
+{
+    return {};
+}
+
 IncomingContactRequest::IncomingContactRequest(IncomingRequestManager *m, const QByteArray &h
                                               )
     : QObject(m)

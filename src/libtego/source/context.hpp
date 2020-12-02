@@ -44,6 +44,10 @@ public:
     tego_message_id_t send_message(
         const tego_user_id_t* user,
         const std::string& message);
+    tego_user_type_t get_user_type(tego_user_id_t const* user) const;
+    size_t get_user_count() const;
+    std::vector<tego_user_id_t*> get_users() const;
+
 
     tego::callback_registry callback_registry_;
     tego::callback_queue callback_queue_;
@@ -58,8 +62,7 @@ public:
 
     mutable std::string torVersion;
 private:
-    class ContactUser* getContactUser(const tego_user_id_t*);
-
+    class ContactUser* getContactUser(const tego_user_id_t*) const;
 
     mutable std::vector<std::string> torLogs;
     tego_host_user_state_t hostUserState = tego_host_user_state_unknown;

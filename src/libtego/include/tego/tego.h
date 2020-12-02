@@ -333,24 +333,37 @@ void tego_context_get_user_status(
 // enum for user type
 typedef enum
 {
-
-    tego_user_type_allowed, // in our contact list
-    tego_user_type_blocked, // in our block list
+    tego_user_type_host, // the host user
+    tego_user_type_allowed, // in host's contact list
+    tego_user_type_blocked, // in host's block list
     tego_user_type_pending, // users the host has added but who have not replied yet
     tego_user_type_requesting, // users who have added host but the host has not replied yet
+    tego_user_type_rejected, // user the host has added but replied with rejection
 } tego_user_type_t;
+
+/*
+ * Get the type of a given user
+ *
+ * @param context : the current tego context
+ * @param user : the given user
+ * @param out_type : filled with type on success
+ * @param error : filled on error
+ */
+void tego_context_get_user_type(
+    const tego_context_t* context,
+    const tego_user_id_t* user,
+    tego_user_type_t* out_type,
+    tego_error_t** error);
 
 /*
  * Get the number of users managed by our tego context
  *
  * @param context : the current tego context
- * @param userType : the type of user we want to count
- * @param out_userCount : gets the number of users with the given type
+ * @param out_userCount : gets the number of users
  * @param error : filled on error
  */
 void tego_context_get_user_count(
     const tego_context_t* context,
-    tego_user_type_t userType,
     size_t* out_userCount,
     tego_error_t** error);
 
@@ -358,7 +371,6 @@ void tego_context_get_user_count(
  * Get all of our users of a given type
  *
  * @param context : the current tego context
- * @param userType : the user type we want to filter by
  * @param out_usersBuffer : destination buffer to store returned user id pointers
  * @param usersBufferLength : maximum nuber of users that can be written to
  *  out_usersBuffer
@@ -367,10 +379,9 @@ void tego_context_get_user_count(
  */
 void tego_context_get_users(
     const tego_context_t* context,
-    tego_user_type_t userType,
     tego_user_id_t** out_usersBuffer,
     size_t usersBufferLength,
-    size_t* out_usersCount,
+    size_t* out_userCount,
     tego_error_t** error);
 
 //
