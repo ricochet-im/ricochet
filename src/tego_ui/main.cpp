@@ -34,7 +34,6 @@
 #include "ui/MainWindow.h"
 
 // TODO: these includes need to go
-#include "core/IdentityManager.h"
 #include "utils/Settings.h"
 
 #include <libtego_callbacks.hpp>
@@ -125,36 +124,72 @@ int main(int argc, char *argv[]) try
 
     /* Identities */
     // const auto createNewIdentity = (SettingsObject().read("identity") == QJsonValue::Undefined);
-    QString serviceID = []()
+    QString serviceKey = []()
     {
         auto settings = SettingsObject(QStringLiteral("identity"), nullptr);
         return settings.read<QString>("serviceKey");
     }();
 
-    QVector<QString> contactHostnames = []()
+    QVector<QString> contactServiceIds = []()
     {
         auto settings = SettingsObject(QStringLiteral("contacts"));
         QVector<QString> retval;
 
         foreach (const QString &serviceId, settings.data().keys())
         {
-            auto currentHostname = QString(serviceId).append(".onion");
-            retval.push_back(currentHostname);
+            retval.push_back(serviceId);
         }
 
         return retval;
     }();
 
-    identityManager = new IdentityManager(serviceID, contactHostnames);
-    QScopedPointer<IdentityManager> scopedIdentityManager(identityManager);
+    {
+        // construct our private key from KeyBlob
+        std::unique_ptr<tego_ed25519_private_key_t> privateKey;
+        auto keyBlob = serviceKey.toUtf8();
+        tego_ed25519_private_key_from_ed25519_keyblob(
+            tego::out(privateKey),
+            keyBlob.data(),
+            keyBlob.size(),
+            tego::throw_on_error());
 
-    tego_context_start_service(
-        tegoContext,
-        nullptr,
-        nullptr,
-        nullptr,
-        0,
-        tego::throw_on_error());
+        // construct our list of users from contact service ids
+        const size_t userCount = static_cast<size_t>(contactServiceIds.size());
+        std::vector<tego_user_id_t*> rawUserIds;
+        rawUserIds.reserve(userCount);
+        std::vector<std::unique_ptr<tego_user_id_t>> managedUserIds;
+        managedUserIds.reserve(userCount);
+
+        for(size_t i = 0; i < userCount; i++)
+        for(const auto& currentServiceId : contactServiceIds)
+        {
+            const auto& serviceIdString = currentServiceId.toUtf8();
+
+            std::unique_ptr<tego_v3_onion_service_id_t> serviceId;
+            tego_v3_onion_service_id_from_string(
+                tego::out(serviceId),
+                serviceIdString.data(),
+                serviceIdString.size(),
+                tego::throw_on_error());
+
+            std::unique_ptr<tego_user_id_t> userId;
+            tego_user_id_from_v3_onion_service_id(
+                tego::out(userId),
+                serviceId.get(),
+                tego::throw_on_error());
+
+            rawUserIds.push_back(userId.get());
+            managedUserIds.push_back(std::move(userId));
+        }
+
+        tego_context_start_service(
+            tegoContext,
+            privateKey.get(),
+            rawUserIds.data(),
+            nullptr,
+            managedUserIds.size(),
+            tego::throw_on_error());
+    }
 
     // init our shims
     shims::UserIdentity::userIdentity = new shims::UserIdentity(tegoContext);

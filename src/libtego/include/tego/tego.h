@@ -1,6 +1,8 @@
 #ifndef TEGO_H
 #define TEGO_H
 
+// TODO: switch to east-const
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -608,9 +610,9 @@ void tego_context_stop_tor(
  */
 void tego_context_start_service(
     tego_context_t* context,
-    const tego_ed25519_private_key_t* hostPrivateKey,
-    const tego_user_id_t** userBuffer,
-    const tego_user_type_t** userTypeBuffer,
+    tego_ed25519_private_key_t const* hostPrivateKey,
+    tego_user_id_t const* const* userBuffer,
+    tego_user_type_t const* const* userTypeBuffer,
     size_t userCount,
     tego_error_t** error);
 

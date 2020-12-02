@@ -27,6 +27,11 @@ public:
     tego_tor_network_status_t get_tor_network_status() const;
     int32_t get_tor_bootstrap_progress() const;
     tego_tor_bootstrap_tag_t get_tor_bootstrap_tag() const;
+    void start_service(
+        tego_ed25519_private_key_t const* hostPrivateKey,
+        tego_user_id_t const* const* userBuffer,
+        tego_user_type_t const* const* userTypeBuffer,
+        size_t userCount);
     void update_tor_daemon_config(const tego_tor_daemon_config_t* config);
     void save_tor_daemon_config();
     void set_host_user_state(tego_host_user_state_t state);

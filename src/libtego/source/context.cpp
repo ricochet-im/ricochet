@@ -180,6 +180,36 @@ tego_tor_bootstrap_tag_t tego_context::get_tor_bootstrap_tag() const
     TEGO_THROW_MSG("unrecognized bootstrap tag : \"{}\"", bootstrapTag);
 }
 
+void tego_context::start_service(
+    tego_ed25519_private_key_t const* hostPrivateKey,
+    tego_user_id_t const* const* userBuffer,
+    tego_user_type_t const* const* userTypeBuffer,
+    size_t userCount)
+{
+    // TEGO_THROW_IF_FALSE((userCount > 0 && userBuffer != nullptr && userTypeBuffer != nullptr) ||
+                        // (userCount == 0 && userBuffer == nullptr && userTypeBuffer == nullptr));
+
+    char rawKeyBlob[TEGO_ED25519_KEYBLOB_SIZE] = {0};
+    tego_ed25519_keyblob_from_ed25519_private_key(
+        rawKeyBlob,
+        sizeof(rawKeyBlob),
+        hostPrivateKey,
+        tego::throw_on_error());
+
+    auto keyBlob = QString::fromUtf8(rawKeyBlob, TEGO_ED25519_KEYBLOB_LENGTH);
+
+    QVector<QString> contactServiceIds;
+    for(size_t k = 0; k < userCount; k++)
+    {
+            contactServiceIds.push_back(
+                QString::fromUtf8(
+                    userBuffer[k]->serviceId.data, TEGO_V3_ONION_SERVICE_ID_LENGTH) + ".onion");
+    }
+
+    // save off the singleton on our context
+    this->identityManager = new IdentityManager(keyBlob, contactServiceIds);
+}
+
 int32_t tego_context::get_tor_bootstrap_progress() const
 {
     TEGO_THROW_IF_NULL(this->torControl);
@@ -583,23 +613,21 @@ extern "C"
 
     void tego_context_start_service(
         tego_context_t* context,
-        const tego_ed25519_private_key_t* hostPrivateKey,
-        const tego_user_id_t** userBuffer,
-        const tego_user_type_t** userTypeBuffer,
+        tego_ed25519_private_key_t const* hostPrivateKey,
+        tego_user_id_t const* const* userBuffer,
+        tego_user_type_t const* const* userTypeBuffer,
         size_t userCount,
         tego_error_t** error)
     {
         return tego::translateExceptions([=]() -> void
         {
-            (void)hostPrivateKey;
-            (void)userBuffer;
-            (void)userTypeBuffer;
-
-            // TODO: actually populate the identity manager with the pased in info
-
             TEGO_THROW_IF_NULL(context);
-            // save off the singleton on our context
-            context->identityManager = identityManager;
+            context->start_service(
+                hostPrivateKey,
+                userBuffer,
+                userTypeBuffer,
+                userCount);
+
         }, error);
     }
 
