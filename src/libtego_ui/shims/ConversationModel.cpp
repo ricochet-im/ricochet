@@ -94,6 +94,12 @@ namespace shims
 
     void ConversationModel::sendMessage(const QString &text)
     {
+        auto utf8Str = text.toUtf8();
+        if (utf8Str.size() == 0)
+        {
+            return;
+        }
+
         // convert the 'contactId' to tego_user_id_t
         auto ricochetId = contactUser->getContactID().right(TEGO_V3_ONION_SERVICE_ID_LENGTH).toUtf8();
 
@@ -111,7 +117,6 @@ namespace shims
             tego::throw_on_error());
 
         // send message and save off the id associated with it
-        auto utf8Str = text.toUtf8();
 
         tego_message_id_t messageId = 0;
         tego_context_send_message(
