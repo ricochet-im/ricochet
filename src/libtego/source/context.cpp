@@ -186,9 +186,6 @@ void tego_context::start_service(
     tego_user_type_t const* const* userTypeBuffer,
     size_t userCount)
 {
-    // TEGO_THROW_IF_FALSE((userCount > 0 && userBuffer != nullptr && userTypeBuffer != nullptr) ||
-                        // (userCount == 0 && userBuffer == nullptr && userTypeBuffer == nullptr));
-
     char rawKeyBlob[TEGO_ED25519_KEYBLOB_SIZE] = {0};
     tego_ed25519_keyblob_from_ed25519_private_key(
         rawKeyBlob,
@@ -208,6 +205,11 @@ void tego_context::start_service(
 
     // save off the singleton on our context
     this->identityManager = new IdentityManager(keyBlob, contactServiceIds);
+}
+
+void tego_context::start_service()
+{
+    this->identityManager = new IdentityManager({}, {});
 }
 
 int32_t tego_context::get_tor_bootstrap_progress() const
@@ -740,12 +742,24 @@ extern "C"
         return tego::translateExceptions([=]() -> void
         {
             TEGO_THROW_IF_NULL(context);
-            context->start_service(
-                hostPrivateKey,
-                userBuffer,
-                userTypeBuffer,
-                userCount);
 
+            if (hostPrivateKey == nullptr)
+            {
+                TEGO_THROW_IF_FALSE(userBuffer == nullptr && userTypeBuffer == nullptr && userCount == 0);
+                context->start_service();
+            }
+            else
+            {
+                // TODO: bring back userTypeBuffer checks once we've implemented that
+                TEGO_THROW_IF_FALSE((userBuffer == nullptr /* && userTypeBuffer == nullptr*/ && userCount == 0) ||
+                                    (userBuffer != nullptr /* && userTypeBuffer != nullptr*/ && userCount > 0));
+
+                context->start_service(
+                    hostPrivateKey,
+                    userBuffer,
+                    userTypeBuffer,
+                    userCount);
+            }
         }, error);
     }
 

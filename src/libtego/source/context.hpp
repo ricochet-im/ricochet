@@ -32,6 +32,7 @@ public:
         tego_user_id_t const* const* userBuffer,
         tego_user_type_t const* const* userTypeBuffer,
         size_t userCount);
+    void start_service();
     void update_tor_daemon_config(const tego_tor_daemon_config_t* config);
     void save_tor_daemon_config();
     void set_host_user_state(tego_host_user_state_t state);
@@ -60,10 +61,10 @@ public:
     Tor::TorControl* torControl = nullptr;
     IdentityManager* identityManager = nullptr;
 
-    mutable std::string torVersion;
 private:
     class ContactUser* getContactUser(const tego_user_id_t*) const;
 
+    mutable std::string torVersion;
     mutable std::vector<std::string> torLogs;
     tego_host_user_state_t hostUserState = tego_host_user_state_unknown;
 };
