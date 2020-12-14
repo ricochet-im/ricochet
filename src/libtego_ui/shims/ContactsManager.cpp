@@ -51,7 +51,10 @@ namespace shims
             myNickname,
             message);
 
-        return getShimContact(contactUser);
+        auto shimContact = getShimContact(contactUser);
+        // TODO: implement addContact equivalent when we load from disk?
+        emit contactAdded(shimContact);
+        return shimContact;
     }
 
     shims::ContactUser* ContactsManager::getShimContact(::ContactUser* contactUser) const

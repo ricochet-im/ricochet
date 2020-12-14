@@ -24,12 +24,15 @@ namespace shims
         QList<QObject*> requestObjects() const;
         bool isServiceOnline() const;
         QString contactID() const;
-        ContactsManager* getContacts();
+        shims::ContactsManager* getContacts();
 
         void setOnline(bool);
 
         static UserIdentity* userIdentity;
         shims::ContactsManager contacts;
+
+        tego_context_t* getContext() { return context; }
+
     signals:
         void statusChanged();
         // used in main.qml

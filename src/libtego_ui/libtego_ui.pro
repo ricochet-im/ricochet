@@ -36,7 +36,8 @@ SOURCES += \
     shims/ConversationModel.cpp\
     shims/IncomingContactRequest.cpp\
     shims/IncomingRequestManager.cpp\
-    shims/OutgoingContactRequest.cpp
+    shims/OutgoingContactRequest.cpp\
+    shims/ContactIDValidator.cpp
 
 HEADERS += \
     libtego_callbacks.hpp \
@@ -53,7 +54,8 @@ HEADERS += \
     shims/ConversationModel.h\
     shims/IncomingContactRequest.h\
     shims/IncomingRequestManager.h\
-    shims/OutgoingContactRequest.h
+    shims/OutgoingContactRequest.h\
+    shims/ContactIDValidator.h
 
 include($${QMAKE_INCLUDES}/protobuf.pri)
 include($${QMAKE_INCLUDES}/openssl.pri)

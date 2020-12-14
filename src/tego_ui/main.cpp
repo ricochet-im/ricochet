@@ -146,49 +146,67 @@ int main(int argc, char *argv[]) try
     {
         // construct our private key from KeyBlob
         std::unique_ptr<tego_ed25519_private_key_t> privateKey;
-        auto keyBlob = serviceKey.toUtf8();
-        tego_ed25519_private_key_from_ed25519_keyblob(
-            tego::out(privateKey),
-            keyBlob.data(),
-            keyBlob.size(),
-            tego::throw_on_error());
-
-        // construct our list of users from contact service ids
-        const size_t userCount = static_cast<size_t>(contactServiceIds.size());
-        std::vector<tego_user_id_t*> rawUserIds;
-        rawUserIds.reserve(userCount);
-        std::vector<std::unique_ptr<tego_user_id_t>> managedUserIds;
-        managedUserIds.reserve(userCount);
-
-        for(size_t i = 0; i < userCount; i++)
-        for(const auto& currentServiceId : contactServiceIds)
+        if (serviceKey.size() > 0)
         {
-            const auto& serviceIdString = currentServiceId.toUtf8();
+            auto keyBlob = serviceKey.toUtf8();
 
-            std::unique_ptr<tego_v3_onion_service_id_t> serviceId;
-            tego_v3_onion_service_id_from_string(
-                tego::out(serviceId),
-                serviceIdString.data(),
-                serviceIdString.size(),
+            tego_ed25519_private_key_from_ed25519_keyblob(
+                tego::out(privateKey),
+                keyBlob.data(),
+                keyBlob.size(),
                 tego::throw_on_error());
 
-            std::unique_ptr<tego_user_id_t> userId;
-            tego_user_id_from_v3_onion_service_id(
-                tego::out(userId),
-                serviceId.get(),
-                tego::throw_on_error());
+            // construct our list of users from contact service ids
+            const size_t userCount = static_cast<size_t>(contactServiceIds.size());
+            std::vector<tego_user_id_t*> rawUserIds;
+            rawUserIds.reserve(userCount);
+            std::vector<std::unique_ptr<tego_user_id_t>> managedUserIds;
+            managedUserIds.reserve(userCount);
 
-            rawUserIds.push_back(userId.get());
-            managedUserIds.push_back(std::move(userId));
+            for(size_t i = 0; i < userCount; i++)
+            for(const auto& currentServiceId : contactServiceIds)
+            {
+                const auto& serviceIdString = currentServiceId.toUtf8();
+
+                std::unique_ptr<tego_v3_onion_service_id_t> serviceId;
+                tego_v3_onion_service_id_from_string(
+                    tego::out(serviceId),
+                    serviceIdString.data(),
+                    serviceIdString.size(),
+                    tego::throw_on_error());
+
+                std::unique_ptr<tego_user_id_t> userId;
+                tego_user_id_from_v3_onion_service_id(
+                    tego::out(userId),
+                    serviceId.get(),
+                    tego::throw_on_error());
+
+                rawUserIds.push_back(userId.get());
+                managedUserIds.push_back(std::move(userId));
+            }
+
+            tego_context_start_service(
+                tegoContext,
+                privateKey.get(),
+                rawUserIds.data(),
+                nullptr,
+                managedUserIds.size(),
+                tego::throw_on_error());
+        }
+        else
+        {
+            tego_context_start_service(
+                tegoContext,
+                nullptr,
+                nullptr,
+                nullptr,
+                0,
+                tego::throw_on_error());
         }
 
-        tego_context_start_service(
-            tegoContext,
-            privateKey.get(),
-            rawUserIds.data(),
-            nullptr,
-            managedUserIds.size(),
-            tego::throw_on_error());
+
+
+
     }
 
     // init our shims

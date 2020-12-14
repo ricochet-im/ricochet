@@ -2,6 +2,7 @@
 
 #include "ContactUser.h"
 #include "ConversationModel.h"
+#include "OutgoingContactRequest.h"
 
 namespace shims
 {
@@ -9,6 +10,7 @@ namespace shims
     : context(context)
     , contactUser(contactUser)
     , conversationModel(new shims::ConversationModel(this))
+    , outgoingContactRequest(new shims::OutgoingContactRequest())
     {
         // wire up slots to forward
         connect(
@@ -25,6 +27,13 @@ namespace shims
             [self=this]()
             {
                 emit self->statusChanged();
+            });
+
+        connect(contactUser,
+            &::ContactUser::contactDeleted,
+            [self=this](::ContactUser*)
+            {
+                emit self->contactDeleted(self);
             });
 
         conversationModel->setContact(this);
@@ -45,9 +54,10 @@ namespace shims
         return static_cast<ContactUser::Status>(contactUser->status());
     }
 
-    OutgoingContactRequest* ContactUser::contactRequest()
+    shims::OutgoingContactRequest* ContactUser::contactRequest()
     {
-        return contactUser->contactRequest();
+        outgoingContactRequest->setOutgoingContactRequest(contactUser->contactRequest());
+        return outgoingContactRequest;
     }
 
     shims::ConversationModel* ContactUser::conversation()
@@ -58,5 +68,10 @@ namespace shims
     void ContactUser::setNickname(const QString &nickname)
     {
         contactUser->setNickname(nickname);
+    }
+
+    void ContactUser::deleteContact()
+    {
+        contactUser->deleteContact();
     }
 }

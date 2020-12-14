@@ -1,13 +1,12 @@
 #pragma once
 
 class ContactUser;
-class OutgoingContactRequest;
-class ConversationModel;
 
 namespace shims
 {
     class ContactsManager;
     class ConversationModel;
+    class OutgoingContactRequest;
     class ContactUser : public QObject
     {
         Q_OBJECT
@@ -37,8 +36,10 @@ namespace shims
         QString getNickname() const;
         QString getContactID() const;
         Status getStatus() const;
-        OutgoingContactRequest *contactRequest();
+        shims::OutgoingContactRequest *contactRequest();
         shims::ConversationModel *conversation();
+
+        Q_INVOKABLE void deleteContact();
 
     public slots:
         void setNickname(const QString &nickname);
@@ -52,6 +53,7 @@ namespace shims
         tego_context_t* context;
         ::ContactUser* contactUser;
         shims::ConversationModel* conversationModel;
+        shims::OutgoingContactRequest* outgoingContactRequest;
 
         QString nickname;
 
