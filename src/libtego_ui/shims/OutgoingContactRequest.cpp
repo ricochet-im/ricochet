@@ -40,10 +40,10 @@ namespace shims
         connect(
             outgoingContactRequest,
             &::OutgoingContactRequest::rejected,
-            [self=this](const QString& reason)
+            [self=this]()
             {
                 logger::trace();
-                emit self->rejected(reason);
+                emit self->rejected();
             });
     }
 }

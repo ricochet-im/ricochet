@@ -32,7 +32,7 @@ namespace shims
 
     signals:
         void statusChanged(int newStatus, int oldStatus);
-        void rejected(const QString &reason);
+        void rejected();
 
     private:
         void setOutgoingContactRequest(::OutgoingContactRequest*);

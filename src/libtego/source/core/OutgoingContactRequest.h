@@ -76,7 +76,7 @@ public:
 
 public slots:
     void accept();
-    void reject(bool error = false, const QString &reason = QString());
+    void reject(bool error);
     void cancel();
 
     void sendRequest(const QSharedPointer<Protocol::Connection> &connection);
@@ -84,7 +84,7 @@ public slots:
 signals:
     void statusChanged(int newStatus, int oldStatus);
     void accepted();
-    void rejected(const QString &reason);
+    void rejected();
     void removed();
 
 private slots:

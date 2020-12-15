@@ -76,8 +76,10 @@ namespace shims
 
     shims::ContactUser* ContactsManager::getShimContactByContactId(const QString& contactId) const
     {
+        logger::trace();
         for(auto cu : this->contacts())
         {
+            logger::println("cu : {}", (void*)cu);
             if (cu->getContactID() == contactId)
             {
                 logger::trace();

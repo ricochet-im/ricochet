@@ -44,6 +44,7 @@ namespace shims
         logger::trace();
         logger::println("UserIdentity instance : {}", (void*)UserIdentity::userIdentity);
         auto contactsManager = UserIdentity::userIdentity->getContacts();
+        logger::println("ContactsManager : {}", (void*)contactsManager);
         return contactsManager->getShimContactByContactId(text);
     }
 

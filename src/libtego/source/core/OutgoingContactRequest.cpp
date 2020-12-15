@@ -197,11 +197,8 @@ void OutgoingContactRequest::accept()
     removeRequest();
 }
 
-void OutgoingContactRequest::reject(bool error, const QString &reason)
+void OutgoingContactRequest::reject(bool error)
 {
-    logger::println("reject -> error : {}, reason '{}'", error, reason);
-    logger::trace();
-
     setStatus(error ? Error : Rejected);
 
     if (user->connection()) {
@@ -210,7 +207,7 @@ void OutgoingContactRequest::reject(bool error, const QString &reason)
             channel->closeChannel();
     }
 
-    emit rejected(reason);
+    emit rejected();
 }
 
 void OutgoingContactRequest::cancel()
@@ -229,7 +226,7 @@ void OutgoingContactRequest::requestStatusChanged(int status)
             accept();
             break;
         case Response::Rejected:
-            reject();
+            reject(false);
             break;
         case Response::Error:
             reject(true);
