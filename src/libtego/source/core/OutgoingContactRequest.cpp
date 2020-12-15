@@ -88,11 +88,6 @@ OutgoingContactRequest::Status OutgoingContactRequest::status() const
     return m_status;
 }
 
-QString OutgoingContactRequest::rejectMessage() const
-{
-    return "Fake Reject Message";
-}
-
 void OutgoingContactRequest::setStatus(Status newStatus)
 {
     Status oldStatus = status();

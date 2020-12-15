@@ -91,63 +91,6 @@ Item {
                 text: visible ? contactInfo.contact.contactID : ""
             }
 
-            GridLayout {
-                Layout.fillWidth: true
-                columns: 2
-
-                Label { text: qsTr("Date added:"); Layout.alignment: Qt.AlignRight }
-                Label {
-                    Layout.fillWidth: true
-                    elide: Text.ElideRight
-                    text: visible ? Qt.formatDate(contactInfo.contact.settings.read("whenCreated"), Qt.DefaultLocaleLongDate) : ""
-                    textFormat: Text.PlainText
-                }
-
-                Label { text: qsTr("Last seen:"); visible: lastSeen.visible; Layout.alignment: Qt.AlignRight }
-                Label {
-                    id: lastSeen
-                    Layout.fillWidth: true
-                    elide: Text.ElideRight
-                    visible: contactInfo.request === null
-                    text: visible ? Qt.formatDate(contactInfo.contact.settings.read("lastConnected"), Qt.DefaultLocaleLongDate) : ""
-                    textFormat: Text.PlainText
-                }
-
-                Label { text: qsTr("Request:"); visible: requestStatus.visible; Layout.alignment: Qt.AlignRight }
-                Label {
-                    id: requestStatus
-                    visible: contactInfo.request !== null
-                    textFormat: Text.PlainText
-                    text: {
-                        var re = ""
-                        if (contactInfo.request === null)
-                            return re
-                        switch (contactInfo.request.status) {
-                            case OutgoingContactRequest.Pending: re = qsTr("Pending connection"); break
-                            case OutgoingContactRequest.Acknowledged: re = qsTr("Delivered"); break
-                            case OutgoingContactRequest.Accepted: re = qsTr("Accepted"); break
-                            case OutgoingContactRequest.Error: re = qsTr("Error"); break
-                            case OutgoingContactRequest.Rejected: re = qsTr("Rejected"); break
-                        }
-                        if (contactInfo.request.isConnected) {
-                            //: %1 status, e.g. "Accepted"
-                            re = qsTr("%1 (Connected)").arg(re)
-                        }
-                        return re
-                    }
-                }
-
-                Label { text: qsTr("Response:"); visible: rejectMessage.visible; Layout.alignment: Qt.AlignRight }
-                Label {
-                    id: rejectMessage
-                    Layout.fillWidth: true
-                    elide: Text.ElideRight
-                    text: visible ? contactInfo.request.rejectMessage : ""
-                    textFormat: Text.PlainText
-                    visible: (contactInfo.request !== null) && (contactInfo.request.rejectMessage !== "")
-                }
-            }
-
             Item { height: 1; width: 1 }
             Rectangle {
                 color: palette.mid

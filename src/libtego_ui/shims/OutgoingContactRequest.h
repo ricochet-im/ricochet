@@ -1,7 +1,5 @@
 #pragma once
 
-class OutgoingContactRequest;
-
 namespace shims
 {
     class ContactUser;
@@ -11,9 +9,7 @@ namespace shims
         Q_DISABLE_COPY(OutgoingContactRequest)
         Q_ENUMS(Status)
 
-        Q_PROPERTY(Status status READ status NOTIFY statusChanged)
-        Q_PROPERTY(QString rejectMessage READ rejectMessage NOTIFY rejected)
-
+        Q_PROPERTY(Status status READ getStatus NOTIFY statusChanged)
     public:
         enum Status
         {
@@ -27,17 +23,19 @@ namespace shims
 
         OutgoingContactRequest() = default;
 
-        Status status() const;
-        QString rejectMessage() const;
+        Status getStatus() const;
+
+        void setStatus(Status status);
+
+        void setAccepted();
+        void setRejected();
+
 
     signals:
         void statusChanged(int newStatus, int oldStatus);
         void rejected();
 
     private:
-        void setOutgoingContactRequest(::OutgoingContactRequest*);
-        ::OutgoingContactRequest* outgoingContactRequest = nullptr;
-
-        friend class shims::ContactUser;
+        Status status = shims::OutgoingContactRequest::Pending;
     };
 }

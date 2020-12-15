@@ -56,7 +56,6 @@ namespace shims
 
     shims::OutgoingContactRequest* ContactUser::contactRequest()
     {
-        outgoingContactRequest->setOutgoingContactRequest(contactUser->contactRequest());
         return outgoingContactRequest;
     }
 

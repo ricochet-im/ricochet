@@ -1,49 +1,33 @@
 #include "OutgoingContactRequest.h"
 
-#include "core/OutgoingContactRequest.h"
-
 namespace shims
 {
-    OutgoingContactRequest::Status OutgoingContactRequest::status() const
+    OutgoingContactRequest::Status OutgoingContactRequest::getStatus() const
     {
         logger::trace();
-        return static_cast<OutgoingContactRequest::Status>(outgoingContactRequest->status());
+        return this->status;
     }
 
-    QString OutgoingContactRequest::rejectMessage() const
+    void OutgoingContactRequest::setStatus(Status status)
     {
-        logger::trace();
-        return outgoingContactRequest->rejectMessage();
-    }
-
-    void OutgoingContactRequest::setOutgoingContactRequest(::OutgoingContactRequest* outgoingContactRequest)
-    {
-        // remove existing connections
-        if (this->outgoingContactRequest)
+        if (this->status != status)
         {
-            disconnect(this->outgoingContactRequest, 0, 0, 0);
+            emit this->statusChanged(this->status, status);
+            this->status = status;
         }
+    }
 
-        this->outgoingContactRequest = outgoingContactRequest;
+    void OutgoingContactRequest::setAccepted()
+    {
+        this->setStatus(Acknowledged);
+        this->setStatus(Accepted);
+    }
 
-        logger::trace();
-        // wire up slots to forward
-        connect(
-            outgoingContactRequest,
-            &::OutgoingContactRequest::statusChanged,
-            [self=this](int newStatus, int oldStatus)
-            {
-                logger::trace();
-                emit self->statusChanged(newStatus, oldStatus);
-            });
+    void OutgoingContactRequest::setRejected()
+    {
+        this->setStatus(Acknowledged);
+        this->setStatus(Rejected);
 
-        connect(
-            outgoingContactRequest,
-            &::OutgoingContactRequest::rejected,
-            [self=this]()
-            {
-                logger::trace();
-                emit self->rejected();
-            });
+        emit this->rejected();
     }
 }

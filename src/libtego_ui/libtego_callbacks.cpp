@@ -3,6 +3,8 @@
 #include "shims/TorManager.h"
 #include "shims/UserIdentity.h"
 #include "shims/ConversationModel.h"
+#include "shims/OutgoingContactRequest.h"
+
 namespace
 {
     constexpr int consumeInterval = 10;
@@ -49,8 +51,12 @@ namespace
         taskQueue.push_back(std::move(func));
     }
 
-    // converts the our tego_user_id_t to ricochet's contactId in the form ricochet:serviceidserviceidserviceid...
-    QString tegoUserIdToContactId(const tego_user_id_t* user)
+    QString serviceIdToContactId(const QString& serviceId)
+    {
+        return QStringLiteral("ricochet:%1").arg(serviceId);
+    }
+
+    QString tegoUserIdToServiceId(const tego_user_id_t* user)
     {
         std::unique_ptr<tego_v3_onion_service_id> serviceId;
         tego_user_id_get_v3_onion_service_id(user, tego::out(serviceId), tego::throw_on_error());
@@ -58,9 +64,14 @@ namespace
         char serviceIdRaw[TEGO_V3_ONION_SERVICE_ID_SIZE] = {0};
         tego_v3_onion_service_id_to_string(serviceId.get(), serviceIdRaw, sizeof(serviceIdRaw), tego::throw_on_error());
 
-        QString contactId = QString("ricochet:") + QString::fromUtf8(serviceIdRaw, TEGO_V3_ONION_SERVICE_ID_LENGTH);
-
+        auto contactId = QString::fromUtf8(serviceIdRaw, TEGO_V3_ONION_SERVICE_ID_LENGTH);
         return contactId;
+    }
+
+    // converts the our tego_user_id_t to ricochet's contactId in the form ricochet:serviceidserviceidserviceid...
+    QString tegoUserIdToContactId(const tego_user_id_t* user)
+    {
+        return serviceIdToContactId(tegoUserIdToServiceId(user));
     }
 
     shims::ContactUser* contactUserFromContactId(const QString& contactId)
@@ -228,20 +239,28 @@ namespace
         const tego_user_id_t* userId,
         tego_bool_t requestAccepted)
     {
-        std::unique_ptr<tego_v3_onion_service_id> serviceId;
-        tego_user_id_get_v3_onion_service_id(userId, tego::out(serviceId), tego::throw_on_error());
+        logger::trace();
 
-        char serviceIdRaw[TEGO_V3_ONION_SERVICE_ID_SIZE] = {0};
-        tego_v3_onion_service_id_to_string(serviceId.get(), serviceIdRaw, sizeof(serviceIdRaw), tego::throw_on_error());
+        auto serviceId = tegoUserIdToServiceId(userId);
 
-        QString serviceIdString(serviceIdRaw);
         push_task([=]() -> void
         {
-            logger::trace();
-            if (requestAccepted) {
+            auto userIdentity = shims::UserIdentity::userIdentity;
+            auto contactsManager = userIdentity->getContacts();
+            auto contact = contactsManager->getShimContactByContactId(serviceIdToContactId(serviceId));
+            auto outgoingContactRequest = contact->contactRequest();
+
+            if (requestAccepted)
+            {
                 // delete the request block entirely like in OutgoingContactRequest::removeRequest
-                SettingsObject so(QStringLiteral("contacts.%1").arg(serviceIdString));
+                SettingsObject so(QStringLiteral("contacts.%1").arg(serviceId));
                 so.unset("request");
+
+                outgoingContactRequest->setAccepted();
+            }
+            else
+            {
+                outgoingContactRequest->setRejected();
             }
         });
     }
