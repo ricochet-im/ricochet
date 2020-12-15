@@ -3,6 +3,9 @@ QT += testlib core network quick
 CONFIG -= app_bundle
 CONFIG += testcase
 
+INCLUDEPATH +=\
+    $${PWD}/../libtego/source\
+
 QMAKE_INCLUDES = $${PWD}/../qmake_includes
 
 include($${QMAKE_INCLUDES}/artifacts.pri)

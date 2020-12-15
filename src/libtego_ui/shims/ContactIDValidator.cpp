@@ -1,5 +1,3 @@
-#include "core/ContactIDValidator.h"
-
 #include "UserIdentity.h"
 #include "ContactIDValidator.h"
 

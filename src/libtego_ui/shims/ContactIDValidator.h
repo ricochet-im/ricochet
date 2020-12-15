@@ -1,6 +1,5 @@
 #pragma once
 
-class ContactIDValidator;
 namespace shims
 {
     class ContactUser;
