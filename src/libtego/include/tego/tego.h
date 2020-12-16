@@ -827,19 +827,6 @@ void tego_context_send_message(
     tego_error_t** error);
 
 /*
- * Adds the user to our allow list and enables them to connect to the host and
- * send messages. One would call this in response to a tego_chat_request_received_callback_t
- *
- * @param context : the current tego context
- * @param user : the user we want to allow
- * @param error : filled on error
- */
-void tego_context_confirm_chat_request(
-    tego_context_t* context,
-    const tego_user_id_t* user,
-    tego_error_t** error);
-
-/*
  * Sends a request to chat to a user
  *
  * @param context : the current tego context
@@ -853,6 +840,28 @@ void tego_context_send_chat_request(
     const tego_user_id_t* user,
     const char* message,
     size_t messageLength,
+    tego_error_t** error);
+
+typedef enum
+{
+    tego_chat_acknowledge_accept,   // allows the user to chat with us
+    tego_chat_acknowledge_reject,   // do not allow the user to chat with us
+    tego_chat_acknowledge_block,    // do not allow and reject all future requests
+} tego_chat_acknowledge_t;
+
+/*
+ * Acknowledges chat request sent from another user. Would be called after receiving
+ * a chat_request_received callback.
+ *
+ * @param context : the current tego context
+ * @param user : the user that sent the chat request
+ * @param response : how to respond to the request
+ * @param error : filled on error
+ */
+void tego_context_acknowledge_chat_request(
+    tego_context_t* context,
+    const tego_user_id_t* user,
+    tego_chat_acknowledge_t response,
     tego_error_t** error);
 
 /*

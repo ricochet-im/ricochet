@@ -84,6 +84,15 @@ namespace tego
         tego_host_user_state_t)
     { }
 
+    void callback_registry::cleanup_chat_request_received_args(
+        tego_user_id_t* user,
+        char* message,
+        size_t)
+    {
+        delete user;
+        delete[] message;
+    }
+
     void callback_registry::cleanup_chat_request_response_received_args(
         tego_user_id_t* user,
         tego_bool_t)

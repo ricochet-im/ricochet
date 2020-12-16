@@ -4,6 +4,7 @@
 
 #include "ContactsManager.h"
 #include "UserIdentity.h"
+#include "IncomingContactRequest.h"
 
 shims::UserIdentity* shims::UserIdentity::userIdentity = nullptr;
 
@@ -14,35 +15,38 @@ namespace shims
     , context(context)
     , online(false)
 
+    { }
+
+    void UserIdentity::createIncomingContactRequest(const QString& hostname, const QString& message)
     {
-        // wire up slots to forward
-        Q_ASSERT(identityManager->identities().size() == 1);
-        auto userIdentity = identityManager->identities().first();
+        auto incomingContactRequest = new shims::IncomingContactRequest(hostname, message);
+        this->requests.push_back(incomingContactRequest);
 
-        connect(
-            userIdentity->getContacts()->incomingRequestManager(),
-            &::IncomingRequestManager::requestAdded,
-            [self=this](IncomingContactRequest* request)
-            {
-                emit self->requestAdded(request);
-            });
-
-        connect(
-            userIdentity->getContacts()->incomingRequestManager(),
-            &::IncomingRequestManager::requestsChanged,
-            [self=this]()
-            {
-                emit self->requestsChanged();
-            });
+        emit this->requestAdded(incomingContactRequest);
+        emit this->requestsChanged();
     }
 
-    QList<QObject*> UserIdentity::requestObjects() const
+    void UserIdentity::removeIncomingContactRequest(shims::IncomingContactRequest* incomingContactRequest)
+    {
+        auto it = std::find(this->requests.begin(), this->requests.end(), incomingContactRequest);
+        Q_ASSERT(it != this->requests.end());
+
+        this->requests.erase(it);
+        emit this->requestsChanged();
+
+        incomingContactRequest->deleteLater();
+    }
+
+    QList<QObject*> UserIdentity::getRequests() const
     {
         logger::trace();
-        auto userIdentity = identityManager->identities().first();
-        auto incomingRequestManager = userIdentity->getContacts()->incomingRequestManager();
-
-        return incomingRequestManager->requestObjects();
+        QList<QObject*> retval;
+        retval.reserve(requests.size());
+        for(auto currentRequest: requests)
+        {
+            retval.push_back(currentRequest);
+        }
+        return retval;
     }
 
     bool UserIdentity::isServiceOnline() const

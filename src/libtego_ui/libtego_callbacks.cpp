@@ -234,6 +234,25 @@ namespace
         });
     }
 
+    void on_chat_request_received(
+        tego_context_t*,
+        const tego_user_id_t* userId,
+        const char* message,
+        size_t messageLength)
+    {
+        logger::println("Received chat request from {}", tegoUserIdToServiceId(userId));
+        logger::println("Message : {}", message);
+
+        auto hostname = tegoUserIdToServiceId(userId) + ".onion";
+        auto messageString = QString::fromUtf8(message, messageLength);
+
+        push_task([=]() -> void
+        {
+            auto userIdentity = shims::UserIdentity::userIdentity;
+            userIdentity->createIncomingContactRequest(hostname, messageString);
+        });
+    }
+
     void on_chat_request_response_received(
         tego_context_t*,
         const tego_user_id_t* userId,
@@ -405,6 +424,11 @@ void init_libtego_callbacks(tego_context_t* context)
     tego_context_set_host_user_state_changed_callback(
         context,
         &on_host_user_state_changed,
+        tego::throw_on_error());
+
+    tego_context_set_chat_request_received_callback(
+        context,
+        &on_chat_request_received,
         tego::throw_on_error());
 
     tego_context_set_chat_request_response_received_callback(

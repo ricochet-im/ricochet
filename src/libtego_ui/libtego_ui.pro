@@ -35,7 +35,6 @@ SOURCES += \
     shims/ContactUser.cpp\
     shims/ConversationModel.cpp\
     shims/IncomingContactRequest.cpp\
-    shims/IncomingRequestManager.cpp\
     shims/OutgoingContactRequest.cpp\
     shims/ContactIDValidator.cpp
 
@@ -53,7 +52,6 @@ HEADERS += \
     shims/ContactUser.h\
     shims/ConversationModel.h\
     shims/IncomingContactRequest.h\
-    shims/IncomingRequestManager.h\
     shims/OutgoingContactRequest.h\
     shims/ContactIDValidator.h
 

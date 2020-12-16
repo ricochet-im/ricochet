@@ -366,6 +366,40 @@ void tego_context::send_chat_request(
         (messageLength == 0) ? QString() : QString::fromUtf8(message, messageLength));
 }
 
+void tego_context::acknowledge_chat_request(
+        const tego_user_id_t* user,
+        tego_chat_acknowledge_t response)
+{
+    TEGO_THROW_IF_NULL(user);
+
+    logger::println("ack chat request from {}", user->serviceId.data);
+    logger::println("response : {}", (int)response);
+
+    TEGO_THROW_IF_NULL(this->identityManager);
+    auto userIdentity = this->identityManager->identities().first();
+    auto contactsManager = userIdentity->getContacts();
+    auto incomingRequestManager = contactsManager->incomingRequestManager();
+
+    auto hostname = QString("%1.onion").arg(user->serviceId.data).toUtf8();
+
+    auto incomingContactRequest = incomingRequestManager->requestFromHostname(hostname);
+    TEGO_THROW_IF_NULL(incomingContactRequest);
+
+    switch(response)
+    {
+        case tego_chat_acknowledge_accept:
+            incomingContactRequest->accept(nullptr);
+            break;
+        case tego_chat_acknowledge_reject:
+            incomingContactRequest->reject();
+            break;
+        case tego_chat_acknowledge_block:
+            incomingContactRequest->reject();
+            incomingRequestManager->addRejectedHost(hostname);
+            break;
+    }
+}
+
 tego_message_id_t tego_context::send_message(
     const tego_user_id_t* user,
     const std::string& message)
@@ -888,6 +922,20 @@ extern "C"
             TEGO_THROW_IF_FALSE(message != nullptr || messageLength == 0);
 
             context->send_chat_request(user, message, messageLength);
+        }, error);
+    }
+
+    void tego_context_acknowledge_chat_request(
+        tego_context_t* context,
+        const tego_user_id_t* user,
+        tego_chat_acknowledge_t response,
+        tego_error_t** error)
+    {
+        return tego::translateExceptions([=]() -> void
+        {
+            TEGO_THROW_IF_NULL(context);
+
+            context->acknowledge_chat_request(user, response);
         }, error);
     }
 

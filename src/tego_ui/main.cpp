@@ -203,10 +203,6 @@ int main(int argc, char *argv[]) try
                 0,
                 tego::throw_on_error());
         }
-
-
-
-
     }
 
     // init our shims

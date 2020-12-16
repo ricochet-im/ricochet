@@ -42,6 +42,9 @@ public:
         const tego_user_id_t* user,
         const char* message,
         size_t messageLength);
+    void acknowledge_chat_request(
+        const tego_user_id_t* user,
+        tego_chat_acknowledge_t response);
     tego_message_id_t send_message(
         const tego_user_id_t* user,
         const std::string& message);

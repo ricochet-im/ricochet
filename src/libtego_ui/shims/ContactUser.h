@@ -19,7 +19,6 @@ namespace shims
         Q_PROPERTY(shims::OutgoingContactRequest* contactRequest READ contactRequest NOTIFY statusChanged)
         Q_PROPERTY(shims::ConversationModel* conversation READ conversation CONSTANT)
 
-        friend class shims::ContactsManager;
 
     public:
         enum Status
@@ -57,6 +56,7 @@ namespace shims
 
         QString nickname;
 
+        friend class shims::ContactsManager;
         friend class shims::ConversationModel;
     };
 }

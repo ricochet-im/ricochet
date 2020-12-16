@@ -57,6 +57,12 @@ namespace shims
         return shimContact;
     }
 
+    shims::ContactUser* ContactsManager::addContact(const QByteArray& hostname, const QString& nickname)
+    {
+        logger::println("TODO: implement addContact");
+        return nullptr;
+    }
+
     shims::ContactUser* ContactsManager::getShimContact(::ContactUser* contactUser) const
     {
         for(auto current : this->contactsList)

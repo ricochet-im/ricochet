@@ -41,6 +41,11 @@
 #include "protocol/Connection.h"
 #include "protocol/ContactRequestChannel.h"
 
+#include "ed25519.hpp"
+#include "context.hpp"
+#include "user.hpp"
+#include "globals.hpp"
+
 IncomingRequestManager::IncomingRequestManager(ContactsManager *c)
     : QObject(c), contacts(c)
 {
@@ -157,6 +162,23 @@ void IncomingRequestManager::requestReceived()
     if (newRequest) {
         m_requests.append(request);
         emit requestAdded(request);
+
+        // convert the hostname to user id
+        auto serviceIdRaw = hostname.chopped(tego::static_strlen(".onion")).toUtf8();
+
+        std::unique_ptr<tego_v3_onion_service_id_t> serviceId;
+        tego_v3_onion_service_id_from_string(tego::out(serviceId), serviceIdRaw.data(), serviceIdRaw.size(), tego::throw_on_error());
+
+        std::unique_ptr<tego_user_id_t> userId;
+        tego_user_id_from_v3_onion_service_id(tego::out(userId), serviceId.get(), tego::throw_on_error());
+
+        auto message = request->message().toUtf8();
+
+        const auto messageLength = static_cast<size_t>(message.size());
+        auto rawMessage = std::make_unique<char[]>(messageLength + 1);
+        std::copy(message.begin(), message.end(), rawMessage.get());
+
+        tego::g_globals.context->callback_registry_.emit_chat_request_received(userId.release(), rawMessage.release(), messageLength);
     }
 }
 
@@ -323,6 +345,9 @@ void IncomingContactRequest::setChannel(Protocol::ContactRequestChannel *channel
 
     connection = newConnection;
 
+    logger::println("nickname : {}", channel->nickname());
+    logger::println("message : {}", channel->message());
+
     setNickname(channel->nickname());
     setMessage(channel->message());
     emit hasActiveConnectionChanged();
@@ -334,7 +359,8 @@ void IncomingContactRequest::accept(ContactUser *user)
 
     // Create the contact if necessary
     if (!user) {
-        Q_ASSERT(!nickname().isEmpty());
+        Q_ASSERT(nickname().isEmpty());
+        this->setNickname("Mock Nickname");
         user = manager->contacts->addContact(QString::fromLatin1(m_hostname), nickname());
         user->setHostname(QString::fromLatin1(m_hostname));
     }
@@ -379,8 +405,6 @@ void IncomingContactRequest::reject()
 
     // Remove the request from the config
     removeRequest();
-    // Blacklist the host to prevent repeat requests
-    manager->addRejectedHost(m_hostname);
     // Remove the request from the manager
     manager->removeRequest(this);
 
