@@ -1,5 +1,6 @@
 #include "ContactUser.h"
 #include "ConversationModel.h"
+#include "UserIdentity.h"
 
 namespace shims
 {
@@ -94,6 +95,9 @@ namespace shims
 
     void ConversationModel::sendMessage(const QString &text)
     {
+        auto userIdentity = shims::UserIdentity::userIdentity;
+        auto context = userIdentity->getContext();
+
         auto utf8Str = text.toUtf8();
         if (utf8Str.size() == 0)
         {
@@ -120,7 +124,7 @@ namespace shims
 
         tego_message_id_t messageId = 0;
         tego_context_send_message(
-            contactUser->context,
+            context,
             userId.get(),
             utf8Str.data(),
             utf8Str.size(),

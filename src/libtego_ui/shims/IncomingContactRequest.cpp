@@ -44,7 +44,7 @@ namespace shims
 
         userIdentity->removeIncomingContactRequest(this);
 
-        contactManager->addContact(getHostname().toUtf8(), nickname);
+        contactManager->addContact(serviceIdString, nickname);
     }
 
     void IncomingContactRequest::reject()

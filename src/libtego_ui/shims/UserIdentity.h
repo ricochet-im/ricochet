@@ -29,7 +29,7 @@ namespace shims
 
         void setOnline(bool);
 
-        static UserIdentity* userIdentity;
+        static shims::UserIdentity* userIdentity;
         shims::ContactsManager contacts;
 
         tego_context_t* getContext() { return context; }

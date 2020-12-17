@@ -279,7 +279,11 @@ namespace
             }
             else
             {
+                SettingsObject so(QStringLiteral("contacts.%1").arg(serviceId));
+                so.write("request.status", 1);
+
                 outgoingContactRequest->setRejected();
+                contact->setStatus(shims::ContactUser::RequestRejected);
             }
         });
     }
@@ -290,23 +294,26 @@ namespace
         tego_user_status_t status)
     {
         logger::trace();
+        auto serviceId = tegoUserIdToServiceId(userId);
 
-        std::unique_ptr<tego_v3_onion_service_id> serviceId;
-        tego_user_id_get_v3_onion_service_id(userId, tego::out(serviceId), tego::throw_on_error());
+        logger::println("user status changed -> service id : {}, status : {}", serviceId, (int)status);
 
-        char serviceIdRaw[TEGO_V3_ONION_SERVICE_ID_SIZE] = {0};
-        tego_v3_onion_service_id_to_string(serviceId.get(), serviceIdRaw, sizeof(serviceIdRaw), tego::throw_on_error());
-
-        logger::println("user status changed -> service id : {}, status : {}", serviceIdRaw, (int)status);
-
-        QString serviceIdString(serviceIdRaw);
         push_task([=]() -> void
         {
-            constexpr auto ContactUser_RequestPending = 2;
-            if (status == ContactUser_RequestPending)
+            auto userIdentity = shims::UserIdentity::userIdentity;
+            auto contactsManager = userIdentity->getContacts();
+            auto contact = contactsManager->getShimContactByContactId(serviceIdToContactId(serviceId));
+
+            switch(status)
             {
-                SettingsObject so(QStringLiteral("contacts.%1").arg(serviceIdString));
-                so.write("request.status", 1);
+                case tego_user_status_online:
+                    contact->setStatus(shims::ContactUser::Online);
+                    break;
+                case tego_user_status_offline:
+                    contact->setStatus(shims::ContactUser::Offline);
+                    break;
+                default:
+                    break;
             }
         });
     }

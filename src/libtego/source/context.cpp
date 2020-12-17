@@ -531,6 +531,14 @@ std::vector<tego_user_id_t*> tego_context::get_users() const
     return users;
 }
 
+void tego_context::forget_user(const tego_user_id_t* user)
+{
+    // TODO: does not handle our blocked users or incoming request users
+    auto contactUser = this->getContactUser(user);
+    TEGO_THROW_IF_NULL(contactUser);
+    contactUser->deleteContact();
+}
+
 //
 // tego_context private methods
 //
@@ -548,7 +556,6 @@ ContactUser* tego_context::getContactUser(tego_user_id_t const* user) const
 
     return contactUser;
 }
-
 
 //
 // Exports
@@ -959,6 +966,18 @@ extern "C"
             {
                 *out_id = id;
             }
+        }, error);
+    }
+
+    void tego_context_forget_user(
+        tego_context_t* context,
+        const tego_user_id_t* user,
+        tego_error_t** error)
+    {
+        return tego::translateExceptions([=]() -> void
+        {
+            TEGO_THROW_IF_NULL(context);
+            context->forget_user(user);
         }, error);
     }
 }

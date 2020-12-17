@@ -1,7 +1,3 @@
-#include "core/IncomingRequestManager.h"
-#include "core/IdentityManager.h"
-#include "core/UserIdentity.h"
-
 #include "ContactsManager.h"
 #include "UserIdentity.h"
 #include "IncomingContactRequest.h"

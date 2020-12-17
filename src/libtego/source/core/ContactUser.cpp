@@ -132,7 +132,19 @@ void ContactUser::updateStatus()
     m_status = newStatus;
     {
         auto userId = this->toTegoUserId();
-        tego::g_globals.context->callback_registry_.emit_user_status_changed(userId.release(), (tego_user_status_t)newStatus);
+        switch(newStatus)
+        {
+            case ContactUser::Online:
+                tego::g_globals.context->callback_registry_.emit_user_status_changed(userId.release(), tego_user_status_online);
+                break;
+            case ContactUser::Offline:
+                tego::g_globals.context->callback_registry_.emit_user_status_changed(userId.release(), tego_user_status_offline);
+                break;
+            default:
+                // noop, other statuses are handled elsewhere
+                break;
+        }
+
     }
     emit statusChanged();
 

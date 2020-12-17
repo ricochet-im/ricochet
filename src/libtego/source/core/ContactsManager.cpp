@@ -58,9 +58,9 @@ void ContactsManager::loadFromSettings(const QVector<QString>& contactHostnames)
     incomingRequests.loadRequests();
 }
 
+// TODO: purge nickname from core codebase
 ContactUser *ContactsManager::addContact(const QString& hostname, const QString &nickname)
 {
-    Q_ASSERT(!nickname.isEmpty());
 
     ContactUser *user = ContactUser::addNewContact(identity, hostname);
     user->setParent(this);

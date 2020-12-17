@@ -889,7 +889,7 @@ void tego_context_block_user(
 void tego_context_forget_user(
     tego_context_t* context,
     const tego_user_id_t* user,
-    tego_error_t* error);
+    tego_error_t** error);
 
 //
 // Callbacks for frontend to respond to events

@@ -1,38 +1,12 @@
-#include "core/IdentityManager.h"
-#include "core/ContactsManager.h"
-#include "core/UserIdentity.h"
-#include "core/ContactUser.h"
-
 #include "ContactsManager.h"
 #include "ContactUser.h"
 
 namespace shims
 {
     ContactsManager::ContactsManager(tego_context_t* context)
-    : contactsManager(identityManager->identities().first()->getContacts())
-    , context(context)
+    : context(context)
     , contactsList({})
-    {
-        // wire up slots to forward
-        connect(
-            contactsManager,
-            &::ContactsManager::unreadCountChanged,
-            [self=this](::ContactUser* user, int unreadCount)
-            {
-                logger::trace();
-                emit self->unreadCountChanged(self->getShimContact(user), unreadCount);
-            });
-
-        connect(
-            contactsManager,
-            &::ContactsManager::contactStatusChanged,
-            [self=this](::ContactUser* user, int status)
-            {
-                logger::trace();
-                logger::println("status : {}", status);
-                emit self->contactStatusChanged(self->getShimContact(user), status);
-            });
-    }
+    { }
 
     shims::ContactUser* ContactsManager::createContactRequest(
             const QString &contactID,
@@ -40,50 +14,47 @@ namespace shims
             const QString &myNickname,
             const QString &message)
     {
-        logger::trace();
-
         logger::println("{{ contactID : {}, nickname : {}, myNickname : {}, message : {} }}",
             contactID, nickname, myNickname, message);
 
-        auto contactUser = contactsManager->createContactRequest(
-            contactID,
-            nickname,
-            myNickname,
-            message);
+        auto servieId = contactID.mid(tego::static_strlen("ricochet:")).toUtf8();
+        auto shimContact = this->addContact(servieId, nickname);
 
-        auto shimContact = getShimContact(contactUser);
-        // TODO: implement addContact equivalent when we load from disk?
-        emit contactAdded(shimContact);
+        auto userId = shimContact->toTegoUserId();
+        auto rawMessage = message.toUtf8();
+
+        tego_context_send_chat_request(this->context, userId.get(), rawMessage.data(), rawMessage.size(), tego::throw_on_error());
+
+        shimContact->setStatus(shims::ContactUser::RequestPending);
+
         return shimContact;
     }
 
-    shims::ContactUser* ContactsManager::addContact(const QByteArray& hostname, const QString& nickname)
+    shims::ContactUser* ContactsManager::addContact(const QString& serviceId, const QString& nickname)
     {
-        logger::println("TODO: implement addContact");
-        return nullptr;
-    }
+        // creates a new contact from service id and nickname
+        auto shimContact = new shims::ContactUser(serviceId, nickname);
+        contactsList.push_back(shimContact);
 
-    shims::ContactUser* ContactsManager::getShimContact(::ContactUser* contactUser) const
-    {
-        for(auto current : this->contactsList)
+        // remove our reference and ready for deleting when contactDeleted signal is fireds
+        connect(shimContact, &shims::ContactUser::contactDeleted, [self=this](shims::ContactUser* user) -> void
         {
-            if (current->contactUser == contactUser)
-            {
-                return current;
-            }
-        }
+            // find the given user in our internal list and remove, mark for deletion
+            auto& contactsList = self->contactsList;
+            auto it = std::find(contactsList.begin(), contactsList.end(), user);
+            contactsList.erase(it);
 
-        logger::println("creating shim contact for : {}, {}", (void*)contactUser, contactUser->hostname());
-        auto retval = new shims::ContactUser(context, contactUser);
-        contactsList.push_back(retval);
+            user->deleteLater();
+        });
 
-        return retval;
+        emit this->contactAdded(shimContact);
+        return shimContact;
     }
 
     shims::ContactUser* ContactsManager::getShimContactByContactId(const QString& contactId) const
     {
         logger::trace();
-        for(auto cu : this->contacts())
+        for(auto cu : contactsList)
         {
             logger::println("cu : {}", (void*)cu);
             if (cu->getContactID() == contactId)
@@ -95,16 +66,18 @@ namespace shims
         return nullptr;
     }
 
-
     const QList<shims::ContactUser*>& ContactsManager::contacts() const
     {
-        // populate our shim contacts
-        auto& realContacts = contactsManager->contacts();
-        for(auto c : realContacts)
-        {
-            getShimContact(c);
-        }
-
         return contactsList;
+    }
+
+    void ContactsManager::setUnreadCount(shims::ContactUser* user, int unreadCount)
+    {
+        emit this->unreadCountChanged(user, unreadCount);
+    }
+
+    void ContactsManager::setContactStatus(shims::ContactUser* user, int status)
+    {
+        emit this->contactStatusChanged(user, status);
     }
 }

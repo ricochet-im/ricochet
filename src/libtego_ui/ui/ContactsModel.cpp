@@ -31,12 +31,10 @@
  */
 
 #include "ContactsModel.h"
-#include "core/IdentityManager.h"
 
 #include "shims/ContactsManager.h"
 #include "shims/ContactUser.h"
 #include "shims/UserIdentity.h"
-#include "protocol/Connection.h"
 
 inline bool contactSort(const shims::ContactUser *c1, const shims::ContactUser *c2)
 {

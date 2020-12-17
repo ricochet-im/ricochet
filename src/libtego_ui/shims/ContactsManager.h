@@ -2,7 +2,6 @@
 
 #include "ContactUser.h"
 
-class ContactsManager;
 namespace shims
 {
     class ContactsManager : public QObject
@@ -17,18 +16,18 @@ namespace shims
             const QString &nickname,
             const QString &myNickname,
             const QString &message);
-        shims::ContactUser* addContact(const QByteArray& hostname, const QString& nickname);
+        shims::ContactUser* addContact(const QString& serviceId, const QString& nickname);
         const QList<shims::ContactUser*>& contacts() const;
-        shims::ContactUser* getShimContact(::ContactUser*) const;
         shims::ContactUser* getShimContactByContactId(const QString& contactId) const;
+
+        void setUnreadCount(shims::ContactUser* user, int unreadCount);
+        void setContactStatus(shims::ContactUser* user, int status);
 
     signals:
         void contactAdded(shims::ContactUser *user);
         void unreadCountChanged(shims::ContactUser *user, int unreadCount);
         void contactStatusChanged(shims::ContactUser* user, int status);
     private:
-        ::ContactsManager* contactsManager;
-
         tego_context_t* context;
         mutable QList<shims::ContactUser*> contactsList;
     };

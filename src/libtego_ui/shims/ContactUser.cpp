@@ -1,57 +1,47 @@
-#include "core/ContactUser.h"
-
+#include "UserIdentity.h"
 #include "ContactUser.h"
 #include "ConversationModel.h"
 #include "OutgoingContactRequest.h"
 
+// TODO: wire up the slots in here, figure out how to properly wire up unread count, status change
+// populating the contacts manager on boot, keeping libtego's internal contacts synced with frontend's
+// put all of the SettingsObject stuff into one settings manager
+
 namespace shims
 {
-    ContactUser::ContactUser(tego_context_t* context, ::ContactUser* contactUser)
-    : context(context)
-    , contactUser(contactUser)
-    , conversationModel(new shims::ConversationModel(this))
+    ContactUser::ContactUser(const QString& serviceId, const QString& nickname)
+    : conversationModel(new shims::ConversationModel(this))
     , outgoingContactRequest(new shims::OutgoingContactRequest())
+    , status(ContactUser::Offline)
+    , serviceId(serviceId)
+    , nickname(nickname)
     {
-        // wire up slots to forward
-        connect(
-            contactUser,
-            &::ContactUser::nicknameChanged,
-            [self=this]()
-            {
-                emit self->nicknameChanged();
-            });
-
-        connect(
-            contactUser,
-            &::ContactUser::statusChanged,
-            [self=this]()
-            {
-                emit self->statusChanged();
-            });
-
-        connect(contactUser,
-            &::ContactUser::contactDeleted,
-            [self=this](::ContactUser*)
-            {
-                emit self->contactDeleted(self);
-            });
-
+        Q_ASSERT(serviceId.size() == TEGO_V3_ONION_SERVICE_ID_LENGTH);
         conversationModel->setContact(this);
     }
 
     QString ContactUser::getNickname() const
     {
-        return contactUser->nickname();
+        return nickname;
     }
 
     QString ContactUser::getContactID() const
     {
-        return contactUser->contactID();
+        return QString("ricochet:") + serviceId;
     }
 
     ContactUser::Status ContactUser::getStatus() const
     {
-        return static_cast<ContactUser::Status>(contactUser->status());
+        return status;
+    }
+
+    void ContactUser::setStatus(ContactUser::Status status)
+    {
+        if (this->status != status)
+        {
+            this->status = status;
+            emit this->statusChanged();
+        }
     }
 
     shims::OutgoingContactRequest* ContactUser::contactRequest()
@@ -64,13 +54,43 @@ namespace shims
         return conversationModel;
     }
 
-    void ContactUser::setNickname(const QString &nickname)
+    void ContactUser::setNickname(const QString& nickname)
     {
-        contactUser->setNickname(nickname);
+        if (this->nickname != nickname)
+        {
+            this->nickname = nickname;
+            emit this->nicknameChanged();
+        }
     }
 
     void ContactUser::deleteContact()
     {
-        contactUser->deleteContact();
+        auto userIdentity = shims::UserIdentity::userIdentity;
+
+        auto context = userIdentity->getContext();
+        auto userId = this->toTegoUserId();
+
+        tego_context_forget_user(context, userId.get(), tego::throw_on_error());
+
+        emit this->contactDeleted(this);
+    }
+
+    std::unique_ptr<tego_user_id_t> ContactUser::toTegoUserId() const
+    {
+        logger::println("serviceId : {}", this->serviceId);
+
+        auto serviceIdRaw = this->serviceId.toUtf8();
+
+        // ensure valid service id
+        std::unique_ptr<tego_v3_onion_service_id_t> serviceId;
+        tego_v3_onion_service_id_from_string(tego::out(serviceId), serviceIdRaw.data(), serviceIdRaw.size(), tego::throw_on_error());
+
+        logger::trace();
+
+        // create user id object from service id
+        std::unique_ptr<tego_user_id_t> userId;
+        tego_user_id_from_v3_onion_service_id(tego::out(userId), serviceId.get(), tego::throw_on_error());
+
+        return userId;
     }
 }

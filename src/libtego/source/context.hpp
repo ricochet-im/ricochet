@@ -51,7 +51,7 @@ public:
     tego_user_type_t get_user_type(tego_user_id_t const* user) const;
     size_t get_user_count() const;
     std::vector<tego_user_id_t*> get_users() const;
-
+    void forget_user(const tego_user_id_t* user);
 
     tego::callback_registry callback_registry_;
     tego::callback_queue callback_queue_;
