@@ -51,9 +51,6 @@ private:
     static double get_timestamp();
 };
 
-std::ostream& operator<<(std::ostream& out, const class QString& str);
-std::ostream& operator<<(std::ostream& out, const class QByteArray& blob);
-std::ostream& operator<<(std::ostream& out, const std::type_info& ti);
 #else // ENABLE_TEGO_LOGGER
 
 // mock no-op logger
@@ -66,7 +63,9 @@ public:
     static void println(const char (&)[N]) {}
     static void trace() {}
 };
-
-
-
 #endif // ENABLE_TEGO_LOGGER
+
+// always provide these overloads
+std::ostream& operator<<(std::ostream& out, const class QString& str);
+std::ostream& operator<<(std::ostream& out, const class QByteArray& blob);
+

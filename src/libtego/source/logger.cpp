@@ -28,6 +28,7 @@ double logger::get_timestamp()
     std::chrono::duration<double> duration(now - start);
     return duration.count();
 }
+#endif
 
 //
 // std::ostream << operators
@@ -106,5 +107,3 @@ std::ostream& operator<<(std::ostream& out, const QByteArray& blob)
 
     return out;
 }
-
-#endif // ENABLE_TEGO_LOGGER
