@@ -46,6 +46,7 @@ HEADERS += \
     ui/LinkedText.h \
     ui/MainWindow.h \
     utils/Settings.h \
+    utils/Useful.h \
     shims/TorControl.h\
     shims/TorCommand.h\
     shims/TorManager.h\

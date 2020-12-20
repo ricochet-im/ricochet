@@ -33,10 +33,11 @@
 #include "ui/MainWindow.h"
 #include "ui/ContactsModel.h"
 #include "ui/LinkedText.h"
-#include "utils/Settings.h"
-#include "utils/PendingOperation.h"
-#include "utils/Useful.h"
 #include "ui/LanguagesModel.h"
+
+#include "utils/Settings.h"
+#include "utils/Useful.h"
+
 
 // shim replacements
 #include "shims/TorControl.h"
@@ -118,8 +119,6 @@ MainWindow::MainWindow(QObject *parent)
     qmlRegisterType<::SettingsObject>("im.ricochet", 1, 0, "Settings");
     qmlRegisterSingletonType<::LinkedText>("im.ricochet", 1, 0, "LinkedText", linkedtext_singleton);
     qmlRegisterType<::LanguagesModel>("im.ricochet", 1, 0, "LanguagesModel");
-
-    qRegisterMetaType<::PendingOperation*>();
 }
 
 MainWindow::~MainWindow()
