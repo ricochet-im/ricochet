@@ -17,8 +17,8 @@ namespace shims
         logger::println("{{ contactID : {}, nickname : {}, myNickname : {}, message : {} }}",
             contactID, nickname, myNickname, message);
 
-        auto servieId = contactID.mid(tego::static_strlen("ricochet:")).toUtf8();
-        auto shimContact = this->addContact(servieId, nickname);
+        auto serviceId = contactID.mid(tego::static_strlen("ricochet:")).toUtf8();
+        auto shimContact = this->addContact(serviceId, nickname);
 
         auto userId = shimContact->toTegoUserId();
         auto rawMessage = message.toUtf8();

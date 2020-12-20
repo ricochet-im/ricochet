@@ -10,7 +10,6 @@ namespace
     constexpr int consumeInterval = 10;
 
     // data
-    std::unique_ptr<QTimer> taskTimer;
     std::vector<std::function<void()>> taskQueue;
     std::mutex taskQueueLock;
 
@@ -269,19 +268,14 @@ namespace
             auto contact = contactsManager->getShimContactByContactId(serviceIdToContactId(serviceId));
             auto outgoingContactRequest = contact->contactRequest();
 
+            logger::trace();
+
             if (requestAccepted)
             {
-                // delete the request block entirely like in OutgoingContactRequest::removeRequest
-                SettingsObject so(QStringLiteral("contacts.%1").arg(serviceId));
-                so.unset("request");
-
                 outgoingContactRequest->setAccepted();
             }
             else
             {
-                SettingsObject so(QStringLiteral("contacts.%1").arg(serviceId));
-                so.write("request.status", 1);
-
                 outgoingContactRequest->setRejected();
                 contact->setStatus(shims::ContactUser::RequestRejected);
             }
@@ -379,7 +373,7 @@ namespace
         push_task([=]() -> void
         {
             SettingsObject so(QStringLiteral("identity"));
-            so.write("serviceKey", keyBlob);
+            so.write("privateKey", keyBlob);
         });
     }
 }

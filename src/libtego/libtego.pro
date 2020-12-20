@@ -102,7 +102,6 @@ SOURCES += \
     source/utils/CryptoKey.cpp \
     source/utils/PendingOperation.cpp \
     source/utils/SecureRNG.cpp \
-    source/utils/Settings.cpp \
     source/utils/StringUtil.cpp
 
 
@@ -131,7 +130,6 @@ HEADERS += \
     source/utils/CryptoKey.h \
     source/utils/PendingOperation.h \
     source/utils/SecureRNG.h \
-    source/utils/Settings.h \
     source/utils/StringUtil.h
 
 SOURCES += \

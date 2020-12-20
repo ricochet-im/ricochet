@@ -27,6 +27,7 @@ SOURCES += \
     ui/LanguagesModel.cpp \
     ui/LinkedText.cpp \
     ui/MainWindow.cpp \
+    utils/Settings.cpp \
     shims/TorControl.cpp\
     shims/TorCommand.cpp\
     shims/TorManager.cpp\
@@ -44,6 +45,7 @@ HEADERS += \
     ui/LanguagesModel.h \
     ui/LinkedText.h \
     ui/MainWindow.h \
+    utils/Settings.h \
     shims/TorControl.h\
     shims/TorCommand.h\
     shims/TorManager.h\

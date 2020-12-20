@@ -30,7 +30,7 @@ public:
     void start_service(
         tego_ed25519_private_key_t const* hostPrivateKey,
         tego_user_id_t const* const* userBuffer,
-        tego_user_type_t const* const* userTypeBuffer,
+        tego_user_type_t* const userTypeBuffer,
         size_t userCount);
     void start_service();
     void update_tor_daemon_config(const tego_tor_daemon_config_t* config);

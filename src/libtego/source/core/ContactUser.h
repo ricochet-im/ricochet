@@ -53,14 +53,6 @@ class ContactUser : public QObject
 {
     Q_OBJECT
     Q_DISABLE_COPY(ContactUser)
-    Q_ENUMS(Status)
-
-    Q_PROPERTY(UserIdentity* identity READ getIdentity CONSTANT)
-    Q_PROPERTY(QString nickname READ nickname WRITE setNickname NOTIFY nicknameChanged)
-    Q_PROPERTY(QString contactID READ contactID CONSTANT)
-    Q_PROPERTY(Status status READ status NOTIFY statusChanged)
-    Q_PROPERTY(OutgoingContactRequest *contactRequest READ contactRequest NOTIFY statusChanged)
-    Q_PROPERTY(ConversationModel *conversation READ conversation CONSTANT)
 
     friend class ContactsManager;
     friend class OutgoingContactRequest;
@@ -77,8 +69,7 @@ public:
 
     UserIdentity * const identity;
 
-    explicit ContactUser(UserIdentity *identity, const QString& hostname, QObject *parent = 0);
-    virtual ~ContactUser();
+    explicit ContactUser(UserIdentity *identity, const QString& hostname, Status status=Offline, QObject *parent = 0);
 
     const QSharedPointer<Protocol::Connection> &connection() { return m_connection; }
     bool isConnected() const { return status() == Online; }
@@ -88,7 +79,6 @@ public:
 
     UserIdentity *getIdentity() const { return identity; }
 
-    QString nickname() const;
     /* Hostname is in the onion hostname format, i.e. it ends with .onion */
     QString hostname() const;
     quint16 port() const;
@@ -96,8 +86,6 @@ public:
     QString contactID() const;
 
     Status status() const { return m_status; }
-
-    class SettingsObject *settings();
 
     Q_INVOKABLE void deleteContact();
 
@@ -120,7 +108,6 @@ public slots:
      */
     void assignConnection(const QSharedPointer<Protocol::Connection> &connection);
 
-    void setNickname(const QString &nickname);
     void setHostname(const QString &hostname);
 
     void updateStatus();
@@ -139,7 +126,6 @@ private slots:
     void onDisconnected();
     void requestRemoved();
     void requestAccepted();
-    void onSettingsModified(const QString &key, const QJsonValue &value);
 
 private:
     QSharedPointer<Protocol::Connection> m_connection;
@@ -148,14 +134,12 @@ private:
     Status m_status;
     quint16 m_lastReceivedChatID;
     OutgoingContactRequest *m_contactRequest;
-    class SettingsObject *m_settings;
     ConversationModel *m_conversation;
     mutable QString m_hostname;
 
     /* See ContactsManager::addContact */
     static ContactUser *addNewContact(UserIdentity *identity, const QString& contactHostname);
 
-    void loadContactRequest();
     void createContactRequest(const QString& msg);
     void updateOutgoingSocket();
 

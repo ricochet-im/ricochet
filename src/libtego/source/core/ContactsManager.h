@@ -44,9 +44,6 @@ class ContactsManager : public QObject
     Q_OBJECT
     Q_DISABLE_COPY(ContactsManager)
 
-    Q_PROPERTY(IncomingRequestManager* incomingRequests READ incomingRequestManager CONSTANT)
-    Q_PROPERTY(int globalUnreadCount READ globalUnreadCount NOTIFY unreadCountChanged)
-
     friend class OutgoingContactRequest;
 
 public:
@@ -60,19 +57,26 @@ public:
     const QList<ContactUser*> &contacts() const { return pContacts; }
     ContactUser *lookupSecret(const QByteArray &secret) const;
     ContactUser *lookupHostname(const QString &hostname) const;
-    ContactUser *lookupNickname(const QString &nickname) const;
 
     /* Create a new user and a contact request for that user. Use this instead of addContact.
      * Note that contactID should be an ricochet: ID. */
-    Q_INVOKABLE ContactUser *createContactRequest(const QString &contactID, const QString &nickname,
-                                                  const QString &myNickname, const QString &message);
+    Q_INVOKABLE ContactUser *createContactRequest(const QString &contactID, const QString &message);
 
     /* addContact will add the contact, but does not create a request. Use createContactRequest */
-    ContactUser *addContact(const QString& hostname, const QString &nickname);
+    ContactUser *addContact(const QString& hostname);
 
     static QString hostnameFromID(const QString &ID);
 
-    void loadFromSettings(const QVector<QString>& contactHostnames);
+    // tego_user_type_allowed
+    void addAllowedContacts(const QList<QString>& userHostnames);
+    // tego_user_type_requesting
+    void addIncomingRequests(const QList<QString>& userHostnames);
+    // tego_user_type_blocked
+    void addRejectedIncomingRequests(const QList<QString>& userHostnames);
+    // tego_user_type_pending
+    void addOutgoingRequests(const QList<QString>& userHostnames);
+    // tego_user_type_rejected
+    void addRejectedOutgoingRequests(const QList<QString>& userHostnames);
 
     int globalUnreadCount() const;
 

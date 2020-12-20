@@ -43,13 +43,8 @@
 #include "user.hpp"
 #include "globals.hpp"
 
-// TODO: currently myNickname is not actually passed down, and message needs to be saved somewhere for when
-// we shutdown without a request being responded to
-OutgoingContactRequest *OutgoingContactRequest::createNewRequest(ContactUser *user, const QString &myNickname,
-                                                                 const QString &message)
+OutgoingContactRequest *OutgoingContactRequest::createNewRequest(ContactUser *user, const QString &message)
 {
-    logger::println("Nickname : '{}', Message: '{}'", myNickname, message);
-
     Q_ASSERT(!user->contactRequest());
 
     user->createContactRequest(message);
@@ -66,16 +61,6 @@ OutgoingContactRequest::OutgoingContactRequest(ContactUser *u, const QString& ms
     emit user->identity->contacts.outgoingRequestAdded(this);
 
     attemptAutoAccept();
-}
-
-OutgoingContactRequest::~OutgoingContactRequest()
-{
-    user->setProperty("contactRequest", QVariant());
-}
-
-QString OutgoingContactRequest::myNickname() const
-{
-    return m_myNickname;
 }
 
 QString OutgoingContactRequest::message() const
@@ -162,9 +147,6 @@ void OutgoingContactRequest::sendRequest(const QSharedPointer<Protocol::Connecti
 
     if (!message().isEmpty())
         channel->setMessage(message());
-    // TODO: this is never set
-    if (!myNickname().isEmpty())
-        channel->setNickname(myNickname());
 
     if (!channel->openChannel()) {
         BUG() << "Channel for outgoing contact request failed";

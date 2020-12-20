@@ -44,23 +44,17 @@ using tego::g_globals;
 #include "core/ContactUser.h"
 #include "protocol/Connection.h"
 #include "utils/Useful.h"
-#include "utils/Settings.h"
 
 using namespace Protocol;
 
-UserIdentity::UserIdentity(int id, const QString& serviceID, const QVector<QString>& contactHostnames, QObject *parent)
+UserIdentity::UserIdentity(int id, const QString& serviceID, QObject *parent)
     : QObject(parent)
     , uniqueID(id)
     , contacts(this)
-    , m_settings(0)
     , m_hiddenService(0)
     , m_incomingServer(0)
 {
-    m_settings = new SettingsObject(QStringLiteral("identity"), this);
-    connect(m_settings, &SettingsObject::modified, this, &UserIdentity::onSettingsModified);
-
     setupService(serviceID);
-    contacts.loadFromSettings(contactHostnames);
 }
 
 UserIdentity *UserIdentity::createIdentity(int uniqueID)
@@ -69,9 +63,6 @@ UserIdentity *UserIdentity::createIdentity(int uniqueID)
     Q_ASSERT(uniqueID == 0);
     if (uniqueID != 0)
         return 0;
-
-    SettingsObject settings(QStringLiteral("identity"));
-    settings.write("initializing", true);
 
     return new UserIdentity(uniqueID, "", {});
 }
@@ -90,9 +81,6 @@ void UserIdentity::setupService(const QString& serviceID)
             return;
         }
         m_hiddenService = new Tor::HiddenService(key, this);
-    } else if (!m_settings->read("initializing").toBool()) {
-        qWarning() << "Missing private key for initialized identity";
-        return;
     } else {
         m_hiddenService = new Tor::HiddenService(this);
         connect(m_hiddenService, &Tor::HiddenService::privateKeyChanged, this,
@@ -120,10 +108,8 @@ void UserIdentity::setupService(const QString& serviceID)
 
     // Generally, these are not used, and we bind to localhost and port 0
     // for an automatic (and portable) selection.
-    QHostAddress address(m_settings->read("localListenAddress").toString());
-    if (address.isNull())
-        address = QHostAddress::LocalHost;
-    quint16 port = (quint16)m_settings->read("localListenPort").toInt();
+    QHostAddress address = QHostAddress::LocalHost;
+    quint16 port = 0;
 
     m_incomingServer = new QTcpServer(this);
     if (!m_incomingServer->listen(address, port)) {
@@ -148,28 +134,10 @@ QString UserIdentity::contactID() const
     return ContactIDValidator::idFromHostname(hostname());
 }
 
-QString UserIdentity::nickname() const
-{
-    return m_settings->read("nickname").toString();
-}
-
-void UserIdentity::setNickname(const QString &nick)
-{
-    m_settings->write("nickname", nick);
-}
-
-void UserIdentity::onSettingsModified(const QString &key, const QJsonValue &value)
-{
-    Q_UNUSED(value);
-    if (key == QLatin1String("nickname"))
-        emit nicknameChanged();
-}
-
 void UserIdentity::onStatusChanged(int newStatus, int oldStatus)
 {
     if (oldStatus == Tor::HiddenService::NotCreated && newStatus > oldStatus)
     {
-        m_settings->write("initializing", QJsonValue::Undefined);
         emit contactIDChanged();
     }
     emit statusChanged();
@@ -256,7 +224,7 @@ void UserIdentity::handleIncomingAuthedConnection(Connection *conn)
         return;
     }
 
-    qDebug() << "Incoming connection authenticated as contact" << user->nickname() << "with hostname" << clientName;
+    qDebug() << "Incoming connection authenticated as contact with hostname" << clientName;
     user->assignConnection(connPtr);
 }
 

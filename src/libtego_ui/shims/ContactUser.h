@@ -1,5 +1,7 @@
 #pragma once
 
+#include "utils/Settings.h"
+
 namespace shims
 {
     class ContactsManager;
@@ -54,6 +56,8 @@ namespace shims
         Status status;
         QString serviceId;
         QString nickname;
+
+        SettingsObject settings;
 
         friend class shims::ContactsManager;
         friend class shims::ConversationModel;

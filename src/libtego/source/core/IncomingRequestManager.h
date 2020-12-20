@@ -47,14 +47,6 @@ class IncomingContactRequest : public QObject
     Q_OBJECT
     Q_DISABLE_COPY(IncomingContactRequest)
 
-    Q_PROPERTY(QByteArray hostname READ hostname CONSTANT)
-    Q_PROPERTY(QString contactId READ contactId CONSTANT)
-    Q_PROPERTY(QString message READ message CONSTANT)
-    Q_PROPERTY(QString nickname READ nickname WRITE setNickname NOTIFY nicknameChanged)
-    Q_PROPERTY(bool hasActiveConnection READ hasActiveConnection NOTIFY hasActiveConnectionChanged)
-    Q_PROPERTY(QDateTime requestDate READ requestDate CONSTANT)
-    Q_PROPERTY(QDateTime lastRequestDate READ lastRequestDate CONSTANT)
-
 public:
     IncomingRequestManager * const manager;
 
@@ -80,7 +72,6 @@ public:
 
     void renew();
 
-    QString settingsKey() const;
     void load();
     void save();
 
@@ -136,6 +127,8 @@ public:
      * configuration. */
     void loadRequests();
 
+    void loadRequests(const QList<QString> userHostnames);
+
     /* Blacklist a host for immediate rejection in the future */
     void addRejectedHost(const QByteArray &hostname);
     bool isHostnameRejected(const QByteArray &hostname) const;
@@ -151,6 +144,7 @@ private slots:
 
 private:
     QList<IncomingContactRequest*> m_requests;
+    QSet<QByteArray> rejectedHosts;
 
     void removeRequest(IncomingContactRequest *request);
 };

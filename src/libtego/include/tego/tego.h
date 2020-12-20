@@ -335,9 +335,9 @@ typedef enum
 {
     tego_user_type_host, // the host user
     tego_user_type_allowed, // in host's contact list
-    tego_user_type_blocked, // in host's block list
-    tego_user_type_pending, // users the host has added but who have not replied yet
     tego_user_type_requesting, // users who have added host but the host has not replied yet
+    tego_user_type_blocked, // users who have added host but the host has rejected
+    tego_user_type_pending, // users the host has added but who have not replied yet
     tego_user_type_rejected, // user the host has added but replied with rejection
 } tego_user_type_t;
 
@@ -623,7 +623,7 @@ void tego_context_start_service(
     tego_context_t* context,
     tego_ed25519_private_key_t const* hostPrivateKey,
     tego_user_id_t const* const* userBuffer,
-    tego_user_type_t const* const* userTypeBuffer,
+    tego_user_type_t* const userTypeBuffer,
     size_t userCount,
     tego_error_t** error);
 
@@ -820,7 +820,7 @@ typedef uint64_t tego_message_id_t;
  */
 void tego_context_send_message(
     tego_context_t* context,
-    tego_user_id_t* user,
+    const tego_user_id_t* user,
     const char* message,
     size_t messageLength,
     tego_message_id_t* out_id,

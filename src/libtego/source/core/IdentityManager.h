@@ -41,11 +41,10 @@ class IdentityManager : public QObject
 
 public:
     // serviceID : string ED25519-V3 keyblob pulled from config.json, or empty string to create one
-    explicit IdentityManager(const QString& serviceID, const QVector<QString>& contactHostnames, QObject *parent = 0);
+    explicit IdentityManager(const QString& serviceID, QObject *parent = 0);
     ~IdentityManager();
 
     const QList<class UserIdentity*> &identities() const { return m_identities; }
-    class UserIdentity *lookupNickname(const QString &nickname) const;
     class UserIdentity *lookupHostname(const QString &hostname) const;
     class UserIdentity *lookupUniqueID(int uniqueID) const;
 
@@ -53,14 +52,12 @@ public:
 
 signals:
     void identityAdded(class UserIdentity *identity);
-    void contactAdded(class ContactUser *user, class UserIdentity *identity);
     void contactDeleted(class ContactUser *user, class UserIdentity *identity);
     void outgoingRequestAdded(class OutgoingContactRequest *request, class UserIdentity *identity);
     void incomingRequestAdded(class IncomingContactRequest *request, class UserIdentity *identity);
     void incomingRequestRemoved(class IncomingContactRequest *request, class UserIdentity *identity);
 
 private slots:
-    void onContactAdded(class ContactUser *user);
     void onOutgoingRequest(class OutgoingContactRequest *request);
     void onIncomingRequest(class IncomingContactRequest *request);
     void onIncomingRequestRemoved(class IncomingContactRequest *request);

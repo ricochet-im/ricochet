@@ -45,29 +45,64 @@ ContactsManager::ContactsManager(UserIdentity *id)
     contactsManager = this;
 }
 
-void ContactsManager::loadFromSettings(const QVector<QString>& contactHostnames)
+
+// tego_user_type_allowed
+void ContactsManager::addAllowedContacts(const QList<QString>& userHostnames)
 {
-    for(const QString& hostname : contactHostnames)
+    for(const auto& hostname : userHostnames)
     {
-        ContactUser *user = new ContactUser(identity, hostname, this);
+        ContactUser *user = new ContactUser(identity, hostname, ContactUser::Offline, this);
         connectSignals(user);
         pContacts.append(user);
         emit contactAdded(user);
     }
-
-    incomingRequests.loadRequests();
 }
 
-// TODO: purge nickname from core codebase
-ContactUser *ContactsManager::addContact(const QString& hostname, const QString &nickname)
+// tego_user_type_requesting
+void ContactsManager::addIncomingRequests(const QList<QString>& userHostnames)
 {
+    this->incomingRequests.loadRequests(userHostnames);
+}
 
-    ContactUser *user = ContactUser::addNewContact(identity, hostname);
+// tego_user_type_blocked
+void ContactsManager::addRejectedIncomingRequests(const QList<QString>& userHostnames)
+{
+    for(const auto& hostname : userHostnames)
+    {
+        this->incomingRequests.addRejectedHost(hostname.toUtf8());
+    }
+}
+
+// tego_user_type_pending
+void ContactsManager::addOutgoingRequests(const QList<QString>& userHostnames)
+{
+    for(const auto& hostname : userHostnames)
+    {
+        this->createContactRequest(QString("ricochet:%1").arg(hostname), QString());
+    }
+}
+
+// tego_user_type_rejected
+void ContactsManager::addRejectedOutgoingRequests(const QList<QString>& userHostnames)
+{
+    for(const auto& hostname : userHostnames)
+    {
+        ContactUser *user = new ContactUser(identity, hostname, ContactUser::RequestRejected, this);
+
+        connect(user, SIGNAL(contactDeleted(ContactUser*)), SLOT(contactDeleted(ContactUser*)));
+        pContacts.append(user);
+
+        // emit contactAdded(user);
+    }
+}
+
+ContactUser *ContactsManager::addContact(const QString& hostname)
+{
+    ContactUser *user = new ContactUser(identity, hostname);
     user->setParent(this);
-    user->setNickname(nickname);
     connectSignals(user);
 
-    qDebug() << "Added new contact" << hostname << "(" << nickname << ")";
+    qDebug() << "Added new contact" << hostname;
 
     pContacts.append(user);
     emit contactAdded(user);
@@ -82,29 +117,26 @@ void ContactsManager::connectSignals(ContactUser *user)
     connect(user, &ContactUser::statusChanged, [this,user]() { emit contactStatusChanged(user, user->status()); });
 }
 
-ContactUser *ContactsManager::createContactRequest(const QString &contactid, const QString &nickname,
-                                                   const QString &myNickname, const QString &message)
+ContactUser *ContactsManager::createContactRequest(const QString &contactid, const QString &message)
 {
     logger::println("contactId : {}", contactid);
-    logger::println("nickname : {}", nickname);
-    logger::println("myNickname : {}", myNickname);
     logger::println("message : {}", message);
 
     QString hostname = ContactIDValidator::hostnameFromID(contactid);
-    if (hostname.isEmpty() || lookupHostname(contactid) || lookupNickname(nickname))
+    if (hostname.isEmpty() || lookupHostname(contactid))
     {
         return 0;
     }
 
     bool b = blockSignals(true);
     const auto contactHostname = ContactIDValidator::hostnameFromID(contactid);
-    ContactUser *user = addContact(contactHostname, nickname);
+    ContactUser *user = addContact(contactHostname);
     blockSignals(b);
     if (!user)
         return user;
     user->setHostname(ContactIDValidator::hostnameFromID(contactid));
 
-    OutgoingContactRequest::createNewRequest(user, myNickname, message);
+    OutgoingContactRequest::createNewRequest(user, message);
 
     /* Signal deferred from addContact to avoid changing the status immediately */
     Q_ASSERT(user->status() == ContactUser::RequestPending);
@@ -135,17 +167,6 @@ ContactUser *ContactsManager::lookupHostname(const QString &hostname) const
     return 0;
 }
 
-ContactUser *ContactsManager::lookupNickname(const QString &nickname) const
-{
-    for (QList<ContactUser*>::ConstIterator it = pContacts.begin(); it != pContacts.end(); ++it)
-    {
-        if (QString::compare(nickname, (*it)->nickname(), Qt::CaseInsensitive) == 0)
-            return *it;
-    }
-
-    return 0;
-}
-
 void ContactsManager::onUnreadCountChanged()
 {
     ConversationModel *model = qobject_cast<ConversationModel*>(sender());
@@ -156,6 +177,7 @@ void ContactsManager::onUnreadCountChanged()
 
     emit unreadCountChanged(user, model->unreadCount());
 
+// TODO: move this out of libtego
 #ifdef Q_OS_MAC
     int unread = globalUnreadCount();
     QtMac::setBadgeLabelText(unread == 0 ? QString() : QString::number(unread));

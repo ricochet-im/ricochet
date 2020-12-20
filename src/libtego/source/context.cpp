@@ -183,9 +183,21 @@ tego_tor_bootstrap_tag_t tego_context::get_tor_bootstrap_tag() const
 void tego_context::start_service(
     tego_ed25519_private_key_t const* hostPrivateKey,
     tego_user_id_t const* const* userBuffer,
-    tego_user_type_t const* const* userTypeBuffer,
+    tego_user_type_t* const userTypeBuffer,
     size_t userCount)
 {
+    TEGO_THROW_IF_NULL(hostPrivateKey);
+    if (userCount > 0)
+    {
+        TEGO_THROW_IF_NULL(userBuffer);
+        TEGO_THROW_IF_NULL(userTypeBuffer);
+    }
+    else
+    {
+        TEGO_THROW_IF_NOT_NULL(userBuffer);
+        TEGO_THROW_IF_NOT_NULL(userTypeBuffer);
+    }
+
     char rawKeyBlob[TEGO_ED25519_KEYBLOB_SIZE] = {0};
     tego_ed25519_keyblob_from_ed25519_private_key(
         rawKeyBlob,
@@ -195,16 +207,54 @@ void tego_context::start_service(
 
     auto keyBlob = QString::fromUtf8(rawKeyBlob, TEGO_ED25519_KEYBLOB_LENGTH);
 
-    QVector<QString> contactServiceIds;
+    // our different types of users
+    QList<QString> allowedUsers;
+    QList<QString> requestingUsers;
+    QList<QString> blockedUsers;
+    QList<QString> pendingUsers;
+    QList<QString> rejectedUsers;
+
     for(size_t k = 0; k < userCount; k++)
     {
-            contactServiceIds.push_back(
-                QString::fromUtf8(
-                    userBuffer[k]->serviceId.data, TEGO_V3_ONION_SERVICE_ID_LENGTH) + ".onion");
+        const auto userType = userTypeBuffer[k];
+        const auto userHostname = QString::fromUtf8(userBuffer[k]->serviceId.data, TEGO_V3_ONION_SERVICE_ID_LENGTH) + ".onion";
+
+        switch(userTypeBuffer[k])
+        {
+            case tego_user_type_host:
+                TEGO_THROW_MSG("passed in userTypeBuffer[{}] is invalid type 'tego_user_type_host'", k);
+                break;
+            case tego_user_type_allowed:
+                allowedUsers.push_back(userHostname);
+                break;
+            case tego_user_type_requesting:
+                requestingUsers.push_back(userHostname);
+                break;
+            case tego_user_type_blocked:
+                blockedUsers.push_back(userHostname);
+                break;
+            case tego_user_type_pending:
+                pendingUsers.push_back(userHostname);
+                break;
+            case tego_user_type_rejected:
+                rejectedUsers.push_back(userHostname);
+                break;
+            default:
+                TEGO_THROW_MSG("passed in userTypeBuffer[{}] : ({}) is invalid", k, (int)userType);
+                break;
+        }
     }
 
     // save off the singleton on our context
-    this->identityManager = new IdentityManager(keyBlob, contactServiceIds);
+    this->identityManager = new IdentityManager(keyBlob);
+    auto userIdentity = this->identityManager->identities().first();
+    auto contactsManager = userIdentity->getContacts();
+
+    contactsManager->addAllowedContacts(allowedUsers);
+    contactsManager->addIncomingRequests(requestingUsers);
+    contactsManager->addRejectedIncomingRequests(blockedUsers);
+    contactsManager->addOutgoingRequests(pendingUsers);
+    contactsManager->addRejectedOutgoingRequests(rejectedUsers);
 }
 
 void tego_context::start_service()
@@ -361,8 +411,6 @@ void tego_context::send_chat_request(
 
     contactsManager->createContactRequest(
         QString::fromStdString(fmt::format("ricochet:{}", user->serviceId.data)),
-        QString(),
-        QString(),
         (messageLength == 0) ? QString() : QString::fromUtf8(message, messageLength));
 }
 
@@ -776,7 +824,7 @@ extern "C"
         tego_context_t* context,
         tego_ed25519_private_key_t const* hostPrivateKey,
         tego_user_id_t const* const* userBuffer,
-        tego_user_type_t const* const* userTypeBuffer,
+        tego_user_type_t* const userTypeBuffer,
         size_t userCount,
         tego_error_t** error)
     {
@@ -791,9 +839,8 @@ extern "C"
             }
             else
             {
-                // TODO: bring back userTypeBuffer checks once we've implemented that
-                TEGO_THROW_IF_FALSE((userBuffer == nullptr /* && userTypeBuffer == nullptr*/ && userCount == 0) ||
-                                    (userBuffer != nullptr /* && userTypeBuffer != nullptr*/ && userCount > 0));
+                TEGO_THROW_IF_FALSE((userBuffer == nullptr && userTypeBuffer == nullptr && userCount == 0) ||
+                                    (userBuffer != nullptr && userTypeBuffer != nullptr && userCount > 0));
 
                 context->start_service(
                     hostPrivateKey,
@@ -948,7 +995,7 @@ extern "C"
 
     void tego_context_send_message(
         tego_context_t* context,
-        tego_user_id_t* user,
+        const tego_user_id_t* user,
         const char* message,
         size_t messageLength,
         tego_message_id_t* out_id,

@@ -62,29 +62,19 @@ class UserIdentity : public QObject
     Q_DISABLE_COPY(UserIdentity)
 
     friend class IdentityManager;
-
-    Q_PROPERTY(int uniqueID READ getUniqueID CONSTANT)
-    Q_PROPERTY(QString nickname READ nickname WRITE setNickname NOTIFY nicknameChanged)
-    Q_PROPERTY(QString contactID READ contactID NOTIFY contactIDChanged)
-    Q_PROPERTY(bool isOnline READ isServiceOnline NOTIFY statusChanged)
-    Q_PROPERTY(ContactsManager *contacts READ getContacts CONSTANT)
-
 public:
     const int uniqueID;
     ContactsManager contacts;
 
-    explicit UserIdentity(int uniqueID, const QString& serviceID, const QVector<QString>& contactHostnames, QObject *parent = 0);
+    explicit UserIdentity(int uniqueID, const QString& serviceID, QObject *parent = 0);
 
     /* Properties */
     int getUniqueID() const { return uniqueID; }
-    QString nickname() const;
     /* Hostname is .onion format, like ContactUser */
     QString hostname() const;
     QString contactID() const;
 
     ContactsManager *getContacts() { return &contacts; }
-
-    void setNickname(const QString &nickname);
 
     /* State */
     bool isServiceOnline() const;
@@ -97,17 +87,13 @@ public:
 signals:
     void statusChanged();
     void contactIDChanged(); // only possible during creation
-    void nicknameChanged();
-    void settingsChanged(const QString &key);
     void incomingConnection(Protocol::Connection *connection);
 
 private slots:
     void onStatusChanged(int newStatus, int oldStatus);
-    void onSettingsModified(const QString &key, const QJsonValue &value);
     void onIncomingConnection();
 
 private:
-    class SettingsObject *m_settings;
     Tor::HiddenService *m_hiddenService;
     QTcpServer *m_incomingServer;
     QVector<QSharedPointer<Protocol::Connection>> m_incomingConnections;

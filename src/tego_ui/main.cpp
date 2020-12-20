@@ -32,8 +32,6 @@
  */
 
 #include "ui/MainWindow.h"
-
-// TODO: these includes need to go
 #include "utils/Settings.h"
 
 #include <libtego_callbacks.hpp>
@@ -123,90 +121,115 @@ int main(int argc, char *argv[]) try
     }
 
     /* Identities */
-    // const auto createNewIdentity = (SettingsObject().read("identity") == QJsonValue::Undefined);
-    QString serviceKey = []()
-    {
-        auto settings = SettingsObject(QStringLiteral("identity"), nullptr);
-        return settings.read<QString>("serviceKey");
-    }();
-
-    QVector<QString> contactServiceIds = []()
-    {
-        auto settings = SettingsObject(QStringLiteral("contacts"));
-        QVector<QString> retval;
-
-        foreach (const QString &serviceId, settings.data().keys())
-        {
-            retval.push_back(serviceId);
-        }
-
-        return retval;
-    }();
-
-    {
-        // construct our private key from KeyBlob
-        std::unique_ptr<tego_ed25519_private_key_t> privateKey;
-        if (serviceKey.size() > 0)
-        {
-            auto keyBlob = serviceKey.toUtf8();
-
-            tego_ed25519_private_key_from_ed25519_keyblob(
-                tego::out(privateKey),
-                keyBlob.data(),
-                keyBlob.size(),
-                tego::throw_on_error());
-
-            // construct our list of users from contact service ids
-            const size_t userCount = static_cast<size_t>(contactServiceIds.size());
-            std::vector<tego_user_id_t*> rawUserIds;
-            rawUserIds.reserve(userCount);
-            std::vector<std::unique_ptr<tego_user_id_t>> managedUserIds;
-            managedUserIds.reserve(userCount);
-
-            for(size_t i = 0; i < userCount; i++)
-            for(const auto& currentServiceId : contactServiceIds)
-            {
-                const auto& serviceIdString = currentServiceId.toUtf8();
-
-                std::unique_ptr<tego_v3_onion_service_id_t> serviceId;
-                tego_v3_onion_service_id_from_string(
-                    tego::out(serviceId),
-                    serviceIdString.data(),
-                    serviceIdString.size(),
-                    tego::throw_on_error());
-
-                std::unique_ptr<tego_user_id_t> userId;
-                tego_user_id_from_v3_onion_service_id(
-                    tego::out(userId),
-                    serviceId.get(),
-                    tego::throw_on_error());
-
-                rawUserIds.push_back(userId.get());
-                managedUserIds.push_back(std::move(userId));
-            }
-
-            tego_context_start_service(
-                tegoContext,
-                privateKey.get(),
-                rawUserIds.data(),
-                nullptr,
-                managedUserIds.size(),
-                tego::throw_on_error());
-        }
-        else
-        {
-            tego_context_start_service(
-                tegoContext,
-                nullptr,
-                nullptr,
-                nullptr,
-                0,
-                tego::throw_on_error());
-        }
-    }
 
     // init our shims
     shims::UserIdentity::userIdentity = new shims::UserIdentity(tegoContext);
+    auto contactsManager = shims::UserIdentity::userIdentity->getContacts();
+
+    auto privateKeyString = SettingsObject("identity").read<QString>("privateKey");
+    if (privateKeyString.isEmpty())
+    {
+        tego_context_start_service(
+            tegoContext,
+            nullptr,
+            nullptr,
+            nullptr,
+            0,
+            tego::throw_on_error());
+    }
+    else
+    {
+        // construct privatekey from privateKey keyblob
+        std::unique_ptr<tego_ed25519_private_key_t> privateKey;
+        auto keyBlob = privateKeyString.toUtf8();
+
+        tego_ed25519_private_key_from_ed25519_keyblob(
+            tego::out(privateKey),
+            keyBlob.data(),
+            keyBlob.size(),
+            tego::throw_on_error());
+
+        // load all of our user objects
+        std::vector<tego_user_id_t*> userIds;
+        std::vector<tego_user_type_t> userTypes;
+        auto userIdCleanup = tego::make_scope_exit([&]() -> void
+        {
+            std::for_each(userIds.begin(), userIds.end(), &tego_user_id_delete);
+        });
+
+        // map strings saved in json with tego types
+        const static QMap<QString, tego_user_type_t> stringToUserType =
+        {
+            {QString("allowed"), tego_user_type_allowed},
+            {QString("requesting"), tego_user_type_requesting},
+            {QString("blocked"), tego_user_type_blocked},
+            {QString("pending"), tego_user_type_pending},
+            {QString("rejected"), tego_user_type_rejected},
+        };
+
+        auto usersJson = SettingsObject("users").data();
+        for(auto it = usersJson.begin(); it != usersJson.end(); ++it)
+        {
+            // get the user's service id
+            const auto serviceIdString = it.key();
+            const auto serviceIdRaw = serviceIdString.toUtf8();
+
+            std::unique_ptr<tego_v3_onion_service_id_t> serviceId;
+            tego_v3_onion_service_id_from_string(
+                tego::out(serviceId),
+                serviceIdRaw.data(),
+                serviceIdRaw.size(),
+                tego::throw_on_error());
+
+            std::unique_ptr<tego_user_id_t> userId;
+            tego_user_id_from_v3_onion_service_id(
+                tego::out(userId),
+                serviceId.get(),
+                tego::throw_on_error());
+            userIds.push_back(userId.release());
+
+            // load relevant data
+            const auto& userData = it.value().toObject();
+            auto typeString = userData.value("type").toString();
+
+            Q_ASSERT(stringToUserType.contains(typeString));
+            auto type = stringToUserType.value(typeString);
+            userTypes.push_back(type);
+
+            if (type == tego_user_type_allowed ||
+                type == tego_user_type_pending ||
+                type == tego_user_type_rejected)
+            {
+                const auto nickname = userData.value("nickname").toString();
+                auto contact = contactsManager->addContact(serviceIdString, nickname);
+                switch(type)
+                {
+                case tego_user_type_allowed:
+                    contact->setStatus(shims::ContactUser::Offline);
+                    break;
+                case tego_user_type_pending:
+                    contact->setStatus(shims::ContactUser::RequestPending);
+                    break;
+                case tego_user_type_rejected:
+                    contact->setStatus(shims::ContactUser::RequestRejected);
+                    break;
+                default:
+                    break;
+                }
+            }
+        }
+        Q_ASSERT(userIds.size() == userTypes.size());
+        const size_t userCount = userIds.size();
+
+        tego_context_start_service(
+            tegoContext,
+            privateKey.get(),
+            userIds.data(),
+            userTypes.data(),
+            userCount,
+            tego::throw_on_error());
+    }
+
 
     /* Window */
     QScopedPointer<MainWindow> w(new MainWindow);

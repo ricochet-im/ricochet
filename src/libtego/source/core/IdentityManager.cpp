@@ -37,7 +37,7 @@
 
 IdentityManager *identityManager = 0;
 
-IdentityManager::IdentityManager(const QString& serviceID, const QVector<QString>& contactHostnames, QObject *parent)
+IdentityManager::IdentityManager(const QString& serviceID, QObject *parent)
     : QObject(parent), highestID(-1)
 {
     identityManager = this;
@@ -48,8 +48,7 @@ IdentityManager::IdentityManager(const QString& serviceID, const QVector<QString
     }
     else
     {
-        // TODO: pass down contactRequests etc
-        addIdentity(new UserIdentity(0, serviceID, contactHostnames, this));
+        addIdentity(new UserIdentity(0, serviceID, this));
     }
 }
 
@@ -63,7 +62,6 @@ void IdentityManager::addIdentity(UserIdentity *identity)
     m_identities.append(identity);
     highestID = qMax(identity->uniqueID, highestID);
 
-    connect(&identity->contacts, SIGNAL(contactAdded(ContactUser*)), SLOT(onContactAdded(ContactUser*)));
     connect(&identity->contacts, SIGNAL(outgoingRequestAdded(OutgoingContactRequest*)),
             SLOT(onOutgoingRequest(OutgoingContactRequest*)));
     connect(&identity->contacts.incomingRequests, SIGNAL(requestAdded(IncomingContactRequest*)),
@@ -103,17 +101,6 @@ UserIdentity *IdentityManager::lookupHostname(const QString &hostname) const
     return 0;
 }
 
-UserIdentity *IdentityManager::lookupNickname(const QString &nickname) const
-{
-    for (QList<UserIdentity*>::ConstIterator it = m_identities.begin(); it != m_identities.end(); ++it)
-    {
-        if (QString::compare(nickname, (*it)->nickname(), Qt::CaseInsensitive) == 0)
-            return *it;
-    }
-
-    return 0;
-}
-
 UserIdentity *IdentityManager::lookupUniqueID(int uniqueID) const
 {
     for (QList<UserIdentity*>::ConstIterator it = m_identities.begin(); it != m_identities.end(); ++it)
@@ -123,11 +110,6 @@ UserIdentity *IdentityManager::lookupUniqueID(int uniqueID) const
     }
 
     return 0;
-}
-
-void IdentityManager::onContactAdded(ContactUser *user)
-{
-    emit contactAdded(user, user->identity);
 }
 
 void IdentityManager::onOutgoingRequest(OutgoingContactRequest *request)

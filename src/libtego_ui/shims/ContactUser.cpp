@@ -14,10 +14,14 @@ namespace shims
     , outgoingContactRequest(new shims::OutgoingContactRequest())
     , status(ContactUser::Offline)
     , serviceId(serviceId)
-    , nickname(nickname)
+    , nickname()
+    , settings(QString("users.%1").arg(serviceId))
     {
         Q_ASSERT(serviceId.size() == TEGO_V3_ONION_SERVICE_ID_LENGTH);
         conversationModel->setContact(this);
+
+
+        this->setNickname(nickname);
     }
 
     QString ContactUser::getNickname() const
@@ -40,6 +44,21 @@ namespace shims
         if (this->status != status)
         {
             this->status = status;
+            switch(this->status)
+            {
+                case ContactUser::Online:
+                case ContactUser::Offline:
+                    settings.write("type", "allowed");
+                    break;
+                case ContactUser::RequestPending:
+                    settings.write("type", "pending");
+                    break;
+                case ContactUser::RequestRejected:
+                    settings.write("type", "rejected");
+                    break;
+                default:
+                    break;
+            }
             emit this->statusChanged();
         }
     }
@@ -59,6 +78,7 @@ namespace shims
         if (this->nickname != nickname)
         {
             this->nickname = nickname;
+            settings.write("nickname", nickname);
             emit this->nicknameChanged();
         }
     }
@@ -72,6 +92,7 @@ namespace shims
 
         tego_context_forget_user(context, userId.get(), tego::throw_on_error());
 
+        settings.undefine();
         emit this->contactDeleted(this);
     }
 

@@ -37,7 +37,6 @@
 #include "OutgoingContactRequest.h"
 #include "ContactIDValidator.h"
 #include "utils/Useful.h"
-#include "utils/Settings.h"
 #include "protocol/Connection.h"
 #include "protocol/ContactRequestChannel.h"
 
@@ -52,6 +51,29 @@ IncomingRequestManager::IncomingRequestManager(ContactsManager *c)
     connect(this, SIGNAL(requestAdded(IncomingContactRequest*)), this, SIGNAL(requestsChanged()));
     connect(this, SIGNAL(requestRemoved(IncomingContactRequest*)), this, SIGNAL(requestsChanged()));
 
+
+    connect(this, &IncomingRequestManager::requestAdded, [self=this](IncomingContactRequest* request) -> void
+    {
+        // convert the hostname to user id
+        const auto hostname = request->hostname();
+        auto serviceIdRaw = hostname.chopped(tego::static_strlen(".onion"));
+
+        std::unique_ptr<tego_v3_onion_service_id_t> serviceId;
+        tego_v3_onion_service_id_from_string(tego::out(serviceId), serviceIdRaw.data(), serviceIdRaw.size(), tego::throw_on_error());
+
+        std::unique_ptr<tego_user_id_t> userId;
+        tego_user_id_from_v3_onion_service_id(tego::out(userId), serviceId.get(), tego::throw_on_error());
+
+        auto message = request->message().toUtf8();
+
+        const auto messageLength = static_cast<size_t>(message.size());
+        auto rawMessage = std::make_unique<char[]>(messageLength + 1);
+        std::copy(message.begin(), message.end(), rawMessage.get());
+
+        tego::g_globals.context->callback_registry_.emit_chat_request_received(userId.release(), rawMessage.release(), messageLength);
+
+        logger::trace();
+    });
     auto attachChannel = [this](Protocol::Channel *channel) {
         if (Protocol::ContactRequestChannel *req = qobject_cast<Protocol::ContactRequestChannel*>(channel)) {
             connect(req, &Protocol::ContactRequestChannel::requestReceived, this, &IncomingRequestManager::requestReceived);
@@ -66,18 +88,11 @@ IncomingRequestManager::IncomingRequestManager(ContactsManager *c)
     );
 }
 
-void IncomingRequestManager::loadRequests()
+void IncomingRequestManager::loadRequests(const QList<QString> userHostnames)
 {
-    SettingsObject settings(QStringLiteral("contactRequests"));
-
-    foreach (const QString &hostStr, settings.data().keys()) {
-        QByteArray host = hostStr.toLatin1();
-        if (!host.endsWith(".onion"))
-            host.append(".onion");
-
-        IncomingContactRequest *request = new IncomingContactRequest(this, host);
-        request->load();
-
+    for(const auto& hostname : userHostnames)
+    {
+        IncomingContactRequest* request = new IncomingContactRequest(this, hostname.toUtf8());
         m_requests.append(request);
         emit requestAdded(request);
     }
@@ -162,23 +177,6 @@ void IncomingRequestManager::requestReceived()
     if (newRequest) {
         m_requests.append(request);
         emit requestAdded(request);
-
-        // convert the hostname to user id
-        auto serviceIdRaw = hostname.chopped(tego::static_strlen(".onion")).toUtf8();
-
-        std::unique_ptr<tego_v3_onion_service_id_t> serviceId;
-        tego_v3_onion_service_id_from_string(tego::out(serviceId), serviceIdRaw.data(), serviceIdRaw.size(), tego::throw_on_error());
-
-        std::unique_ptr<tego_user_id_t> userId;
-        tego_user_id_from_v3_onion_service_id(tego::out(userId), serviceId.get(), tego::throw_on_error());
-
-        auto message = request->message().toUtf8();
-
-        const auto messageLength = static_cast<size_t>(message.size());
-        auto rawMessage = std::make_unique<char[]>(messageLength + 1);
-        std::copy(message.begin(), message.end(), rawMessage.get());
-
-        tego::g_globals.context->callback_registry_.emit_chat_request_received(userId.release(), rawMessage.release(), messageLength);
     }
 }
 
@@ -192,33 +190,17 @@ void IncomingRequestManager::removeRequest(IncomingContactRequest *request)
 
 void IncomingRequestManager::addRejectedHost(const QByteArray &hostname)
 {
-    logger::trace();
-// TODO: migrate this to libtego_ui
-#if 0
-    SettingsObject *settings = contacts->identity->settings();
-    QJsonArray blacklist = settings->read<QJsonArray>("hostnameBlacklist");
-    if (!blacklist.contains(QString::fromLatin1(hostname))) {
-        blacklist.append(QString::fromLatin1(hostname));
-        settings->write("hostnameBlacklist", blacklist);
-    }
-#endif
+    this->rejectedHosts.insert(hostname);
 }
 
 bool IncomingRequestManager::isHostnameRejected(const QByteArray &hostname) const
 {
-    logger::trace();
-// TODO: migrate this to libtego_ui
-#if 0
-    QJsonArray blacklist = contacts->identity->settings()->read<QJsonArray>("hostnameBlacklist");
-    return blacklist.contains(QString::fromLatin1(hostname));
-#endif
-    return false;
+    return this->rejectedHosts.contains(hostname);
 }
 
-// TODO: implement lol
 QList<QByteArray> IncomingRequestManager::getRejectedHostnames() const
 {
-    return {};
+    return this->rejectedHosts.values();
 }
 
 IncomingContactRequest::IncomingContactRequest(IncomingRequestManager *m, const QByteArray &h
@@ -233,36 +215,14 @@ IncomingContactRequest::IncomingContactRequest(IncomingRequestManager *m, const 
     qDebug() << "Created contact request from" << m_hostname << (connection ? "with" : "without") << "connection";
 }
 
-QString IncomingContactRequest::settingsKey() const
-{
-    QString key = QString(QLatin1String(m_hostname));
-    key.chop(QStringLiteral(".onion").size());
-    return QStringLiteral("contactRequests.%1").arg(key);
-}
-
 void IncomingContactRequest::load()
 {
-    SettingsObject settings(settingsKey());
 
-    setNickname(settings.read("nickname").toString());
-    setMessage(settings.read("message").toString());
-
-    m_requestDate = settings.read<QDateTime>("requestDate");
-    m_lastRequestDate = settings.read<QDateTime>("lastRequestDate");
 }
 
 void IncomingContactRequest::save()
 {
-    SettingsObject settings(settingsKey());
 
-    settings.write("nickname", nickname());
-    settings.write("message", message());
-
-    if (m_requestDate.isNull())
-        m_requestDate = m_lastRequestDate = QDateTime::currentDateTime();
-
-    settings.write("requestDate", m_requestDate);
-    settings.write("lastRequestDate", m_lastRequestDate);
 }
 
 void IncomingContactRequest::renew()
@@ -272,7 +232,7 @@ void IncomingContactRequest::renew()
 
 void IncomingContactRequest::removeRequest()
 {
-    SettingsObject(settingsKey()).undefine();
+
 }
 
 QString IncomingContactRequest::contactId() const
@@ -361,7 +321,7 @@ void IncomingContactRequest::accept(ContactUser *user)
     if (!user) {
         Q_ASSERT(nickname().isEmpty());
         this->setNickname("Mock Nickname");
-        user = manager->contacts->addContact(QString::fromLatin1(m_hostname), nickname());
+        user = manager->contacts->addContact(QString::fromLatin1(m_hostname));
         user->setHostname(QString::fromLatin1(m_hostname));
     }
 

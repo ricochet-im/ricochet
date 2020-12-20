@@ -44,11 +44,6 @@ class OutgoingContactRequest : public QObject
 {
     Q_OBJECT
     Q_DISABLE_COPY(OutgoingContactRequest)
-    Q_ENUMS(Status)
-
-    Q_PROPERTY(Status status READ status NOTIFY statusChanged)
-    Q_PROPERTY(QString myNickname READ myNickname CONSTANT)
-    Q_PROPERTY(QString message READ message CONSTANT)
 
 public:
     enum Status
@@ -61,12 +56,12 @@ public:
         FirstResult = Accepted
     };
 
-    static OutgoingContactRequest *createNewRequest(ContactUser *user, const QString &myNickname, const QString &message);
+    static OutgoingContactRequest *createNewRequest(ContactUser *user, const QString &message);
 
     ContactUser * const user;
 
     OutgoingContactRequest(ContactUser *user, const QString &message);
-    virtual ~OutgoingContactRequest();
+    virtual ~OutgoingContactRequest() = default;
 
     QString myNickname() const;
     QString message() const;
@@ -90,7 +85,6 @@ private slots:
 
 private:
     Status m_status;
-    QString m_myNickname;
     QString m_message;
 
     void setStatus(Status newStatus);
