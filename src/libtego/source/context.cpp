@@ -28,6 +28,7 @@ tego_context::tego_context()
 
 void tego_context::start_tor(const tego_tor_launch_config_t* config)
 {
+    TEGO_THROW_IF_NULL(this->torManager);
     TEGO_THROW_IF_NULL(config);
 
     this->torManager->setDataDirectory(config->dataDirectory.data());
@@ -456,6 +457,7 @@ tego_message_id_t tego_context::send_message(
     TEGO_THROW_IF_FALSE(message.size() > 0)
 
     auto contactUser = getContactUser(user);
+    TEGO_THROW_IF_NULL(contactUser);
     auto conversationModel = contactUser->conversation();
 
     return conversationModel->sendMessage(QString::fromStdString(message));

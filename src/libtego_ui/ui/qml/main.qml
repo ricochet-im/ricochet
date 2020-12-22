@@ -120,19 +120,6 @@ QtObject {
             property int dialogWindowFlags: Qt.Dialog | Qt.WindowSystemMenuHint | Qt.WindowTitleHint | Qt.WindowCloseButtonHint
         },
 
-        // Timer {
-        //     interval: 2000
-        //     running: true
-        //     repeat: false
-        //     onTriggered: {
-        //         var pendingRequests = userIdentity.requests
-        //         for (var i = 0; i < pendingRequests.length; i++) {
-        //             var object = createDialog("ContactRequestDialog.qml", { 'request': pendingRequests[i] })
-        //             object.visible = true
-        //         }
-        //     }
-        // },
-
         Loader {
             id: audioNotificationLoader
             active: uiSettings.data.playAudioNotification || false

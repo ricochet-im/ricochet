@@ -146,17 +146,17 @@ namespace
         push_task([=]() -> void
         {
             logger::println("new process status : {}", status);
-            auto torManger = shims::TorManager::torManager;
+            auto torManager = shims::TorManager::torManager;
             switch(status)
             {
                 case tego_tor_process_status_running:
-                    torManger->setRunning("Yes");
+                    torManager->setRunning("Yes");
                     break;
                 case tego_tor_process_status_external:
-                    torManger->setRunning("External");
+                    torManager->setRunning("External");
                     break;
                 default:
-                    torManger->setRunning("No");
+                    torManager->setRunning("No");
                     break;
             }
         });
