@@ -146,8 +146,12 @@ namespace shims
             if (bridgeCount > 0)
             {
                 // copy over raw
-                const char* rawBridges[bridgeCount] = {0};
-                size_t rawBridgeLengths[bridgeCount] = {0};
+                const char* rawBridges[bridgeCount];
+                size_t rawBridgeLengths[bridgeCount];
+
+                std::fill(rawBridges, rawBridges + bridgeCount, nullptr);
+                std::fill(rawBridgeLengths, rawBridgeLengths + bridgeCount, 0);
+
                 for(size_t i = 0; i < bridgeStrings.size(); ++i)
                 {
                     const auto& currentBridgeString = bridgeStrings[i];
