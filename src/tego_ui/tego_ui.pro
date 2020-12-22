@@ -55,9 +55,6 @@ DEFINES += "TEGO_VERSION=$${VERSION}"
 }
 
 # Pass DEFINES+=RICOCHET_NO_PORTABLE for a system-wide installation
-
-CONFIG(release,debug|release):DEFINES += QT_NO_DEBUG_OUTPUT QT_NO_WARNING_OUTPUT
-
 contains(DEFINES, RICOCHET_NO_PORTABLE) {
     unix:!macx {
         target.path = /usr/bin
