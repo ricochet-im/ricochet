@@ -298,16 +298,19 @@ namespace
             auto contactsManager = userIdentity->getContacts();
             auto contact = contactsManager->getShimContactByContactId(serviceIdToContactId(serviceId));
 
-            switch(status)
+            if (contact != nullptr)
             {
-                case tego_user_status_online:
-                    contact->setStatus(shims::ContactUser::Online);
-                    break;
-                case tego_user_status_offline:
-                    contact->setStatus(shims::ContactUser::Offline);
-                    break;
-                default:
-                    break;
+                switch(status)
+                {
+                    case tego_user_status_online:
+                        contact->setStatus(shims::ContactUser::Online);
+                        break;
+                    case tego_user_status_offline:
+                        contact->setStatus(shims::ContactUser::Offline);
+                        break;
+                    default:
+                        break;
+                }
             }
         });
     }
