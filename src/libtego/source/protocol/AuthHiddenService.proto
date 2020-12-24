@@ -17,7 +17,7 @@ message Packet {
 }
 
 message Proof {
-    optional bytes signature = 1;       // RSA signature
+    optional bytes signature = 1;       // ED25519-V3 signature
     optional string service_id = 2;      // sans .onion prefix
 }
 

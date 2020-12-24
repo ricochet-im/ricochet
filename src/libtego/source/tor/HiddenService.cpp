@@ -88,7 +88,7 @@ void HiddenService::setPrivateKey(const CryptoKey &key)
     }
 
     m_privateKey = key;
-    m_hostname = m_privateKey.torServiceID() + QStringLiteral(".onion");
+    m_hostname = QString::fromUtf8(m_privateKey.torServiceID()) + QStringLiteral(".onion");
     emit privateKeyChanged();
 }
 

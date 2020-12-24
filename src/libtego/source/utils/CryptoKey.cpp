@@ -102,7 +102,7 @@ QByteArray CryptoKey::encodedKeyBlob() const
     return retval;
 }
 
-QString CryptoKey::torServiceID() const
+QByteArray CryptoKey::torServiceID() const
 {
     // convert public key to service id
     std::unique_ptr<tego_v3_onion_service_id_t> serviceId;
@@ -119,7 +119,7 @@ QString CryptoKey::torServiceID() const
         sizeof(serviceIdString),
         tego::throw_on_error());
 
-    QString retval = {serviceIdString};
+    QByteArray retval(serviceIdString);
     return retval;
 }
 

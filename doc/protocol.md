@@ -493,8 +493,8 @@ the *server_cookie* field, with a randomly generated value used to prevent repla
 ##### Proof
 ```protobuf
 message Proof {
-    optional bytes public_key = 1;      // DER encoded RSA public key
-    optional bytes signature = 2;       // RSA signature
+    optional bytes signature = 1;       // ED25519-V3 signature
+    optional bytes service_id = 1;      // v3 onion service id
 }
 ```
 
@@ -503,18 +503,16 @@ The proof is calculated as:
 ```
 // + represents concatenation, and function is HMAC-SHA256(key, message)
 HMAC-SHA256(client_cookie + server_cookie,
-    client_hostname       // base32-encoded client address, without .onion
-    + recipient_hostname  // base32-encoded server address, without .onion
+    client_serviceid       // base32-encoded client address, without .onion
+    + recipient_serviceid  // base32-encoded server address, without .onion
 )
 ```
 
-This proof is signed with the hidden service's private key using PKCS #1 v2.0 (as per OpenSSL
-RSA_sign) to make *signature*.
+This proof is signed with the hidden service's ED25519-v3 private key to make *signature*.
 
 The recipient of this message must:
 
-* Reject any message with a public_key field too large or not correctly formed to be a DER-encoded
-  1024-bit RSA public key
+* Reject any message with a service_id field of an unexpected size
 * Reject any message with a signature field of an unexpected size
 * Decode the public_key, and calculate its 'onion' address per [rend-spec][rend-spec]
 * Build the proof message

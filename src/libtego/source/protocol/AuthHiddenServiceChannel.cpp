@@ -43,6 +43,8 @@ using namespace Protocol;
 
 namespace Protocol {
 
+constexpr size_t COOKIE_SIZE = 16;
+
 class AuthHiddenServiceChannelPrivate : public ChannelPrivate
 {
 public:
@@ -56,7 +58,10 @@ public:
     {
     }
 
-    QByteArray getProofData(const QString &clientHostname);
+    QByteArray getProofData(const QByteArray& clientServiceId) const;
+private:
+    QByteArray getProofKey() const;
+    QByteArray getProofMessage(const QByteArray &clientServiceId) const;
 };
 
 }
@@ -123,7 +128,7 @@ bool AuthHiddenServiceChannel::allowInboundChannelRequest(const Data::Control::O
 
     // Store client cookie
     std::string clientCookie = request->GetExtension(Data::AuthHiddenService::client_cookie);
-    if (clientCookie.size() != 16) {
+    if (clientCookie.size() != COOKIE_SIZE) {
         qDebug() << "Received OpenChannel for" << type() << "with no valid client_cookie";
         result->set_common_error(ChannelResult::BadUsageError);
         return false;
@@ -131,7 +136,7 @@ bool AuthHiddenServiceChannel::allowInboundChannelRequest(const Data::Control::O
     d->clientCookie = QByteArray(clientCookie.c_str(), clientCookie.size());
 
     // Generate a random cookie and return result
-    d->serverCookie = SecureRNG::random(16);
+    d->serverCookie = SecureRNG::random(COOKIE_SIZE);
     if (d->serverCookie.isEmpty())
         return false;
 
@@ -150,7 +155,7 @@ bool AuthHiddenServiceChannel::allowOutboundChannelRequest(Data::Control::OpenCh
         return false;
     }
 
-    d->clientCookie = SecureRNG::random(16);
+    d->clientCookie = SecureRNG::random(COOKIE_SIZE);
     if (d->clientCookie.isEmpty())
         return false;
     request->SetExtension(Data::AuthHiddenService::client_cookie, std::string(d->clientCookie.constData(), d->clientCookie.size()));
@@ -163,7 +168,7 @@ bool AuthHiddenServiceChannel::processChannelOpenResult(const Data::Control::Cha
 
     if (result->opened()) {
         std::string cookie = result->GetExtension(Data::AuthHiddenService::server_cookie);
-        if (cookie.size() != 16) {
+        if (cookie.size() != COOKIE_SIZE) {
             qDebug() << "Received ChannelResult for" << type() << "with no valid server_cookie";
             return false;
         }
@@ -187,7 +192,7 @@ void AuthHiddenServiceChannel::sendAuthMessage()
     if (!isOpened())
         return;
 
-    if (d->clientCookie.size() != 16 || d->serverCookie.size() != 16) {
+    if (d->clientCookie.size() != COOKIE_SIZE || d->serverCookie.size() != COOKIE_SIZE) {
         BUG() << "AuthHiddenServiceChannel can't create a proof without valid cookies";
         closeChannel();
         return;
@@ -208,18 +213,44 @@ void AuthHiddenServiceChannel::sendAuthMessage()
     qDebug() << "AuthHiddenServiceChannel sent outbound authentication packet";
 }
 
-QByteArray AuthHiddenServiceChannelPrivate::getProofData(const QString &client)
+QByteArray AuthHiddenServiceChannelPrivate::getProofData(const QByteArray& clientServiceId) const
 {
-    QByteArray serverHostname = connection->serverHostname().toLatin1().mid(0, TEGO_V3_ONION_SERVICE_ID_LENGTH);
-    QByteArray clientHostname = client.toLatin1();
+    auto proofMessage = this->getProofMessage(clientServiceId);
+    auto proofKey = this->getProofKey();
 
-    if (clientHostname.size() != TEGO_V3_ONION_SERVICE_ID_LENGTH || serverHostname.size() != TEGO_V3_ONION_SERVICE_ID_LENGTH) {
-        BUG() << "AuthHiddenServiceChannel can't figure out the client and server hostnames";
-        return QByteArray();
+    auto proofData = QMessageAuthenticationCode::hash(proofMessage, proofKey, QCryptographicHash::Sha256);
+    return proofData;
+
+}
+
+QByteArray AuthHiddenServiceChannelPrivate::getProofKey() const
+{
+    if (clientCookie.size() != COOKIE_SIZE)
+    {
+        BUG() << "Invalid client cookie size; should be " << COOKIE_SIZE;
+        return {};
+    }
+    if (serverCookie.size() != COOKIE_SIZE)
+    {
+        BUG() << "Invalid server cookie size; should be " << COOKIE_SIZE;
+        return {};
     }
 
-    auto proofData = clientHostname + serverHostname;
-    return proofData;
+    return this->clientCookie + this->serverCookie;
+}
+
+QByteArray AuthHiddenServiceChannelPrivate::getProofMessage(const QByteArray& clientServiceId) const
+{
+    // TODO: prepenend string 'ricochet-refresh proof' to the message to prevent hash reuse
+    QByteArray serverServiceId = connection->serverServiceId();
+
+    if (clientServiceId.size() != TEGO_V3_ONION_SERVICE_ID_LENGTH || serverServiceId.size() != TEGO_V3_ONION_SERVICE_ID_LENGTH) {
+        BUG() << "AuthHiddenServiceChannel can't figure out the client and server hostnames";
+        return {};
+    }
+
+    auto proofMessage = clientServiceId + serverServiceId;
+    return proofMessage;
 }
 
 void AuthHiddenServiceChannel::receivePacket(const QByteArray &packet)
@@ -250,7 +281,7 @@ void AuthHiddenServiceChannel::handleProof(const Data::AuthHiddenService::Proof 
         return;
     }
 
-    if (d->clientCookie.size() != 16 || d->serverCookie.size() != 16) {
+    if (d->clientCookie.size() != COOKIE_SIZE || d->serverCookie.size() != COOKIE_SIZE) {
         BUG() << "AuthHiddenServiceChannel can't create a proof without valid cookies";
         closeChannel();
         return;
@@ -263,24 +294,40 @@ void AuthHiddenServiceChannel::handleProof(const Data::AuthHiddenService::Proof 
 
     result->set_accepted(false);
 
-    CryptoKey publicKey;
-    if(!publicKey.loadFromServiceId(serviceId)) {
-        qWarning() << "Unable to parse public key from" << type();
+    if (signature.size() == TEGO_ED25519_SIGNATURE_SIZE)
+    {
+        CryptoKey publicKey;
+        if(publicKey.loadFromServiceId(serviceId))
+        {
+            auto proofData = d->getProofData(serviceId);
+            if (publicKey.verifyData(proofData, signature))
+            {
+                result->set_accepted(true);
+            }
+            else
+            {
+                qWarning() << "Signature verification failed on" << type();
+            }
+        }
+        else
+        {
+            qWarning() << "Unable to parse public key from" << type();
+        }
     }
-    auto proofData = d->getProofData(serviceId);
-    if (publicKey.verifyData(proofData, signature)) {
-        result->set_accepted(true);
-    } else {
-	    qWarning() << "Signature verification failed on" << type();
+    else
+    {
+        qWarning() << "Received Signature with incorrect size from" << type();
     }
 
-    const auto hostname = serviceId + ".onion";
-
-    if (result->accepted()) {
+    if (result->accepted())
+    {
+        // TODO: send back our own signature with our private key for server to verify
+        const auto hostname = serviceId + ".onion";
         connection()->grantAuthentication(Connection::HiddenServiceAuth, hostname);
         d->accepted = true;
         result->set_is_known_contact(connection()->purpose() == Connection::Purpose::KnownContact);
-    } else {
+    } else
+    {
         d->accepted = false;
     }
 

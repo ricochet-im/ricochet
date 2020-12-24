@@ -49,7 +49,7 @@ public:
 
     // write to tor's 'KeyBlob' format
     QByteArray encodedKeyBlob() const;
-    QString torServiceID() const;
+    QByteArray torServiceID() const;
 
     // sign data with our private key
     QByteArray signData(const QByteArray &data) const;

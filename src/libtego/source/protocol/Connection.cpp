@@ -128,6 +128,12 @@ QString Connection::serverHostname() const
     return hostname;
 }
 
+QByteArray Connection::serverServiceId() const
+{
+    auto hostname = this->serverHostname();
+    return hostname.toUtf8().left(TEGO_V3_ONION_SERVICE_ID_LENGTH);
+}
+
 int Connection::age() const
 {
     return qRound(d->ageTimer.elapsed() / 1000.0);

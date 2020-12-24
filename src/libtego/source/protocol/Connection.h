@@ -107,6 +107,14 @@ public:
      */
     QString serverHostname() const;
 
+    /* Service Id of the server side of the connection
+     *
+     * Follows same rules as serverHostname(), but returns just the
+     * serviceId portion of the hostname (so ths does not end with
+     * ".onion")
+     */
+    QByteArray serverServiceId() const;
+
     /* Age of the connection in seconds */
     int age() const;
 
