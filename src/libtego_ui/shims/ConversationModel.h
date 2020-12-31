@@ -48,8 +48,10 @@ namespace shims
 
     signals:
         void contactChanged();
-        void unreadCountChanged();
+        void unreadCountChanged(int prevCount, int currentCount);
     private:
+        void setUnreadCount(int count);
+
         shims::ContactUser* contactUser = nullptr;
 
         struct MessageData

@@ -176,12 +176,6 @@ void ContactsManager::onUnreadCountChanged()
     ContactUser *user = model->contact();
 
     emit unreadCountChanged(user, model->unreadCount());
-
-// TODO: move this out of libtego
-#ifdef Q_OS_MAC
-    int unread = globalUnreadCount();
-    QtMac::setBadgeLabelText(unread == 0 ? QString() : QString::number(unread));
-#endif
 }
 
 int ContactsManager::globalUnreadCount() const

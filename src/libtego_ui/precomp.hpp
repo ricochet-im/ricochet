@@ -25,6 +25,9 @@
 #include <QRegularExpressionValidator>
 #include <QScreen>
 #include <QtQml>
+#ifdef Q_OS_MAC
+#   include <QtMac>
+#endif // Q_OS_MAC
 
 // tego
 #include <tego/tego.hpp>
