@@ -85,7 +85,7 @@ int main(int argc, char *argv[]) try
     a.setOrganizationName(QStringLiteral("Ricochet"));
 
 #if !defined(Q_OS_WIN) && !defined(Q_OS_MAC)
-    a.setWindowIcon(QIcon(QStringLiteral(":/icons/ricochet_refresh.svg")));
+    a.setWindowIcon(QIcon(QStringLiteral(":/icons/ricochet_refresh.png")));
 #endif
 
     QScopedPointer<SettingsFile> settings(new SettingsFile);
