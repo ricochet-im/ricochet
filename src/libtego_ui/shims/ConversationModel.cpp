@@ -10,6 +10,18 @@ namespace shims
     , messages({})
     , unreadCount(0)
     {
+        connect(this, &ConversationModel::unreadCountChanged, [self=this](int prevCount, int currentCount) -> void
+        {
+            static int globalUnreadCount = 0;
+
+            const auto delta = currentCount - prevCount;
+            globalUnreadCount += delta;
+
+            qDebug() << "globalUnreadCount:" << globalUnreadCount;
+#ifdef Q_OS_MAC
+            QtMac::setBadgeLabelText(globalUnreadCount == 0 ? QString() : QString::number(globalUnreadCount));
+#endif
+        });
     }
 
     QHash<int,QByteArray> ConversationModel::roleNames() const
@@ -87,10 +99,19 @@ namespace shims
 
     void ConversationModel::resetUnreadCount()
     {
-        if (unreadCount == 0)
-            return;
-        unreadCount = 0;
-        emit unreadCountChanged();
+        this->setUnreadCount(0);
+    }
+
+    void ConversationModel::setUnreadCount(int count)
+    {
+        Q_ASSERT(count >= 0);
+
+        const auto oldUnreadCount = this->unreadCount;
+        if(oldUnreadCount != count)
+        {
+            this->unreadCount = count;
+            emit unreadCountChanged(oldUnreadCount, unreadCount);
+        }
     }
 
     void ConversationModel::sendMessage(const QString &text)
@@ -174,8 +195,7 @@ namespace shims
         this->messages.prepend(std::move(md));
         this->endInsertRows();
 
-        this->unreadCount++;
-        emit unreadCountChanged();
+        this->setUnreadCount(this->unreadCount + 1);
     }
 
     void ConversationModel::messageAcknowledged(tego_message_id_t messageId, bool accepted)
