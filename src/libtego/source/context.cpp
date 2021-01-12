@@ -716,7 +716,13 @@ extern "C"
         return tego::translateExceptions([=]() -> size_t
         {
             TEGO_THROW_IF_NULL(context);
-            TEGO_THROW_IF_FALSE(out_logBuffer);
+            TEGO_THROW_IF_NULL(out_logBuffer);
+
+            // nothing to do if no space to write
+            if (logBufferSize == 0)
+            {
+                return 0;
+            }
 
             // get our tor logs
             const auto& logs = context->get_tor_logs();
@@ -737,6 +743,8 @@ extern "C"
 
             // finally copy at most logBufferSize bytes from logBuffer
             size_t copyCount = std::min(logBufferSize, logBuffer.size());
+            TEGO_THROW_IF_FALSE(copyCount > 0);
+
             std::copy(logBuffer.begin(), logBuffer.begin() + copyCount, out_logBuffer);
             // always write null terminator at the end
             out_logBuffer[copyCount - 1] = 0;

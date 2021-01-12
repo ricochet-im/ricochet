@@ -1,3 +1,6 @@
+#include "error.hpp"
+
+#define NOT_USED(...) TEGO_THROW_MSG("{} should never be called", __FUNCTION__)
 
 extern "C"
 {
@@ -51,6 +54,30 @@ extern "C"
     const char* tor_fix_source_file(const char* fname)
     {
 	   return fname;
+    }
+
+    // we only need the following stubs on Windows because link-time optimization is broken
+    // on Windows 64 bit ( https://sourceware.org/bugzilla/show_bug.cgi?id=12762) 
+    void crypto_strongest_rand(uint8_t*, size_t)
+    {
+        NOT_USED();
+    }
+
+    void memwipe(void*, uint8_t, size_t)
+    {
+        NOT_USED();
+    }
+
+    size_t crypto_digest_algorithm_get_length(digest_algorithm_t)
+    {
+        NOT_USED();
+        return {};
+    }
+
+    void* tor_memdup_(const void*, size_t)
+    {
+        NOT_USED();
+        return {};
     }
 #endif
 }
