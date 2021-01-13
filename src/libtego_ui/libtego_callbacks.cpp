@@ -304,9 +304,11 @@ namespace
                 {
                     case tego_user_status_online:
                         contact->setStatus(shims::ContactUser::Online);
+                        contactsManager->setContactStatus(contact, shims::ContactUser::Online);
                         break;
                     case tego_user_status_offline:
                         contact->setStatus(shims::ContactUser::Offline);
+                        contactsManager->setContactStatus(contact, shims::ContactUser::Offline);
                         break;
                     default:
                         break;

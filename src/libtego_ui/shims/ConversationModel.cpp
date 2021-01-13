@@ -111,6 +111,10 @@ namespace shims
         {
             this->unreadCount = count;
             emit unreadCountChanged(oldUnreadCount, unreadCount);
+
+            auto userIdentity = shims::UserIdentity::userIdentity;
+            auto contactsManager = userIdentity->getContacts();
+            contactsManager->setUnreadCount(this->contactUser, count);
         }
     }
 
