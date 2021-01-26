@@ -180,13 +180,7 @@ void ConnectionPrivate::setSocket(QTcpSocket *s, Connection::Direction d)
         q->grantAuthentication(Connection::HiddenServiceAuth, serverName);
 
         // Send the introduction version handshake message
-        
-        /* XXX, since the 1.0.x legacy handling was dropped, introductions 
-         * should no longer say they support old versions */
-        /* Fix?:
-         * char intro[] = { 0x49, 0x4D, 0x01, ProtocolVersion }; */
-
-        char intro[] = { 0x49, 0x4D, 0x02, ProtocolVersion, 0 };
+        char intro[] = { 0x49, 0x4D, 0x01, ProtocolVersion, 0 };
         if (socket->write(intro, sizeof(intro)) < (int)sizeof(intro)) {
             qDebug() << "Failed writing introduction message to socket";
             q->close();
