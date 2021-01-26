@@ -36,6 +36,7 @@ using tego::g_globals;
 #include "ConversationModel.h"
 #include "protocol/Connection.h"
 #include "protocol/ChatChannel.h"
+#include "protocol/FileChannel.h"
 #include "utils/SecureRNG.h"
 
 ConversationModel::ConversationModel(QObject *parent)
@@ -91,23 +92,63 @@ void ConversationModel::setContact(ContactUser *contact)
     emit contactChanged();
 }
 
+/* Get a channel of type T for a contact, if it doesn't exist create one
+ * on error returns NULL */
+template<typename T> T *findOrCreateChannelForContact(ContactUser *contact, Protocol::Channel::Direction direction) {
+    T *channel = contact->connection()->findChannel<T>(direction);
+    if (!channel) {
+        /* create a new channel */
+        channel = new T(direction, contact->connection().data());
+        if (!channel->openChannel()) {
+            delete channel;
+            channel = (T *)0;
+        }
+    }
+
+    return channel;
+}
+
+tego_message_id_t ConversationModel::sendFile(const QString &file_url) {
+    MessageData message(file_url, QDateTime::currentDateTime(), lastMessageId++, Queued);
+    message.type = ConversationModel::MessageData::Type::File;
+
+    if (m_contact->connection()) {
+        auto channel = findOrCreateChannelForContact<Protocol::FileChannel>(m_contact, Protocol::Channel::Outbound);
+
+        if (channel && channel->isOpened()) {
+            if (channel->sendFileWithId(file_url, QDateTime(), message.identifier))
+                message.status = Sending;
+            else
+                message.status = Error;
+            message.attemptCount++;
+        }
+    }
+
+    beginInsertRows(QModelIndex(), 0, 0);
+    messages.prepend(message);
+    endInsertRows();
+    prune();
+
+    return static_cast<tego_message_id_t>(message.identifier);
+}
+
 tego_message_id_t ConversationModel::sendMessage(const QString &text)
 {
     if (text.isEmpty())
         return 0;
 
+    /* XXX: this is just to test file transfer, we can write a nice and pretty
+     * UI later. Format for files is like one would use in a browser, i.e.:
+     * file:///home/username/file.txt */
+    if (text.startsWith(QString::fromLatin1("file://"))) {
+        return sendFile(text);
+    }
+
     MessageData message(text, QDateTime::currentDateTime(), lastMessageId++, Queued);
+    message.type = ConversationModel::MessageData::Type::Message;
 
     if (m_contact->connection()) {
-        auto channel = m_contact->connection()->findChannel<Protocol::ChatChannel>(Protocol::Channel::Outbound);
-        if (!channel) {
-            channel = new Protocol::ChatChannel(Protocol::Channel::Outbound, m_contact->connection().data());
-            if (!channel->openChannel()) {
-                message.status = Error;
-                delete channel;
-                channel = 0;
-            }
-        }
+        auto channel = findOrCreateChannelForContact<Protocol::ChatChannel>(m_contact, Protocol::Channel::Outbound);
 
         if (channel && channel->isOpened()) {
             if (channel->sendChatMessageWithId(text, QDateTime(), message.identifier))
@@ -143,24 +184,30 @@ void ConversationModel::sendQueuedMessages()
     if (!haveQueued)
         return;
 
-    auto channel = m_contact->connection()->findChannel<Protocol::ChatChannel>(Protocol::Channel::Outbound);
-    if (!channel) {
-        channel = new Protocol::ChatChannel(Protocol::Channel::Outbound, m_contact->connection().data());
-        if (!channel->openChannel()) {
-            delete channel;
-            return;
-        }
-    }
+    auto chat_channel = findOrCreateChannelForContact<Protocol::ChatChannel>(m_contact, Protocol::Channel::Outbound);
+    auto file_channel = findOrCreateChannelForContact<Protocol::FileChannel>(m_contact, Protocol::Channel::Outbound);
 
     // sendQueuedMessages is called at channelOpened
-    if (!channel->isOpened())
-        return;
+    if (!chat_channel->isOpened()) return;
+    if (!file_channel->isOpened()) return;
 
     // Iterate backwards, from oldest to newest messages
     for (int i = messages.size() - 1; i >= 0; i--) {
         if (messages[i].status == Queued) {
             qDebug() << "Sending queued chat message";
-            bool ok = channel->sendChatMessageWithId(messages[i].text, messages[i].time, messages[i].identifier);
+            bool ok = false;
+            switch (messages[i].type) {
+                case ConversationModel::MessageData::Type::Message:
+                    ok = chat_channel->sendChatMessageWithId(messages[i].text, messages[i].time, messages[i].identifier);
+                    break;
+                case ConversationModel::MessageData::Type::File:
+                    ok = file_channel->sendFileWithId(messages[i].text, messages[i].time, messages[i].identifier);
+                    break;
+                default:
+                    /* XXX: Should this be BUG()? */
+                    qWarning() << "Rejected invalid message type";
+                    break;
+            };
 
             if (ok)
                 messages[i].status = Sending;

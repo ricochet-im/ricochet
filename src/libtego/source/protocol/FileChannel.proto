@@ -1,0 +1,73 @@
+/* Ricochet Refresh - https://ricochetrefresh.net/
+ * Copyright (C) 2020, Blueprint For Free Speech <ricochet@blueprintforfreespeech.net>
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ *
+ *    * Redistributions of source code must retain the above copyright
+ *      notice, this list of conditions and the following disclaimer.
+ *
+ *    * Redistributions in binary form must reproduce the above
+ *      copyright notice, this list of conditions and the following disclaimer
+ *      in the documentation and/or other materials provided with the
+ *      distribution.
+ *
+ *    * Neither the names of the copyright owners nor the names of its
+ *      contributors may be used to endorse or promote products derived from
+ *      this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+syntax = "proto2";
+
+package Protocol.Data.File;
+
+message Packet {
+    optional FileHeader file_header = 1;
+    optional FileChunk file_chunk = 2;
+    optional FileChunkAck file_chunk_ack = 3;
+    optional FileHeaderAck file_header_ack = 4;
+}
+
+message FileHeader {
+    optional uint32 file_id = 1;
+    optional uint64 size = 2;
+    optional string name = 3;
+    optional bytes sha3_512 = 4;
+    optional uint32 chunk_count = 5;
+    optional int32 time_delta = 6;
+}
+
+/* When sending files, they should be split into chunks to avoid high latency.
+ * Each chunk should be validated as they are recieved so that if a chunk is
+ * corrupted in transit, only the bad chunk will need to be resent, rather
+ * than discarding the entire file */
+message FileChunk {
+    optional bytes sha3_512 = 1;    /* sha3_512 of the chunk */
+    optional uint32 file_id = 2;
+    optional uint32 chunk_id = 3;
+    optional uint32 chunk_size = 4; /* size of the chunk */
+    optional bytes chunk_data = 5;
+}
+
+message FileChunkAck {
+    optional uint64 file_chunk_id = 1;
+    optional bool accepted = 2 [default = false];
+}
+
+message FileHeaderAck {
+    optional uint64 file_id = 1;
+    optional bool accepted = 2 [default = false];
+}

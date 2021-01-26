@@ -35,6 +35,7 @@
 
 #include "core/ContactUser.h"
 #include "protocol/ChatChannel.h"
+#include "protocol/FileChannel.h"
 
 class ConversationModel : public QAbstractListModel
 {
@@ -76,6 +77,7 @@ public:
     virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
 
 public slots:
+    tego_message_id_t sendFile(const QString &file_url);
     tego_message_id_t sendMessage(const QString &text);
     void clear();
 
@@ -92,6 +94,10 @@ private slots:
 
 private:
     struct MessageData {
+        enum Type {
+            Message,
+            File
+        } type;
         QString text;
         QDateTime time;
         MessageId identifier;

@@ -259,6 +259,8 @@ void OutboundConnectorPrivate::onConnected()
             setError(QStringLiteral("Protocol version negotiation failed with peer"));
         }
     );
+    /* XXX: this is a pointless connect - it connects a signal to a signal, which has no connections 
+     * (all instances of oldVersionNegotiated are unneeded) */
     connect(connection.data(), &Connection::oldVersionNegotiated, q, &OutboundConnector::oldVersionNegotiated);
     setStatus(OutboundConnector::Initializing);
 }
