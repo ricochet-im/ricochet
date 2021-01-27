@@ -87,7 +87,7 @@ public:
 
     Status status() const { return m_status; }
 
-    Q_INVOKABLE void deleteContact();
+    void deleteContact();
 
     std::unique_ptr<tego_user_id_t> toTegoUserId() const;
 

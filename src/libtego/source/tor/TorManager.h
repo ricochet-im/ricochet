@@ -45,16 +45,6 @@ class TorManagerPrivate;
 class TorManager : public QObject
 {
     Q_OBJECT
-
-    Q_PROPERTY(bool configurationNeeded READ configurationNeeded NOTIFY configurationNeededChanged)
-    Q_PROPERTY(QStringList logMessages READ logMessages CONSTANT)
-    Q_PROPERTY(Tor::TorProcess* process READ process CONSTANT)
-    Q_PROPERTY(Tor::TorControl* control READ control CONSTANT)
-    Q_PROPERTY(bool hasError READ hasError NOTIFY errorChanged)
-    Q_PROPERTY(QString errorMessage READ errorMessage NOTIFY errorChanged)
-    Q_PROPERTY(QString dataDirectory READ dataDirectory WRITE setDataDirectory)
-    Q_PROPERTY(QString running READ running NOTIFY runningChanged)
-
 public:
     explicit TorManager(QObject *parent = 0);
     static TorManager *instance();

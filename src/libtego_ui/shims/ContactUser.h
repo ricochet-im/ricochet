@@ -38,6 +38,7 @@ namespace shims
         shims::ConversationModel *conversation();
 
         Q_INVOKABLE void deleteContact();
+        Q_INVOKABLE void sendFile();
 
         std::unique_ptr<tego_user_id_t> toTegoUserId() const;
 

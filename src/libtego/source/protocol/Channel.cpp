@@ -109,7 +109,7 @@ bool Channel::isOpened() const
 {
     Q_D(const Channel);
     if (d->isOpened && d->identifier < 0)
-        BUG() << "Channel is marked as open, but has no identifier";
+        TEGO_BUG() << "Channel is marked as open, but has no identifier";
     return d->isOpened;
 }
 
@@ -117,14 +117,14 @@ bool Channel::openChannel()
 {
     Q_D(Channel);
     if (direction() != Channel::Outbound || isOpened() || identifier() >= 0) {
-        BUG() << "Cannot send request to open" << type() << "channel in an incorrect state";
+        TEGO_BUG() << "Cannot send request to open" << type() << "channel in an incorrect state";
         if (isOpened())
             closeChannel();
         d->invalidate();
         return false;
     } else if (!connection()->findChannel<ControlChannel>()->sendOpenChannel(this)) {
         if (isOpened()) {
-            BUG() << "Channel somehow opened instantly in an impossible situation";
+            TEGO_BUG() << "Channel somehow opened instantly in an impossible situation";
             closeChannel();
         }
         d->invalidate();
@@ -159,12 +159,12 @@ bool ChannelPrivate::openChannelInbound(const Data::Control::OpenChannel *reques
     Q_Q(Channel);
     result->set_opened(false);
     if (direction != Channel::Inbound || isOpened || identifier >= 0 || hasSentClose || isInvalidated) {
-        BUG() << "Handling inbound open channel request on a channel in an unexpected state; rejecting";
+        TEGO_BUG() << "Handling inbound open channel request on a channel in an unexpected state; rejecting";
         return false;
     }
 
     if (request->channel_identifier() <= 0) {
-        BUG() << "Invalid channel identifier in inboundOpenChannel handler";
+        TEGO_BUG() << "Invalid channel identifier in inboundOpenChannel handler";
         return false;
     }
 
@@ -185,7 +185,7 @@ bool ChannelPrivate::openChannelInbound(const Data::Control::OpenChannel *reques
     }
 
     if (result->has_common_error()) {
-        BUG() << "Accepted inbound OpenChannel request, but result has error details set. Assuming it's actually an error.";
+        TEGO_BUG() << "Accepted inbound OpenChannel request, but result has error details set. Assuming it's actually an error.";
         result->set_opened(false);
         return false;
     }
@@ -201,7 +201,7 @@ bool ChannelPrivate::openChannelOutbound(Data::Control::OpenChannel *request)
 {
     Q_Q(Channel);
     if (direction != Channel::Outbound || isOpened || identifier >= 0) {
-        BUG() << "Handling outbound open channel request on a channel in an unexpected state; rejecting";
+        TEGO_BUG() << "Handling outbound open channel request on a channel in an unexpected state; rejecting";
         return false;
     }
 
@@ -223,7 +223,7 @@ bool ChannelPrivate::openChannelResult(const Data::Control::ChannelResult *resul
     Q_Q(Channel);
     // ControlChannel should weed out clearly invalid messages, so assert here if it didn't
     if (direction != Channel::Outbound || isOpened || identifier < 0) {
-        BUG() << "Handling response for outbound open channel on a channel in an unexpected state; ignoring";
+        TEGO_BUG() << "Handling response for outbound open channel on a channel in an unexpected state; ignoring";
         return false;
     }
 
@@ -259,17 +259,17 @@ bool Channel::sendPacket(const QByteArray &packet)
 {
     Q_D(Channel);
     if (d->identifier < 0) {
-        BUG() << "Cannot send packet to channel" << type() << "without an assigned identifier";
+        TEGO_BUG() << "Cannot send packet to channel" << type() << "without an assigned identifier";
         return false;
     }
 
     if (packet.size() == 0) {
-        BUG() << "Cannot send empty packet to channel" << type();
+        TEGO_BUG() << "Cannot send empty packet to channel" << type();
         return false;
     }
 
     if (packet.size() > ConnectionPrivate::PacketMaxDataSize) {
-        BUG() << "Packet is too big on channel" << type();
+        TEGO_BUG() << "Packet is too big on channel" << type();
         return false;
     }
 
@@ -279,7 +279,7 @@ bool Channel::sendPacket(const QByteArray &packet)
 void Channel::requestInboundApproval()
 {
     if (direction() != Channel::Inbound || isOpened()) {
-        BUG() << "Called in an unexpected channel state";
+        TEGO_BUG() << "Called in an unexpected channel state";
         return;
     }
 
@@ -302,7 +302,7 @@ ChannelPrivate::~ChannelPrivate()
 {
     Q_Q(Channel);
     if (identifier >= 0 && !isInvalidated) {
-        BUG() << "Channel of type" << type << "was deleted without being invalidated";
+        TEGO_BUG() << "Channel of type" << type << "was deleted without being invalidated";
         connection->d->removeChannel(q);
     }
 }

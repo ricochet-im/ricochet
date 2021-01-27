@@ -65,12 +65,12 @@ bool ChatChannel::allowOutboundChannelRequest(Data::Control::OpenChannel *reques
     Q_UNUSED(request);
 
     if (connection()->findChannel<ChatChannel>(Channel::Outbound)) {
-        BUG() << "Rejecting outbound request for" << type() << "channel because one is already open on this connection";
+        TEGO_BUG() << "Rejecting outbound request for" << type() << "channel because one is already open on this connection";
         return false;
     }
 
     if (connection()->purpose() != Connection::Purpose::KnownContact) {
-        BUG() << "Rejecting outbound request for" << type() << "channel for connection with unexpected purpose" << int(connection()->purpose());
+        TEGO_BUG() << "Rejecting outbound request for" << type() << "channel for connection with unexpected purpose" << int(connection()->purpose());
         return false;
     }
 
@@ -99,7 +99,7 @@ void ChatChannel::receivePacket(const QByteArray &packet)
 bool ChatChannel::sendChatMessageWithId(QString text, QDateTime time, MessageId id)
 {
     if (direction() != Outbound) {
-        BUG() << "Chat channels are unidirectional, and this is not an outbound channel";
+        TEGO_BUG() << "Chat channels are unidirectional, and this is not an outbound channel";
         return false;
     }
 
@@ -107,10 +107,10 @@ bool ChatChannel::sendChatMessageWithId(QString text, QDateTime time, MessageId 
     message->set_message_id(id);
 
     if (text.isEmpty()) {
-        BUG() << "Chat message is empty, and it should've been discarded";
+        TEGO_BUG() << "Chat message is empty, and it should've been discarded";
         return false;
     } else if (text.size() > MessageMaxCharacters) {
-        BUG() << "Chat message is too long (" << text.size() << "characters), and it should've been limited already. Truncated.";
+        TEGO_BUG() << "Chat message is too long (" << text.size() << "characters), and it should've been limited already. Truncated.";
         text.truncate(MessageMaxCharacters);
     }
 

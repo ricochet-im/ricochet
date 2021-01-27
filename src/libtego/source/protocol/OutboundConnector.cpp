@@ -92,7 +92,7 @@ OutboundConnector::~OutboundConnector()
 void OutboundConnector::setAuthPrivateKey(const CryptoKey &key)
 {
     if (!key.isLoaded() || !key.isPrivate()) {
-        BUG() << "Cannot make outbound connection without a valid private key";
+        TEGO_BUG() << "Cannot make outbound connection without a valid private key";
         return;
     }
 
@@ -108,7 +108,7 @@ bool OutboundConnector::connectToHost(const QString &hostname, quint16 port)
     }
 
     if (d->status == Ready) {
-        BUG() << "Reusing an OutboundConnector object";
+        TEGO_BUG() << "Reusing an OutboundConnector object";
         d->errorMessage = QStringLiteral("Outbound connection handler was already used");
         d->setStatus(Error);
         return false;
@@ -180,7 +180,7 @@ QSharedPointer<Connection> OutboundConnector::takeConnection()
 {
     QSharedPointer<Connection> c(d->connection);
     if (status() != Ready || !c) {
-        BUG() << "Cannot take connection when not in the Ready state";
+        TEGO_BUG() << "Cannot take connection when not in the Ready state";
         return c;
     }
 
@@ -240,7 +240,7 @@ void OutboundConnectorPrivate::retryAfterError()
 void OutboundConnectorPrivate::onConnected()
 {
     if (!socket || status != OutboundConnector::Connecting) {
-        BUG() << "OutboundConnector connected in an unexpected state";
+        TEGO_BUG() << "OutboundConnector connected in an unexpected state";
         setError(QStringLiteral("Connected in an unexpected state"));
         return;
     }
@@ -268,7 +268,7 @@ void OutboundConnectorPrivate::onConnected()
 void OutboundConnectorPrivate::startAuthentication()
 {
     if (!connection || status != OutboundConnector::Initializing) {
-        BUG() << "OutboundConnector startAuthentication in an unexpected state";
+        TEGO_BUG() << "OutboundConnector startAuthentication in an unexpected state";
         setError(QStringLiteral("Connected in an unexpected state"));
         return;
     }

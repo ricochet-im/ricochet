@@ -9,8 +9,86 @@ namespace
 {
     constexpr int consumeInterval = 10;
 
+    // this holds a callback which can be called and then deletes the underlying data
+    // replaces std::function beause std::function cannot be move constructed >:[
+    class run_once_task
+    {
+    public:
+        run_once_task() = default;
+        run_once_task(run_once_task&& that)
+        : run_once_task()
+        {
+            *this = std::move(that);
+        }
+
+        // no copying allowed
+        run_once_task(const run_once_task&) = delete;
+        run_once_task& operator=(run_once_task const&) = delete;
+
+        // ensure move does not overwrite existing callback data
+        run_once_task& operator=(run_once_task&& that)
+        {
+            Q_ASSERT(exec == nullptr && callable == nullptr);
+            exec = that.exec;
+            callable = that.callable;
+
+            that.exec = nullptr;
+            that.callable = nullptr;
+
+            return *this;
+        }
+
+        template<typename LAMBDA>
+        run_once_task(LAMBDA&& lambda)
+        {
+            // convertible to raw ptr
+            if constexpr (std::is_convertible<LAMBDA, void(*)(void)>::value)
+            {
+                exec = [](run_once_task* self) -> void
+                {
+                    auto lambda = reinterpret_cast<void(*)(void)>(self->callable);
+                    lambda();
+
+                    self->exec = nullptr;
+                    self->callable = nullptr;
+                };
+                callable = reinterpret_cast<void*>(static_cast<void(*)(void)>(lambda));
+            }
+            // otherwise make a heap copy
+            else
+            {
+                exec = [](run_once_task* self) -> void
+                {
+                    auto lambda = reinterpret_cast<LAMBDA*>(self->callable);
+                    (*lambda)();
+                    delete lambda;
+
+                    self->exec = nullptr;
+                    self->callable = nullptr;
+                };
+                callable = new LAMBDA(std::move(lambda));
+            }
+        }
+
+        // just ensure we're not messing anything up
+        ~run_once_task()
+        {
+            Q_ASSERT(exec == nullptr && callable == nullptr);
+        }
+
+
+        void operator()()
+        {
+            exec(this);
+        }
+
+    private:
+        void(*exec)(run_once_task*) = nullptr;
+        void* callable = nullptr;
+    };
+
     // data
-    std::vector<std::function<void()>> taskQueue;
+    std::vector<run_once_task> taskQueue;
     std::mutex taskQueueLock;
 
     void consume_tasks()
@@ -23,7 +101,7 @@ namespace
         }
 
         // consume all of our tasks
-        for(auto task : localTaskQueue)
+        for(auto& task : localTaskQueue)
         {
             try
             {
@@ -361,6 +439,117 @@ namespace
         });
     }
 
+    void on_file_transfer_request_received(
+        tego_context_t*,
+        tego_user_id_t const* sender,
+        tego_file_transfer_id_t id,
+        char const* fileName,
+        size_t fileNameLength,
+        tego_file_size_t fileSize,
+        tego_file_hash_t const* fileHash)
+    {
+        auto contactId = tegoUserIdToContactId(sender);
+        QString fileNameCopy = QString::fromUtf8(fileName, fileNameLength);
+        auto hashStr = tego::to_string(fileHash);
+
+        push_task([=,fileName=std::move(fileNameCopy)]() -> void
+        {
+            auto contactUser = contactUserFromContactId(contactId);
+            Q_ASSERT(contactUser != nullptr);
+            auto conversationModel = contactUser->conversation();
+            Q_ASSERT(conversationModel != nullptr);
+
+            conversationModel->fileTransferRequestReceived(id, fileName, QString::fromStdString(hashStr), fileSize);
+        });
+    }
+
+    void on_file_transfer_request_acknowledged(
+        tego_context_t*,
+        tego_user_id_t const* receiver,
+        tego_file_transfer_id_t id,
+        tego_bool_t ack)
+    {
+        auto contactId = tegoUserIdToContactId(receiver);
+
+        push_task([=]() -> void
+        {
+            auto contactUser = contactUserFromContactId(contactId);
+            Q_ASSERT(contactUser != nullptr);
+            auto conversationModel = contactUser->conversation();
+            Q_ASSERT(conversationModel != nullptr);
+
+            conversationModel->fileTransferRequestAcknowledged(id, ack);
+        });
+    }
+
+    void on_file_transfer_request_response_received(
+        tego_context_t*,
+        tego_user_id_t const* receiver,
+        tego_file_transfer_id_t id,
+        tego_file_transfer_response_t response)
+    {
+        auto contactId = tegoUserIdToContactId(receiver);
+
+        push_task([=]() -> void
+        {
+            auto contactUser = contactUserFromContactId(contactId);
+            Q_ASSERT(contactUser != nullptr);
+            auto conversationModel = contactUser->conversation();
+            Q_ASSERT(conversationModel != nullptr);
+
+            conversationModel->fileTransferRequestResponded(id, response);
+        });
+    }
+
+    void on_file_transfer_progress(
+        tego_context_t*,
+        const tego_user_id_t* userId,
+        tego_file_transfer_id_t id,
+        tego_file_transfer_direction_t direction,
+        tego_file_size_t bytesComplete,
+        tego_file_size_t bytesTotal)
+    {
+        auto contactId = tegoUserIdToContactId(userId);
+
+        push_task([=]() -> void
+        {
+            auto contactUser = contactUserFromContactId(contactId);
+            Q_ASSERT(contactUser != nullptr);
+            auto conversationModel = contactUser->conversation();
+            Q_ASSERT(conversationModel != nullptr);
+
+            conversationModel->fileTransferRequestProgressUpdated(id, bytesComplete);
+        });
+
+
+        logger::println(
+            "File Progress id : {}, direction : {}, transferred : {} bytes, total : {} bytes",
+            id,
+            direction == tego_file_transfer_direction_sending ? "sending" : "receiving",
+            bytesComplete,
+            bytesTotal);
+    }
+
+    void on_file_transfer_complete(
+        tego_context_t*,
+        const tego_user_id_t* userId,
+        tego_file_transfer_id_t id,
+        tego_file_transfer_direction_t,
+        tego_file_transfer_result_t result)
+    {
+        auto contactId = tegoUserIdToContactId(userId);
+
+        push_task([=]() -> void
+        {
+            auto contactUser = contactUserFromContactId(contactId);
+            Q_ASSERT(contactUser != nullptr);
+            auto conversationModel = contactUser->conversation();
+            Q_ASSERT(conversationModel != nullptr);
+
+            conversationModel->fileTransferRequestCompleted(id, result);
+        });
+    }
+
     void on_new_identity_created(
         tego_context_t*,
         const tego_ed25519_private_key_t* privateKey)
@@ -440,6 +629,31 @@ void init_libtego_callbacks(tego_context_t* context)
     tego_context_set_chat_request_response_received_callback(
         context,
         &on_chat_request_response_received,
+        tego::throw_on_error());
+
+    tego_context_set_file_transfer_request_received_callback(
+        context,
+        &on_file_transfer_request_received,
+        tego::throw_on_error());
+
+    tego_context_set_file_transfer_request_acknowledged_callback(
+        context,
+        &on_file_transfer_request_acknowledged,
+        tego::throw_on_error());
+
+    tego_context_set_file_transfer_request_response_received_callback(
+        context,
+        &on_file_transfer_request_response_received,
+        tego::throw_on_error());
+
+    tego_context_set_file_transfer_progress_callback(
+        context,
+        &on_file_transfer_progress,
+        tego::throw_on_error());
+
+    tego_context_set_file_transfer_complete_callback(
+        context,
+        &on_file_transfer_complete,
         tego::throw_on_error());
 
     tego_context_set_user_status_changed_callback(

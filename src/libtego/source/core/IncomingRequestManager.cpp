@@ -124,7 +124,7 @@ void IncomingRequestManager::requestReceived()
 {
     Protocol::ContactRequestChannel *channel = qobject_cast<Protocol::ContactRequestChannel*>(sender());
     if (!channel) {
-        BUG() << "Called without a valid sender";
+        TEGO_BUG() << "Called without a valid sender";
         return;
     }
 
@@ -132,7 +132,7 @@ void IncomingRequestManager::requestReceived()
 
     QString hostname = channel->connection()->authenticatedIdentity(Protocol::Connection::HiddenServiceAuth);
     if (hostname.isEmpty() || !hostname.endsWith(QStringLiteral(".onion"))) {
-        BUG() << "Incoming contact request received but connection isn't authenticated";
+        TEGO_BUG() << "Incoming contact request received but connection isn't authenticated";
         channel->setResponseStatus(Response::Error);
         return;
     }
@@ -166,7 +166,7 @@ void IncomingRequestManager::requestReceived()
      * contact, including an outgoing request. Those are implicitly accepted at
      * a different level. */
     if (contacts->lookupHostname(hostname)) {
-        BUG() << "Created an inbound contact request matching a known contact; this shouldn't be allowed";
+        TEGO_BUG() << "Created an inbound contact request matching a known contact; this shouldn't be allowed";
         return;
     }
 
@@ -285,7 +285,7 @@ void IncomingContactRequest::setChannel(Protocol::ContactRequestChannel *channel
     qDebug() << "Assigning connection to IncomingContactRequest from" << m_hostname;
     QSharedPointer<Protocol::Connection> newConnection = manager->contacts->identity->takeIncomingConnection(channel->connection());
     if (!newConnection) {
-        BUG() << "Failed taking ownership of connection from an incoming request";
+        TEGO_BUG() << "Failed taking ownership of connection from an incoming request";
         channel->connection()->close();
         return;
     }

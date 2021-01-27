@@ -39,15 +39,15 @@
  * with a proper error case for release-mode builds. For example:
  *
  * if (!connection || !user) {
- *     BUG() << "Request" << request << "should have a connection and user";
+ *     TEGO_BUG() << "Request" << request << "should have a connection and user";
  *     return false;
  * }
  *
- * Do not confuse bugs with actual error cases; BUG() should never be
+ * Do not confuse bugs with actual error cases; TEGO_BUG() should never be
  * triggered unless the code or logic is wrong.
  */
 #if !defined(QT_NO_DEBUG) || defined(QT_FORCE_ASSERTS)
-# define BUG() Explode(__FILE__,__LINE__), qWarning() << "BUG:"
+# define TEGO_BUG() Explode(__FILE__,__LINE__), qWarning() << "BUG:"
 namespace {
 class Explode
 {
@@ -61,7 +61,7 @@ public:
 };
 }
 #else
-# define BUG() qWarning() << "BUG:"
+# define TEGO_BUG() qWarning() << "BUG:"
 #endif
 
 #endif

@@ -42,10 +42,6 @@ class SetConfCommand : public TorControlCommand
 {
     Q_OBJECT
     Q_DISABLE_COPY(SetConfCommand)
-
-    Q_PROPERTY(QString errorMessage READ errorMessage CONSTANT)
-    Q_PROPERTY(bool successful READ isSuccessful CONSTANT)
-
 public:
     SetConfCommand();
 

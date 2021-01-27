@@ -108,8 +108,6 @@ class IncomingRequestManager : public QObject
     Q_OBJECT
     Q_DISABLE_COPY(IncomingRequestManager)
 
-    Q_PROPERTY(QList<QObject*> requests READ requestObjects NOTIFY requestsChanged)
-
     friend class IncomingContactRequest;
 
 public:

@@ -2,6 +2,7 @@
 #include "error.hpp"
 #include "context.hpp"
 #include "tor.hpp"
+#include "file_hash.hpp"
 
 extern "C"
 {
@@ -19,4 +20,5 @@ extern "C"
     TEGO_DELETE_IMPL(tego_tor_launch_config);
     TEGO_DELETE_IMPL(tego_tor_daemon_config);
     TEGO_DELETE_IMPL(tego_user_id);
+    TEGO_DELETE_IMPL(tego_file_hash);
 }

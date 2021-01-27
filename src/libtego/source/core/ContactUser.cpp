@@ -148,7 +148,7 @@ void ContactUser::updateOutgoingSocket()
         return;
 
     if (m_outgoingSocket && m_outgoingSocket->status() == Protocol::OutboundConnector::Ready) {
-        BUG() << "Called updateOutgoingSocket with an existing socket in Ready. This should've been deleted.";
+        TEGO_BUG() << "Called updateOutgoingSocket with an existing socket in Ready. This should've been deleted.";
         m_outgoingSocket->disconnect(this);
         m_outgoingSocket->deleteLater();
         m_outgoingSocket = 0;
@@ -188,7 +188,7 @@ void ContactUser::onConnected()
     }
 
     if (m_status != Online && m_status != RequestPending) {
-        BUG() << "Contact has a connection while in status" << m_status << "which is not expected.";
+        TEGO_BUG() << "Contact has a connection while in status" << m_status << "which is not expected.";
         m_connection->close();
     }
 }
@@ -199,13 +199,13 @@ void ContactUser::onDisconnected()
 
     if (m_connection) {
         if (m_connection->isConnected()) {
-            BUG() << "onDisconnected called, but connection is still connected";
+            TEGO_BUG() << "onDisconnected called, but connection is still connected";
             return;
         }
 
         m_connection.clear();
     } else {
-        BUG() << "onDisconnected called without a connection";
+        TEGO_BUG() << "onDisconnected called without a connection";
     }
 
     updateStatus();
@@ -261,7 +261,7 @@ void ContactUser::deleteContact()
 void ContactUser::requestAccepted()
 {
     if (!m_contactRequest) {
-        BUG() << "Request accepted but ContactUser doesn't know an active request";
+        TEGO_BUG() << "Request accepted but ContactUser doesn't know an active request";
         return;
     }
 
@@ -285,12 +285,12 @@ void ContactUser::requestRemoved()
 void ContactUser::assignConnection(const QSharedPointer<Protocol::Connection> &connection)
 {
     if (connection == m_connection) {
-        BUG() << "Connection is already assigned to this ContactUser";
+        TEGO_BUG() << "Connection is already assigned to this ContactUser";
         return;
     }
 
     if (connection->purpose() == Protocol::Connection::Purpose::KnownContact) {
-        BUG() << "Connection is already assigned to a contact";
+        TEGO_BUG() << "Connection is already assigned to a contact";
         connection->close();
         return;
     }
@@ -298,13 +298,13 @@ void ContactUser::assignConnection(const QSharedPointer<Protocol::Connection> &c
     bool isOutbound = connection->direction() == Protocol::Connection::ClientSide;
 
     if (!connection->isConnected()) {
-        BUG() << "Connection assigned to contact but isn't connected; discarding";
+        TEGO_BUG() << "Connection assigned to contact but isn't connected; discarding";
         connection->close();
         return;
     }
 
     if (!connection->hasAuthenticatedAs(Protocol::Connection::HiddenServiceAuth, hostname())) {
-        BUG() << "Connection assigned to contact without matching authentication";
+        TEGO_BUG() << "Connection assigned to contact without matching authentication";
         connection->close();
         return;
     }
@@ -322,7 +322,7 @@ void ContactUser::assignConnection(const QSharedPointer<Protocol::Connection> &c
         if (m_contactRequest && knownToPeer) {
             m_contactRequest->accept();
             if (m_contactRequest)
-                BUG() << "Outgoing contact request not unset after implicit accept during connection";
+                TEGO_BUG() << "Outgoing contact request not unset after implicit accept during connection";
         } else if (!m_contactRequest && !knownToPeer) {
             qDebug() << "Contact says we're unknown; marking as rejected";
             connection->close();
@@ -388,7 +388,7 @@ void ContactUser::assignConnection(const QSharedPointer<Protocol::Connection> &c
     }
 
     if (m_connection) {
-        BUG() << "After resolving connection races, ContactUser still has two connections";
+        TEGO_BUG() << "After resolving connection races, ContactUser still has two connections";
         connection->close();
         return;
     }
@@ -426,7 +426,7 @@ void ContactUser::assignConnection(const QSharedPointer<Protocol::Connection> &c
      * kicks in. In particular, this is important to allow AuthHiddenServiceChannel to
      * respond before other channels are created. */
     if (!metaObject()->invokeMethod(this, "onConnected", Qt::QueuedConnection))
-        BUG() << "Failed queuing invocation of onConnected method";
+        TEGO_BUG() << "Failed queuing invocation of onConnected method";
 }
 
 void ContactUser::clearConnection()

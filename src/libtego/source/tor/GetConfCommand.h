@@ -42,9 +42,6 @@ class GetConfCommand : public TorControlCommand
 {
     Q_OBJECT
     Q_DISABLE_COPY(GetConfCommand)
-
-    Q_PROPERTY(QVariantMap results READ results CONSTANT)
-
 public:
     enum Type {
         GetConf,

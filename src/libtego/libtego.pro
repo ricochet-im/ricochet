@@ -52,7 +52,8 @@ HEADERS +=\
     source/context.hpp\
     source/signals.hpp\
     source/tor.hpp\
-    source/user.hpp
+    source/user.hpp\
+    source/file_hash.hpp
 
 SOURCES +=\
     source/libtego.cpp\
@@ -65,7 +66,8 @@ SOURCES +=\
     source/context.cpp\
     source/signals.cpp\
     source/tor.cpp\
-    source/user.cpp
+    source/user.cpp\
+    source/file_hash.cpp
 
 
 # external

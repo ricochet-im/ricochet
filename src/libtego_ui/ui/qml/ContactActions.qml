@@ -31,6 +31,10 @@ Item {
         root.openPreferences("ContactPreferences.qml", { 'selectedContact': contact })
     }
 
+    function sendFile() {
+        contact.sendFile();
+    }
+
     signal renameTriggered
 
     Menu {
@@ -47,6 +51,10 @@ Item {
         MenuItem {
             text: qsTr("Rename")
             onTriggered: renameTriggered()
+        }
+        MenuItem {
+            text: qsTr("Send File...")
+            onTriggered: sendFile();
         }
         MenuSeparator { }
         MenuItem {

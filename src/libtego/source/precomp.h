@@ -60,6 +60,9 @@ extern "C" {
 #include <set>
 #include <sstream>
 #include <optional>
+#include <tuple>
+#include <type_traits>
+#include <chrono>
 
 // fmt
 #include <fmt/format.h>

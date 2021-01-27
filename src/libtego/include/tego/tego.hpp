@@ -45,6 +45,22 @@ namespace tego
     private:
         tego_error_t* error_ = nullptr;
     };
+
+    //
+    // to_string methods to convert various tego types to human readable strings
+    //
+    inline std::string to_string(tego_file_hash_t const* fileHash)
+    {
+
+        if (fileHash == nullptr) return {};
+
+        const auto hashSize = tego_file_hash_string_size(fileHash, tego::throw_on_error());
+
+        std::string hashString(hashSize, 0);
+        tego_file_hash_to_string(fileHash, hashString.data(), hashSize, tego::throw_on_error());
+
+        return hashString;
+    }
 }
 
 
@@ -65,4 +81,5 @@ TEGO_DEFAULT_DELETE_IMPL(tego_v3_onion_service_id)
 TEGO_DEFAULT_DELETE_IMPL(tego_tor_launch_config);
 TEGO_DEFAULT_DELETE_IMPL(tego_tor_daemon_config);
 TEGO_DEFAULT_DELETE_IMPL(tego_user_id);
+TEGO_DEFAULT_DELETE_IMPL(tego_file_hash);
 

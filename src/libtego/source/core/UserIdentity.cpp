@@ -206,7 +206,7 @@ void UserIdentity::handleIncomingAuthedConnection(Connection *conn)
 
     QString clientName = conn->authenticatedIdentity(Connection::HiddenServiceAuth);
     if (clientName.isEmpty()) {
-        BUG() << "Called to handle incoming authed connection without any authed name";
+        TEGO_BUG() << "Called to handle incoming authed connection without any authed name";
         return;
     }
 
@@ -220,7 +220,7 @@ void UserIdentity::handleIncomingAuthedConnection(Connection *conn)
 
     QSharedPointer<Connection> connPtr(takeIncomingConnection(conn));
     if (!connPtr) {
-        BUG() << "Called to handle incoming authed connection, but the connection is already out of the incoming list";
+        TEGO_BUG() << "Called to handle incoming authed connection, but the connection is already out of the incoming list";
         return;
     }
 

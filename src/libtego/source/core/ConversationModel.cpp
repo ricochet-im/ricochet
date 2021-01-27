@@ -30,6 +30,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "error.hpp"
+#include "file_hash.hpp"
 #include "globals.hpp"
 using tego::g_globals;
 
@@ -38,6 +40,7 @@ using tego::g_globals;
 #include "protocol/ChatChannel.h"
 #include "protocol/FileChannel.h"
 #include "utils/SecureRNG.h"
+#include "utils/Useful.h"
 
 ConversationModel::ConversationModel(QObject *parent)
     : QAbstractListModel(parent)
@@ -62,21 +65,31 @@ void ConversationModel::setContact(ContactUser *contact)
     m_contact = contact;
     if (m_contact) {
         auto connectChannel = [this](Protocol::Channel *channel) {
-            if (Protocol::ChatChannel *chat = qobject_cast<Protocol::ChatChannel*>(channel)) {
+            if (channel->direction() == Protocol::Channel::Outbound)
+            {
+                connect(channel, &Protocol::Channel::invalidated, this, &ConversationModel::outboundChannelClosed);
+                sendQueuedMessages();
+            }
+
+            if (Protocol::ChatChannel *chat = qobject_cast<Protocol::ChatChannel*>(channel))
+            {
                 connect(chat, &Protocol::ChatChannel::messageReceived, this, &ConversationModel::messageReceived);
                 connect(chat, &Protocol::ChatChannel::messageAcknowledged, this, &ConversationModel::messageAcknowledged);
-
-                if (chat->direction() == Protocol::Channel::Outbound) {
-                    connect(chat, &Protocol::Channel::invalidated, this, &ConversationModel::outboundChannelClosed);
-                    sendQueuedMessages();
-                }
+            }
+            else if (auto fc = qobject_cast<Protocol::FileChannel*>(channel); fc != nullptr)
+            {
+                connect(fc, &Protocol::FileChannel::fileTransferRequestReceived, this, &ConversationModel::onFileTransferRequestReceived);
+                connect(fc, &Protocol::FileChannel::fileTransferAcknowledged, this, &ConversationModel::onFileTransferAcknowledged);
+                connect(fc, &Protocol::FileChannel::fileTransferRequestResponded, this, &ConversationModel::onFileTransferRequestResponded);
+                connect(fc, &Protocol::FileChannel::fileTransferProgress, this, &ConversationModel::onFileTransferProgress);
+                connect(fc, &Protocol::FileChannel::fileTransferFinished, this, &ConversationModel::onFileTransferFinished);
             }
         };
 
         auto connectConnection = [this,connectChannel]() {
             if (m_contact->connection()) {
                 connect(m_contact->connection().data(), &Protocol::Connection::channelOpened, this, connectChannel);
-                foreach (auto channel, m_contact->connection()->findChannels<Protocol::ChatChannel>())
+                foreach (auto channel, m_contact->connection()->findChannels<Protocol::Channel>())
                     connectChannel(channel);
                 sendQueuedMessages();
             }
@@ -99,29 +112,63 @@ template<typename T> T *findOrCreateChannelForContact(ContactUser *contact, Prot
     if (!channel) {
         /* create a new channel */
         channel = new T(direction, contact->connection().data());
-        if (!channel->openChannel()) {
+        if (!channel->openChannel())
+        {
             delete channel;
-            channel = (T *)0;
+            channel = nullptr;
         }
     }
-
     return channel;
 }
 
-tego_message_id_t ConversationModel::sendFile(const QString &file_url) {
-    MessageData message(file_url, QDateTime::currentDateTime(), lastMessageId++, Queued);
+
+std::tuple<tego_file_transfer_id_t, std::unique_ptr<tego_file_hash_t>, tego_file_size_t> ConversationModel::sendFile(const QString &file_uri)
+{
+    logger::println("Sending file: {}", file_uri);
+
+    MessageData message(file_uri, QDateTime::currentDateTime(), lastMessageId++, Queued);
     message.type = ConversationModel::MessageData::Type::File;
 
-    if (m_contact->connection()) {
-        auto channel = findOrCreateChannelForContact<Protocol::FileChannel>(m_contact, Protocol::Channel::Outbound);
+    std::unique_ptr<tego_file_hash_t> fileHash;
 
-        if (channel && channel->isOpened()) {
-            if (channel->sendFileWithId(file_url, QDateTime(), message.identifier))
+    // calculate our file hash
+    if(std::ifstream file(file_uri.toStdString(), std::ios::in | std::ios::binary); file.is_open())
+    {
+        fileHash = std::make_unique<tego_file_hash_t>(file);
+        // copy for our message
+        message.fileHash = *fileHash;
+    }
+    else
+    {
+        TEGO_THROW_MSG("Could not open file {}", file_uri);
+    }
+
+	// calculate file size
+    const uint64_t fileSize = QFileInfo(file_uri).size();
+
+    if (m_contact->connection())
+    {
+        logger::trace();
+        auto channel = findOrCreateChannelForContact<Protocol::FileChannel>(m_contact, Protocol::Channel::Outbound);
+        if (channel && channel->isOpened())
+        {
+            logger::trace();
+            if (channel->sendFileWithId(message.text, message.fileHash, QDateTime(), message.identifier))
+            {
+                logger::trace();
                 message.status = Sending;
+            }
             else
+            {
+                logger::trace();
                 message.status = Error;
+            }
             message.attemptCount++;
         }
+    }
+    else
+    {
+        logger::trace();
     }
 
     beginInsertRows(QModelIndex(), 0, 0);
@@ -129,7 +176,7 @@ tego_message_id_t ConversationModel::sendFile(const QString &file_url) {
     endInsertRows();
     prune();
 
-    return static_cast<tego_message_id_t>(message.identifier);
+    return {message.identifier, std::move(fileHash), fileSize};
 }
 
 tego_message_id_t ConversationModel::sendMessage(const QString &text)
@@ -137,24 +184,22 @@ tego_message_id_t ConversationModel::sendMessage(const QString &text)
     if (text.isEmpty())
         return 0;
 
-    /* XXX: this is just to test file transfer, we can write a nice and pretty
-     * UI later. Format for files is like one would use in a browser, i.e.:
-     * file:///home/username/file.txt */
-    if (text.startsWith(QString::fromLatin1("file://"))) {
-        return sendFile(text);
-    }
-
     MessageData message(text, QDateTime::currentDateTime(), lastMessageId++, Queued);
     message.type = ConversationModel::MessageData::Type::Message;
 
-    if (m_contact->connection()) {
+    if (m_contact->connection())
+    {
         auto channel = findOrCreateChannelForContact<Protocol::ChatChannel>(m_contact, Protocol::Channel::Outbound);
-
-        if (channel && channel->isOpened()) {
+        if (channel && channel->isOpened())
+        {
             if (channel->sendChatMessageWithId(text, QDateTime(), message.identifier))
+            {
                 message.status = Sending;
+            }
             else
+            {
                 message.status = Error;
+            }
             message.attemptCount++;
         }
     }
@@ -167,54 +212,106 @@ tego_message_id_t ConversationModel::sendMessage(const QString &text)
     return static_cast<tego_message_id_t>(message.identifier);
 }
 
+void ConversationModel::acceptFile(tego_file_transfer_id_t id, const std::string& dest)
+{
+    TEGO_THROW_IF_FALSE(m_contact->connection());
+    auto channel = findOrCreateChannelForContact<Protocol::FileChannel>(m_contact, Protocol::Channel::Inbound);
+    TEGO_THROW_IF_NULL(channel);
+    TEGO_THROW_IF_FALSE(channel->isOpened());
+
+    channel->acceptFile(id, dest);
+}
+
+void ConversationModel::rejectFile(tego_file_transfer_id_t id)
+{
+    TEGO_THROW_IF_FALSE(m_contact->connection());
+    auto channel = findOrCreateChannelForContact<Protocol::FileChannel>(m_contact, Protocol::Channel::Inbound);
+    TEGO_THROW_IF_NULL(channel);
+    TEGO_THROW_IF_FALSE(channel->isOpened());
+
+    channel->rejectFile(id);
+}
+
+void ConversationModel::cancelTransfer(tego_file_transfer_id_t id)
+{
+    if(m_contact->connection())
+    {
+        // first try cancelling an inbound transfer
+        if (auto channel = findOrCreateChannelForContact<Protocol::FileChannel>(m_contact, Protocol::Channel::Inbound);
+            channel != nullptr)
+        {
+            if (channel->isOpened() && channel->cancelTransfer(id))
+            {
+                return;
+            }
+        }
+
+        // next try cancelling an outbound transfer
+        if (auto channel = findOrCreateChannelForContact<Protocol::FileChannel>(m_contact, Protocol::Channel::Outbound);
+            channel != nullptr)
+        {
+            if (channel->isOpened() && channel->cancelTransfer(id))
+            {
+                return;
+            }
+        }
+    }
+    else if(auto it = std::find_if(messages.begin(), messages.end(), [=](auto& msg) {return msg.identifier == id;});
+            it != messages.end())
+    {
+        messages.erase(it);
+    }
+    else
+    {
+        TEGO_THROW_MSG("Tego transfer {} does not exist", id);
+    }
+}
+
+
 void ConversationModel::sendQueuedMessages()
 {
     if (!m_contact->connection())
-        return;
-
-    // Quickly scan to see if we have any queued messages
-    bool haveQueued = false;
-    foreach (const MessageData &data, messages) {
-        if (data.status == Queued) {
-            haveQueued = true;
-            break;
-        }
-    }
-
-    if (!haveQueued)
         return;
 
     auto chat_channel = findOrCreateChannelForContact<Protocol::ChatChannel>(m_contact, Protocol::Channel::Outbound);
     auto file_channel = findOrCreateChannelForContact<Protocol::FileChannel>(m_contact, Protocol::Channel::Outbound);
 
     // sendQueuedMessages is called at channelOpened
-    if (!chat_channel->isOpened()) return;
-    if (!file_channel->isOpened()) return;
 
     // Iterate backwards, from oldest to newest messages
-    for (int i = messages.size() - 1; i >= 0; i--) {
-        if (messages[i].status == Queued) {
+    for (int i = messages.size() - 1; i >= 0; i--)
+    {
+        auto& m = messages[i];
+        if (m.status == Queued) {
             qDebug() << "Sending queued chat message";
-            bool ok = false;
-            switch (messages[i].type) {
+            bool attempted = false;
+            switch (m.type)
+            {
                 case ConversationModel::MessageData::Type::Message:
-                    ok = chat_channel->sendChatMessageWithId(messages[i].text, messages[i].time, messages[i].identifier);
+                    if (chat_channel->isOpened())
+                    {
+                        m.status = chat_channel->sendChatMessageWithId(m.text, m.time, m.identifier) ? Sending : Error;
+                        attempted = true;
+                    }
                     break;
                 case ConversationModel::MessageData::Type::File:
-                    ok = file_channel->sendFileWithId(messages[i].text, messages[i].time, messages[i].identifier);
+                    if (file_channel->isOpened())
+                    {
+                        logger::println("Attempted to send queued file: {}", m.text);
+                        m.status = file_channel->sendFileWithId(m.text, m.fileHash, m.time, m.identifier) ? Sending : Error;
+                        attempted = true;
+                    }
                     break;
                 default:
-                    /* XXX: Should this be BUG()? */
-                    qWarning() << "Rejected invalid message type";
+                    TEGO_BUG() << "Rejected invalid message type";
                     break;
             };
 
-            if (ok)
-                messages[i].status = Sending;
-            else
-                messages[i].status = Error;
-            messages[i].attemptCount++;
-            emit dataChanged(index(i, 0), index(i, 0));
+            if (attempted)
+            {
+                m.attemptCount++;
+                emit dataChanged(index(i, 0), index(i, 0));
+            }
         }
     }
 }
@@ -279,16 +376,8 @@ void ConversationModel::messageAcknowledged(MessageId id, bool accepted)
     data.status = accepted ? Delivered : Error;
     emit dataChanged(index(row, 0), index(row, 0));
 
-    {
-        // convert our hostname to just the service id raw string
-        auto serviceIdString = m_contact->hostname().left(TEGO_V3_ONION_SERVICE_ID_LENGTH).toUtf8();
-        // ensure valid service id
-        auto serviceId = std::make_unique<tego_v3_onion_service_id>(serviceIdString.data(), serviceIdString.size());
-        // create user id object from service id
-        auto userId = std::make_unique<tego_user_id>(*serviceId.get());
-
-        g_globals.context->callback_registry_.emit_message_acknowledged(userId.release(), static_cast<tego_message_id_t>(id), (accepted ? TEGO_TRUE : TEGO_FALSE));
-    }
+    auto userId = this->contact()->toTegoUserId();
+    g_globals.context->callback_registry_.emit_message_acknowledged(userId.release(), static_cast<tego_message_id_t>(id), (accepted ? TEGO_TRUE : TEGO_FALSE));
 }
 
 void ConversationModel::outboundChannelClosed()
@@ -338,6 +427,78 @@ void ConversationModel::onContactStatusChanged()
 {
     // Update in case section has changed
     emit dataChanged(index(0, 0), index(rowCount()-1, 0), QVector<int>() << SectionRole);
+}
+
+void ConversationModel::onFileTransferRequestReceived(tego_file_transfer_id_t id, const QString& filename, tego_file_size_t fileSize, tego_file_hash_t hash)
+{
+    // user id
+    auto userId = this->contact()->toTegoUserId();
+
+    // filename
+    auto utf8Filename = filename.toUtf8();
+    const auto rawFilenameLength = utf8Filename.size();
+    const auto rawFilenameSize = rawFilenameLength + 1; // for null terminator
+    auto rawFilename = std::make_unique<char[]>(rawFilenameSize);
+    std::copy(utf8Filename.begin(), utf8Filename.end(), rawFilename.get());
+    rawFilename[rawFilenameLength] = 0;
+
+    // filehash
+    auto heapHash = std::make_unique<tego_file_hash_t>(hash);
+
+    g_globals.context->callback_registry_.emit_file_transfer_request_received(
+        userId.release(),
+        id,
+        rawFilename.release(),
+        rawFilenameLength,
+        fileSize,
+        heapHash.release());
+}
+
+void ConversationModel::onFileTransferAcknowledged(tego_file_transfer_id_t id, bool accepted)
+{
+    int row = indexOfIdentifier(id, true);
+    if (row < 0)
+        return;
+
+    MessageData &data = messages[row];
+    data.status = accepted ? Delivered : Error;
+    emit dataChanged(index(row, 0), index(row, 0));
+
+    auto userId = this->contact()->toTegoUserId();
+    g_globals.context->callback_registry_.emit_file_transfer_request_acknowledged(
+        userId.release(),
+        id,
+        accepted ? TEGO_TRUE : TEGO_FALSE);
+}
+
+void ConversationModel::onFileTransferRequestResponded(tego_file_transfer_id_t id, tego_file_transfer_response_t response)
+{
+    auto userId = this->contact()->toTegoUserId();
+    g_globals.context->callback_registry_.emit_file_transfer_request_response_received(
+        userId.release(),
+        id,
+        response);
+}
+
+void ConversationModel::onFileTransferProgress(tego_file_transfer_id_t id, tego_file_transfer_direction_t direction, uint64_t bytesTransmitted, uint64_t bytesTotal)
+{
+    auto userId = this->contact()->toTegoUserId();
+    g_globals.context->callback_registry_.emit_file_transfer_progress(
+        userId.release(),
+        id,
+        direction,
+        bytesTransmitted,
+        bytesTotal);
+}
+
+void ConversationModel::onFileTransferFinished(tego_file_transfer_id_t id, tego_file_transfer_direction_t direction, tego_file_transfer_result_t result)
+{
+    auto userId = this->contact()->toTegoUserId();
+    g_globals.context->callback_registry_.emit_file_transfer_complete(
+        userId.release(),
+        id,
+        direction,
+        result);
 }
 
 QHash<int,QByteArray> ConversationModel::roleNames() const

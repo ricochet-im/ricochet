@@ -78,12 +78,12 @@ void HiddenService::addTarget(quint16 servicePort, QHostAddress targetAddress, q
 void HiddenService::setPrivateKey(const CryptoKey &key)
 {
     if (m_privateKey.isLoaded()) {
-        BUG() << "Cannot change the private key on an existing HiddenService";
+        TEGO_BUG() << "Cannot change the private key on an existing HiddenService";
         return;
     }
 
     if (!key.isPrivate()) {
-        BUG() << "Cannot create a hidden service with a public key";
+        TEGO_BUG() << "Cannot create a hidden service with a public key";
         return;
     }
 

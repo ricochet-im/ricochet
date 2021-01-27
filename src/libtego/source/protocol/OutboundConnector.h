@@ -52,11 +52,6 @@ class OutboundConnector : public QObject
 {
     Q_OBJECT
     Q_DISABLE_COPY(OutboundConnector)
-    Q_ENUMS(Status)
-
-    Q_PROPERTY(Status status READ status NOTIFY statusChanged)
-    Q_PROPERTY(bool isActive READ isActive NOTIFY isActiveChanged)
-
 public:
     enum Status {
         Inactive,

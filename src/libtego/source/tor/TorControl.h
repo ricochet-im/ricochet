@@ -46,19 +46,6 @@ class TorControlPrivate;
 class TorControl : public QObject
 {
     Q_OBJECT
-    Q_ENUMS(Status TorStatus)
-
-    // Status of the control connection
-    Q_PROPERTY(Status status READ status NOTIFY statusChanged)
-    // Status of Tor (and whether it believes it can connect)
-    Q_PROPERTY(TorStatus torStatus READ torStatus NOTIFY torStatusChanged)
-    // Whether it's possible to make a SOCKS connection and connect
-    Q_PROPERTY(bool hasConnectivity READ hasConnectivity NOTIFY connectivityChanged)
-    Q_PROPERTY(QString torVersion READ torVersion NOTIFY connected)
-    Q_PROPERTY(QString errorMessage READ errorMessage NOTIFY statusChanged)
-    Q_PROPERTY(QVariantMap bootstrapStatus READ bootstrapStatus NOTIFY bootstrapStatusChanged)
-    Q_PROPERTY(bool hasOwnership READ hasOwnership NOTIFY hasOwnershipChanged)
-
 public:
     // control status
     enum Status
@@ -109,9 +96,9 @@ public:
     void addHiddenService(HiddenService *service);
 
     QVariantMap bootstrapStatus() const;
-    Q_INVOKABLE QObject *getConfiguration(const QString &options);
-    Q_INVOKABLE QObject *setConfiguration(const QVariantMap &options);
-    Q_INVOKABLE PendingOperation *saveConfiguration();
+    QObject *getConfiguration(const QString &options);
+    QObject *setConfiguration(const QVariantMap &options);
+    PendingOperation *saveConfiguration();
 
 signals:
     void statusChanged(int newStatus, int oldStatus);

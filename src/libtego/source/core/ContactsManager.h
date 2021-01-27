@@ -60,7 +60,7 @@ public:
 
     /* Create a new user and a contact request for that user. Use this instead of addContact.
      * Note that contactID should be an ricochet: ID. */
-    Q_INVOKABLE ContactUser *createContactRequest(const QString &contactID, const QString &message);
+    ContactUser *createContactRequest(const QString &contactID, const QString &message);
 
     /* addContact will add the contact, but does not create a request. Use createContactRequest */
     ContactUser *addContact(const QString& hostname);

@@ -121,7 +121,7 @@ QString Connection::serverHostname() const
         hostname = d->socket->property("localHostname").toString();
 
     if (!hostname.endsWith(QStringLiteral(".onion"))) {
-        BUG() << "Connection does not have a valid server hostname:" << hostname;
+        TEGO_BUG() << "Connection does not have a valid server hostname:" << hostname;
         return QString();
     }
 
@@ -142,7 +142,7 @@ int Connection::age() const
 void ConnectionPrivate::setSocket(QTcpSocket *s, Connection::Direction d)
 {
     if (socket) {
-        BUG() << "Connection already has a socket";
+        TEGO_BUG() << "Connection already has a socket";
         return;
     }
 
@@ -154,7 +154,7 @@ void ConnectionPrivate::setSocket(QTcpSocket *s, Connection::Direction d)
     socket->setParent(q);
 
     if (socket->state() != QAbstractSocket::ConnectedState) {
-        BUG() << "Connection created with socket in a non-connected state" << socket->state();
+        TEGO_BUG() << "Connection created with socket in a non-connected state" << socket->state();
     }
 
     Channel *control = new ControlChannel(direction == Connection::ClientSide ? Channel::Outbound : Channel::Inbound, q);
@@ -163,7 +163,7 @@ void ConnectionPrivate::setSocket(QTcpSocket *s, Connection::Direction d)
     insertChannel(control);
 
     if (!control->isOpened() || control->identifier() != 0 || q->channel(0) != control) {
-        BUG() << "Control channel on new connection is not set up properly";
+        TEGO_BUG() << "Control channel on new connection is not set up properly";
         q->close();
         return;
     }
@@ -172,7 +172,7 @@ void ConnectionPrivate::setSocket(QTcpSocket *s, Connection::Direction d)
         // The server side is implicitly authenticated (by the transport) as the correct service, so grant that
         QString serverName = q->serverHostname();
         if (serverName.isEmpty()) {
-            BUG() << "Server side of connection doesn't have an authenticated name, aborting";
+            TEGO_BUG() << "Server side of connection doesn't have an authenticated name, aborting";
             q->close();
             return;
         }
@@ -210,7 +210,7 @@ void ConnectionPrivate::closeImmediately()
         socket->abort();
 
     if (!wasClosed) {
-        BUG() << "Socket was forcefully closed but never emitted closed signal";
+        TEGO_BUG() << "Socket was forcefully closed but never emitted closed signal";
         wasClosed = true;
         emit q->closed();
     }
@@ -218,19 +218,20 @@ void ConnectionPrivate::closeImmediately()
     if (!channels.isEmpty()) {
         foreach (Channel *c, channels)
             qDebug() << "Open channel:" << c << c->type() << c->connection();
-        BUG() << "Channels remain open after forcefully closing connection socket";
+        TEGO_BUG() << "Channels remain open after forcefully closing connection socket";
     }
 }
 
 void ConnectionPrivate::socketDisconnected()
 {
     qDebug() << "Connection" << this << "disconnected";
-    closeAllChannels();
-
+    // emit close signal first so FileChannel can bubble up errors
     if (!wasClosed) {
         wasClosed = true;
         emit q->closed();
     }
+
+    closeAllChannels();
 }
 
 void ConnectionPrivate::socketReadable()
@@ -331,7 +332,7 @@ void ConnectionPrivate::socketReadable()
             socket->abort();
             return;
         } else if (re < PacketHeaderSize) {
-            BUG() << "Socket had" << available << "bytes available but peek only returned" << re;
+            TEGO_BUG() << "Socket had" << available << "bytes available but peek only returned" << re;
             return;
         }
 
@@ -356,7 +357,7 @@ void ConnectionPrivate::socketReadable()
             } else {
                 // Because of QTcpSocket buffering, we can expect that up to 'available' bytes
                 // will read. Treat anything less as an error condition.
-                BUG() << "Socket read was unexpectedly small;" << available << "bytes should've been available but we read" << re;
+                TEGO_BUG() << "Socket read was unexpectedly small;" << available << "bytes should've been available but we read" << re;
             }
             socket->abort();
             return;
@@ -370,7 +371,7 @@ void ConnectionPrivate::socketReadable()
                 qDebug() << "Connection socket error" << socket->error() << "during read:" << socket->errorString();
             } else {
                 // As above
-                BUG() << "Socket read was unexpectedly small;" << available << "bytes should've been available but we read" << re;
+                TEGO_BUG() << "Socket read was unexpectedly small;" << available << "bytes should've been available but we read" << re;
             }
             socket->abort();
             return;
@@ -392,7 +393,7 @@ void ConnectionPrivate::socketReadable()
         if (channel->connection() != q) {
             // If this fails, something is extremely broken. It may be dangerous to continue
             // processing any data at all. Crash gracefully.
-            BUG() << "Channel" << channelId << "found on connection" << this << "but its connection is"
+            TEGO_BUG() << "Channel" << channelId << "found on connection" << this << "but its connection is"
                   << channel->connection();
             qFatal("Connection mismatch while handling packet");
             return;
@@ -410,7 +411,7 @@ bool ConnectionPrivate::writePacket(Channel *channel, const QByteArray &data)
 {
     if (channel->connection() != q) {
         // As above, dangerously broken, crash the process to avoid damage
-        BUG() << "Writing packet for channel" << channel->identifier() << "on connection" << this
+        TEGO_BUG() << "Writing packet for channel" << channel->identifier() << "on connection" << this
               << "but its connection is" << channel->connection();
         qFatal("Connection mismatch while writing packet");
         return false;
@@ -422,12 +423,12 @@ bool ConnectionPrivate::writePacket(Channel *channel, const QByteArray &data)
 bool ConnectionPrivate::writePacket(int channelId, const QByteArray &data)
 {
     if (channelId < 0 || channelId > UINT16_MAX) {
-        BUG() << "Cannot write packet for channel with invalid identifier" << channelId;
+        TEGO_BUG() << "Cannot write packet for channel with invalid identifier" << channelId;
         return false;
     }
 
     if (data.size() > PacketMaxDataSize) {
-        BUG() << "Cannot write oversized packet of" << data.size() << "bytes to channel" << channelId;
+        TEGO_BUG() << "Cannot write oversized packet of" << data.size() << "bytes to channel" << channelId;
         return false;
     }
 
@@ -480,18 +481,18 @@ int ConnectionPrivate::availableOutboundChannelId()
 
     if (channels.contains(nextOutboundChannelId)) {
         // Abort the connection if we still couldn't find an id, because it's probably a nasty bug
-        BUG() << "Can't find an available outbound channel ID for connection; aborting connection";
+        TEGO_BUG() << "Can't find an available outbound channel ID for connection; aborting connection";
         socket->abort();
         return -1;
     }
 
     if (nextOutboundChannelId < minId || nextOutboundChannelId > maxId) {
-        BUG() << "Selected a channel id that isn't within range";
+        TEGO_BUG() << "Selected a channel id that isn't within range";
         return -1;
     }
 
     if (evenNumbered == bool(nextOutboundChannelId % 2)) {
-        BUG() << "Selected a channel id that isn't valid for this side of the connection";
+        TEGO_BUG() << "Selected a channel id that isn't valid for this side of the connection";
         return -1;
     }
 
@@ -518,23 +519,23 @@ bool ConnectionPrivate::isValidAvailableChannelId(int id, Connection::Direction 
 bool ConnectionPrivate::insertChannel(Channel *channel)
 {
     if (channel->connection() != q) {
-        BUG() << "Connection tried to insert a channel assigned to a different connection";
+        TEGO_BUG() << "Connection tried to insert a channel assigned to a different connection";
         return false;
     }
 
     if (channel->identifier() < 0) {
-        BUG() << "Connection tried to insert a channel without a valid identifier";
+        TEGO_BUG() << "Connection tried to insert a channel without a valid identifier";
         return false;
     }
 
     if (channels.contains(channel->identifier())) {
-        BUG() << "Connection tried to insert a channel with a duplicate id" << channel->identifier()
+        TEGO_BUG() << "Connection tried to insert a channel with a duplicate id" << channel->identifier()
               << "- we have" << channels.value(channel->identifier()) << "and inserted" << channel;
         return false;
     }
 
     if (channel->parent() != q) {
-        BUG() << "Connection inserted a channel without expected parent object. Fixing.";
+        TEGO_BUG() << "Connection inserted a channel without expected parent object. Fixing.";
         channel->setParent(q);
     }
 
@@ -545,7 +546,7 @@ bool ConnectionPrivate::insertChannel(Channel *channel)
 void ConnectionPrivate::removeChannel(Channel *channel)
 {
     if (channel->connection() != q) {
-        BUG() << "Connection tried to remove a channel assigned to a different connection";
+        TEGO_BUG() << "Connection tried to remove a channel assigned to a different connection";
         return;
     }
 
@@ -566,7 +567,7 @@ void ConnectionPrivate::closeAllChannels()
         channel->closeChannel();
 
     if (!channels.isEmpty())
-        BUG() << "Channels remain open on connection after calling closeAllChannels";
+        TEGO_BUG() << "Channels remain open on connection after calling closeAllChannels";
 }
 
 QHash<int,Channel*> Connection::channels()
@@ -591,34 +592,34 @@ bool Connection::setPurpose(Purpose value)
 
     switch (value) {
         case Purpose::Unknown:
-            BUG() << "A connection can't reset to unknown purpose";
+            TEGO_BUG() << "A connection can't reset to unknown purpose";
             return false;
         case Purpose::KnownContact:
             if (!hasAuthenticated(HiddenServiceAuth)) {
-                BUG() << "Connection purpose cannot be KnownContact without authenticating a service";
+                TEGO_BUG() << "Connection purpose cannot be KnownContact without authenticating a service";
                 return false;
             }
             break;
         case Purpose::OutboundRequest:
             if (d->direction != ClientSide) {
-                BUG() << "Connection purpose cannot be OutboundRequest on an inbound connection";
+                TEGO_BUG() << "Connection purpose cannot be OutboundRequest on an inbound connection";
                 return false;
             } else if (d->purpose != Purpose::Unknown) {
-                BUG() << "Connection purpose cannot change from" << int(d->purpose) << "to OutboundRequest";
+                TEGO_BUG() << "Connection purpose cannot change from" << int(d->purpose) << "to OutboundRequest";
                 return false;
             }
             break;
         case Purpose::InboundRequest:
             if (d->direction != ServerSide) {
-                BUG() << "Connection purpose cannot be InboundRequest on an outbound connection";
+                TEGO_BUG() << "Connection purpose cannot be InboundRequest on an outbound connection";
                 return false;
             } else if (d->purpose != Purpose::Unknown) {
-                BUG() << "Connection purpose cannot change from" << int(d->purpose) << "to InboundRequest";
+                TEGO_BUG() << "Connection purpose cannot change from" << int(d->purpose) << "to InboundRequest";
                 return false;
             }
             break;
         default:
-            BUG() << "Purpose type" << int(value) << "is not defined";
+            TEGO_BUG() << "Purpose type" << int(value) << "is not defined";
             return false;
     }
 
@@ -649,7 +650,7 @@ QString Connection::authenticatedIdentity(AuthenticationType type) const
 void Connection::grantAuthentication(AuthenticationType type, const QString &identity)
 {
     if (hasAuthenticated(type)) {
-        BUG() << "Tried to redundantly grant" << type << "authentication to connection";
+        TEGO_BUG() << "Tried to redundantly grant" << type << "authentication to connection";
         return;
     }
 

@@ -117,12 +117,12 @@ void OutgoingContactRequest::attemptAutoAccept()
 void OutgoingContactRequest::sendRequest(const QSharedPointer<Protocol::Connection> &connection)
 {
     if (connection != user->connection()) {
-        BUG() << "OutgoingContactRequest connection doesn't match the assigned user";
+        TEGO_BUG() << "OutgoingContactRequest connection doesn't match the assigned user";
         return;
     }
 
     if (connection->purpose() != Protocol::Connection::Purpose::OutboundRequest) {
-        BUG() << "OutgoingContactRequest told to use a connection of invalid purpose" << int(connection->purpose());
+        TEGO_BUG() << "OutgoingContactRequest told to use a connection of invalid purpose" << int(connection->purpose());
         return;
     }
 
@@ -149,7 +149,7 @@ void OutgoingContactRequest::sendRequest(const QSharedPointer<Protocol::Connecti
         channel->setMessage(message());
 
     if (!channel->openChannel()) {
-        BUG() << "Channel for outgoing contact request failed";
+        TEGO_BUG() << "Channel for outgoing contact request failed";
         return;
     }
 }
@@ -209,7 +209,7 @@ void OutgoingContactRequest::requestStatusChanged(int status)
             reject(true);
             break;
         default:
-            BUG() << "Unknown ContactRequest response status";
+            TEGO_BUG() << "Unknown ContactRequest response status";
             break;
     }
 }

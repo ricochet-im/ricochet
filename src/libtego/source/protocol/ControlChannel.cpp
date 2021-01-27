@@ -41,7 +41,7 @@ ControlChannel::ControlChannel(Direction direction, Connection *connection)
     : Channel(QStringLiteral("control"), direction, connection)
 {
     if (connection->channel(0))
-        BUG() << "Created ControlChannel for connection which already has a channel 0";
+        TEGO_BUG() << "Created ControlChannel for connection which already has a channel 0";
 
     Q_D(Channel);
     d->isOpened = true;
@@ -51,12 +51,12 @@ ControlChannel::ControlChannel(Direction direction, Connection *connection)
 bool ControlChannel::sendOpenChannel(Channel *channel)
 {
     if (channel->isOpened() || channel->direction() != Outbound || channel->identifier() >= 0) {
-        BUG() << "openChannel called for a" << channel->type() << "channel in an unexpected state";
+        TEGO_BUG() << "openChannel called for a" << channel->type() << "channel in an unexpected state";
         return false;
     }
 
     if (channel->connection() != connection()) {
-        BUG() << "openChannel called for" << channel->type() << "channel on a different connection";
+        TEGO_BUG() << "openChannel called for" << channel->type() << "channel on a different connection";
         return false;
     }
 
@@ -74,17 +74,17 @@ bool ControlChannel::sendOpenChannel(Channel *channel)
     if (!request->has_channel_type() || !request->has_channel_identifier() ||
         request->channel_identifier() < 0 || request->channel_identifier() > UINT16_MAX)
     {
-        BUG() << "Outbound OpenChannel request isn't valid:" << QString::fromStdString(request->DebugString());
+        TEGO_BUG() << "Outbound OpenChannel request isn't valid:" << QString::fromStdString(request->DebugString());
         return false;
     }
 
     if (request->channel_identifier() != channel->identifier()) {
-        BUG() << "Channel identifier doesn't match in OpenChannel request of type" << channel->type();
+        TEGO_BUG() << "Channel identifier doesn't match in OpenChannel request of type" << channel->type();
         return false;
     }
 
     if (!connection()->d->insertChannel(channel)) {
-        BUG() << "Valid channel refused by connection";
+        TEGO_BUG() << "Valid channel refused by connection";
         return false;
     }
 
@@ -107,21 +107,21 @@ bool ControlChannel::allowInboundChannelRequest(const Data::Control::OpenChannel
 {
     Q_UNUSED(request);
     Q_UNUSED(result);
-    BUG() << "ControlChannel should never receive channel requests";
+    TEGO_BUG() << "ControlChannel should never receive channel requests";
     return false;
 }
 
 bool ControlChannel::allowOutboundChannelRequest(Data::Control::OpenChannel *request)
 {
     Q_UNUSED(request);
-    BUG() << "ControlChannel should never send channel requests";
+    TEGO_BUG() << "ControlChannel should never send channel requests";
     return false;
 }
 
 bool ControlChannel::processChannelOpenResult(const Data::Control::ChannelResult *result)
 {
     Q_UNUSED(result);
-    BUG() << "ControlChannel should never receive a channel request response";
+    TEGO_BUG() << "ControlChannel should never receive a channel request response";
     return false;
 }
 
@@ -174,12 +174,12 @@ void ControlChannel::handleOpenChannel(const Data::Control::OpenChannel &message
     } else {
         if (!channel->d_ptr->openChannelInbound(&message, response)) {
             if (response->opened())
-                BUG() << "openChannelInbound handler failed but response said successful. Assuming failure.";
+                TEGO_BUG() << "openChannelInbound handler failed but response said successful. Assuming failure.";
             response->set_opened(false);
         }
 
         if (!response->has_opened()) {
-            BUG() << "inboundOpenChannel handler for" << channel->type() << "did not update response message";
+            TEGO_BUG() << "inboundOpenChannel handler for" << channel->type() << "did not update response message";
             response->set_opened(false);
             response->set_common_error(Data::Control::ChannelResult::GenericError);
         }
@@ -189,7 +189,7 @@ void ControlChannel::handleOpenChannel(const Data::Control::OpenChannel &message
         if (!channel || !channel->isOpened() || channel->direction() != Inbound ||
             channel->identifier() != id)
         {
-            BUG() << "Channel" << channel->type() << "in unexpected state after inbound open";
+            TEGO_BUG() << "Channel" << channel->type() << "in unexpected state after inbound open";
             response->set_opened(false);
             // The channel may think it's open, so force it to close
             channel->closeChannel();
@@ -233,10 +233,10 @@ void ControlChannel::handleChannelResult(const Data::Control::ChannelResult &mes
     bool opened = channel->d_ptr->openChannelResult(&message);
 
     if (opened && !channel->isOpened()) {
-        BUG() << "Outbound channel isn't open after successful ChannelResult";
+        TEGO_BUG() << "Outbound channel isn't open after successful ChannelResult";
         channel->closeChannel();
     } else if (!opened && channel->isOpened()) {
-        BUG() << "Outbound channel is open after failed ChannelResult";
+        TEGO_BUG() << "Outbound channel is open after failed ChannelResult";
         channel->closeChannel();
     }
 
@@ -244,7 +244,7 @@ void ControlChannel::handleChannelResult(const Data::Control::ChannelResult &mes
     // instance to be deleted once it's safe to do so
     if (!opened || !channel->isOpened()) {
         if (connection()->channel(channel->identifier())) {
-            BUG() << "Channel not invalidated after failed outbound OpenChannel request";
+            TEGO_BUG() << "Channel not invalidated after failed outbound OpenChannel request";
             channel->closeChannel();
         }
     } else {

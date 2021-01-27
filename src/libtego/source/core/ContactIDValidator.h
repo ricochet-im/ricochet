@@ -51,8 +51,8 @@ public:
     virtual void fixup(QString &text) const;
     virtual State validate(QString &text, int &pos) const;
 
-    Q_INVOKABLE ContactUser *matchingContact(const QString &text) const;
-    Q_INVOKABLE bool matchesIdentity(const QString &text) const;
+    ContactUser *matchingContact(const QString &text) const;
+    bool matchesIdentity(const QString &text) const;
 
 signals:
     void failed() const;

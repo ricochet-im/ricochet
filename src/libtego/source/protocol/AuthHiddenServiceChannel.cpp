@@ -87,12 +87,12 @@ void AuthHiddenServiceChannel::setPrivateKey(const CryptoKey &key)
 {
     Q_D(AuthHiddenServiceChannel);
     if (isOpened()) {
-        BUG() << "Channel is already open";
+        TEGO_BUG() << "Channel is already open";
         return;
     }
 
     if (!key.isLoaded() || !key.isPrivate()) {
-        BUG() << "AuthHiddenServiceChannel cannot authenticate without a valid private key";
+        TEGO_BUG() << "AuthHiddenServiceChannel cannot authenticate without a valid private key";
         return;
     }
 
@@ -151,7 +151,7 @@ bool AuthHiddenServiceChannel::allowOutboundChannelRequest(Data::Control::OpenCh
     Q_D(AuthHiddenServiceChannel);
 
     if (!d->privateKey.isLoaded()) {
-        BUG() << "AuthHiddenServiceChannel can't be opened without a private key";
+        TEGO_BUG() << "AuthHiddenServiceChannel can't be opened without a private key";
         return false;
     }
 
@@ -185,7 +185,7 @@ void AuthHiddenServiceChannel::sendAuthMessage()
     Q_D(AuthHiddenServiceChannel);
 
     if (direction() != Outbound) {
-        BUG() << "Proof message is only sent from outbound channels";
+        TEGO_BUG() << "Proof message is only sent from outbound channels";
         return;
     }
 
@@ -193,7 +193,7 @@ void AuthHiddenServiceChannel::sendAuthMessage()
         return;
 
     if (d->clientCookie.size() != COOKIE_SIZE || d->serverCookie.size() != COOKIE_SIZE) {
-        BUG() << "AuthHiddenServiceChannel can't create a proof without valid cookies";
+        TEGO_BUG() << "AuthHiddenServiceChannel can't create a proof without valid cookies";
         closeChannel();
         return;
     }
@@ -227,12 +227,12 @@ QByteArray AuthHiddenServiceChannelPrivate::getProofKey() const
 {
     if (clientCookie.size() != COOKIE_SIZE)
     {
-        BUG() << "Invalid client cookie size; should be " << COOKIE_SIZE;
+        TEGO_BUG() << "Invalid client cookie size; should be " << COOKIE_SIZE;
         return {};
     }
     if (serverCookie.size() != COOKIE_SIZE)
     {
-        BUG() << "Invalid server cookie size; should be " << COOKIE_SIZE;
+        TEGO_BUG() << "Invalid server cookie size; should be " << COOKIE_SIZE;
         return {};
     }
 
@@ -245,7 +245,7 @@ QByteArray AuthHiddenServiceChannelPrivate::getProofMessage(const QByteArray& cl
     QByteArray serverServiceId = connection->serverServiceId();
 
     if (clientServiceId.size() != TEGO_V3_ONION_SERVICE_ID_LENGTH || serverServiceId.size() != TEGO_V3_ONION_SERVICE_ID_LENGTH) {
-        BUG() << "AuthHiddenServiceChannel can't figure out the client and server hostnames";
+        TEGO_BUG() << "AuthHiddenServiceChannel can't figure out the client and server hostnames";
         return {};
     }
 
@@ -282,7 +282,7 @@ void AuthHiddenServiceChannel::handleProof(const Data::AuthHiddenService::Proof 
     }
 
     if (d->clientCookie.size() != COOKIE_SIZE || d->serverCookie.size() != COOKIE_SIZE) {
-        BUG() << "AuthHiddenServiceChannel can't create a proof without valid cookies";
+        TEGO_BUG() << "AuthHiddenServiceChannel can't create a proof without valid cookies";
         closeChannel();
         return;
     }

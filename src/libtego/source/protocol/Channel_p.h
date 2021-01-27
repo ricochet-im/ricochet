@@ -71,14 +71,14 @@ template<typename T> bool Channel::sendMessage(const T &message)
 {
     int size = message.ByteSize();
     if (size > ConnectionPrivate::PacketMaxDataSize) {
-        BUG() << "Message on" << type() << "channel is too big -" << size << "bytes:"
-              << QString::fromStdString(message.DebugString());
+        TEGO_BUG() << "Message on" << type() << "channel is too big -" << size << "bytes:"
+                   << QString::fromStdString(message.DebugString());
         return false;
     }
 
     if (size < 1) {
-        BUG() << "Message on" << type() << "channel encoded as invalid length; this isn't possible to send:"
-              << QString::fromStdString(message.DebugString());
+        TEGO_BUG() << "Message on" << type() << "channel encoded as invalid length; this isn't possible to send:"
+                   << QString::fromStdString(message.DebugString());
         return false;
     }
 
@@ -86,7 +86,7 @@ template<typename T> bool Channel::sendMessage(const T &message)
     quint8 *end = message.SerializeWithCachedSizesToArray(reinterpret_cast<quint8*>(packet.data()));
     quint8 *expected_end = reinterpret_cast<quint8*>(packet.data() + size);
     if (end != expected_end) {
-        BUG() << "Unexpected packet size after message serialization. Expected" << size << "but got" << qptrdiff(end - expected_end);
+        TEGO_BUG() << "Unexpected packet size after message serialization. Expected" << size << "but got" << qptrdiff(end - expected_end);
         return false;
     }
 

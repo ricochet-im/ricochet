@@ -19,6 +19,8 @@
 // Qt
 #include <QClipboard>
 #include <QDateTime>
+#include <QDir>
+#include <QFileDialog>
 #include <QGuiApplication>
 #include <QMessageBox>
 #include <QQuickItem>

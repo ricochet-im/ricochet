@@ -1,5 +1,5 @@
 # get us onto the latest c++
-QMAKE_CXXFLAGS += --std=c++2a
+QMAKE_CXXFLAGS += --std=c++2a -Wall -Wextra
 
 # link time optimization for non-windows targets
 !win32-g++ {

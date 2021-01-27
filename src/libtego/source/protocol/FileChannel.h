@@ -36,6 +36,7 @@
 #include "protocol/Channel.h"
 #include "protocol/FileChannel.pb.h"
 #include "tego/tego.h"
+#include "file_hash.hpp"
 
 namespace Protocol
 {
@@ -46,88 +47,114 @@ class FileChannel : public Channel
     Q_DISABLE_COPY(FileChannel);
 
 public:
-    typedef quint32 file_id_t;
-    typedef quint32 chunk_id_t;
-    constexpr static int FileMaxChunkSize = 2000;
-    constexpr static int SHA3_512_BUFSIZE = 65535;
-
     explicit FileChannel(Direction direction, Connection *connection);
 
-    bool sendFileWithId(QString file_url, QDateTime time, file_id_t id);
-
+    bool sendFileWithId(QString file_url, const tego_file_hash_t& fileHash, QDateTime time, tego_file_transfer_id_t id);
+    void acceptFile(tego_file_transfer_id_t id, const std::string& dest);
+    void rejectFile(tego_file_transfer_id_t id);
+    bool cancelTransfer(tego_file_transfer_id_t id);
+    // signals bubble up to the ConversationModel object that owns this FileChannel
 signals:
-    void fileReceived(const QDateTime &time, file_id_t id);
-    void fileAcknowledged(file_id_t id, tego_bool_t accepted);
-    
+    void fileTransferRequestReceived(tego_file_transfer_id_t id, QString fileName, tego_file_size_t fileSize, tego_file_hash_t);
+    void fileTransferAcknowledged(tego_file_transfer_id_t id, bool ack);
+    void fileTransferRequestResponded(tego_file_transfer_id_t id, tego_file_transfer_response_t response);
+    void fileTransferProgress(tego_file_transfer_id_t id, tego_file_transfer_direction_t direction, tego_file_size_t bytesTransmitted, tego_file_size_t bytesTotal);
+    void fileTransferFinished(tego_file_transfer_id_t id, tego_file_transfer_direction_t direction, tego_file_transfer_result_t);
+
 protected:
     virtual bool allowInboundChannelRequest(const Data::Control::OpenChannel *request, Data::Control::ChannelResult *result);
     virtual bool allowOutboundChannelRequest(Data::Control::OpenChannel *request);
     virtual void receivePacket(const QByteArray &packet);
 private:
-    file_id_t nextFileId();
-    file_id_t file_id;
-    size_t fsize_to_chunks(size_t sz);
-    
-    struct queuedFile {
-        file_id_t id;
-        std::string path;
-        size_t size;
-        chunk_id_t cur_chunk;
-        bool finished;
-        bool peer_did_accept;
+    // when our socket goes away
+    void onConnectionClosed();
+
+    // we need runtime checks to ensure that sizes stored as tego_file_size_t are representable as
+    // std::streamoff too where appropriate
+    // verify that std::streamoff is representable as a tego_file_size_t
+    static_assert(std::numeric_limits<std::streamoff>::max() <= std::numeric_limits<tego_file_size_t>::max());
+    // verify the QFileInfo::size() method returns a qint64
+    static_assert(std::is_same_v<decltype(QFileInfo().size()), qint64>);
+    // verify that std::streamoff is representable as qint64 (type used by Qt File APIs for sizes)
+    static_assert(std::numeric_limits<std::streamoff>::max() <= std::numeric_limits<qint64>::max());
+
+    struct outgoing_transfer_record
+    {
+        outgoing_transfer_record(
+            tego_file_transfer_id_t id,
+            const std::string& filePath,
+            tego_file_size_t fileSize);
+
+        std::chrono::time_point<std::chrono::system_clock> beginTime;
+
+        const tego_file_transfer_id_t id;
+        const tego_file_size_t size;
+        tego_file_size_t offset;
+        std::ifstream stream;
+
+        inline bool finished() const { return offset == size; }
     };
 
-    struct pendingRecvFile {
-        file_id_t id;
-        size_t size;
-        chunk_id_t cur_chunk;
-        chunk_id_t n_chunks;
-        chunk_id_t missing_chunks;
-        std::string path;
-        std::string sha3_512;
-        std::string name;
-    };
+    struct incoming_transfer_record
+	{
+        incoming_transfer_record(
+            tego_file_transfer_id_t id,
+            tego_file_size_t fileSize,
+            const std::string& fileHash);
+        // explicit destructor defined, so we need to explicitly define a move constructor
+		// for usage with std::map
+        incoming_transfer_record(incoming_transfer_record&&) = default;
 
-    std::vector<queuedFile> queuedFiles;            //files that have already been queued to be sent and the destination has replied accepting the transfer
-    std::vector<queuedFile> pendingFileHeaders;     //file headers that we sent and that are waiting for an ack
-    std::vector<pendingRecvFile> pendingRecvFiles;  //files that we have accepted to recieve, and are waiting on chunks
+        ~incoming_transfer_record();
+
+        std::chrono::time_point<std::chrono::system_clock> beginTime;
+
+        const tego_file_transfer_id_t id;
+        const tego_file_size_t size;
+        std::string dest; // destination to save to
+        const std::string hash;
+
+        // need to write and read
+        std::fstream stream;
+
+        std::string partial_dest() const;
+        void open_stream(const std::string& dest);
+    };
+    // 63 kb, max packet size is UINT16_MAX (ak 65535, 64k - 1) so leave space for other data
+    constexpr static tego_file_size_t FileMaxChunkSize = 63*1024; // bytes
+    // intermediate buffer we load chunks from disk into
+    // each access to this buffer happens on the same thread, and only within the scope of a function
+    // so no need to worry about synchronization or sharing between file transfers
+    char chunkBuffer[FileMaxChunkSize];
+
+    // file transfers we are sending
+    std::map<tego_file_transfer_id_t, outgoing_transfer_record> outgoingTransfers;
+    // file transfers we are receiving
+    std::map<tego_file_transfer_id_t, incoming_transfer_record> incomingTransfers;
+
+    // called when something unrecoverable occurs, or contact is sending us bad packets, or we get in
+    // some other allegedly impossible state; kills all our transfers and disconnect the channel
+    void emitFatalError(std::string&& msg, tego_file_transfer_result_t error, bool shouldCloseChannel);
+    // called when some error occurs that does not affect other transfers
+    void emitNonFatalError(std::string&& msg, tego_file_transfer_id_t id, tego_file_transfer_result_t error);
+
+    bool verifyPacket(Data::File::Packet const& message);
+    bool verifyFileHeader(Data::File::FileHeader const& message);
+    bool verifyFileHeaderAck(Data::File::FileHeaderAck const& message);
+    bool verifyFileHeaderResponse(Data::File::FileHeaderResponse const& message);
+    bool verifyFileChunk(Data::File::FileChunk const& message);
+    bool verifyFileChunkAck(Data::File::FileChunkAck const& message);
+    bool verifyFileTransferCompleteNotification(Data::File::FileTransferCompleteNotification const& message);
 
     void handleFileHeader(const Data::File::FileHeader &message);
+    void handleFileHeaderAck(const Data::File::FileHeaderAck &message);
+    void handleFileHeaderResponse(const Data::File::FileHeaderResponse &message);
     void handleFileChunk(const Data::File::FileChunk &message);
     void handleFileChunkAck(const Data::File::FileChunkAck &message);
-    void handleFileHeaderAck(const Data::File::FileHeaderAck &message);
-    bool sendChunkWithId(file_id_t fid, std::string &fpath, chunk_id_t cid);
-    bool sendNextChunk(file_id_t id);
-    /*
-     * get the sha3_512 hash of a buffer
-     * @param in : pointer to a buffer with the data to be hashed
-     * @param in_sz : size of in
-     * @param out : pointer to a buffer with at least EVP_MAX_MD_SIZE bytes
-     * allocated to it
-     * @param out_sz : pointer to an int which will have the amount of bytes
-     * written stored in
-     */
-    void sha3_512_buf(const char *in, const unsigned int in_sz, unsigned char *out, unsigned int *out_sz);
-    /*
-     * get the sha3_512 hash of a file by path
-     * @param fpath : file path
-     * @param out : pointer to a buffer with at least EVP_MAX_MD_SIZE bytes
-     * allocated to it
-     * @param out_sz : pointer to an int which will have the amount of bytes
-     * written stored in
-     */
-    void sha3_512_file(std::string &fpath, unsigned char *out, unsigned int *out_sz);
-    /*
-     * get the sha3_512 hash of a file by ifstream reference
-     * @param file : ifstream that has the opened file
-     * @param out : pointer to a buffer with at least EVP_MAX_MD_SIZE bytes
-     * allocated to it
-     * @param out_sz : pointer to an int which will have the amount of bytes
-     * written stored in
-     */
-    void sha3_512_file(std::ifstream &file, unsigned char *out, unsigned int *out_sz);
+    void handleFileTransferCompleteNotification(const Data::File::FileTransferCompleteNotification &message);
+
+    void sendNextChunk(tego_file_transfer_id_t id);
 };
 
 }
-
 #endif

@@ -40,13 +40,9 @@
 class ConversationModel : public QAbstractListModel
 {
     Q_OBJECT
-    Q_ENUMS(MessageStatus)
-
-    Q_PROPERTY(ContactUser* contact READ contact WRITE setContact NOTIFY contactChanged)
-    Q_PROPERTY(int unreadCount READ unreadCount RESET resetUnreadCount NOTIFY unreadCountChanged)
-
 public:
     typedef Protocol::ChatChannel::MessageId MessageId;
+    static_assert(std::is_same_v<MessageId, tego_message_id_t>);
 
     enum {
         TimestampRole = Qt::UserRole,
@@ -70,15 +66,19 @@ public:
     void setContact(ContactUser *contact);
 
     int unreadCount() const { return m_unreadCount; }
-    Q_INVOKABLE void resetUnreadCount();
+    void resetUnreadCount();
 
     virtual QHash<int,QByteArray> roleNames() const;
     virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
     virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
 
-public slots:
-    tego_message_id_t sendFile(const QString &file_url);
+    std::tuple<tego_file_transfer_id_t, std::unique_ptr<tego_file_hash_t>, tego_file_size_t> sendFile(const QString &file_url);
     tego_message_id_t sendMessage(const QString &text);
+
+    void acceptFile(tego_file_transfer_id_t id, const std::string& dest);
+    void rejectFile(tego_file_transfer_id_t id);
+    void cancelTransfer(tego_file_transfer_id_t id);
+
     void clear();
 
 signals:
@@ -92,6 +92,12 @@ private slots:
     void sendQueuedMessages();
     void onContactStatusChanged();
 
+    void onFileTransferRequestReceived(tego_file_transfer_id_t id, const QString& filename, tego_file_size_t fileSize, tego_file_hash_t hash);
+    void onFileTransferAcknowledged(tego_file_transfer_id_t id, bool ack);
+    void onFileTransferRequestResponded(tego_file_transfer_id_t id, tego_file_transfer_response_t response);
+    void onFileTransferProgress(tego_file_transfer_id_t id, tego_file_transfer_direction_t direction, tego_file_size_t bytesTransmitted, tego_file_size_t bytesTotal);
+    void onFileTransferFinished(tego_file_transfer_id_t id, tego_file_transfer_direction_t direction, tego_file_transfer_result_t result);
+
 private:
     struct MessageData {
         enum Type {
@@ -99,6 +105,7 @@ private:
             File
         } type;
         QString text;
+        tego_file_hash_t fileHash;
         QDateTime time;
         MessageId identifier;
         MessageStatus status;

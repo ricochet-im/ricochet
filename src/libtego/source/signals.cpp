@@ -3,6 +3,7 @@
 #include "error.hpp"
 #include "ed25519.hpp"
 #include "user.hpp"
+#include "file_hash.hpp"
 
 namespace tego
 {
@@ -39,98 +40,6 @@ namespace tego
     void callback_registry::push_back(type_erased_callback&& callback)
     {
         this->context_->callback_queue_.push_back(std::move(callback));
-    }
-
-    //
-    // Callback Register Arg Cleanup Functions
-    //
-
-    void callback_registry::cleanup_tor_error_occurred_args(
-        tego_tor_error_origin_t,
-        tego_error_t* error)
-    {
-        delete error;
-    }
-
-    void callback_registry::cleanup_update_tor_daemon_config_succeeded_args(
-        tego_bool_t)
-    { }
-
-    void callback_registry::cleanup_tor_control_status_changed_args(
-       tego_tor_control_status_t)
-    { }
-
-    void callback_registry::cleanup_tor_process_status_changed_args(
-       tego_tor_process_status_t)
-    { }
-
-    void callback_registry::cleanup_tor_network_status_changed_args(
-       tego_tor_network_status_t)
-    { }
-
-    void callback_registry::cleanup_tor_bootstrap_status_changed_args(
-       int32_t,
-       tego_tor_bootstrap_tag_t)
-    { }
-
-    void callback_registry::cleanup_tor_log_received_args(
-        char* message,
-        size_t)
-    {
-        delete[] message;
-    }
-
-    void callback_registry::cleanup_host_user_state_changed_args(
-        tego_host_user_state_t)
-    { }
-
-    void callback_registry::cleanup_chat_request_received_args(
-        tego_user_id_t* user,
-        char* message,
-        size_t)
-    {
-        delete user;
-        delete[] message;
-    }
-
-    void callback_registry::cleanup_chat_request_response_received_args(
-        tego_user_id_t* user,
-        tego_bool_t)
-    {
-        delete user;
-    }
-
-    void callback_registry::cleanup_message_received_args(
-        tego_user_id_t* user,
-        tego_time_t,
-        tego_message_id_t,
-        char* message,
-        size_t)
-    {
-        delete user;
-        delete[] message;
-    }
-
-
-    void callback_registry::cleanup_message_acknowledged_args(
-        tego_user_id_t* user,
-        tego_message_id_t,
-        tego_bool_t)
-    {
-        delete user;
-    }
-
-    void callback_registry::cleanup_user_status_changed_args(
-        tego_user_id_t* user,
-        tego_user_status_t)
-    {
-        delete user;
-    }
-
-    void callback_registry::cleanup_new_identity_created_args(
-        tego_ed25519_private_key_t* privateKey)
-    {
-        delete privateKey;
     }
 
     //
@@ -218,6 +127,7 @@ extern "C"
         return tego::translateExceptions([=]() -> void\
         {\
             TEGO_THROW_IF_NULL(context);\
+            TEGO_THROW_IF_FALSE(context->threadId == std::this_thread::get_id());\
             context->callback_registry_.register_##EVENT(callback);\
         }, error);\
     }
@@ -234,6 +144,11 @@ extern "C"
     TEGO_DEFINE_CALLBACK_SETTER(chat_request_response_received);
     TEGO_DEFINE_CALLBACK_SETTER(message_received);
     TEGO_DEFINE_CALLBACK_SETTER(message_acknowledged);
+    TEGO_DEFINE_CALLBACK_SETTER(file_transfer_request_received);
+    TEGO_DEFINE_CALLBACK_SETTER(file_transfer_request_acknowledged);
+    TEGO_DEFINE_CALLBACK_SETTER(file_transfer_request_response_received);
+    TEGO_DEFINE_CALLBACK_SETTER(file_transfer_progress);
+    TEGO_DEFINE_CALLBACK_SETTER(file_transfer_complete);
     TEGO_DEFINE_CALLBACK_SETTER(user_status_changed);
     TEGO_DEFINE_CALLBACK_SETTER(new_identity_created);
 }

@@ -52,6 +52,17 @@ public:
     size_t get_user_count() const;
     std::vector<tego_user_id_t*> get_users() const;
     void forget_user(const tego_user_id_t* user);
+    std::tuple<tego_file_transfer_id_t, std::unique_ptr<tego_file_hash_t>, tego_file_size_t> send_file_transfer_request(
+        tego_user_id_t const* user,
+        std::string const& filePath);
+    void respond_file_transfer_request(
+        tego_user_id_t const* user,
+        tego_file_transfer_id_t fileTransfer,
+        tego_file_transfer_response_t response,
+        std::string const& destPath);
+    void cancel_file_transfer_transfer(
+        tego_user_id_t const* user,
+        tego_file_transfer_id_t);
 
     tego::callback_registry callback_registry_;
     tego::callback_queue callback_queue_;
@@ -64,6 +75,12 @@ public:
     Tor::TorControl* torControl = nullptr;
     IdentityManager* identityManager = nullptr;
 
+    // we store the thread id that this context is associated with
+    // calls which go into our qt internals must be called from the same
+    // thread as the context was created on
+    // (this is not entirely true, they must be called from the thread with the Qt
+    // event loop, which in our case is the thread the context is created on)
+    std::thread::id threadId;
 private:
     class ContactUser* getContactUser(const tego_user_id_t*) const;
 

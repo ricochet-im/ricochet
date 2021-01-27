@@ -21,6 +21,7 @@ using tego::g_globals;
 tego_context::tego_context()
 : callback_registry_(this)
 , callback_queue_(this)
+, threadId(std::this_thread::get_id())
 {
     this->torManager = Tor::TorManager::instance();
     this->torControl = torManager->control();
@@ -589,6 +590,66 @@ void tego_context::forget_user(const tego_user_id_t* user)
     contactUser->deleteContact();
 }
 
+std::tuple<tego_file_transfer_id_t, std::unique_ptr<tego_file_hash_t>, tego_file_size_t> tego_context::send_file_transfer_request(
+    tego_user_id_t const* user,
+    std::string const& filePath)
+{
+    TEGO_THROW_IF_NULL(user);
+
+    auto contactUser = this->getContactUser(user);
+    TEGO_THROW_IF_NULL(contactUser);
+    auto conversationModel = contactUser->conversation();
+
+    return conversationModel->sendFile(QString::fromStdString(filePath));
+}
+
+void tego_context::respond_file_transfer_request(
+    tego_user_id_t const* user,
+    tego_file_transfer_id_t fileTransfer,
+    tego_file_transfer_response_t response,
+    std::string const& destPath)
+{
+    // ensure we have a valid user
+    TEGO_THROW_IF_NULL(user);
+    // ensure a valid response
+    TEGO_THROW_IF_FALSE(response == tego_file_transfer_response_accept ||
+                        response == tego_file_transfer_response_reject);
+    // ensure non-empty dest path in case we are accepting
+    TEGO_THROW_IF_TRUE(response == tego_file_transfer_response_accept && destPath.empty())
+
+    auto contactUser = this->getContactUser(user);
+    TEGO_THROW_IF_NULL(contactUser);
+    auto conversationModel = contactUser->conversation();
+
+    switch(response)
+    {
+        case tego_file_transfer_response_accept:
+        {
+            conversationModel->acceptFile(fileTransfer, destPath);
+        }
+        break;
+        case tego_file_transfer_response_reject:
+        {
+            conversationModel->rejectFile(fileTransfer);
+        }
+        break;
+    }
+}
+
+void tego_context::cancel_file_transfer_transfer(
+    tego_user_id_t const* user,
+    tego_file_transfer_id_t fileTransfer)
+{
+    // ensure we have a valid user
+    TEGO_THROW_IF_NULL(user);
+
+    auto contactUser = this->getContactUser(user);
+    TEGO_THROW_IF_NULL(contactUser);
+    auto conversationModel = contactUser->conversation();
+
+    conversationModel->cancelTransfer(fileTransfer);
+}
+
 //
 // tego_context private methods
 //
@@ -670,6 +731,7 @@ extern "C"
         return tego::translateExceptions([=]() -> void
         {
             TEGO_THROW_IF_NULL(context);
+            TEGO_THROW_IF_FALSE(context->threadId == std::this_thread::get_id());
 
             context->start_tor(launchConfig);
         }, error);
@@ -683,6 +745,7 @@ extern "C"
         return tego::translateExceptions([=]() -> void
         {
             TEGO_THROW_IF_NULL(context);
+            TEGO_THROW_IF_FALSE(context->threadId == std::this_thread::get_id());
             TEGO_THROW_IF_NULL(out_configured);
 
             *out_configured = TEGO_FALSE;
@@ -701,6 +764,7 @@ extern "C"
         return tego::translateExceptions([=]() -> size_t
         {
             TEGO_THROW_IF_NULL(context);
+            TEGO_THROW_IF_FALSE(context->threadId == std::this_thread::get_id());
 
             return context->get_tor_logs_size();
         }, error, 0);
@@ -716,6 +780,7 @@ extern "C"
         return tego::translateExceptions([=]() -> size_t
         {
             TEGO_THROW_IF_NULL(context);
+            TEGO_THROW_IF_FALSE(context->threadId == std::this_thread::get_id());
             TEGO_THROW_IF_NULL(out_logBuffer);
 
             // nothing to do if no space to write
@@ -760,6 +825,7 @@ extern "C"
         return tego::translateExceptions([=]() -> const char*
         {
             TEGO_THROW_IF_NULL(context);
+            TEGO_THROW_IF_FALSE(context->threadId == std::this_thread::get_id());
 
             return context->get_tor_version_string();
         }, error, nullptr);
@@ -773,6 +839,7 @@ extern "C"
         return tego::translateExceptions([=]() -> void
         {
             TEGO_THROW_IF_NULL(context);
+            TEGO_THROW_IF_FALSE(context->threadId == std::this_thread::get_id());
             TEGO_THROW_IF_NULL(out_status);
 
             auto status = context->get_tor_control_status();
@@ -788,6 +855,7 @@ extern "C"
         return tego::translateExceptions([=]() -> void
         {
             TEGO_THROW_IF_NULL(context);
+            TEGO_THROW_IF_FALSE(context->threadId == std::this_thread::get_id());
             TEGO_THROW_IF_NULL(out_status);
 
             const auto status = context->get_tor_process_status();
@@ -803,6 +871,7 @@ extern "C"
         return tego::translateExceptions([=]() -> void
         {
             TEGO_THROW_IF_NULL(context);
+            TEGO_THROW_IF_FALSE(context->threadId == std::this_thread::get_id());
             TEGO_THROW_IF_NULL(out_status);
 
             auto status = context->get_tor_network_status();
@@ -819,6 +888,7 @@ extern "C"
         return tego::translateExceptions([=]() -> void
         {
             TEGO_THROW_IF_NULL(context);
+            TEGO_THROW_IF_FALSE(context->threadId == std::this_thread::get_id());
             TEGO_THROW_IF_NULL(out_progress);
             TEGO_THROW_IF_NULL(out_tag);
 
@@ -841,6 +911,7 @@ extern "C"
         return tego::translateExceptions([=]() -> void
         {
             TEGO_THROW_IF_NULL(context);
+            TEGO_THROW_IF_FALSE(context->threadId == std::this_thread::get_id());
 
             if (hostPrivateKey == nullptr)
             {
@@ -869,6 +940,7 @@ extern "C"
         return tego::translateExceptions([=]() -> void
         {
             TEGO_THROW_IF_NULL(context);
+            TEGO_THROW_IF_FALSE(context->threadId == std::this_thread::get_id());
             TEGO_THROW_IF_NULL(out_hostUser);
 
             auto hostUser = context->get_host_user_id();
@@ -884,6 +956,7 @@ extern "C"
         return tego::translateExceptions([=]() -> void
         {
             TEGO_THROW_IF_NULL(context);
+            TEGO_THROW_IF_FALSE(context->threadId == std::this_thread::get_id());
             TEGO_THROW_IF_NULL(out_state);
 
             auto state = context->get_host_user_state();
@@ -899,6 +972,7 @@ extern "C"
         return tego::translateExceptions([=]() -> void
         {
             TEGO_THROW_IF_NULL(context);
+            TEGO_THROW_IF_FALSE(context->threadId == std::this_thread::get_id());
 
             context->update_tor_daemon_config(torConfig);
         }, error);
@@ -911,6 +985,7 @@ extern "C"
         return tego::translateExceptions([=]() -> void
         {
             TEGO_THROW_IF_NULL(context);
+            TEGO_THROW_IF_FALSE(context->threadId == std::this_thread::get_id());
 
             context->save_tor_daemon_config();
         }, error);
@@ -925,6 +1000,7 @@ extern "C"
         return tego::translateExceptions([=]() -> void
         {
             TEGO_THROW_IF_NULL(context);
+            TEGO_THROW_IF_FALSE(context->threadId == std::this_thread::get_id());
             TEGO_THROW_IF_NULL(user);
             TEGO_THROW_IF_NULL(out_type);
 
@@ -941,6 +1017,7 @@ extern "C"
         return tego::translateExceptions([=]() -> void
         {
             TEGO_THROW_IF_NULL(context);
+            TEGO_THROW_IF_FALSE(context->threadId == std::this_thread::get_id());
             TEGO_THROW_IF_NULL(out_userCount);
 
             auto count = context->get_user_count();
@@ -958,6 +1035,7 @@ extern "C"
         return tego::translateExceptions([=]() -> void
         {
             TEGO_THROW_IF_NULL(context);
+            TEGO_THROW_IF_FALSE(context->threadId == std::this_thread::get_id());
             TEGO_THROW_IF_NULL(out_usersBuffer);
             TEGO_THROW_IF_NULL(out_userCount);
 
@@ -982,6 +1060,7 @@ extern "C"
         return tego::translateExceptions([=]() -> void
         {
             TEGO_THROW_IF_NULL(context);
+            TEGO_THROW_IF_FALSE(context->threadId == std::this_thread::get_id());
             TEGO_THROW_IF_NULL(user);
             TEGO_THROW_IF_FALSE(message != nullptr || messageLength == 0);
 
@@ -998,8 +1077,92 @@ extern "C"
         return tego::translateExceptions([=]() -> void
         {
             TEGO_THROW_IF_NULL(context);
+            TEGO_THROW_IF_FALSE(context->threadId == std::this_thread::get_id());
 
             context->acknowledge_chat_request(user, response);
+        }, error);
+    }
+
+    void tego_context_send_file_transfer_request(
+        tego_context* context,
+        tego_user_id_t const*  user,
+        char const* filePath,
+        size_t filePathLength,
+        tego_file_transfer_id_t* out_id,
+        tego_file_hash_t** out_fileHash,
+        tego_file_size_t* out_fileSize,
+        tego_error_t** error)
+    {
+        return tego::translateExceptions([=]() -> void
+        {
+            TEGO_THROW_IF_NULL(context);
+            TEGO_THROW_IF_FALSE(context->threadId == std::this_thread::get_id());
+            TEGO_THROW_IF_NULL(user);
+            TEGO_THROW_IF_NULL(filePath);
+            TEGO_THROW_IF_FALSE(filePathLength > 0);
+
+            auto [id, fileHash, fileSize] =
+                context->send_file_transfer_request(
+                    user,
+                    std::string(filePath, filePathLength));
+
+            if (out_id != nullptr)
+            {
+                *out_id = id;
+            }
+            if (out_fileHash != nullptr)
+            {
+                *out_fileHash = fileHash.release();
+            }
+            if (out_fileSize != nullptr)
+            {
+                *out_fileSize = fileSize;
+            }
+
+        }, error);
+    }
+
+    void tego_context_respond_file_transfer_request(
+        tego_context* context,
+        tego_user_id_t const* user,
+        tego_file_transfer_id_t fileTransfer,
+        tego_file_transfer_response_t response,
+        char const* destPath,
+        size_t destPathLength,
+        tego_error_t** error)
+    {
+        return tego::translateExceptions([=]() -> void
+        {
+            TEGO_THROW_IF_NULL(context);
+            TEGO_THROW_IF_FALSE(context->threadId == std::this_thread::get_id());
+            TEGO_THROW_IF_NULL(user);
+            // dest string must be valid is accept
+            TEGO_THROW_IF_TRUE(response == tego_file_transfer_response_accept &&
+                (destPath == nullptr || destPathLength == 0))
+            // dest string must be null and empty if reject
+            TEGO_THROW_IF_TRUE(response == tego_file_transfer_response_reject &&
+                (destPath != nullptr || destPathLength > 0))
+
+            context->respond_file_transfer_request(
+                user,
+                fileTransfer,
+                response,
+                destPath ? std::string(destPath, destPathLength) : std::string());
+        }, error);
+    }
+
+    void tego_context_cancel_file_transfer(
+        tego_context* context,
+        tego_user_id_t const* user,
+        tego_file_transfer_id_t id,
+        tego_error_t** error)
+    {
+        return tego::translateExceptions([=]() -> void
+        {
+            TEGO_THROW_IF_NULL(context);
+            TEGO_THROW_IF_FALSE(context->threadId == std::this_thread::get_id());
+            TEGO_THROW_IF_NULL(user);
+            context->cancel_file_transfer_transfer(user, id);
         }, error);
     }
 
@@ -1014,6 +1177,7 @@ extern "C"
         return tego::translateExceptions([=]() -> void
         {
             TEGO_THROW_IF_NULL(context);
+            TEGO_THROW_IF_FALSE(context->threadId == std::this_thread::get_id());
             TEGO_THROW_IF_NULL(user);
             TEGO_THROW_IF_NULL(message);
             TEGO_THROW_IF_FALSE(messageLength > 0);
@@ -1021,6 +1185,7 @@ extern "C"
             auto id = context->send_message(user, std::string(message, messageLength));
             if (out_id != nullptr)
             {
+                logger::println("Sent message with id: {}", id);
                 *out_id = id;
             }
         }, error);
@@ -1034,6 +1199,7 @@ extern "C"
         return tego::translateExceptions([=]() -> void
         {
             TEGO_THROW_IF_NULL(context);
+            TEGO_THROW_IF_FALSE(context->threadId == std::this_thread::get_id());
             context->forget_user(user);
         }, error);
     }

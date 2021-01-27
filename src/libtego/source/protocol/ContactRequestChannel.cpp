@@ -62,18 +62,18 @@ QString ContactRequestChannel::message() const
 void ContactRequestChannel::setMessage(const QString &message)
 {
     if (direction() != Outbound) {
-        BUG() << "Request messages can only be set on outbound messages";
+        TEGO_BUG() << "Request messages can only be set on outbound messages";
         return;
     }
 
     // Only valid before channel opened
     if (isOpened() || identifier() >= 0) {
-        BUG() << "Request data must be set before opening channel";
+        TEGO_BUG() << "Request data must be set before opening channel";
         return;
     }
 
     if (message.size() > Data::ContactRequest::MessageMaxCharacters) {
-        BUG() << "Outbound contact request message is too long (" << message.size() << ")";
+        TEGO_BUG() << "Outbound contact request message is too long (" << message.size() << ")";
         return;
     }
 
@@ -110,17 +110,17 @@ QString ContactRequestChannel::nickname() const
 void ContactRequestChannel::setNickname(const QString &nickname)
 {
     if (direction() != Outbound) {
-        BUG() << "Request messages can only be set on outbound messages";
+        TEGO_BUG() << "Request messages can only be set on outbound messages";
         return;
     }
 
     if (isOpened() || identifier() >= 0) {
-        BUG() << "Request data must be set before opening channel";
+        TEGO_BUG() << "Request data must be set before opening channel";
         return;
     }
 
     if (!isAcceptableNickname(nickname)) {
-        BUG() << "Outbound contact request nickname isn't acceptable:" << nickname;
+        TEGO_BUG() << "Outbound contact request nickname isn't acceptable:" << nickname;
         return;
     }
 
@@ -181,7 +181,7 @@ bool ContactRequestChannel::allowInboundChannelRequest(const Data::Control::Open
         emit requestReceived();
 
         if (m_responseStatus == Response::Undefined) {
-            BUG() << "No response to incoming contact request after requestReceived signal";
+            TEGO_BUG() << "No response to incoming contact request after requestReceived signal";
             setResponseStatus(Response::Error);
         }
     }
@@ -202,13 +202,13 @@ void ContactRequestChannel::setResponseStatus(Status status)
         return;
 
     if (direction() != Inbound) {
-        BUG() << "Can't set the response on an outbound contact request";
+        TEGO_BUG() << "Can't set the response on an outbound contact request";
         return;
     }
 
     using namespace Data::ContactRequest;
     if (m_responseStatus > Response::Pending)
-        BUG() << "Response status is already a final state" << m_responseStatus << "but was changed to" << status;
+        TEGO_BUG() << "Response status is already a final state" << m_responseStatus << "but was changed to" << status;
 
     m_responseStatus = status;
 
@@ -228,13 +228,13 @@ bool ContactRequestChannel::allowOutboundChannelRequest(Data::Control::OpenChann
     if (connection()->direction() != Connection::ClientSide ||
         connection()->purpose() != Connection::Purpose::OutboundRequest)
     {
-        BUG() << "ContactRequestChannel can only be used on OutboundRequest connections. Has purpose"
+        TEGO_BUG() << "ContactRequestChannel can only be used on OutboundRequest connections. Has purpose"
               << int(connection()->purpose());
         return false;
     }
 
     if (connection()->findChannel<ContactRequestChannel>()) {
-        BUG() << "ContactRequestChannel can only be used once per connection";
+        TEGO_BUG() << "ContactRequestChannel can only be used once per connection";
         return false;
     }
 

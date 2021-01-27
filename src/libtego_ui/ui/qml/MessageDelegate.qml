@@ -53,8 +53,8 @@ Column {
 
     Rectangle {
         id: background
-        width: Math.max(30, textField.width + 12)
-        height: textField.height + 12
+        width: Math.max(30, message.width + 12)
+        height: message.height + 12
         x: model.isOutgoing ? parent.width - width - 11 : 10
 
         property int __maxWidth: parent.width * 0.8
@@ -81,40 +81,156 @@ Column {
             Behavior on opacity { NumberAnimation { } }
         }
 
-        TextEdit {
-            id: textField
-            width: Math.min(implicitWidth, background.__maxWidth)
-            height: contentHeight
-            x: Math.round((parent.width - width) / 2)
+        Rectangle
+        {
+            id: message
+
+            property Item childItem: {
+                if (model.type == "text")
+                {
+                    return textField;
+                }
+                else if (model.type =="transfer")
+                {
+                    return transferField;
+                }
+            }
+
+            width: childItem.width
+            height: childItem.height
+            x: Math.round((background.width - width) / 2)
             y: 6
 
-            renderType: Text.NativeRendering
-            textFormat: TextEdit.RichText
-            selectionColor: palette.highlight
-            selectedTextColor: palette.highlightedText
-            font.pointSize: styleHelper.pointSize
+            color: "transparent"
 
-            wrapMode: TextEdit.Wrap
-            readOnly: true
-            selectByMouse: true
-            text: LinkedText.parsed(model.text)
+            // text message
+            TextEdit {
+                id: textField
+                visible: parent.childItem === this
+                width: Math.min(implicitWidth, background.__maxWidth)
+                height: contentHeight
 
-            onLinkActivated: {
-                textField.deselect()
-                delegate.showContextMenu(link)
+                renderType: Text.NativeRendering
+                textFormat: TextEdit.RichText
+                selectionColor: palette.highlight
+                selectedTextColor: palette.highlightedText
+                font.pointSize: styleHelper.pointSize
+
+                wrapMode: TextEdit.Wrap
+                readOnly: true
+                selectByMouse: true
+                text: LinkedText.parsed(model.text)
+
+                onLinkActivated: {
+                    textField.deselect()
+                    delegate.showContextMenu(link)
+                }
+
+                // Workaround an incomplete fix for QTBUG-31646
+                Component.onCompleted: {
+                    if (textField.hasOwnProperty('linkHovered'))
+                        textField.linkHovered.connect(function() { })
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    acceptedButtons: Qt.RightButton
+
+                    onClicked: delegate.showContextMenu(parent.hoveredLink)
+                }
             }
 
-            // Workaround an incomplete fix for QTBUG-31646
-            Component.onCompleted: {
-                if (textField.hasOwnProperty('linkHovered'))
-                    textField.linkHovered.connect(function() { })
-            }
-            
-            MouseArea {
-                anchors.fill: parent
-                acceptedButtons: Qt.RightButton
+            // sending file transfer
+            Rectangle {
+                id: transferField
+                visible: parent.childItem === this
 
-                onClicked: delegate.showContextMenu(parent.hoveredLink)
+                width: 256
+                height: transferDisplay.height
+
+                color: "transparent"
+
+                Row {
+                    x: 0
+                    y: 0
+                    width: parent.width
+                    height: parent.height
+                    spacing: 6
+
+                    Column {
+                        id: transferDisplay
+
+                        width: parent.width - (acceptButton.visible ? (acceptButton.width + parent.spacing) : 0) - parent.spacing - cancelButton.width
+                        spacing: 6
+
+                        Text {
+                            id: filename
+
+                            width: parent.width
+                            height: styleHelper.pointSize * 1.5
+
+                            text: model.transfer ? model.transfer.file_name : ""
+                            font.bold: true
+                            font.pointSize: styleHelper.pointSize
+                            elide: Text.ElideMiddle
+                        }
+
+                        ProgressBar {
+                            id: progressBar
+
+                            width: parent.width
+                            height: visible ? 8 : 0
+
+                            visible: model.transfer ? (model.transfer.status === ConversationModel.Pending || model.transfer.status === ConversationModel.InProgress) : false
+
+                            indeterminate: model.transfer ? (model.transfer.status === ConversationModel.Pending) : true
+                            value: model.transfer ? model.transfer.progressPercent : 0
+                        }
+
+                        Label {
+                            id: transferStatus
+
+                            width: parent.width
+                            height: styleHelper.pointSize * 1.5
+
+                            text: model.transfer ? model.transfer.statusString : ""
+                            font.pointSize: filename.font.pointSize * 0.8;
+                            color: Qt.lighter(filename.color, 1.5)
+                        }
+                    }
+
+                    Button {
+                        id: acceptButton
+
+                        visible: model.transfer ? (model.transfer.status === ConversationModel.Pending && model.transfer.direction === ConversationModel.Downloading) : false
+
+                        width: visible ? transferDisplay.height : 0
+                        height: visible ? transferDisplay.height : 0
+
+                        text: "⬇"
+
+                        onClicked: {
+                            contact.conversation.tryAcceptFileTransfer(model.transfer.id);
+                        }
+                    }
+
+                    Button {
+                        id: cancelButton
+                        visible: model.transfer ? (model.transfer.status === ConversationModel.Pending || model.transfer.status === ConversationModel.InProgress) : false
+
+                        width: visible ? transferDisplay.height : 0
+                        height: visible ? transferDisplay.height : 0
+
+                        text: "✕"
+
+                        onClicked: {
+                            if (acceptButton.visible)
+                                contact.conversation.rejectFileTransfer(model.transfer.id);
+                            else
+                                contact.conversation.cancelFileTransfer(model.transfer.id);
+                        }
+                    }
+                }
             }
         }
     }
