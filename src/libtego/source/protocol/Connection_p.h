@@ -44,7 +44,7 @@ class ConnectionPrivate : public QObject
     Q_DISABLE_COPY(ConnectionPrivate)
 
 public:
-    static const quint8 ProtocolVersion = 3 ;
+    static const quint8 ProtocolVersion = 3;
     static const quint8 ProtocolVersionFailed = 0xff;
     static const int PacketHeaderSize = 4;
     static const int PacketMaxDataSize = UINT16_MAX - PacketHeaderSize;
