@@ -44,7 +44,11 @@ TEMPLATE = app
 
 QT += core gui network quick widgets
 
-VERSION = 3.0.0b
+isEmpty(RICOCHET_REFRESH_VERSION) {
+    VERSION = devbuild
+} else {
+    VERSION = $${RICOCHET_REFRESH_VERSION}
+}
 
 DEFINES += "TEGO_VERSION=$${VERSION}"
 
@@ -140,6 +144,12 @@ win32:RC_ICONS = icons/ricochet_refresh.ico
 OTHER_FILES += $${PWD}/../libtego_ui/ui/qml/*
 lupdate_only {
     SOURCES += $${PWD}/../libtego_ui/ui/qml/*.qml
+    SOURCES += $${PWD}/../libtego_ui/ui/*.cpp
+    SOURCES += $${PWD}/../libtego_ui/ui/*.h
+    SOURCES += $${PWD}/../libtego_ui/shims/*.cpp
+    SOURCES += $${PWD}/../libtego_ui/shims/*.h
+    SOURCES += $${PWD}/../libtego_ui/utils/*.cpp
+    SOURCES += $${PWD}/../libtego_ui/utils/*.h
 }
 
 # Translations
@@ -173,7 +183,7 @@ TRANSLATIONS += \
     ricochet_ja
 
 # Only build translations when creating the primary makefile.
-!build_pass: {
+{
     contains(QMAKE_HOST.os,Windows):QMAKE_LRELEASE = $$[QT_INSTALL_BINS]/lrelease.exe
     else:QMAKE_LRELEASE = $$[QT_INSTALL_BINS]/lrelease
     for (translation, TRANSLATIONS) {

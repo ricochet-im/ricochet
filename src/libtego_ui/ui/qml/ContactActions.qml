@@ -40,33 +40,45 @@ Item {
     Menu {
         id: contextMenu
 
+        /* QT automatically sets Accessible.text to MenuItem.text */
         MenuItem {
+            //: Context menu command to open the chat screen in a separate window
             text: qsTr("Open Window")
             onTriggered: openWindow()
         }
         MenuItem {
+            //: Context menu command to open a window showing the selected contact's details
             text: qsTr("Details...")
             onTriggered: openPreferences()
         }
         MenuItem {
+            //: Context menu command to rename the selected contact
             text: qsTr("Rename")
             onTriggered: renameTriggered()
         }
         MenuItem {
+            //: Context menu command to initiate a file transfer, opens a system file dialog
             text: qsTr("Send File...")
             onTriggered: sendFile();
         }
         MenuSeparator { }
         MenuItem {
+            //: Context menu command to remove a contact from the contact list
             text: qsTr("Remove")
             onTriggered: removeContact()
         }
     }
 
+    Accessible.role: Accessible.List
+    //: Description of the items in the context menu for accessibility tech like screen readers
+    Accessible.name: qsTr("Contact options")
+
     Loader {
         id: removeContactDialog
         source: "MessageDialogWrapper.qml"
         active: false
+
+        Accessible.role: Accessible.Window
     }
 }
 

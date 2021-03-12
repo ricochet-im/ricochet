@@ -18,6 +18,10 @@ Item {
             Layout.minimumWidth: 150
             Layout.fillHeight: true
             frameVisible: true
+
+            Accessible.role: Accessible.List
+            //: Description of the list of contacts for accessibility tech like screen readers
+            Accessible.name: qsTr("Contact list")
         }
 
         data: [
@@ -89,6 +93,15 @@ Item {
                 Layout.minimumWidth: 100
                 readOnly: true
                 text: visible ? contactInfo.contact.contactID : ""
+
+                Accessible.role: Accessible.StaticText
+                //: Description of text box containing a contact's contact id for accessibility tech like screen readers
+                Accessible.name: qsTr("Contact ID for ") +
+                                 visible ?
+                                 nickname.text :
+                //: A placeholder name for a contact whose name we do not know
+                                 qsTr("Unknown user")
+                Accessible.description: text
             }
 
             Item { height: 1; width: 1 }
@@ -103,15 +116,25 @@ Item {
                 Layout.fillWidth: true
 
                 Button {
+                    //: Label for button which allows renaming of a contact
                     text: qsTr("Rename")
                     onClicked: nickname.renameMode = !nickname.renameMode
+                    Accessible.role: Accessible.Button
+                    Accessible.name: text
+                    //: Description of button which renames a contact for accessibility tech like screen readers
+                    Accessible.description: qsTr("Renames this contact")
                 }
 
                 Item { Layout.fillWidth: true; height: 1 }
 
                 Button {
+                    //: Label for button which removes a contact from the contact list
                     text: qsTr("Remove")
                     onClicked: contactActions.removeContact()
+                    Accessible.role: Accessible.Button
+                    Accessible.name: text
+                    //: Description of button which removes a user from the contact list for accessibility tech like screen readers
+                    Accessible.description: qsTr("Removes this contact") // todo: translation
                 }
             }
 
@@ -119,6 +142,19 @@ Item {
                 Layout.fillHeight: true
                 width: 1
             }
+
+            Accessible.role: Accessible.Window
+            //: Description of the contents of the 'Contacts' window for accessibility tech like screen readers
+            Accessible.name: qsTr("Preferences for contact ") +
+                             visible ?
+                             nickname.text :
+                             //: A placeholder name for a contact whose name we do not know
+                             qsTr("Unknown user")
         }
     }
+    Accessible.role: Accessible.Window
+    //: Name of the contact preferences window for accessibility tech like screen readers
+    Accessible.name: qsTr("Contact Preferences Window")
+    //: Description of what user can do in the contact preferences window for accessibility tech like screen readers
+    Accessible.description: qsTr("A list of all your contacts, with their ricochet IDs, and options such as renaming and removing")
 }

@@ -145,7 +145,19 @@ bool MainWindow::showUI()
 
 QString MainWindow::version() const
 {
-    return qApp->applicationVersion();
+    const static auto retval = qApp->applicationVersion();
+    return retval;
+}
+
+QString MainWindow::accessibleVersion() const
+{
+    const static auto retval = [this]() -> QString
+    {
+        auto version = this->version();
+        return version.replace('.', QString(" %1 ").arg(tr("Version Seperator")));
+    }();
+
+    return retval;
 }
 
 QString MainWindow::aboutText() const

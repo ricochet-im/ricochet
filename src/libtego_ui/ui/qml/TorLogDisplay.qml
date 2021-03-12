@@ -15,4 +15,9 @@ TextArea {
             logDisplay.append(message)
         }
     }
+
+    //: Name of the text field containg the tor logs, used by accessibility tech such as screen readers
+    Accessible.name: qsTr("Tor log")
+    Accessible.role: Accessible.StaticText
+    Accessible.description: text // XXX: seems like a bad idea to have the entire log read out
 }

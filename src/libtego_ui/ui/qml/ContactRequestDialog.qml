@@ -52,7 +52,10 @@ ApplicationWindow {
             Layout.fillWidth: true
             horizontalAlignment: Qt.AlignHCenter
             wrapMode: Text.Wrap
+            //: Descriptive text that is displayed in a popup window when a user tries to add you as a contact
             text: qsTr("Someone new is asking to connect to you")
+            Accessible.role: Accessible.PopupMenu
+            Accessible.name: text
         }
 
         Item { height: 1 }
@@ -99,14 +102,24 @@ ApplicationWindow {
         }
 
         Button {
+            //: Label for button which rejects a contact request when pressed
             text: qsTr("Reject")
             onClicked: contactRequestDialog.reject()
+            Accessible.role: Accessible.Button
+            Accessible.name: text
+            //: Description of what 'Reject' button does for accessibility tech like screen readers
+            Accessible.description: qsTr("Rejects the incoming contact request")
         }
 
         Button {
+            //: Label for button which accepts a contact request when pressed
             text: qsTr("Accept")
             enabled: hasValidContact
             onClicked: contactRequestDialog.accept()
+            Accessible.role: Accessible.Button
+            Accessible.name: text
+            //: Description of what 'Accept' button does for accessibility tech like screen readers
+            Accessible.description: qsTr("Accepts the incoming contact request")
         }
     }
 

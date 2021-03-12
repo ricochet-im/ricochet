@@ -22,7 +22,7 @@ ApplicationWindow {
     function close() { visible = false }
 
     property string link
-    property QtObject contact
+    property ContactUser contact
 
     ColumnLayout {
         id: layout
@@ -37,6 +37,7 @@ ApplicationWindow {
 
         Label {
             Layout.fillWidth: true
+            //: Label displayed when user clicks on a link
             text: qsTr("<b>Warning!</b> Opening links with your default browser will harm your security and anonymity.<br><br>You can <a href='.'>copy to the clipboard</a> instead.")
             wrapMode: Text.Wrap
             horizontalAlignment: Qt.AlignHCenter
@@ -44,6 +45,10 @@ ApplicationWindow {
                 LinkedText.copyToClipboard(dialog.link)
                 dialog.close()
             }
+            Accessible.role: Accessible.StaticText
+            //: Name of warning label used with accessibility tech such as screen readers
+            Accessible.name: qsTr("Warning")
+            Accessible.description: text
         }
 
         Item { width: 1; height: 1 }
@@ -55,13 +60,8 @@ ApplicationWindow {
         }
 
         CheckBox {
-            id: alwaysOpenContact
-            text: qsTr("Don't ask again for links from %1").arg(contact ? Utils.htmlEscaped(contact.nickname) : "???")
-            checked: contact.settings.data.alwaysOpenBrowser || false
-        }
-
-        CheckBox {
             id: alwaysOpenAll
+            //: Checkbox option text for when user clicks on a link
             text: qsTr("Don't ask again for any links (not recommended!)")
             checked: uiSettings.data.alwaysOpenBrowser || false
         }
@@ -69,10 +69,9 @@ ApplicationWindow {
         RowLayout {
             width: parent.width
             Button {
+                //: Label on button to open link in a web browser
                 text: qsTr("Open Browser")
                 onClicked: {
-                    if (alwaysOpenContact.checked)
-                        contact.settings.write("alwaysOpenBrowser", true)
                     if (alwaysOpenAll.checked)
                         uiSettings.write("alwaysOpenBrowser", true)
                     Qt.openUrlExternally(link)
@@ -81,11 +80,14 @@ ApplicationWindow {
             }
             Item { Layout.fillWidth: true; height: 1 }
             Button {
+                //: Label on cancel button
                 text: qsTr("Cancel")
                 isDefault: true
                 onClicked: dialog.close()
             }
         }
+
+        Item { height: Qt.platform.os === "linux" ? 8 : 0}
 
         Keys.onEscapePressed: dialog.close()
         Keys.onReturnPressed: dialog.close()

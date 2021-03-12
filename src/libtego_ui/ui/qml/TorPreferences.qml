@@ -21,19 +21,78 @@ Item {
 
         GridLayout {
             columns: 4
+
             width: parent.width
-            Label { text: qsTr("Running:") }
-            Label { font.bold: true; Layout.fillWidth: true; text: qsTr(torInstance.running) }
-            Label { text: qsTr("Control connected:") }
-            Label { font.bold: true; Layout.fillWidth: true; text: ((torControl.status == TorControl.Connected) ? qsTr("Yes") : qsTr("No")) }
-            Label { text: qsTr("Circuits established:") }
-            Label { font.bold: true; text: ((torControl.torStatus == TorControl.TorReady) ? qsTr("Yes") : qsTr("No")) }
-            Label { text: qsTr("Hidden service:") }
-            Label { font.bold: true; text: (userIdentity.isOnline ? qsTr("Online") : qsTr("Offline")) }
-            Label { text: qsTr("Version:") }
-            Label { font.bold: true; text: torControl.torVersion; textFormat: Text.PlainText }
-            //Label { text: "Recommended:" }
-            //Label { font.bold: true; text: "Unknown" }
+            Label {
+                //: Display label that beside it indicates whether tor is running
+                text: qsTr("Running:")
+                Accessible.role: StaticText
+                Accessible.name: qsTr("Running")
+            }
+            Label {
+                font.bold: true
+                Layout.fillWidth: true
+                text: qsTr(torInstance.running)
+
+                Accessible.role: Accessible.StaticText
+                Accessible.name: text
+                //: Description of the value of this label, used by acccessibility tech like screen readers
+                Accessible.description: qsTr("Whether tor is running")
+            }
+            Label {
+                //: Display label that beside it indicates whether ricochet is connected to tor's control port
+                text: qsTr("Control connected:")
+                Accessible.role: Accessible.StaticText
+                Accessible.name: qsTr("Control connected")
+            }
+            Label {
+                font.bold: true
+                Layout.fillWidth: true
+                text: ((torControl.status == TorControl.Connected) ? qsTr("Yes") : qsTr("No"))
+
+                Accessible.role: Accessible.StaticText
+                Accessible.name: text
+                //: Description of the value of this label, used by acccessibility tech like screen readers
+                Accessible.description: qsTr("Whether tor control connected")
+            }
+            Label {
+                text: qsTr("Circuits established:")
+                Accessible.role: Accessible.StaticText
+                Accessible.name: qsTr("Circuits established")
+            }
+            Label {
+                font.bold: true
+                text: ((torControl.torStatus == TorControl.TorReady) ? qsTr("Yes") : qsTr("No"))
+
+                Accessible.role: Accessible.StaticText
+                Accessible.name: text
+                //: Description of the value of this label, used by acccessibility tech like screen readers
+                Accessible.description: qsTr("Whether circuits established")
+            }
+            Label {
+                text: qsTr("Hidden service:")
+                Accessible.role: Accessible.StaticText
+                Accessible.name: qsTr("Hidden service")
+            }
+            Label {
+                font.bold: true
+                text: (userIdentity.isOnline ? qsTr("Online") : qsTr("Offline"))
+
+                Accessible.role: Accessible.StaticText
+                Accessible.name: text
+                //: Description of the value of this label, used by acccessibility tech like screen readers
+                Accessible.description: qsTr("Whether a hidden service is up or not")
+            }
+            Label {
+                text: qsTr("Version:")
+                Accessible.role: Accessible.StaticText
+                Accessible.name: qsTr("Version")
+            }
+            Label {
+                font.bold: true
+                text: torControl.torVersion
+                textFormat: Text.PlainText
+            }
         }
 
         Rectangle {

@@ -72,13 +72,21 @@ ScrollView {
                     // should correctly be capitalized. We go lowercase only because it looks
                     // nicer when using SmallCaps, and that's a display detail.
                     switch (parseInt(section)) {
+                        //: Section header in the contact list for users which are online
                         case ContactUser.Online: return qsTr("Online").toLowerCase()
+                        //: Section header in the contact list for users which are offline
                         case ContactUser.Offline: return qsTr("Offline").toLowerCase()
+                        //: Section header in the contact list for users requesting to be added to the user's contact list
                         case ContactUser.RequestPending: return qsTr("Requests").toLowerCase()
+                        //: Section header in the contact list for users that have rejected the user's request to be added to their contact list
                         case ContactUser.RequestRejected: return qsTr("Rejected").toLowerCase()
-                        case ContactUser.Outdated: return qsTr("Outdated").toLowerCase()
                     }
                 }
+
+                Accessible.role: Accessible.StaticText
+                Accessible.name: text
+                //: Description of the section header for accessibility tech like screen readers
+                Accessible.description: qsTr("Status for the given contacts")
             }
 
             Rectangle {

@@ -14,8 +14,11 @@ GridLayout {
     property bool hasValidRequest: contactIdField.acceptableInput && nameField.text.length
 
     Label {
+        //: Label for the contact id text box in the 'add new contact' window
         text: qsTr("ID:")
         Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
+        Accessible.role: Accessible.StaticText
+        Accessible.name: text
     }
 
     ContactIDField {
@@ -26,19 +29,30 @@ GridLayout {
     }
 
     Label {
+        //: Label for the contact nickname text box in the 'add new contact' window
         text: qsTr("Name:")
         Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
+        Accessible.role: Accessible.StaticText
+        Accessible.name: text
     }
 
     TextField {
         id: nameField
         Layout.fillWidth: true
         readOnly: contactFields.readOnly
+
+        Accessible.role: Accessible.Dialog
+        Accessible.name: text
+        //: Description of textbox for setting a contact's nickname for accessibility tech like screen readers
+        Accessible.description: qsTr("Field for the contact's nickname")
     }
 
     Label {
+        //: Label for the contact greeting message text box in the 'add new contact' window
         text: qsTr("Message:")
         Layout.alignment: Qt.AlignTop | Qt.AlignRight
+        Accessible.role: Accessible.StaticText
+        Accessible.name: text
     }
 
     TextArea {
@@ -47,5 +61,9 @@ GridLayout {
         Layout.fillHeight: true
         textFormat: TextEdit.PlainText
         readOnly: contactFields.readOnly
+        Accessible.role: Accessible.Dialog
+        Accessible.name: text
+        //: Description of textbox for setting a new contact's initial greeting message for accessibility tech like screen readers
+        Accessible.description: qsTr("Field for the contact's greeting message")
     }
 }

@@ -34,12 +34,6 @@ ApplicationWindow {
         }
     }
 
-    Timer {
-        id: retakeFocus
-        onTriggered: chatPage.forceActiveFocus()
-        interval: 1
-    }
-
     ChatPage {
         id: chatPage
         anchors.fill: parent

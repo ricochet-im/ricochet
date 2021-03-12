@@ -49,6 +49,7 @@ class MainWindow : public QObject
     Q_DISABLE_COPY(MainWindow)
 
     Q_PROPERTY(QString version READ version CONSTANT)
+    Q_PROPERTY(QString accessibleVersion READ accessibleVersion CONSTANT)
     Q_PROPERTY(QString aboutText READ aboutText CONSTANT)
     Q_PROPERTY(QVariantMap screens READ screens CONSTANT)
 
@@ -60,6 +61,7 @@ public:
 
     QString aboutText() const;
     QString version() const;
+    QString accessibleVersion() const;
     QVariantMap screens() const;
 
     Q_INVOKABLE bool showRemoveContactDialog(shims::ContactUser *user);

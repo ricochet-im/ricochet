@@ -6,7 +6,7 @@ import im.ricochet 1.0
 FocusScope {
     id: chatPage
 
-    property var contact
+    property ContactUser contact
     property TextArea textField: textInput
     property var conversationModel: (contact !== null) ? contact.conversation : null
 
@@ -159,6 +159,12 @@ FocusScope {
                     if (textInput.length > 2000)
                         textInput.remove(2000, textInput.length)
                 }
+
+                Accessible.role: Accessible.EditableText
+                //: label for accessibility tech like screen readers
+                Accessible.name: qsTr("Message area") // todo: translation
+                //: description of the text area used to send messages for accessibility tech like screen readers
+                Accessible.description: qsTr("Write the message to be sent here. Press enter to send")
             }
         }
     }

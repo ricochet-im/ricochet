@@ -55,6 +55,9 @@ Rectangle {
         textFormat: Text.PlainText
         x: 6
         y: 6
+
+        Accessible.name: text
+        Accessible.role: Accessible.StaticText
     }
 }
 

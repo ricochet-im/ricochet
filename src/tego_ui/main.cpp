@@ -74,13 +74,7 @@ int main(int argc, char *argv[]) try
 
     init_libtego_callbacks(tegoContext);
 
-#ifdef TEGO_VERSION
-#   define XSTR(X) STR(X)
-#   define STR(X) #X
-#   define TEGO_VERSION_STR XSTR(TEGO_VERSION)
-#else
-#   define TEGO_VERSION_STR "devbuild"
-#endif
+
     a.setApplicationVersion(QLatin1String(TEGO_VERSION_STR));
     a.setOrganizationName(QStringLiteral("Ricochet"));
 

@@ -50,6 +50,9 @@ Column {
         width: parent.width
         text: qsTr("Does this computer need a proxy to access the internet?")
         wrapMode: Text.Wrap
+
+        Accessible.role: Accessible.StaticText
+        Accessible.name: text
     }
 
     GroupBox {
@@ -58,6 +61,9 @@ Column {
         GridLayout {
             anchors.fill: parent
             columns: 2
+
+            /* without this the top of groupbox clips into the first row */
+            Item { height: Qt.platform.os === "linux" ? 15 : 0}
 
             Label {
                 text: qsTr("Proxy type:")
@@ -79,11 +85,20 @@ Column {
                     id: proxyPalette
                     colorGroup: setup.proxyType == "" ? SystemPalette.Disabled : SystemPalette.Active
                 }
+
+                Accessible.role: Accessible.ComboBox
+                Accessible.name: selectedType
+                //: Description used by accessibility tech, such as screen readers
+                Accessible.description: qsTr("If you need a proxy to access the internet, select one from this list.")
             }
 
             Label {
+                //: Label indicating the textbox to place a proxy IP or URL
                 text: qsTr("Address:")
                 color: proxyPalette.text
+
+                Accessible.role: Accessible.StaticText
+                Accessible.name: text
             }
             RowLayout {
                 Layout.fillWidth: true
@@ -91,22 +106,40 @@ Column {
                     id: proxyAddressField
                     Layout.fillWidth: true
                     enabled: setup.proxyType
+                    //: Placeholder text of text box expecting an IP or URL for proxy
                     placeholderText: qsTr("IP address or hostname")
+
+                    Accessible.role: Accessible.EditableText
+                    Accessible.name: placeholderText
+                    //: Description of what to enter into the IP textbox, used by accessibility tech such as screen readers
+                    Accessible.description: qsTr("Enter the IP address or hostname of the proxy you wish to connect to")
                 }
                 Label {
+                    //: Label indicating the textbox to place a proxy port
                     text: qsTr("Port:")
                     color: proxyPalette.text
+
                 }
                 TextField {
                     id: proxyPortField
                     Layout.preferredWidth: 50
                     enabled: setup.proxyType
+
+                    Accessible.role: Accessible.EditableText
+                    //: Name of the port label, used by accessibility tech such as screen readers
+                    Accessible.name: qsTr("Port")
+                    //: Description of what to enter into the Port textbox, used by accessibility tech such as screen readers
+                    Accessible.description: qsTr("Enter the port of the proxy you wish to connect to")
                 }
             }
 
             Label {
+                //: Label indicating the textbox to place the proxy username
                 text: qsTr("Username:")
                 color: proxyPalette.text
+
+                Accessible.role: Accessible.StaticText
+                Accessible.name: text
             }
             RowLayout {
                 Layout.fillWidth: true
@@ -115,17 +148,35 @@ Column {
                     id: proxyUsernameField
                     Layout.fillWidth: true
                     enabled: setup.proxyType
+                    //: Textbox placeholder text indicating the field is not required
                     placeholderText: qsTr("Optional")
+
+                    Accessible.role: Accessible.EditableText
+                    //: Name of the username label, used by accessibility tech such as screen readers
+                    Accessible.name: qsTr("Username")
+                    //: Description to enter into the Username textbox, used by accessibility tech such as screen readers
+                    Accessible.description: qsTr("If required, enter the username for the proxy you wish to connect to")
                 }
                 Label {
+                    //: Label indicating the textbox to place the proxy password
                     text: qsTr("Password:")
                     color: proxyPalette.text
+
+                    Accessible.role: Accessible.StaticText
+                    Accessible.name: text
                 }
                 TextField {
                     id: proxyPasswordField
                     Layout.fillWidth: true
                     enabled: setup.proxyType
+                    //: Textbox placeholder text indicating the field is not required
                     placeholderText: qsTr("Optional")
+
+                    Accessible.role: Accessible.EditableText
+                    //: Name of the password label, used by accessibility tech such as screen readers
+                    Accessible.name: qsTr("Password")
+                    //: Description to enter into the Password textbox, used by accessibility tech such as screen readers
+                    Accessible.description: qsTr("If required, enter the password for the proxy you wish to connect to")
                 }
             }
         }
@@ -135,27 +186,44 @@ Column {
 
     Label {
         width: parent.width
+        //: Description for the purpose of the Allowed Ports textbox
         text: qsTr("Does this computer's Internet connection go through a firewall that only allows connections to certain ports?")
         wrapMode: Text.Wrap
+
+        Accessible.role: Accessible.StaticText
+        Accessible.name: text
     }
 
     GroupBox {
         width: parent.width
         // Workaround OS X visual bug
         height: Math.max(implicitHeight, 40)
-        RowLayout {
+
+        /* without this the top of groupbox clips into the first row */
+        ColumnLayout {
             anchors.fill: parent
-            Label {
-                text: qsTr("Allowed ports:")
-            }
-            TextField {
-                id: allowedPortsField
-                Layout.fillWidth: true
-            }
-            Label {
-                text: qsTr("Example: 80,443")
-                SystemPalette { id: disabledPalette; colorGroup: SystemPalette.Disabled }
-                color: disabledPalette.text
+
+            Item { height: Qt.platform.os === "linux" ? 15 : 0 }
+
+            RowLayout {
+                Label {
+                    //: Label indicating the textbox to place the allowed ports
+                    text: qsTr("Allowed ports:")
+
+                    Accessible.role: Accessible.StaticText
+                    Accessible.name: text
+                }
+                TextField {
+                    id: allowedPortsField
+                    Layout.fillWidth: true
+                    //: Textbox showing an example entry for the firewall allowed ports entry
+                    placeholderText: qsTr("Example: 80,443")
+
+                    Accessible.role: Accessible.EditableText
+                    //: Name of the allowed ports label, used by accessibility tech such as screen readers
+                    Accessible.name: qsTr("Allowed ports") // todo: translations
+                    Accessible.description: placeholderText
+                }
             }
         }
     }
@@ -164,22 +232,35 @@ Column {
 
     Label {
         width: parent.width
+
         text: qsTr("If this computer's Internet connection is censored, you will need to obtain and use bridge relays.")
         wrapMode: Text.Wrap
+
+        Accessible.role: Accessible.StaticText
+        Accessible.name: text
     }
 
     GroupBox {
         width: parent.width
         ColumnLayout {
             anchors.fill: parent
+
+            Item { height: Qt.platform.os === "linux" ? 15 : 0 }
+
             Label {
                 text: qsTr("Enter one or more bridge relays (one per line):")
+
+                Accessible.role: Accessible.StaticText
+                Accessible.name: text
             }
             TextArea {
                 id: bridgesField
                 Layout.fillWidth: true
                 Layout.preferredHeight: allowedPortsField.height * 2
                 tabChangesFocus: true
+
+                Accessible.name: qsTr("Enter one or more bridge relays (one per line):")
+                Accessible.role: Accessible.EditableText
             }
         }
     }
@@ -188,18 +269,26 @@ Column {
         width: parent.width
 
         Button {
+            //: Button label for going back to previous screen
             text: qsTr("Back")
             onClicked: window.back()
+
+            Accessible.name: text
+            Accessible.onPressAction: window.back()
         }
 
         Item { height: 1; Layout.fillWidth: true }
 
         Button {
+            //: Button label for connecting to tor
             text: qsTr("Connect")
             isDefault: true
             onClicked: {
                 setup.save()
             }
+
+            Accessible.name: text
+            Accessible.onPressAction: setup.save()
         }
     }
 }

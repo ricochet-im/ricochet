@@ -16,6 +16,7 @@ ToolBar {
     data: [
         Action {
             id: addContactAction
+            //: Tooltip text for the button that launches the dialog box for adding a new contact
             text: qsTr("Add Contact")
             onTriggered: {
                 var object = createDialog("AddContactDialog.qml", { }, window)
@@ -25,6 +26,7 @@ ToolBar {
 
         Action {
             id: preferencesAction
+            //: Tooltip text for the button that launches program preferences window
             text: qsTr("Preferences")
             onTriggered: root.openPreferences()
         }
@@ -72,9 +74,16 @@ ToolBar {
                 sourceComponent: Bubble {
                     target: addContactButton
                     maximumWidth: toolBarLayout.width
+                    //: Tooltip that displays on first launch indicating how to add a new contact
                     text: qsTr("Click to add contacts")
                 }
             }
+
+            Accessible.role: Accessible.Button
+            //: Name of the button for adding a new contact for accessibility tech like screen readers
+            Accessible.name: qsTr("Add Contact")
+            //: Description of the 'Add Contact' button for accessibility tech like screen readers
+            Accessible.description: qsTr("Shows the add contact dialogue")
         }
 
         ToolButton {
@@ -82,6 +91,12 @@ ToolBar {
             implicitHeight: 24
             style: iconButtonStyle
             text: "\ue803" // iconFont gear
+
+            Accessible.role: Accessible.Button
+            //: Name of the button for launching the preferences window for accessibility tech like screen readres
+            Accessible.name: qsTr("Preferences")
+            //: Description of the 'Preferences' button for accessibility tech like screen readers
+            Accessible.description: qsTr("Shows the preferences dialogue") // todo: translation
         }
     }
 }

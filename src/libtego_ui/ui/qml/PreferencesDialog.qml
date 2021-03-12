@@ -32,27 +32,38 @@ ApplicationWindow {
         }
     }
 
+
     TabView {
         id: tabs
         anchors.fill: parent
         anchors.margins: 8
 
+        Accessible.role: Accessible.MenuBar
+        //: Name of the tab bar for accessibility tech like screen readers
+        Accessible.name: qsTr("Menu Tabs")
+
+        /* QT will automatically set Accessible.text, also tabs fail to load if
+         * you set any accessibility properties */
         Tab {
+            //: Title of the general settings tab
             title: qsTr("General")
             source: Qt.resolvedUrl("GeneralPreferences.qml")
         }
 
         Tab {
+            //: Title of the contacts list tab
             title: qsTr("Contacts")
             source: Qt.resolvedUrl("ContactPreferences.qml")
         }
 
         Tab {
+            //: Title of the tor tab, contains tor settings and logs
             title: qsTr("Tor")
             source: Qt.resolvedUrl("TorPreferences.qml")
         }
 
         Tab {
+            //: Title of the about tab, contains license information and ricochet version
             title: qsTr("About")
             source: Qt.resolvedUrl("AboutPreferences.qml")
         }

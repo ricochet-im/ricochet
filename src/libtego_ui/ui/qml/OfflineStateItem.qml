@@ -104,6 +104,7 @@ MouseArea {
         }
         Button {
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+            //: Button label
             text: qsTr("Configure")
             onClicked: {
                 var object = createDialog("NetworkSetupWizard.qml", { }, window)
@@ -112,6 +113,7 @@ MouseArea {
         }
         Button {
             Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+            //: Button label
             text: qsTr("Details")
             onClicked: {
                 openPreferences("TorPreferences.qml")
@@ -140,6 +142,7 @@ MouseArea {
 
             PropertyChanges {
                 target: label
+                //: Label displayed when connecting to the Tor network fails
                 text: qsTr("Connection failed")
             }
 
@@ -165,7 +168,7 @@ MouseArea {
 
             PropertyChanges {
                 target: label
-                //: \u2026 is ellipsis
+                //: Label displayed when in process of connecting, \u2026 is ellipsis
                 text: qsTr("Connecting\u2026")
             }
 

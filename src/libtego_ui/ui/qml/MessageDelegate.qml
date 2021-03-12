@@ -123,7 +123,7 @@ Column {
 
                 onLinkActivated: {
                     textField.deselect()
-                    delegate.showContextMenu(link)
+                    delegate.showLinkLeftClickContextMenu(link)
                 }
 
                 // Workaround an incomplete fix for QTBUG-31646
@@ -173,6 +173,10 @@ Column {
                             font.bold: true
                             font.pointSize: styleHelper.pointSize
                             elide: Text.ElideMiddle
+                            Accessible.role: Accessible.StaticText
+                            Accessible.name: text
+                            //: Description of the text displaying the filename of a file transfer, used by accessibility tech like screen readres
+                            Accessible.description: qsTr("File transfer file name");
                         }
 
                         ProgressBar {
@@ -185,6 +189,10 @@ Column {
 
                             indeterminate: model.transfer ? (model.transfer.status === ConversationModel.Pending) : true
                             value: model.transfer ? model.transfer.progressPercent : 0
+
+                            Accessible.role: Accessible.ProgressBar
+                            //: Description of progress bar displaying the file transfer progress, used by accessibility tech like screen readers
+                            Accessible.description: qsTr("File transfer progress");
                         }
 
                         Label {
@@ -196,6 +204,10 @@ Column {
                             text: model.transfer ? model.transfer.statusString : ""
                             font.pointSize: filename.font.pointSize * 0.8;
                             color: Qt.lighter(filename.color, 1.5)
+                            Accessible.role: Accessible.StaticText
+                            Accessible.name: text
+                            //: Description of label displaying the current status of a file transfer, used by accessibility tech like screen readers
+                            Accessible.description: qsTr("File transfer status")
                         }
                     }
 
@@ -208,6 +220,11 @@ Column {
                         height: visible ? transferDisplay.height : 0
 
                         text: "⬇"
+                        Accessible.role: Accessible.Button
+                        //: Label for file transfer 'Download' button for accessibility tech like screen readers
+                        Accessible.name: qsTr("Download")
+                        //: Description of what the file transfer 'Download' button does for accessibility tech like screen readers
+                        Accessible.description: qsTr("Download file")
 
                         onClicked: {
                             contact.conversation.tryAcceptFileTransfer(model.transfer.id);
@@ -222,6 +239,11 @@ Column {
                         height: visible ? transferDisplay.height : 0
 
                         text: "✕"
+                        Accessible.role: Accessible.Button
+                        //: Label for file transfer 'Cancel' button for accessibility tech like screen readers
+                        Accessible.name: qsTr("Cancel or reject")
+                        //: Description of what the file transfer 'Cancel' button does for accessibility tech like screen readers
+                        Accessible.description: qsTr("Cancels or rejects a file transfer")
 
                         onClicked: {
                             if (acceptButton.visible)
@@ -235,28 +257,37 @@ Column {
         }
     }
 
+    function showLinkLeftClickContextMenu(link) {
+        var object = hyperLinkLeftClickContextMenu.createObject(delegate, (link !== undefined) ? { 'hoveredLink' : link } : { })
+        // XXX FIXME QtQuickControls private API. The only other option is 'visible', and it is not reliable. See PR#183
+        object.popupVisibleChanged.connect(function() { if (!object.__popupVisible) object.destroy(1000) })
+        object.popup()
+    }
+
     function showContextMenu(link) {
-        var object = contextMenu.createObject(delegate, (link !== undefined) ? { 'hoveredLink': link } : { })
-        // XXX QtQuickControls private API. The only other option is 'visible', and it is not reliable. See PR#183
+        var object = rightClickContextMenu.createObject(delegate, (link !== undefined) ? { 'hoveredLink': link } : { })
+        // XXX FIXME QtQuickControls private API. The only other option is 'visible', and it is not reliable. See PR#183
         object.popupVisibleChanged.connect(function() { if (!object.__popupVisible) object.destroy(1000) })
         object.popup()
     }
 
     Component {
-        id: contextMenu
+        id: hyperLinkLeftClickContextMenu
 
         Menu {
             property string hoveredLink: textField.hasOwnProperty('hoveredLink') ? textField.hoveredLink : ""
             MenuItem {
-                text: linkAddContact.visible ? qsTr("Copy ID") : qsTr("Copy Link")
+                //: Text for context menu command to copy a url to the clipboard
+                text: qsTr("Copy Link")
                 visible: hoveredLink.length > 0
                 onTriggered: LinkedText.copyToClipboard(hoveredLink)
             }
             MenuItem {
+                //: Text for context menu command to open a url in a web browser
                 text: qsTr("Open with Browser")
                 visible: hoveredLink.length > 0 && hoveredLink.substr(0,4).toLowerCase() == "http"
                 onTriggered: {
-                    if (uiSettings.data.alwaysOpenBrowser || contact.settings.data.alwaysOpenBrowser) {
+                    if (uiSettings.data.alwaysOpenBrowser) {
                         Qt.openUrlExternally(hoveredLink)
                     } else {
                         var window = uiMain.findParentWindow(delegate)
@@ -265,20 +296,42 @@ Column {
                     }
                 }
             }
+        }
+    }
+
+    Component {
+        id: rightClickContextMenu
+
+        Menu {
+            property string hoveredLink: textField.hasOwnProperty('hoveredLink') ? textField.hoveredLink : ""
             MenuItem {
-                id: linkAddContact
-                text: qsTr("Add as Contact")
-                visible: hoveredLink.length > 0 && (hoveredLink.substr(0,9).toLowerCase() == "ricochet:"
-                                                    || hoveredLink.substr(0,8).toLowerCase() == "torsion:")
+                text: (hoveredLink.length > 0 && (hoveredLink.substr(0,9).toLowerCase() == "ricochet:")) ?
+                    //: Text for context menu command to copy a ricochet contact id to clipboard
+                    qsTr("Copy ID") :
+                    //: Text for context menu command to copy a url to the clipboard
+                    qsTr("Copy Link")
+                visible: hoveredLink.length > 0
+                onTriggered: LinkedText.copyToClipboard(hoveredLink)
+            }
+            MenuItem {
+                //: Text for context menu command to open a url in a web browser
+                text: qsTr("Open with Browser")
+                visible: hoveredLink.length > 0 && hoveredLink.substr(0,4).toLowerCase() == "http"
                 onTriggered: {
-                    var object = createDialog("AddContactDialog.qml", { 'staticContactId': hoveredLink }, chatWindow)
-                    object.visible = true
+                    if (uiSettings.data.alwaysOpenBrowser) {
+                        Qt.openUrlExternally(hoveredLink)
+                    } else {
+                        var window = uiMain.findParentWindow(delegate)
+                        var object = createDialog("OpenBrowserDialog.qml", { 'link': hoveredLink, 'contact': contact }, window)
+                        object.visible = true
+                    }
                 }
             }
             MenuSeparator {
                 visible: hoveredLink.length > 0
             }
             MenuItem {
+                //: Text for context menu command to copy an entire message to clipboard
                 text: qsTr("Copy Message")
                 visible: textField.selectedText.length == 0
                 onTriggered: {
@@ -286,6 +339,7 @@ Column {
                 }
             }
             MenuItem {
+                //: Text for context menu command to copy selected text to clipboard
                 text: qsTr("Copy Selection")
                 visible: textField.selectedText.length > 0
                 shortcut: "Ctrl+C"

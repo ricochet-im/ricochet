@@ -28,6 +28,14 @@
 // tego
 #include <tego/tego.hpp>
 
+#ifdef TEGO_VERSION
+#   define TEGO_STR2(X) #X
+#   define TEGO_STR(X) TEGO_STR2(X)
+#   define TEGO_VERSION_STR TEGO_STR(TEGO_VERSION)
+#else
+#   define TEGO_VERSION_STR "devbuild"
+#endif
+
 #endif // __cplusplus
 
 

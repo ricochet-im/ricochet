@@ -34,4 +34,8 @@ Label {
                 return qsTr("Connected")
         }
     }
+
+    Accessible.name: qsTr("Tor status") // todo: translation
+    Accessible.role: Accessible.StaticText
+    Accessible.description: text
 }
