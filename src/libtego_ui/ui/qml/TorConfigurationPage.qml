@@ -64,6 +64,7 @@ Column {
 
             /* without this the top of groupbox clips into the first row */
             Item { height: Qt.platform.os === "linux" ? 15 : 0}
+            Item { height: Qt.platform.os === "linux" ? 15 : 0}
 
             Label {
                 text: qsTr("Proxy type:")

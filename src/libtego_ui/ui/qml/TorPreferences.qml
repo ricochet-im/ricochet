@@ -26,7 +26,7 @@ Item {
             Label {
                 //: Display label that beside it indicates whether tor is running
                 text: qsTr("Running:")
-                Accessible.role: StaticText
+                Accessible.role: Accessible.StaticText
                 Accessible.name: qsTr("Running")
             }
             Label {

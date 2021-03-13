@@ -1,6 +1,6 @@
 import QtQuick 2.15
-import QtQuick.Controls 2.0
-import QtQuick.Layouts 1.15
+import QtQuick.Controls 1.4
+import QtQuick.Layouts 1.0
 
 ColumnLayout {
     anchors {
@@ -29,7 +29,7 @@ ColumnLayout {
             anchors.centerIn: parent
 
             text: "<a href='https://ricochetrefresh.net/'>ricochetrefresh.net</a>"
-            onLinkActivated: Qt.openUrlExternall("https://ricochetrefresh.net")
+            onLinkActivated: Qt.openUrlExternally("https://ricochetrefresh.net")
         }
 
         //: provides context for the URL for accessibility tech like screen readers
@@ -37,28 +37,17 @@ ColumnLayout {
         Accessible.role: Accessible.StaticText
     }
 
-    Flickable {
-        // this is so that the scroll bars doesn't spill over the border
-        Layout.rightMargin: 8
-        Layout.bottomMargin: 8
-        Layout.fillHeight: true
+    TextArea {
         Layout.fillWidth: true
-        Layout.alignment: Qt.AlignHCenter
+        Layout.fillHeight: true
 
-        TextArea.flickable : TextArea {
-            selectByMouse: true
+        readOnly: true
+        text: uiMain.aboutText
+        textFormat: TextEdit.PlainText
+        wrapMode: TextEdit.Wrap
 
-            readOnly: true
-            text: uiMain.aboutText
-        }
-
-        ScrollBar.vertical: ScrollBar { }
-        ScrollBar.horizontal: ScrollBar { } // openssl license has some long lines that need to be accounted for
-
-        //: summary of a block of text for accessibility tech like screen readers
         Accessible.description: qsTr("The license of Ricochet Refresh and its dependencies")
         Accessible.name: qsTr("License")
-        Accessible.role: Accessible.StaticText
     }
 
     Accessible.role: Accessible.Window
@@ -66,3 +55,4 @@ ColumnLayout {
     //: summary of the window's contents for accessibility tech like screen readers
     Accessible.description: qsTr("About page, contains license and version information")
 }
+
