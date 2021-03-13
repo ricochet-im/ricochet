@@ -533,5 +533,95 @@ contact request).
 
 After sending *Result*, the channel should be closed.
 
+### File channel
+
+| Channel            | Detail |
+| ------------------ | ------ |
+| **Channel type**   | `im.ricochet.file-transfer` |
+| **Purpose**        | Sending files |
+| **Direction**      | One-way: Only initiator of the channel sends commands and file chunks, and recipient sends replies |
+| **Singleton**      | Only one file channel is created by each peer on the connection |
+| **Authentication** | Requires `im.ricochet.auth.hidden-service` as a known contact |
+
+The file channel allows the initiator to send file transfer requests. The recipient may respond either accepting or rejecting the request. Once the initiator receives an accept response, they begin sending chunks. The recipient must send an ACK message to the initiator after receiving a chunk before the initiator will send the next chunk. This chunk, ack, chunk, ... pattern limits throughput, but is necessary to avoid flooding the connection to the peer and blocking chat messages from going through. In the future, a separate connection on a separate socket should be created for the File channel to maximize transfer speed. At any point, either the initiator or recipient may send a message signaling the end of the transfer.
+
+##### Packet
+```protobuf
+message Packet {
+    optional FileHeader file_header = 1;
+    optional FileHeaderAck file_header_ack = 2;
+    optional FileHeaderResponse file_header_response = 3;
+    optional FileChunk file_chunk = 4;
+    optional FileChunkAck file_chunk_ack = 5;
+    optional FileTransferCompleteNotification file_transfer_complete_notification = 6;
+}
+```
+
+All packets sent to the file channel must encode a *Packet*, with exactly one field. Each packet contains a uint32 *file_id* field to identify which file transfer the packet refers to. It is possible to have multiple file transfers going on between the initiator and the recipient.
+
+##### FileHeader
+```protobuf
+message FileHeader {
+    optional uint32 file_id = 1;
+    optional uint64 file_size = 2;
+    optional string name = 3;
+    optional bytes file_hash = 4;
+}
+```
+The initiator sends an initial FileHeader message to the recipient. It is expected that the recipient will always send a FileHeaderAck response, if they are able. The FileHeader message includes a per-peer unique identifier, and some meta-data about the file the initiator wishes to send the recipient.
+
+##### FileHeaderAck
+```protobuf
+message FileHeaderAck {
+    optional uint32 file_id = 1;
+    optional bool accepted = 2 [default = false];
+}
+```
+The recipient always automatically sends a FileHeaderAck message in response to a FileHeader message. The *accepted* field must be true to progress.
+
+##### FileHeaderResponse
+```protobuf
+message FileHeaderResponse {
+    optional uint32 file_id = 1;
+    optional int32 response = 2;
+}
+```
+
+The *FileHeaderResponse* message is sent by the recipient after they send the *FileHeaderAck* message to the initiator. This message indicates whether the recipient wishes to proceed with the file transfer. The *response* field is an int that corresponds with the *tego_file_transfer_response_t* enum defined in tego.h; 0 for accept and 1 for reject.
+
+##### FileChunk
+```protobuf
+message FileChunk {
+    optional uint32 file_id = 1;
+    optional bytes chunk_data = 2;
+}
+```
+
+Once the initiator has received a *FileHeaderResponse* message indicating the recipient wishes to proceed with the file transfer, the initiator begins to send *FileChunk* messages. The maximum number of bytes in each chunk is currently defined as 63 kebibytes (63 * 1024 bytes). This constant is defined in `libtego/source/protocol/FileChannel.h` After each *FileChunk* is sent by the initiator, they must wait for the recipient to respond with a *FileChunkAck* message before sending subsequent chunks.
+
+##### FileChunkAck
+```protobuf
+message FileChunkAck {
+    optional uint32 file_id = 1;
+    optional uint64 bytes_received = 2;
+}
+```
+The *FileChunkAck* message is sent by the recipient immediately upon receiving and writing a chunk to disk.
+
+##### FileTransferCompleteNotification
+```protobuf
+enum FileTransferResult {
+    Success = 0;
+    Failure = 1;
+    Cancelled = 2;
+}
+
+message FileTransferCompleteNotification {
+    optional uint32 file_id = 1;
+    optional FileTransferResult result = 2;
+}
+```
+The *FileTransferCompleteNotification* message may be sent by either the initiator or the recipient at any time with a *result* value of *Failure* or *Cancelled* to indicate that the file transfer is over. The recipient is expected to send this message with a *result* of *Success* once all bytes have been received. Once either party receives this message, they remove internal state associated with the given transfer. Any subsequent messages referring to a complete transfer are ignored.
+
 [rend-spec]: https://gitweb.torproject.org/torspec.git/blob/HEAD:/rend-spec.txt
 [protobuf]: https://code.google.com/p/protobuf/
