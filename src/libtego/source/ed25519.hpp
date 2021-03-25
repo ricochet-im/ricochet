@@ -21,6 +21,7 @@ struct tego_v3_onion_service_id
 {
     tego_v3_onion_service_id() = default;
     tego_v3_onion_service_id(const char* serviceIdString, size_t serviceIdStringLength);
+    static tego_bool_t is_valid(std::string_view &serviceIdString);
 
     char data[TEGO_V3_ONION_SERVICE_ID_SIZE] = {0};
 };

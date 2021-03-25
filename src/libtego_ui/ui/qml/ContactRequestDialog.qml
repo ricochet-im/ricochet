@@ -4,7 +4,7 @@ import QtQuick.Layouts 1.0
 
 ApplicationWindow {
     id: contactRequestDialog
-    width: 350
+    width: 640
     height: 200
     minimumWidth: width
     maximumWidth: width

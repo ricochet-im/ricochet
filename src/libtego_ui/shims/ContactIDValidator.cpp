@@ -27,15 +27,20 @@ namespace shims
             {
                 emit failed();
             }
+            else
+            {
+                emit success(); // removes the popup when the id returns to being valid
+            }
             return re;
         }
 
-        if (matchingContact(text) || matchesIdentity(text))
+        if (!isValidID(text) || matchingContact(text) || matchesIdentity(text))
         {
             emit failed();
             return QValidator::Invalid;
         }
 
+        emit success();
         return re;
     }
 
@@ -68,5 +73,16 @@ namespace shims
         auto utf8ServiceId = QByteArray(serviceIdString, TEGO_V3_ONION_SERVICE_ID_LENGTH);
 
         return utf8Text == utf8ServiceId;
+    }
+
+    bool ContactIDValidator::isValidID(const QString &serviceID) const
+    {
+        auto strippedID = serviceID.mid(tego::static_strlen("ricochet:"));
+        logger::println("strippedID : {}", strippedID.toUtf8().constData(), strippedID.size());
+
+        bool valid = tego_v3_onion_service_id_string_is_valid(strippedID.toUtf8().constData(), strippedID.size(), nullptr) == TEGO_TRUE;
+        logger::println("valid: {}", valid);
+
+        return valid;
     }
 }

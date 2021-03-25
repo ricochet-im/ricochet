@@ -284,6 +284,7 @@ Column {
             //: Button label for connecting to tor
             text: qsTr("Connect")
             isDefault: true
+            enabled: setup.proxyType ? (proxyAddressField.text && proxyPortField.text) : true
             onClicked: {
                 setup.save()
             }

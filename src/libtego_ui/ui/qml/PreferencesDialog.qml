@@ -5,8 +5,8 @@ import im.ricochet 1.0
 
 ApplicationWindow {
     id: preferencesWindow
-    width: 550
-    minimumWidth: 550
+    width: 820
+    minimumWidth: 820
     height: 400
     minimumHeight: 400
     title: qsTr("Ricochet Preferences")

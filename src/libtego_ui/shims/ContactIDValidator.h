@@ -13,9 +13,11 @@ namespace shims
         virtual void fixup(QString &text) const;
         virtual State validate(QString &text, int &pos) const;
 
+        Q_INVOKABLE bool isValidID(const QString &serviceID) const;
         Q_INVOKABLE shims::ContactUser *matchingContact(const QString &text) const;
         Q_INVOKABLE bool matchesIdentity(const QString &text) const;
     signals:
         void failed() const;
+        void success() const;
     };
 }

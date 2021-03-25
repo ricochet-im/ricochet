@@ -39,6 +39,11 @@ FocusScope {
                         //: Error message showed when user attempts to add a contact already in their contact list
                         errorBubble.show(qsTr("<b>%1</b> is already your contact").arg(Utils.htmlEscaped(contact.nickname)))
                     }
+                    else if (!isValidID(field.text))
+                    {
+                        //: Error message showed when the id doesn't comply with spec https://gitweb.torproject.org/torspec.git/tree/rend-spec-v3.txt
+                        errorBubble.show(qsTr("This ID is invalid"));
+                    }
                     else if (matchesIdentity(field.text))
                     {
                         //: Error message showed when user attempts to add themselves as a contact in their contact list
@@ -49,6 +54,10 @@ FocusScope {
                         //: Error message showed when the provided ricochet id is invalid
                         errorBubble.show(qsTr("Enter an ID starting with <b>ricochet:</b>"))
                     }
+                }
+
+                onSuccess: {
+                    errorBubble.clear()
                 }
             }
 

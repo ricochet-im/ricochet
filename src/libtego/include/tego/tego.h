@@ -109,6 +109,20 @@ void tego_ed25519_public_key_from_ed25519_private_key(
     tego_error_t** error);
 
 /*
+ * Checks if a service id string is valid per tor rend spec:
+ * https://gitweb.torproject.org/torspec.git/tree/rend-spec-v3.txt
+ *
+ * @param serviceIdString : string containing the v3 service id to be validated
+ * @param serviceIdStringLength : length of serviceIdString not counting the
+ *  null terminator
+ * @param error : filled on error
+ */
+tego_bool_t tego_v3_onion_service_id_string_is_valid(
+        const char* serviceIdString,
+        size_t serviceIdStringLength,
+        tego_error_t** error);
+
+/*
  * Construct a service id object from string. Validates
  * the checksum and version byte per spec:
  * https://gitweb.torproject.org/torspec.git/tree/rend-spec-v3.txt

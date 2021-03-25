@@ -18,6 +18,13 @@ namespace shims
             contactID, nickname, myNickname, message);
 
         auto serviceId = contactID.mid(tego::static_strlen("ricochet:")).toUtf8();
+
+        // check that the service id is valid before anything else
+        if (tego_v3_onion_service_id_string_is_valid(serviceId.constData(), serviceId.size(), nullptr) != TEGO_TRUE)
+        {
+            return nullptr;
+        }
+
         auto shimContact = this->addContact(serviceId, nickname);
 
         auto userId = shimContact->toTegoUserId();
