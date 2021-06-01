@@ -20,23 +20,6 @@ ColumnLayout {
         Accessible.name: qsTr("Ricochet Refresh version %1").arg(uiMain.accessibleVersion)
     }
 
-    Label {
-        horizontalAlignment: Qt.AlignHCenter
-        Layout.fillWidth: true
-
-        Label {
-            id: homePageLink
-            anchors.centerIn: parent
-
-            text: "<a href='https://ricochetrefresh.net/'>ricochetrefresh.net</a>"
-            onLinkActivated: Qt.openUrlExternally("https://ricochetrefresh.net")
-        }
-
-        //: provides context for the URL for accessibility tech like screen readers
-        Accessible.name: qsTr("Ricochet Refresh web home page")
-        Accessible.role: Accessible.StaticText
-    }
-
     TextArea {
         Layout.fillWidth: true
         Layout.fillHeight: true

@@ -25,21 +25,6 @@ ColumnLayout {
     }
 
     CheckBox {
-        //: Text description of an option to open URLs in default web browser when clicked
-        text: qsTr("Open links in default browser without prompting")
-        checked: uiSettings.data.alwaysOpenBrowser || false
-        onCheckedChanged: {
-            uiSettings.write("alwaysOpenBrowser", checked)
-        }
-
-        Accessible.role: Accessible.CheckBox
-        Accessible.name: text
-        Accessible.onPressAction: {
-            uiSettings.write("alwaysOpenBrowser", checked)
-        }
-    }
-
-    CheckBox {
         //: Text description of an option to play audio notifications when contacts log in, log out, and send messages
         text: qsTr("Play audio notifications")
         checked: uiSettings.data.playAudioNotification || false

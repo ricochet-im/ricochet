@@ -33,20 +33,16 @@
 #ifndef LINKEDTEXT_H
 #define LINKEDTEXT_H
 
-class LinkedText : public QObject
+class Clipboard : public QObject
 {
     Q_OBJECT
-    Q_DISABLE_COPY(LinkedText)
-
+    Q_DISABLE_COPY(Clipboard)
 public:
-    explicit LinkedText(QObject *parent = 0);
+    explicit Clipboard(QObject* parent = nullptr) : QObject(parent) {}
 
-    Q_INVOKABLE QString parsed(const QString &input);
-    Q_INVOKABLE void copyToClipboard(const QString &text);
+    Q_INVOKABLE void copyText(QString const& text);
 
-private:
-    QRegularExpression linkRegex;
-    QStringList allowedSchemes;
+    static QObject* singleton_provider(QQmlEngine*,QJSEngine*);
 };
 
 #endif

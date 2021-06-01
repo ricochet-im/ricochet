@@ -104,6 +104,7 @@ Column {
             color: "transparent"
 
             // text message
+
             TextEdit {
                 id: textField
                 visible: parent.childItem === this
@@ -111,7 +112,7 @@ Column {
                 height: contentHeight
 
                 renderType: Text.NativeRendering
-                textFormat: TextEdit.RichText
+                textFormat: TextEdit.PlainText
                 selectionColor: palette.highlight
                 selectedTextColor: palette.highlightedText
                 font.pointSize: styleHelper.pointSize
@@ -119,24 +120,13 @@ Column {
                 wrapMode: TextEdit.Wrap
                 readOnly: true
                 selectByMouse: true
-                text: LinkedText.parsed(model.text)
-
-                onLinkActivated: {
-                    textField.deselect()
-                    delegate.showLinkLeftClickContextMenu(link)
-                }
-
-                // Workaround an incomplete fix for QTBUG-31646
-                Component.onCompleted: {
-                    if (textField.hasOwnProperty('linkHovered'))
-                        textField.linkHovered.connect(function() { })
-                }
+                text: model.text
 
                 MouseArea {
                     anchors.fill: parent
                     acceptedButtons: Qt.RightButton
 
-                    onClicked: delegate.showContextMenu(parent.hoveredLink)
+                    onClicked: delegate.showContextMenu()
                 }
             }
 
@@ -257,85 +247,22 @@ Column {
         }
     }
 
-    function showLinkLeftClickContextMenu(link) {
-        var object = hyperLinkLeftClickContextMenu.createObject(delegate, (link !== undefined) ? { 'hoveredLink' : link } : { })
-        // XXX FIXME QtQuickControls private API. The only other option is 'visible', and it is not reliable. See PR#183
-        object.popupVisibleChanged.connect(function() { if (!object.__popupVisible) object.destroy(1000) })
+    function showContextMenu() {
+        var object = rightClickContextMenu.createObject(delegate, { })
+        object.popupVisibleChanged.connect(function() { if (!object.visible) object.destroy(1000) })
         object.popup()
-    }
-
-    function showContextMenu(link) {
-        var object = rightClickContextMenu.createObject(delegate, (link !== undefined) ? { 'hoveredLink': link } : { })
-        // XXX FIXME QtQuickControls private API. The only other option is 'visible', and it is not reliable. See PR#183
-        object.popupVisibleChanged.connect(function() { if (!object.__popupVisible) object.destroy(1000) })
-        object.popup()
-    }
-
-    Component {
-        id: hyperLinkLeftClickContextMenu
-
-        Menu {
-            property string hoveredLink: textField.hasOwnProperty('hoveredLink') ? textField.hoveredLink : ""
-            MenuItem {
-                //: Text for context menu command to copy a url to the clipboard
-                text: qsTr("Copy Link")
-                visible: hoveredLink.length > 0
-                onTriggered: LinkedText.copyToClipboard(hoveredLink)
-            }
-            MenuItem {
-                //: Text for context menu command to open a url in a web browser
-                text: qsTr("Open with Browser")
-                visible: hoveredLink.length > 0 && hoveredLink.substr(0,4).toLowerCase() == "http"
-                onTriggered: {
-                    if (uiSettings.data.alwaysOpenBrowser) {
-                        Qt.openUrlExternally(hoveredLink)
-                    } else {
-                        var window = uiMain.findParentWindow(delegate)
-                        var object = createDialog("OpenBrowserDialog.qml", { 'link': hoveredLink, 'contact': contact }, window)
-                        object.visible = true
-                    }
-                }
-            }
-        }
     }
 
     Component {
         id: rightClickContextMenu
 
         Menu {
-            property string hoveredLink: textField.hasOwnProperty('hoveredLink') ? textField.hoveredLink : ""
-            MenuItem {
-                text: (hoveredLink.length > 0 && (hoveredLink.substr(0,9).toLowerCase() == "ricochet:")) ?
-                    //: Text for context menu command to copy a ricochet contact id to clipboard
-                    qsTr("Copy ID") :
-                    //: Text for context menu command to copy a url to the clipboard
-                    qsTr("Copy Link")
-                visible: hoveredLink.length > 0
-                onTriggered: LinkedText.copyToClipboard(hoveredLink)
-            }
-            MenuItem {
-                //: Text for context menu command to open a url in a web browser
-                text: qsTr("Open with Browser")
-                visible: hoveredLink.length > 0 && hoveredLink.substr(0,4).toLowerCase() == "http"
-                onTriggered: {
-                    if (uiSettings.data.alwaysOpenBrowser) {
-                        Qt.openUrlExternally(hoveredLink)
-                    } else {
-                        var window = uiMain.findParentWindow(delegate)
-                        var object = createDialog("OpenBrowserDialog.qml", { 'link': hoveredLink, 'contact': contact }, window)
-                        object.visible = true
-                    }
-                }
-            }
-            MenuSeparator {
-                visible: hoveredLink.length > 0
-            }
             MenuItem {
                 //: Text for context menu command to copy an entire message to clipboard
                 text: qsTr("Copy Message")
                 visible: textField.selectedText.length == 0
                 onTriggered: {
-                    LinkedText.copyToClipboard(textField.getText(0, textField.length))
+                    Clipboard.copyText(textField.getText(0, textField.length))
                 }
             }
             MenuItem {

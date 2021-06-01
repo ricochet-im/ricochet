@@ -30,46 +30,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LinkedText.h"
+#include "Clipboard.h"
 
-LinkedText::LinkedText(QObject *parent)
-    : QObject(parent)
-{
-    // Select things that look like URLs of some kind and allow QUrl::fromUserInput to validate them
-    linkRegex = QRegularExpression(QStringLiteral("([a-z]{3,9}:|www\\.)([^\\s,.);!>]|[,.);!>](?!\\s|$))+"), QRegularExpression::CaseInsensitiveOption);
-
-    allowedSchemes << QStringLiteral("http")
-                   << QStringLiteral("https")
-                   << QStringLiteral("torsion")
-                   << QStringLiteral("ricochet");
-}
-
-QString LinkedText::parsed(const QString &input)
-{
-    QString re;
-    int p = 0;
-    QRegularExpressionMatchIterator it = linkRegex.globalMatch(input);
-    while (it.hasNext()) {
-        QRegularExpressionMatch match = it.next();
-        int start = match.capturedStart();
-
-        QUrl url = QUrl::fromUserInput(match.capturedRef().toString());
-        if (!allowedSchemes.contains(url.scheme().toLower()))
-            continue;
-
-        if (start > p)
-            re.append(input.mid(p, start - p).toHtmlEscaped().replace(QLatin1Char('\n'), QStringLiteral("<br/>")));
-        re.append(QStringLiteral("<a href=\"%1\">%2</a>").arg(QString::fromLatin1(url.toEncoded()).toHtmlEscaped(), match.capturedRef().toString().toHtmlEscaped()));
-        p = match.capturedEnd();
-    }
-
-    if (p < input.size())
-        re.append(input.mid(p).toHtmlEscaped().replace(QLatin1Char('\n'), QStringLiteral("<br/>")));
-
-    return re;
-}
-
-void LinkedText::copyToClipboard(const QString &text)
+void Clipboard::copyText(QString const& text)
 {
     QClipboard *clipboard = qApp->clipboard();
     clipboard->setText(text);
@@ -78,3 +41,6 @@ void LinkedText::copyToClipboard(const QString &text)
         clipboard->setText(text, QClipboard::Selection);
 }
 
+QObject* Clipboard::singleton_provider(QQmlEngine*,QJSEngine*) {
+    return new Clipboard();
+}

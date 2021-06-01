@@ -26,7 +26,6 @@
         <file>StartupStatusPage.qml</file>
         <file>OfflineStateItem.qml</file>
         <file>MainWindow.qml</file>
-        <file>OpenBrowserDialog.qml</file>
         <file>Bubble.qml</file>
         <file>PageView.qml</file>
         <file>ChatPage.qml</file>

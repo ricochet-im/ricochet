@@ -31,8 +31,8 @@
  */
 
 #include "ui/MainWindow.h"
+#include "ui/Clipboard.h"
 #include "ui/ContactsModel.h"
-#include "ui/LinkedText.h"
 #include "ui/LanguagesModel.h"
 
 #include "utils/Settings.h"
@@ -51,11 +51,6 @@
 #include "shims/IncomingContactRequest.h"
 
 MainWindow *uiMain = 0;
-
-static QObject *linkedtext_singleton(QQmlEngine *, QJSEngine *)
-{
-    return new LinkedText;
-}
 
 /* Through the QQmlNetworkAccessManagerFactory below, all network requests
  * created via QML will be passed to this object; including, for example,
@@ -103,7 +98,6 @@ MainWindow::MainWindow(QObject *parent)
     qml = new QQmlApplicationEngine(this);
     qml->setNetworkAccessManagerFactory(new NetworkAccessBlockingFactory);
 
-    // TODO: shim ContactUser and ContactsManager next, then complete UserIdentity shim
     qmlRegisterUncreatableType<shims::ContactUser>("im.ricochet", 1, 0, "ContactUser", QString());
     qmlRegisterUncreatableType<shims::UserIdentity>("im.ricochet", 1, 0, "UserIdentity", QString());
     qmlRegisterUncreatableType<shims::ContactsManager>("im.ricochet", 1, 0, "ContactsManager", QString());
@@ -114,7 +108,7 @@ MainWindow::MainWindow(QObject *parent)
     qmlRegisterType<::ContactsModel>("im.ricochet", 1, 0, "ContactsModel");
     qmlRegisterType<shims::ContactIDValidator>("im.ricochet", 1, 0, "ContactIDValidator");
     qmlRegisterType<::SettingsObject>("im.ricochet", 1, 0, "Settings");
-    qmlRegisterSingletonType<::LinkedText>("im.ricochet", 1, 0, "LinkedText", linkedtext_singleton);
+    qmlRegisterSingletonType<::Clipboard>("im.ricochet", 1, 0, "Clipboard", &Clipboard::singleton_provider);
     qmlRegisterType<::LanguagesModel>("im.ricochet", 1, 0, "LanguagesModel");
 }
 

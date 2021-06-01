@@ -23,9 +23,9 @@ PRECOMPILED_HEADER = precomp.hpp
 
 SOURCES += \
     libtego_callbacks.cpp \
+    ui/Clipboard.cpp \
     ui/ContactsModel.cpp \
     ui/LanguagesModel.cpp \
-    ui/LinkedText.cpp \
     ui/MainWindow.cpp \
     utils/Settings.cpp \
     shims/TorControl.cpp\
@@ -41,9 +41,9 @@ SOURCES += \
 
 HEADERS += \
     libtego_callbacks.hpp \
+    ui/Clipboard.h \
     ui/ContactsModel.h \
     ui/LanguagesModel.h \
-    ui/LinkedText.h \
     ui/MainWindow.h \
     utils/Settings.h \
     utils/Useful.h \
