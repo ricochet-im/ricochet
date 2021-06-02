@@ -119,6 +119,14 @@ ApplicationWindow {
             property QtObject currentContact: (visible && width > 0) ? contactList.selectedContact : null
             onCurrentContactChanged: {
                 if (currentContact !== null) {
+
+                    // remove chat page for user when they are deleted
+                    if(typeof currentContact.contactDeletedCallbackAdded === 'undefined') {
+                        currentContact.contactDeleted.connect(function(user) {
+                            remove(user.contactID);
+                        });
+                        currentContact.contactDeletedCallbackAdded = true;
+                    }
                     show(currentContact.contactID, Qt.resolvedUrl("ChatPage.qml"),
                          { 'contact': currentContact });
                 } else {
