@@ -76,7 +76,6 @@ int main(int argc, char *argv[]) try
 
 
     a.setApplicationVersion(QLatin1String(TEGO_VERSION_STR));
-    a.setOrganizationName(QStringLiteral("Ricochet"));
 
 #if !defined(Q_OS_WIN) && !defined(Q_OS_MAC)
     a.setWindowIcon(QIcon(QStringLiteral(":/icons/ricochet_refresh.png")));
@@ -238,32 +237,6 @@ catch(std::exception& re)
     return -1;
 }
 
-
-static QString userConfigPath()
-{
-    QString path = QStandardPaths::writableLocation(QStandardPaths::DataLocation);
-    QString oldPath = path;
-    oldPath.replace(QStringLiteral("Ricochet"), QStringLiteral("Torsion"), Qt::CaseInsensitive);
-    if (QFile::exists(oldPath))
-        return oldPath;
-    return path;
-}
-
-#ifdef Q_OS_MAC
-static QString appBundlePath()
-{
-    QString path = QApplication::applicationDirPath();
-    int p = path.lastIndexOf(QLatin1String(".app/"));
-    if (p >= 0)
-    {
-        p = path.lastIndexOf(QLatin1Char('/'), p);
-        path = path.left(p+1);
-    }
-
-    return path;
-}
-#endif
-
 // Writes default settings to settings object. Does not care about any
 // preexisting values, therefore this is best used on a fresh object.
 static void loadDefaultSettings(SettingsFile *settings)
@@ -285,25 +258,22 @@ static bool initSettings(SettingsFile *settings, QLockFile **lockFile, QString &
      * This behavior may be overriden by passing a folder path as the first argument.
      */
 
+    /* ricochet-refresh by default loads and saves configuration files from QStandardPaths::AppLocalDataLocation
+     *
+     * Linux: ~/.local/share/ricochet-refresh
+     * Windows: C:/Users/<USER>/AppData/Local/ricochet-refresh
+     * macOS: "~/Library/Application Support/ricochet-refresh"
+     *
+     * ricochet-refresh can also load configuration files from a custom directory passed in as the first argument
+     */
+
     QString configPath;
     QStringList args = qApp->arguments();
+
     if (args.size() > 1) {
         configPath = args[1];
     } else {
-#ifndef RICOCHET_NO_PORTABLE
-# ifdef Q_OS_MAC
-        if (!qApp->applicationDirPath().contains(QStringLiteral("/Applications"))) {
-            // Try old configuration path first
-            configPath = appBundlePath() + QStringLiteral("config.torsion");
-            if (!QFile::exists(configPath))
-                configPath = appBundlePath() + QStringLiteral("config.ricochet");
-        }
-# else
-        configPath = qApp->applicationDirPath() + QStringLiteral("/config");
-# endif
-#endif
-        if (configPath.isEmpty())
-            configPath = userConfigPath();
+        configPath = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
     }
 
     QDir dir(configPath);
