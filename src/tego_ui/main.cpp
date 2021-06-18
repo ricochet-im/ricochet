@@ -87,6 +87,9 @@ int main(int argc, char *argv[]) try
     QString error;
     QLockFile *lock = 0;
     if (!initSettings(settings.data(), &lock, error)) {
+        if (error.isEmpty()) {
+            return 0;
+        }
         QMessageBox::critical(0, qApp->translate("Main", "Ricochet Error"), error);
         return 1;
     }
@@ -237,6 +240,25 @@ catch(std::exception& re)
     return -1;
 }
 
+#ifdef Q_OS_MAC
+// returns the directory to place the config.ricochet directory on macOS
+// no trailing '/'
+static QString appBundlePath()
+{
+    QString path = QApplication::applicationDirPath();
+    // if user left the binaries insidie the app bundle
+    int p = path.lastIndexOf(QLatin1String(".app/"));
+    if (p >= 0)
+    {
+        // just some binaries floating around somewhere
+        p = path.lastIndexOf(QLatin1Char('/'), p);
+        path = path.left(p);
+    }
+
+    return path;
+}
+#endif
+
 // Writes default settings to settings object. Does not care about any
 // preexisting values, therefore this is best used on a fresh object.
 static void loadDefaultSettings(SettingsFile *settings)
@@ -246,18 +268,6 @@ static void loadDefaultSettings(SettingsFile *settings)
 
 static bool initSettings(SettingsFile *settings, QLockFile **lockFile, QString &errorMessage)
 {
-    /* If built in portable mode (default), configuration is stored in the 'config'
-     * directory next to the binary. If not writable, launching fails.
-     *
-     * Portable OS X is an exception. In that case, configuration is stored in a
-     * 'config.ricochet' folder next to the application bundle, unless the application
-     * path contains "/Applications", in which case non-portable mode is used.
-     *
-     * When not in portable mode, a platform-specific per-user config location is used.
-     *
-     * This behavior may be overriden by passing a folder path as the first argument.
-     */
-
     /* ricochet-refresh by default loads and saves configuration files from QStandardPaths::AppLocalDataLocation
      *
      * Linux: ~/.local/share/ricochet-refresh
@@ -273,7 +283,68 @@ static bool initSettings(SettingsFile *settings, QLockFile **lockFile, QString &
     if (args.size() > 1) {
         configPath = args[1];
     } else {
+        // TODO: remove this profile migration after sufficient time has passed (EOY 2021)
+        auto legacyConfigPath = []() -> QString {
+            QString configPath;
+#ifdef Q_OS_MAC
+            // if the user has installed it to /Applications
+            if (qApp->applicationDirPath().contains(QStringLiteral("/Applications"))) {
+                // ~Library/Application Support/Ricochet/Ricochet-Refresh
+                configPath = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QStringLiteral("/Ricochet/Ricochet-Refresh");
+            } else {
+                configPath = appBundlePath() + QStringLiteral("/config.ricochet");
+            }
+#else
+            configPath = qApp->applicationDirPath() + QStringLiteral("/config");
+#endif
+            return configPath;
+        }();
         configPath = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
+
+        logger::println("configPath : {}", configPath);
+        logger::println("legacyConfigPath : {}", legacyConfigPath);
+
+        // only put up migration UX when
+        if (// old path differs from new path
+            configPath != legacyConfigPath &&
+            // the old path exists
+            QFile::exists(legacyConfigPath) &&
+            // the new path does not exist
+            !QFile::exists(configPath)) {
+
+            QMessageBox msgBox;
+            msgBox.setWindowTitle(QStringLiteral("Profile Migration"));
+            msgBox.setText(QStringLiteral("Ricochet Refresh has detected an existing legacy profile. Do you want to import it?"));
+            msgBox.setIcon(QMessageBox::Question);
+            msgBox.setDetailedText(
+                QStringLiteral(
+                    "Previous versions of Ricochet Refresh stored your profile data in the application's install location. If you import your legacy profile, it will be moved to a new location within your home directory.\n\n"
+                    "Old profile: '%1'\n"
+                    "New profile: '%2'").arg(legacyConfigPath).arg(configPath));
+            msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No | QMessageBox::Abort);
+            msgBox.setDefaultButton(QMessageBox::Abort);
+
+            switch(static_cast<QMessageBox::StandardButton>(msgBox.exec()))
+            {
+                case QMessageBox::Yes:
+                    // migrate profile
+                    if(!QDir().rename(legacyConfigPath, configPath)) {
+                        errorMessage = QStringLiteral("Unable to migrate profile");
+                        return false;
+                    }
+                    break;
+                case QMessageBox::No:
+                    // use old profile path
+                    configPath = legacyConfigPath;
+                    break;
+                case QMessageBox::Abort:
+                    // exit program
+                    return false;
+                default:
+                    errorMessage = QStringLiteral("Invalid return value from msgBox.exec()");
+                    return false;
+                }
+        }
     }
 
     QDir dir(configPath);
