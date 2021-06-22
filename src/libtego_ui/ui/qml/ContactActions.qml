@@ -35,7 +35,30 @@ Item {
         contact.sendFile();
     }
 
+    function canExportConversation() {
+        return contact.conversation.conversationEventCount > 0;
+    }
+
+    function exportConversation() {
+        if (contact.exportConversation() != true) {
+            exportConversationFailedDialog.visible = true;
+        }
+    }
+
     signal renameTriggered
+
+    MessageDialog {
+        id: exportConversationFailedDialog
+
+        title: qsTr("Warning")
+        icon: StandardIcon.Warning
+        text: qsTr("Could not successfully export conversation")
+        standardButtons: StandardButton.Ok
+
+        visible: false
+
+        onAccepted: visible = false;
+    }
 
     Menu {
         id: contextMenu
@@ -59,7 +82,13 @@ Item {
         MenuItem {
             //: Context menu command to initiate a file transfer, opens a system file dialog
             text: qsTr("Send File...")
-            onTriggered: sendFile();
+            onTriggered: sendFile()
+        }
+        MenuItem {
+            //: Context menu command to initiate a chat log export, opens a system file dialog to export to
+            enabled: canExportConversation()   // only enable if we have anything to export
+            text: qsTr("Export Conversation...")
+            onTriggered: exportConversation()
         }
         MenuSeparator { }
         MenuItem {

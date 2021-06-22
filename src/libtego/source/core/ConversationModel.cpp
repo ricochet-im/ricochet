@@ -126,8 +126,8 @@ std::tuple<tego_file_transfer_id_t, std::unique_ptr<tego_file_hash_t>, tego_file
 {
     logger::println("Sending file: {}", file_uri);
 
-    MessageData message(file_uri, QDateTime::currentDateTime(), lastMessageId++, Queued);
-    message.type = ConversationModel::MessageData::Type::File;
+    MessageData message(File, file_uri, QDateTime::currentDateTime(), lastMessageId++, Queued);
+    message.type = ConversationModel::MessageType::File;
 
     std::unique_ptr<tego_file_hash_t> fileHash;
 
@@ -184,8 +184,7 @@ tego_message_id_t ConversationModel::sendMessage(const QString &text)
     if (text.isEmpty())
         return 0;
 
-    MessageData message(text, QDateTime::currentDateTime(), lastMessageId++, Queued);
-    message.type = ConversationModel::MessageData::Type::Message;
+    MessageData message(Message, text, QDateTime::currentDateTime(), lastMessageId++, Queued);
 
     if (m_contact->connection())
     {
@@ -287,14 +286,14 @@ void ConversationModel::sendQueuedMessages()
             bool attempted = false;
             switch (m.type)
             {
-                case ConversationModel::MessageData::Type::Message:
+                case ConversationModel::MessageType::Message:
                     if (chat_channel->isOpened())
                     {
                         m.status = chat_channel->sendChatMessageWithId(m.text, m.time, m.identifier) ? Sending : Error;
                         attempted = true;
                     }
                     break;
-                case ConversationModel::MessageData::Type::File:
+                case ConversationModel::MessageType::File:
                     if (file_channel->isOpened())
                     {
                         logger::println("Attempted to send queued file: {}", m.text);
@@ -344,7 +343,7 @@ void ConversationModel::messageReceived(const QString &text, const QDateTime &ti
     }
 
     beginInsertRows(QModelIndex(), row, row);
-    MessageData message(text, time, id, Received);
+    MessageData message(Message, text, time, id, Received);
     messages.insert(row, message);
     endInsertRows();
     prune();

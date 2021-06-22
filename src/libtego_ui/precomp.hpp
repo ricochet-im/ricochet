@@ -15,6 +15,12 @@
 #include <type_traits>
 #include <cstdint>
 #include <functional>
+#include <fstream>
+#include <iterator>
+
+// fmt
+#include <fmt/format.h>
+#include <fmt/ostream.h>
 
 // Qt
 #include <QClipboard>

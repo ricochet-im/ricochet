@@ -21,29 +21,22 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/ui/qml/AboutPreferences.qml" line="36"/>
-        <source>Ricochet Refresh web home page</source>
-        <extracomment>provides context for the URL for accessibility tech like screen readers</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../libtego_ui/ui/qml/AboutPreferences.qml" line="59"/>
+        <location filename="../../libtego_ui/ui/qml/AboutPreferences.qml" line="32"/>
         <source>The license of Ricochet Refresh and its dependencies</source>
-        <extracomment>summary of a block of text for accessibility tech like screen readers</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/ui/qml/AboutPreferences.qml" line="60"/>
+        <location filename="../../libtego_ui/ui/qml/AboutPreferences.qml" line="33"/>
         <source>License</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/ui/qml/AboutPreferences.qml" line="65"/>
+        <location filename="../../libtego_ui/ui/qml/AboutPreferences.qml" line="37"/>
         <source>About</source>
         <translation type="unfinished">О программе</translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/ui/qml/AboutPreferences.qml" line="67"/>
+        <location filename="../../libtego_ui/ui/qml/AboutPreferences.qml" line="39"/>
         <source>About page, contains license and version information</source>
         <extracomment>summary of the window&apos;s contents for accessibility tech like screen readers</extracomment>
         <translation type="unfinished"></translation>
@@ -105,37 +98,53 @@
 <context>
     <name>ContactActions</name>
     <message>
-        <location filename="../../libtego_ui/ui/qml/ContactActions.qml" line="46"/>
+        <location filename="../../libtego_ui/ui/qml/ContactActions.qml" line="49"/>
+        <source>Warning</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../libtego_ui/ui/qml/ContactActions.qml" line="51"/>
+        <source>Could not successfully export conversation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../libtego_ui/ui/qml/ContactActions.qml" line="65"/>
         <source>Open Window</source>
         <extracomment>Context menu command to open the chat screen in a separate window</extracomment>
         <translation>Открыть окно</translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/ui/qml/ContactActions.qml" line="51"/>
+        <location filename="../../libtego_ui/ui/qml/ContactActions.qml" line="70"/>
         <source>Details...</source>
         <extracomment>Context menu command to open a window showing the selected contact&apos;s details</extracomment>
         <translation>Подробнее...</translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/ui/qml/ContactActions.qml" line="56"/>
+        <location filename="../../libtego_ui/ui/qml/ContactActions.qml" line="75"/>
         <source>Rename</source>
         <extracomment>Context menu command to rename the selected contact</extracomment>
         <translation>Переименовать</translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/ui/qml/ContactActions.qml" line="61"/>
+        <location filename="../../libtego_ui/ui/qml/ContactActions.qml" line="80"/>
         <source>Send File...</source>
         <extracomment>Context menu command to initiate a file transfer, opens a system file dialog</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/ui/qml/ContactActions.qml" line="67"/>
+        <location filename="../../libtego_ui/ui/qml/ContactActions.qml" line="85"/>
+        <source>Export Conversation</source>
+        <extracomment>Context menu command to initiate a chat log export, opens a system file dialog to export to</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../libtego_ui/ui/qml/ContactActions.qml" line="91"/>
         <source>Remove</source>
         <extracomment>Context menu command to remove a contact from the contact list</extracomment>
         <translation>Удалить</translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/ui/qml/ContactActions.qml" line="74"/>
+        <location filename="../../libtego_ui/ui/qml/ContactActions.qml" line="98"/>
         <source>Contact options</source>
         <extracomment>Description of the items in the context menu for accessibility tech like screen readers</extracomment>
         <translation type="unfinished"></translation>
@@ -151,30 +160,36 @@
     </message>
     <message>
         <location filename="../../libtego_ui/ui/qml/ContactIDField.qml" line="45"/>
+        <source>This ID is invalid</source>
+        <extracomment>Error message showed when the id doesn&apos;t comply with spec https://gitweb.torproject.org/torspec.git/tree/rend-spec-v3.txt</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../libtego_ui/ui/qml/ContactIDField.qml" line="50"/>
         <source>You can&apos;t add yourself as a contact</source>
         <extracomment>Error message showed when user attempts to add themselves as a contact in their contact list</extracomment>
         <translation>Вы не можете добавить себя в свой же список контактов</translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/ui/qml/ContactIDField.qml" line="50"/>
+        <location filename="../../libtego_ui/ui/qml/ContactIDField.qml" line="55"/>
         <source>Enter an ID starting with &lt;b&gt;ricochet:&lt;/b&gt;</source>
         <extracomment>Error message showed when the provided ricochet id is invalid</extracomment>
         <translation>Введите ID, начинающийся с &lt;b&gt;ricochet:&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/ui/qml/ContactIDField.qml" line="88"/>
+        <location filename="../../libtego_ui/ui/qml/ContactIDField.qml" line="97"/>
         <source>Copied to clipboard</source>
         <extracomment>Message displayed when text is copied to the user&apos;s clipboard</extracomment>
         <translation>Скопировано в буфер</translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/ui/qml/ContactIDField.qml" line="103"/>
+        <location filename="../../libtego_ui/ui/qml/ContactIDField.qml" line="112"/>
         <source>Copy</source>
         <extracomment>Text displayed on a button used to copy somethign to the user&apos;s clipboard</extracomment>
         <translation>Копировать</translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/ui/qml/ContactIDField.qml" line="110"/>
+        <location filename="../../libtego_ui/ui/qml/ContactIDField.qml" line="119"/>
         <source>Copies the ricochet id to the clipboard</source>
         <extracomment>Text description of ricochet id copy button for accessibility tech like screen readers</extracomment>
         <translation type="unfinished"></translation>
@@ -393,20 +408,19 @@
         <translation>Использовать одно окно для разговоров</translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/ui/qml/GeneralPreferences.qml" line="29"/>
         <source>Open links in default browser without prompting</source>
         <extracomment>Text description of an option to open URLs in default web browser when clicked</extracomment>
-        <translation>Открывать ссылки в браузере по умолчанию без запроса</translation>
+        <translation type="vanished">Открывать ссылки в браузере по умолчанию без запроса</translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/ui/qml/GeneralPreferences.qml" line="44"/>
+        <location filename="../../libtego_ui/ui/qml/GeneralPreferences.qml" line="29"/>
         <source>Play audio notifications</source>
         <extracomment>Text description of an option to play audio notifications when contacts log in, log out, and send messages</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/ui/qml/GeneralPreferences.qml" line="61"/>
-        <location filename="../../libtego_ui/ui/qml/GeneralPreferences.qml" line="77"/>
+        <location filename="../../libtego_ui/ui/qml/GeneralPreferences.qml" line="46"/>
+        <location filename="../../libtego_ui/ui/qml/GeneralPreferences.qml" line="62"/>
         <source>Volume</source>
         <extracomment>Label for a slider used to adjust audio notification volume
 ----------
@@ -414,8 +428,8 @@ Name of the slider used to adjust audio notification volume for accessibility te
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/ui/qml/GeneralPreferences.qml" line="91"/>
-        <location filename="../../libtego_ui/ui/qml/GeneralPreferences.qml" line="129"/>
+        <location filename="../../libtego_ui/ui/qml/GeneralPreferences.qml" line="76"/>
+        <location filename="../../libtego_ui/ui/qml/GeneralPreferences.qml" line="114"/>
         <source>Language</source>
         <extracomment>Label for combobox where users can specify the UI language
 ----------
@@ -423,12 +437,12 @@ Name of the combobox used to select UI langauge for accessibility tech like scre
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/ui/qml/GeneralPreferences.qml" line="117"/>
+        <location filename="../../libtego_ui/ui/qml/GeneralPreferences.qml" line="102"/>
         <source>Restart Ricochet to apply changes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/ui/qml/GeneralPreferences.qml" line="131"/>
+        <location filename="../../libtego_ui/ui/qml/GeneralPreferences.qml" line="116"/>
         <source>What language ricochet will use</source>
         <extracomment>Description of what the language combox is for for accessibility tech like screen readers</extracomment>
         <translation type="unfinished"></translation>
@@ -492,17 +506,17 @@ Name of the button for launching the preferences window for accessibility tech l
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../../libtego_ui/ui/MainWindow.cpp" line="157"/>
+        <location filename="../../libtego_ui/ui/MainWindow.cpp" line="151"/>
         <source>Version Seperator</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/ui/MainWindow.cpp" line="191"/>
+        <location filename="../../libtego_ui/ui/MainWindow.cpp" line="185"/>
         <source>Remove %1</source>
         <translation>Удалить %1</translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/ui/MainWindow.cpp" line="192"/>
+        <location filename="../../libtego_ui/ui/MainWindow.cpp" line="186"/>
         <source>Do you want to permanently remove %1?</source>
         <translation>Вы действительно хотите удалить %1 навсегда?</translation>
     </message>
@@ -534,79 +548,74 @@ Name of the button for launching the preferences window for accessibility tech l
         <translation>%1 не в сети</translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/ui/qml/MessageDelegate.qml" line="179"/>
+        <location filename="../../libtego_ui/ui/qml/MessageDelegate.qml" line="169"/>
         <source>File transfer file name</source>
         <extracomment>Description of the text displaying the filename of a file transfer, used by accessibility tech like screen readres</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/ui/qml/MessageDelegate.qml" line="195"/>
+        <location filename="../../libtego_ui/ui/qml/MessageDelegate.qml" line="185"/>
         <source>File transfer progress</source>
         <extracomment>Description of progress bar displaying the file transfer progress, used by accessibility tech like screen readers</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/ui/qml/MessageDelegate.qml" line="210"/>
+        <location filename="../../libtego_ui/ui/qml/MessageDelegate.qml" line="200"/>
         <source>File transfer status</source>
         <extracomment>Description of label displaying the current status of a file transfer, used by accessibility tech like screen readers</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/ui/qml/MessageDelegate.qml" line="225"/>
+        <location filename="../../libtego_ui/ui/qml/MessageDelegate.qml" line="215"/>
         <source>Download</source>
         <extracomment>Label for file transfer &apos;Download&apos; button for accessibility tech like screen readers</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/ui/qml/MessageDelegate.qml" line="227"/>
+        <location filename="../../libtego_ui/ui/qml/MessageDelegate.qml" line="217"/>
         <source>Download file</source>
         <extracomment>Description of what the file transfer &apos;Download&apos; button does for accessibility tech like screen readers</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/ui/qml/MessageDelegate.qml" line="244"/>
+        <location filename="../../libtego_ui/ui/qml/MessageDelegate.qml" line="234"/>
         <source>Cancel or reject</source>
         <extracomment>Label for file transfer &apos;Cancel&apos; button for accessibility tech like screen readers</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/ui/qml/MessageDelegate.qml" line="246"/>
+        <location filename="../../libtego_ui/ui/qml/MessageDelegate.qml" line="236"/>
         <source>Cancels or rejects a file transfer</source>
         <extracomment>Description of what the file transfer &apos;Cancel&apos; button does for accessibility tech like screen readers</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/ui/qml/MessageDelegate.qml" line="310"/>
         <source>Copy ID</source>
         <extracomment>Text for context menu command to copy a ricochet contact id to clipboard</extracomment>
-        <translation>Копировать ID</translation>
+        <translation type="vanished">Копировать ID</translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/ui/qml/MessageDelegate.qml" line="281"/>
-        <location filename="../../libtego_ui/ui/qml/MessageDelegate.qml" line="312"/>
         <source>Copy Link</source>
         <extracomment>Text for context menu command to copy a url to the clipboard</extracomment>
-        <translation>Копировать ссылку</translation>
+        <translation type="vanished">Копировать ссылку</translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/ui/qml/MessageDelegate.qml" line="287"/>
-        <location filename="../../libtego_ui/ui/qml/MessageDelegate.qml" line="318"/>
         <source>Open with Browser</source>
         <extracomment>Text for context menu command to open a url in a web browser</extracomment>
-        <translation>Открыть в браузере</translation>
+        <translation type="vanished">Открыть в браузере</translation>
     </message>
     <message>
         <source>Add as Contact</source>
         <translation type="vanished">Добавить в список контактов</translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/ui/qml/MessageDelegate.qml" line="335"/>
+        <location filename="../../libtego_ui/ui/qml/MessageDelegate.qml" line="262"/>
         <source>Copy Message</source>
         <extracomment>Text for context menu command to copy an entire message to clipboard</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/ui/qml/MessageDelegate.qml" line="343"/>
+        <location filename="../../libtego_ui/ui/qml/MessageDelegate.qml" line="270"/>
         <source>Copy Selection</source>
         <extracomment>Text for context menu command to copy selected text to clipboard</extracomment>
         <translation type="unfinished"></translation>
@@ -690,38 +699,28 @@ Name of the button for launching the preferences window for accessibility tech l
 <context>
     <name>OpenBrowserDialog</name>
     <message>
-        <location filename="../../libtego_ui/ui/qml/OpenBrowserDialog.qml" line="41"/>
         <source>&lt;b&gt;Warning!&lt;/b&gt; Opening links with your default browser will harm your security and anonymity.&lt;br&gt;&lt;br&gt;You can &lt;a href=&apos;.&apos;&gt;copy to the clipboard&lt;/a&gt; instead.</source>
         <extracomment>Label displayed when user clicks on a link</extracomment>
-        <translation>&lt;b&gt;Внимание!&lt;/b&gt; Открывая ссылки браузером по умолчанию Вы можете нарушить Вашу безопасность и анонимность.&lt;br&gt;&lt;br&gt;Вместо этого Вы можете &lt;a href=&apos;.&apos;&gt;скопировать ссылку&lt;/a&gt;.</translation>
+        <translation type="vanished">&lt;b&gt;Внимание!&lt;/b&gt; Открывая ссылки браузером по умолчанию Вы можете нарушить Вашу безопасность и анонимность.&lt;br&gt;&lt;br&gt;Вместо этого Вы можете &lt;a href=&apos;.&apos;&gt;скопировать ссылку&lt;/a&gt;.</translation>
     </message>
     <message>
         <source>Don&apos;t ask again for links from %1</source>
         <translation type="vanished">Не спрашивать при открытии последующих ссылок от %1</translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/ui/qml/OpenBrowserDialog.qml" line="50"/>
-        <source>Warning</source>
-        <extracomment>Name of warning label used with accessibility tech such as screen readers</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../libtego_ui/ui/qml/OpenBrowserDialog.qml" line="65"/>
         <source>Don&apos;t ask again for any links (not recommended!)</source>
         <extracomment>Checkbox option text for when user clicks on a link</extracomment>
-        <translation>Не спрашивать при открытии всех последующих ссылок (не рекомендуется!)</translation>
+        <translation type="vanished">Не спрашивать при открытии всех последующих ссылок (не рекомендуется!)</translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/ui/qml/OpenBrowserDialog.qml" line="73"/>
         <source>Open Browser</source>
         <extracomment>Label on button to open link in a web browser</extracomment>
-        <translation>Открыть браузер</translation>
+        <translation type="vanished">Открыть браузер</translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/ui/qml/OpenBrowserDialog.qml" line="84"/>
         <source>Cancel</source>
         <extracomment>Label on cancel button</extracomment>
-        <translation>Отмена</translation>
+        <translation type="vanished">Отмена</translation>
     </message>
 </context>
 <context>
@@ -859,144 +858,144 @@ Name of the button for launching the preferences window for accessibility tech l
         <translation>Этот компьютер использует прокси для доступа в Интернет?</translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/ui/qml/TorConfigurationPage.qml" line="69"/>
+        <location filename="../../libtego_ui/ui/qml/TorConfigurationPage.qml" line="70"/>
         <source>Proxy type:</source>
         <translation>Тип прокси:</translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/ui/qml/TorConfigurationPage.qml" line="74"/>
-        <location filename="../../libtego_ui/ui/qml/TorConfigurationPage.qml" line="76"/>
+        <location filename="../../libtego_ui/ui/qml/TorConfigurationPage.qml" line="75"/>
+        <location filename="../../libtego_ui/ui/qml/TorConfigurationPage.qml" line="77"/>
         <source>None</source>
         <translation>Нет</translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/ui/qml/TorConfigurationPage.qml" line="92"/>
+        <location filename="../../libtego_ui/ui/qml/TorConfigurationPage.qml" line="93"/>
         <source>If you need a proxy to access the internet, select one from this list.</source>
         <extracomment>Description used by accessibility tech, such as screen readers</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/ui/qml/TorConfigurationPage.qml" line="97"/>
+        <location filename="../../libtego_ui/ui/qml/TorConfigurationPage.qml" line="98"/>
         <source>Address:</source>
         <extracomment>Label indicating the textbox to place a proxy IP or URL</extracomment>
         <translation>Адрес:</translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/ui/qml/TorConfigurationPage.qml" line="110"/>
+        <location filename="../../libtego_ui/ui/qml/TorConfigurationPage.qml" line="111"/>
         <source>IP address or hostname</source>
         <extracomment>Placeholder text of text box expecting an IP or URL for proxy</extracomment>
         <translation>IP адрес или имя хоста</translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/ui/qml/TorConfigurationPage.qml" line="115"/>
+        <location filename="../../libtego_ui/ui/qml/TorConfigurationPage.qml" line="116"/>
         <source>Enter the IP address or hostname of the proxy you wish to connect to</source>
         <extracomment>Description of what to enter into the IP textbox, used by accessibility tech such as screen readers</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/ui/qml/TorConfigurationPage.qml" line="119"/>
+        <location filename="../../libtego_ui/ui/qml/TorConfigurationPage.qml" line="120"/>
         <source>Port:</source>
         <extracomment>Label indicating the textbox to place a proxy port</extracomment>
         <translation>Порт:</translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/ui/qml/TorConfigurationPage.qml" line="130"/>
+        <location filename="../../libtego_ui/ui/qml/TorConfigurationPage.qml" line="131"/>
         <source>Port</source>
         <extracomment>Name of the port label, used by accessibility tech such as screen readers</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/ui/qml/TorConfigurationPage.qml" line="132"/>
+        <location filename="../../libtego_ui/ui/qml/TorConfigurationPage.qml" line="133"/>
         <source>Enter the port of the proxy you wish to connect to</source>
         <extracomment>Description of what to enter into the Port textbox, used by accessibility tech such as screen readers</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/ui/qml/TorConfigurationPage.qml" line="138"/>
+        <location filename="../../libtego_ui/ui/qml/TorConfigurationPage.qml" line="139"/>
         <source>Username:</source>
         <extracomment>Label indicating the textbox to place the proxy username</extracomment>
         <translation>Имя пользователя:</translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/ui/qml/TorConfigurationPage.qml" line="152"/>
-        <location filename="../../libtego_ui/ui/qml/TorConfigurationPage.qml" line="173"/>
+        <location filename="../../libtego_ui/ui/qml/TorConfigurationPage.qml" line="153"/>
+        <location filename="../../libtego_ui/ui/qml/TorConfigurationPage.qml" line="174"/>
         <source>Optional</source>
         <extracomment>Textbox placeholder text indicating the field is not required</extracomment>
         <translation>Необязательно</translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/ui/qml/TorConfigurationPage.qml" line="156"/>
+        <location filename="../../libtego_ui/ui/qml/TorConfigurationPage.qml" line="157"/>
         <source>Username</source>
         <extracomment>Name of the username label, used by accessibility tech such as screen readers</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/ui/qml/TorConfigurationPage.qml" line="158"/>
+        <location filename="../../libtego_ui/ui/qml/TorConfigurationPage.qml" line="159"/>
         <source>If required, enter the username for the proxy you wish to connect to</source>
         <extracomment>Description to enter into the Username textbox, used by accessibility tech such as screen readers</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/ui/qml/TorConfigurationPage.qml" line="162"/>
+        <location filename="../../libtego_ui/ui/qml/TorConfigurationPage.qml" line="163"/>
         <source>Password:</source>
         <extracomment>Label indicating the textbox to place the proxy password</extracomment>
         <translation>Пароль:</translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/ui/qml/TorConfigurationPage.qml" line="177"/>
+        <location filename="../../libtego_ui/ui/qml/TorConfigurationPage.qml" line="178"/>
         <source>Password</source>
         <extracomment>Name of the password label, used by accessibility tech such as screen readers</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/ui/qml/TorConfigurationPage.qml" line="179"/>
+        <location filename="../../libtego_ui/ui/qml/TorConfigurationPage.qml" line="180"/>
         <source>If required, enter the password for the proxy you wish to connect to</source>
         <extracomment>Description to enter into the Password textbox, used by accessibility tech such as screen readers</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/ui/qml/TorConfigurationPage.qml" line="190"/>
+        <location filename="../../libtego_ui/ui/qml/TorConfigurationPage.qml" line="191"/>
         <source>Does this computer&apos;s Internet connection go through a firewall that only allows connections to certain ports?</source>
         <extracomment>Description for the purpose of the Allowed Ports textbox</extracomment>
         <translation>Соединение данного компьютера фильтруется фаерволом, который разрешает доступ только к определенным портам?</translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/ui/qml/TorConfigurationPage.qml" line="211"/>
+        <location filename="../../libtego_ui/ui/qml/TorConfigurationPage.qml" line="212"/>
         <source>Allowed ports:</source>
         <extracomment>Label indicating the textbox to place the allowed ports</extracomment>
         <translation>Открытые порты:</translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/ui/qml/TorConfigurationPage.qml" line="220"/>
+        <location filename="../../libtego_ui/ui/qml/TorConfigurationPage.qml" line="221"/>
         <source>Example: 80,443</source>
         <extracomment>Textbox showing an example entry for the firewall allowed ports entry</extracomment>
         <translation>Например: 80,443</translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/ui/qml/TorConfigurationPage.qml" line="224"/>
+        <location filename="../../libtego_ui/ui/qml/TorConfigurationPage.qml" line="225"/>
         <source>Allowed ports</source>
         <extracomment>Name of the allowed ports label, used by accessibility tech such as screen readers</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/ui/qml/TorConfigurationPage.qml" line="236"/>
+        <location filename="../../libtego_ui/ui/qml/TorConfigurationPage.qml" line="237"/>
         <source>If this computer&apos;s Internet connection is censored, you will need to obtain and use bridge relays.</source>
         <translation>Если соединение этого компьютера подвергается цензуре, Вам необходимо получить и использовать ретрансляторы Tor.</translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/ui/qml/TorConfigurationPage.qml" line="251"/>
-        <location filename="../../libtego_ui/ui/qml/TorConfigurationPage.qml" line="262"/>
+        <location filename="../../libtego_ui/ui/qml/TorConfigurationPage.qml" line="252"/>
+        <location filename="../../libtego_ui/ui/qml/TorConfigurationPage.qml" line="263"/>
         <source>Enter one or more bridge relays (one per line):</source>
         <translation>Введите один ретранслятор или более (по одному на строку):</translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/ui/qml/TorConfigurationPage.qml" line="273"/>
+        <location filename="../../libtego_ui/ui/qml/TorConfigurationPage.qml" line="274"/>
         <source>Back</source>
         <extracomment>Button label for going back to previous screen</extracomment>
         <translation>Назад</translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/ui/qml/TorConfigurationPage.qml" line="284"/>
+        <location filename="../../libtego_ui/ui/qml/TorConfigurationPage.qml" line="285"/>
         <source>Connect</source>
         <extracomment>Button label for connecting to tor</extracomment>
         <translation>Соединить</translation>
@@ -1173,51 +1172,65 @@ Name of the button for launching the preferences window for accessibility tech l
     </message>
     <message>
         <location filename="../../libtego_ui/shims/ConversationModel.cpp" line="114"/>
+        <source>Accepted</source>
+        <translation type="unfinished">Принято</translation>
+    </message>
+    <message>
+        <location filename="../../libtego_ui/shims/ConversationModel.cpp" line="115"/>
         <source>Rejected</source>
         <translation type="unfinished">Отказано</translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/shims/ConversationModel.cpp" line="120"/>
+        <location filename="../../libtego_ui/shims/ConversationModel.cpp" line="121"/>
         <source>Cancelled</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/shims/ConversationModel.cpp" line="121"/>
+        <location filename="../../libtego_ui/shims/ConversationModel.cpp" line="122"/>
         <source>Complete</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/shims/ConversationModel.cpp" line="122"/>
+        <location filename="../../libtego_ui/shims/ConversationModel.cpp" line="123"/>
         <source>Unkown Failure</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/shims/ConversationModel.cpp" line="123"/>
+        <location filename="../../libtego_ui/shims/ConversationModel.cpp" line="124"/>
         <source>Bad File Hash</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/shims/ConversationModel.cpp" line="124"/>
+        <location filename="../../libtego_ui/shims/ConversationModel.cpp" line="125"/>
         <source>Network Error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/shims/ConversationModel.cpp" line="125"/>
+        <location filename="../../libtego_ui/shims/ConversationModel.cpp" line="126"/>
         <source>File System Error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/shims/ConversationModel.cpp" line="127"/>
+        <location filename="../../libtego_ui/shims/ConversationModel.cpp" line="128"/>
         <source>Invalid</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/shims/ConversationModel.cpp" line="220"/>
+        <location filename="../../libtego_ui/shims/ConversationModel.cpp" line="223"/>
+        <location filename="../../libtego_ui/shims/ConversationModel.cpp" line="395"/>
         <source>Open File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../libtego_ui/shims/ConversationModel.cpp" line="285"/>
+        <location filename="../../libtego_ui/shims/ConversationModel.cpp" line="289"/>
+        <location filename="../../libtego_ui/shims/ConversationModel.cpp" line="295"/>
+        <location filename="../../libtego_ui/shims/ConversationModel.cpp" line="309"/>
+        <location filename="../../libtego_ui/shims/ConversationModel.cpp" line="350"/>
+        <source>me</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../libtego_ui/shims/ConversationModel.cpp" line="436"/>
         <source>Save File</source>
         <translation type="unfinished"></translation>
     </message>

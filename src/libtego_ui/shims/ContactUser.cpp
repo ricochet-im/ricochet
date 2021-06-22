@@ -101,6 +101,11 @@ namespace shims
         this->conversationModel->sendFile();
     }
 
+    bool ContactUser::exportConversation()
+    {
+        return this->conversationModel->exportConversation();
+    }
+
     std::unique_ptr<tego_user_id_t> ContactUser::toTegoUserId() const
     {
         logger::println("serviceId : {}", this->serviceId);

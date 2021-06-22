@@ -60,6 +60,11 @@ public:
         Error
     };
 
+    enum MessageType {
+        Message,
+        File
+    };
+
     ConversationModel(QObject *parent = 0);
 
     ContactUser *contact() const { return m_contact; }
@@ -100,10 +105,7 @@ private slots:
 
 private:
     struct MessageData {
-        enum Type {
-            Message,
-            File
-        } type;
+        MessageType type;
         QString text;
         tego_file_hash_t fileHash;
         QDateTime time;
@@ -111,8 +113,8 @@ private:
         MessageStatus status;
         quint8 attemptCount;
 
-        MessageData(const QString &text, const QDateTime &time, MessageId id, MessageStatus status)
-            : text(text), time(time), identifier(id), status(status), attemptCount(0)
+        MessageData(MessageType type, const QString &text, const QDateTime &time, MessageId id, MessageStatus status)
+            : type(type), text(text), time(time), identifier(id), status(status), attemptCount(0)
         {
         }
     };

@@ -161,7 +161,10 @@ Column {
                             width: parent.width
                             height: visible ? 8 : 0
 
-                            visible: model.transfer ? (model.transfer.status === ConversationModel.Pending || model.transfer.status === ConversationModel.InProgress) : false
+                            visible: model.transfer ?
+                                    (model.transfer.status === ConversationModel.Pending ||
+                                     model.transfer.status === ConversationModel.InProgress ||
+                                     model.transfer.status === ConversationModel.Accepted) : false
 
                             indeterminate: model.transfer ? (model.transfer.status === ConversationModel.Pending) : true
                             value: model.transfer ? model.transfer.progressPercent : 0
@@ -239,7 +242,10 @@ Column {
 
                     Button {
                         id: cancelButton
-                        visible: model.transfer ? (model.transfer.status === ConversationModel.Pending || model.transfer.status === ConversationModel.InProgress) : false
+                        visible: model.transfer ?
+                                (model.transfer.status === ConversationModel.Pending ||
+                                 model.transfer.status === ConversationModel.InProgress ||
+                                 model.transfer.status === ConversationModel.Accepted) : false
 
                         width: visible ? transferDisplay.height : 0
                         height: visible ? transferDisplay.height : 0

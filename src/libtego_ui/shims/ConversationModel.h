@@ -1,5 +1,7 @@
 #pragma once
 
+#include "ContactUser.h"
+
 namespace shims
 {
     class ContactUser;
@@ -10,6 +12,7 @@ namespace shims
 
         Q_PROPERTY(shims::ContactUser* contact READ contact WRITE setContact NOTIFY contactChanged)
         Q_PROPERTY(int unreadCount READ getUnreadCount RESET resetUnreadCount NOTIFY unreadCountChanged)
+        Q_PROPERTY(int conversationEventCount READ getConversationEventCount NOTIFY conversationEventCountChanged)
     public:
         ConversationModel(QObject *parent = 0);
 
@@ -43,6 +46,7 @@ namespace shims
         {
             InvalidTransfer,
             Pending,
+            Accepted,
             Rejected,
             InProgress,
             Cancelled,
@@ -62,6 +66,19 @@ namespace shims
         };
         Q_ENUM(TransferDirection);
 
+        enum EventType {
+            InvalidEvent,
+            TextMessageEvent,
+            TransferMessageEvent,
+            UserStatusUpdateEvent
+        };
+
+        enum UserStatusTarget {
+            UserTargetNone,
+            UserTargetClient,
+            UserTargetPeer
+        };
+
         // impl QAbstractListModel
         virtual QHash<int,QByteArray> roleNames() const;
         virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
@@ -73,11 +90,17 @@ namespace shims
         Q_INVOKABLE void resetUnreadCount();
 
         void sendFile();
+        bool hasEventsToExport();
+        Q_INVOKABLE int getConversationEventCount() const { return this->events.size(); }
+        bool exportConversation();
         // invokable function neeeds to use a Qt type since it is invokable from QML
         static_assert(std::is_same_v<quint32, tego_file_transfer_id_t>);
         Q_INVOKABLE void tryAcceptFileTransfer(quint32 id);
         Q_INVOKABLE void cancelFileTransfer(quint32 id);
         Q_INVOKABLE void rejectFileTransfer(quint32 id);
+
+
+        void setStatus(ContactUser::Status status);
 
         void fileTransferRequestReceived(tego_file_transfer_id_t id, QString fileName, QString fileHash, quint64 fileSize);
         void fileTransferRequestAcknowledged(tego_file_transfer_id_t id, bool accepted);
@@ -95,6 +118,7 @@ namespace shims
     signals:
         void contactChanged();
         void unreadCountChanged(int prevCount, int currentCount);
+        void conversationEventCountChanged();
     private:
         void setUnreadCount(int count);
 
@@ -119,12 +143,48 @@ namespace shims
             TransferStatus transferStatus = InvalidTransfer;
         };
 
+        struct EventData
+        {
+            EventType type = InvalidEvent;
+            union {
+                struct {
+                    size_t reverseIndex = 0;
+                } messageData;
+                struct {
+                    size_t reverseIndex = 0;
+                    TransferStatus status = InvalidTransfer;
+                    qint64 bytesTransferred = 0; // we care about this for when a transfer is cancelled midway 
+                } transferData;
+                struct {
+                    ContactUser::Status status = ContactUser::Status::Offline;
+                    UserStatusTarget target = UserTargetNone; // when the protocol is eventually fixed and users
+                                                              // are notified of being blocked, this will be needed
+                } userStatusData;
+            };
+            QDateTime time = {};
+
+            EventData() {}
+        };
+
         QList<MessageData> messages;
+        QList<EventData> events;
+
+        void addEventFromMessage(int row);
+
+        void deserializeTextMessageEventToFile(const EventData &event, std::ofstream &ofile) const;
+        void deserializeTransferMessageEventToFile(const EventData &event, std::ofstream &ofile) const;
+        void deserializeUserStatusUpdateEventToFile(const EventData &event, std::ofstream &ofile) const;
+        void deserializeEventToFile(const EventData &event, std::ofstream &ofile) const;
+
         int unreadCount = 0;
 
         void emitDataChanged(int row);
+
         int indexOfMessage(quint32 identifier) const;
         int indexOfOutgoingMessage(quint32 identifier) const;
         int indexOfIncomingMessage(quint32 identifier) const;
+
+        static const char* getMessageStatusString(const MessageStatus status);
+        static const char* getTransferStatusString(const TransferStatus status);
     };
 }

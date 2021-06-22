@@ -375,6 +375,7 @@ namespace
             auto userIdentity = shims::UserIdentity::userIdentity;
             auto contactsManager = userIdentity->getContacts();
             auto contact = contactsManager->getShimContactByContactId(serviceIdToContactId(serviceId));
+            auto conversation = contact->conversation();
 
             if (contact != nullptr)
             {
@@ -383,10 +384,12 @@ namespace
                     case tego_user_status_online:
                         contact->setStatus(shims::ContactUser::Online);
                         contactsManager->setContactStatus(contact, shims::ContactUser::Online);
+                        conversation->setStatus(shims::ContactUser::Online);
                         break;
                     case tego_user_status_offline:
                         contact->setStatus(shims::ContactUser::Offline);
                         contactsManager->setContactStatus(contact, shims::ContactUser::Offline);
+                        conversation->setStatus(shims::ContactUser::Offline);
                         break;
                     default:
                         break;
