@@ -22,11 +22,9 @@ Clone with git from `https://github.com/blueprint-freespeech/ricochet-refresh.gi
 
 If you're interested in helping to package Ricochet Refresh for common Linux platforms, please get in touch!
 
-## Hints
+## Debug vs Release build
 
 Add `CONFIG+=debug` or `CONFIG+=release` to the qmake command for a debug or release build. Debug builds enable logging to standard output, and shouldn't be used in sensitive environments.
-
-By default, Ricochet Refresh will be portable, and configuration is stored in a folder named `config` next to the binary. Add `DEFINES+=RICOCHET_NO_PORTABLE` to the qmake command for a system-wide installation using platform configuration paths instead.
 
 ## Linux
 
@@ -55,6 +53,7 @@ If the `qml-module-qtquick` packages aren't available, try `qtdeclarative5-contr
 #### Qt SDK
 The [Qt SDK](https://www.qt.io/download/) is available for most Linux systems and includes an IDE as well as all Qt dependencies.
 
+### Building and Installing
 To build, simply run:
 ```sh
 qmake # qmake-qt5 for some platforms
@@ -63,14 +62,12 @@ make
 
 For a system-wide installation, use:
 ```sh
-qmake DEFINES+=RICOCHET_NO_PORTABLE
-make
 make install # as root
 ```
 
-You must have a `tor` binary installed on the system (in $PATH), or placed next to the `ricochet` binary.
+You must have a `tor` binary installed on the system (in `$PATH`), or placed next to the `ricochet-refresh` binary.
 
-In portable mode (default), all configuration is stored in a folder called `config` with the binary. When installed, the platform's user configuration path is used instead.
+By default Ricochet Refresh will load and save configuration files to `~/.local/share/ricochet-refresh/`. First argument to command-line overrides this and allows you to specificy the config directory.
 
 The [buildscripts](https://github.com/blueprint-freespeech/ricochet-refresh/tree/master/buildscripts) directory contains a set of scripts to build a fully static Ricochet Refresh on a clean Debian system. These are used to create the generic linux binary packages.
 
@@ -95,7 +92,7 @@ make
 
 You also need a `tor` binary in $PATH or inside the build's `ricochet refresh.app/Contents/MacOS` folder. The easiest solution is to use `brew install tor`. If you copy the `tor` binary, you will need to keep it up to date.
 
-Normally, configuration will be stored in a `config.ricochet` folder, in the same location as `ricochet.app`. However, if the bundle is installed to `/Applications`, the system location `~/Library/Application Support/Ricochet` is used instead. You can force that behavior by adding `DEFINES+=RICOCHET_NO_PORTABLE` to the qmake command.
+By default, configuration will be stored at `~/Library/Application Support/ricochet-refresh/` folder. This can be overriden by supplying a directory as first argument to the command-line.
 
 The `packaging/osx/release_osx.sh` script demonstrates how to build a redistributable app bundle.
 
