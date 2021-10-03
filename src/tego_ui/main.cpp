@@ -268,11 +268,11 @@ static void loadDefaultSettings(SettingsFile *settings)
 
 static bool initSettings(SettingsFile *settings, QLockFile **lockFile, QString &errorMessage)
 {
-    /* ricochet-refresh by default loads and saves configuration files from QStandardPaths::AppLocalDataLocation
+    /* ricochet-refresh by default loads and saves configuration files from QStandardPaths::AppConfigLocation
      *
-     * Linux: ~/.local/share/ricochet-refresh
+     * Linux: ~/.config/ricochet-refresh
      * Windows: C:/Users/<USER>/AppData/Local/ricochet-refresh
-     * macOS: "~/Library/Application Support/ricochet-refresh"
+     * macOS: ~/Library/Preferences/<APPNAME>
      *
      * ricochet-refresh can also load configuration files from a custom directory passed in as the first argument
      */
@@ -299,9 +299,11 @@ static bool initSettings(SettingsFile *settings, QLockFile **lockFile, QString &
 #endif
             return configPath;
         }();
-        configPath = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
+        auto v3_0_10ConfigPath = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
+        configPath = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
 
         logger::println("configPath : {}", configPath);
+        logger::println("v3.0.10 configPath  :{}", v3_0_10ConfigPath);
         logger::println("legacyConfigPath : {}", legacyConfigPath);
 
         // only put up migration UX when
@@ -344,6 +346,17 @@ static bool initSettings(SettingsFile *settings, QLockFile **lockFile, QString &
                     errorMessage = QStringLiteral("Invalid return value from msgBox.exec()");
                     return false;
                 }
+        // auto migrate if we have a 3.0.10 config but no 3.0.11+ config
+        } else if (// 3.0.10 path exists
+            QFile::exists(v3_0_10ConfigPath) &&
+            // but 3.0.11+ path does not
+            !QFile::exists(configPath)) {
+
+            /// just automatically move the directory
+            if(!QDir().rename(v3_0_10ConfigPath, configPath)) {
+                // on failure use the old path
+                configPath = v3_0_10ConfigPath;
+            }
         }
     }
 
