@@ -23,7 +23,7 @@ Ricochet Refresh is not affiliated with, or endorsed by, The Tor Project.
 
 For more information about Tor, you can [read about Tor](https://www.torproject.org/about/overview.html.en)
 For more information about Ricochet Refresh, you can:
-  * [Learn about it's design](https://github.com/blueprint-freespeech/ricochet-refresh/blob/main/doc/design.md)
+  * [Learn about its design](https://github.com/blueprint-freespeech/ricochet-refresh/blob/main/doc/design.md)
   * [Learn about the protocol](https://github.com/blueprint-freespeech/ricochet-refresh/blob/main/doc/protocol.md)
 
 ### Disclaimer
