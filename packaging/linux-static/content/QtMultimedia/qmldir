@@ -1,4 +1,0 @@
-module QtMultimedia
-plugin declarative_multimedia
-classname Qt5MultimediaQuick
-typeinfo plugins.qmltypes
