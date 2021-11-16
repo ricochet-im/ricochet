@@ -33,7 +33,7 @@
 #ifndef PROTOCOL_CHANNEL_H
 #define PROTOCOL_CHANNEL_H
 
-#include "protocol/ControlChannel.pb.h"
+#include "ControlChannel.pb.h"
 
 namespace Protocol
 {

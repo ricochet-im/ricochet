@@ -1,48 +1,40 @@
+# Build files
 Makefile
 Makefile.*
-*.user
-*.user.*
+CMake*
+build/
 debug
 release
-*.pdb
-*.app
-.packagingrc
-.qmake.stash
-.qmake.cache
-.DS_Store
+
+# Build artifacts
 *.exe
 *.dll
+*.pdb
+*.so
+*.a
 *.o
+*.app
+*.dylib
 *.moc
-tests/*/tst_*
-src/tests/*/tst_*
-!tst_*.pro
-!tst_*.cpp
-!tst_*.h
+
+# Generated source files (These should always end up in the build dir anyway)
 *.pb.h
 *.pb.cc
-packaging/installer/Qt
-packaging/installer/Output
-src/tego_ui/translation/*.qm
+moc_*.cpp
+moc_predefs.h
+qrc_*.cpp
+
+# Generated translations
+*.qm
+
+# Other
+*.user
+*.user.*
+.DS_Store
+.packagingrc
+.vscode/
+
+# Ricochet files (when running in the root dir)
 config
 config.ricochet
-config.log
-config.tests/*/*
-!config.tests/*/*.pro
-!config.tests/*/*.cpp
-!config.tests/*/*.h
-ricochet
-src/ricochet.log
-build-tests*
-buildscripts/src/ricochet-refresh
-buildscripts/output
-buildscripts/lib
-target_wrapper\.sh
-moc_predefs.h
-moc_*.cpp
-qrc_*.cpp
-ricochet-refresh
-*.gch
-\.vscode/c_cpp_properties\.json
-\.vscode/
-notes/*
+

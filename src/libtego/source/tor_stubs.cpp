@@ -55,9 +55,8 @@ extern "C"
     {
 	   return fname;
     }
+#endif
 
-    // we only need the following stubs on Windows because link-time optimization is broken
-    // on Windows 64 bit ( https://sourceware.org/bugzilla/show_bug.cgi?id=12762) 
     void crypto_strongest_rand(uint8_t*, size_t)
     {
         NOT_USED();
@@ -79,5 +78,4 @@ extern "C"
         NOT_USED();
         return {};
     }
-#endif
 }

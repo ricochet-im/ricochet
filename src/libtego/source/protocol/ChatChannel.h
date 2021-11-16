@@ -34,7 +34,7 @@
 #define PROTOCOL_CHATCHANNEL_H
 
 #include "protocol/Channel.h"
-#include "protocol/ChatChannel.pb.h"
+#include "ChatChannel.pb.h"
 
 namespace Protocol
 {

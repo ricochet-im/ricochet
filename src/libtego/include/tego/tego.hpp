@@ -59,7 +59,7 @@ namespace tego
 
         // std::string expects length as arg, not buffer size
         std::string hashString(hashSize-1, 0);
-        tego_file_hash_to_string(fileHash, hashString.data(), hashSize, tego::throw_on_error());
+        tego_file_hash_to_string(fileHash, const_cast<char*>(hashString.data()), hashSize, tego::throw_on_error());
 
         return hashString;
     }

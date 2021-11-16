@@ -1,8 +1,0 @@
-[Desktop Entry]
-Encoding=UTF-8
-Type=Application
-Name=Ricochet Refresh 
-Categories=Network;InstantMessaging;Chat;FileTransfer;Qt
-Comment=Anonymous instant messaging
-Icon=ricochet_refresh
-Exec=ricochet-refresh

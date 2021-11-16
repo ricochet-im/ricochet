@@ -34,7 +34,7 @@
 #define PROTOCOL_FILECHANNEL_H
 
 #include "protocol/Channel.h"
-#include "protocol/FileChannel.pb.h"
+#include "FileChannel.pb.h"
 #include "tego/tego.h"
 #include "file_hash.hpp"
 
