@@ -46,7 +46,11 @@ using namespace Protocol;
 
 static void logTransferStats(qint64 bytes, std::chrono::time_point<std::chrono::system_clock> beginTime)
 {
-    const auto kilobytes = static_cast<double>(bytes) / 1024.0;
+    // This is preferred over `static_cast<double>(bytes) / 1024.0` because
+    // doing it that way will potentially lose precision if the byte count is
+    // above 9007199254740992, which while albeit unlikely, is theoretically 
+    // possible.
+    const auto kilobytes = static_cast<double>(bytes / 1024) + (static_cast<double>(bytes % 1024) / 1024);
     const auto seconds = std::chrono::duration_cast<std::chrono::duration<double>>( std::chrono::system_clock::now() - beginTime).count();
 
     logger::println("Transfer Complete: {{ size : {} kilobytes, duration : {} seconds, rate : {} kilobytes / second}}", kilobytes, seconds, kilobytes / seconds);

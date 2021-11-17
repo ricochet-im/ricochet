@@ -43,7 +43,7 @@ namespace shims
             bufferSize,
             tego::throw_on_error());
 
-        // TODO: check that written isn't > std::numeric_limits<int>::max(), and handle if it is
+        Q_ASSERT(written < std::numeric_limits<int>::max());
         return QString::fromUtf8(buffer.get(), static_cast<int>(written)).split('\n');
     }
 

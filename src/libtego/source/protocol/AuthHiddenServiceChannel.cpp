@@ -38,6 +38,7 @@
 #include "utils/CryptoKey.h"
 #include "utils/Useful.h"
 #include "utils/StringUtil.h"
+#include "error.hpp"
 
 using namespace Protocol;
 
@@ -133,6 +134,7 @@ bool AuthHiddenServiceChannel::allowInboundChannelRequest(const Data::Control::O
         result->set_common_error(ChannelResult::BadUsageError);
         return false;
     }
+    TEGO_THROW_IF_FALSE(clientCookie.size() <= std::numeric_limits<int>::max());
     d->clientCookie = QByteArray(clientCookie.c_str(), static_cast<int>(clientCookie.size()));
 
     // Generate a random cookie and return result
@@ -172,7 +174,8 @@ bool AuthHiddenServiceChannel::processChannelOpenResult(const Data::Control::Cha
             qDebug() << "Received ChannelResult for" << type() << "with no valid server_cookie";
             return false;
         }
-
+        
+        TEGO_THROW_IF_FALSE(cookie.size() <= std::numeric_limits<int>::max());
         d->serverCookie = QByteArray(cookie.c_str(), static_cast<int>(cookie.size()));
         return true;
     }
@@ -287,6 +290,8 @@ void AuthHiddenServiceChannel::handleProof(const Data::AuthHiddenService::Proof 
         return;
     }
 
+    TEGO_THROW_IF_FALSE(message.signature().size() <= std::numeric_limits<int>::max());
+    TEGO_THROW_IF_FALSE(message.service_id().size() <= std::numeric_limits<int>::max());
     QByteArray signature(message.signature().c_str(), static_cast<int>(message.signature().size()));
     QByteArray serviceId(message.service_id().c_str(), static_cast<int>(message.service_id().size()));
 

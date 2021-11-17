@@ -116,6 +116,7 @@ namespace shims
                             case InProgress:
                             {
                                 const auto locale = QLocale::system();
+                                Q_ASSERT(message.bytesTransferred < std::numeric_limits<qint64>::max());
                                 return QString("%1 / %2").arg(locale.formattedDataSize(static_cast<qint64>(message.bytesTransferred)), locale.formattedDataSize(message.fileSize));
                             }
                             case Cancelled: return tr("Cancelled");
@@ -254,6 +255,7 @@ namespace shims
                 md.status = Queued;
 
                 md.fileName = QFileInfo(filePath).fileName();
+                Q_ASSERT(md.fileSize < std::numeric_limits<qint64>::max());
                 md.fileSize = static_cast<qint64>(fileSize);
                 md.fileHash = QString::fromStdString(tego::to_string(fileHash.get()));
                 md.transferStatus = Pending;
@@ -274,6 +276,7 @@ namespace shims
 
     void ConversationModel::deserializeTextMessageEventToFile(const EventData &event, std::ofstream &ofile) const
     {
+        Q_ASSERT(event.messageData.reverseIndex < std::numeric_limits<int>::max());
         auto &md = this->messages[this->messages.size() - static_cast<int>(event.messageData.reverseIndex)];
         switch (md.status)
         {
@@ -299,6 +302,7 @@ namespace shims
 
     void ConversationModel::deserializeTransferMessageEventToFile(const EventData &event, std::ofstream &ofile) const
     {
+        Q_ASSERT(event.transferData.reverseIndex < std::numeric_limits<int>::max());
         auto &md = this->messages[this->messages.size() - static_cast<int>(event.transferData.reverseIndex)];
 
         if (md.transferDirection == InvalidDirection)
@@ -550,6 +554,7 @@ namespace shims
 
         md.fileName = std::move(fileName);
         md.fileHash = std::move(fileHash);
+        Q_ASSERT(md.fileSize < std::numeric_limits<qint64>::max());
         md.fileSize = static_cast<qint64>(fileSize);
         md.transferDirection = Downloading;
         md.transferStatus = Pending;
@@ -705,6 +710,7 @@ namespace shims
                 ed.type = TransferMessageEvent;
                 ed.transferData.reverseIndex = static_cast<size_t>(this->messages.size() - row);
                 ed.transferData.status = md.transferStatus;
+                Q_ASSERT(md.bytesTransferred < std::numeric_limits<qint64>::max());
                 ed.transferData.bytesTransferred = static_cast<qint64>(md.bytesTransferred);
                 break;
             default:
