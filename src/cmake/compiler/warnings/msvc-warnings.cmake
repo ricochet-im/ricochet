@@ -1,7 +1,6 @@
 # based off https://github.com/cpp-best-practices/cpp_starter_project/blob/main/cmake/CompilerWarnings.cmake
 
-set (
-    CXX_WARNINGS
+set(CXX_WARNINGS
     /W4 # Baseline reasonable warnings
     /w14242 # 'identifier': conversion from 'type1' to 'type1', possible loss of data
     /w14254 # 'operator': conversion from 'type1:field_bits' to 'type2:field_bits', possible loss of data
@@ -28,11 +27,10 @@ set (
 )
 
 if (WARNINGS_AS_ERRORS)
-    set (CXX_WARNINGS ${CXX_WARNINGS} /WX)
+    set(CXX_WARNINGS ${CXX_WARNINGS} /WX)
 endif ()
 
-set (
-    C_WARNINGS
+set(C_WARNINGS
     /W4 # Baseline reasonable warnings
     /w14242 # 'identifier': conversion from 'type1' to 'type1', possible loss of data
     /w14254 # 'operator': conversion from 'type1:field_bits' to 'type2:field_bits', possible loss of data
@@ -56,5 +54,5 @@ set (
 )
 
 if (WARNINGS_AS_ERRORS)
-    set (C_WARNINGS ${C_WARNINGS} /WX)
+    set(C_WARNINGS ${C_WARNINGS} /WX)
 endif ()

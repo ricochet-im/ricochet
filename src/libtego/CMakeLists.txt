@@ -1,15 +1,15 @@
-cmake_minimum_required (VERSION 3.16)
+cmake_minimum_required(VERSION 3.16)
 
-project (libtego LANGUAGES CXX)
+project(libtego LANGUAGES CXX)
 
-set (CMAKE_INCLUDE_CURRENT_DIR ON)
-set (CMAKE_AUTOUIC ON)
-set (CMAKE_AUTOMOC ON)
-set (CMAKE_AUTORCC ON)
-set (CMAKE_CXX_STANDARD 20)
-set (CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package (
+find_package(
     QT
     NAMES
     Qt6
@@ -20,7 +20,7 @@ find_package (
                Quick
                Widgets
     REQUIRED)
-find_package (
+find_package(
     Qt${QT_VERSION_MAJOR}
     COMPONENTS Core
                Widgets
@@ -30,19 +30,19 @@ find_package (
     REQUIRED)
 
 if (APPLE)
-    find_package (
+    find_package(
         Qt${QT_VERSION_MAJOR}
         COMPONENTS MacExtras
         REQUIRED)
 endif ()
 
-set (THREADS_PREFER_PTHREAD_FLAG ON)
-find_package (Threads REQUIRED)
-find_package (fmt REQUIRED)
-find_package (OpenSSL REQUIRED)
-find_package (Protobuf REQUIRED)
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
+find_package(fmt REQUIRED)
+find_package(OpenSSL REQUIRED)
+find_package(Protobuf REQUIRED)
 
-add_library (
+add_library(
     tego STATIC
     include/tego/logger.hpp
     include/tego/tego.h
@@ -138,24 +138,24 @@ add_library (
     source/utils/StringUtil.cpp
     source/utils/StringUtil.h
     source/utils/Useful.h)
-target_precompile_headers (tego PRIVATE source/precomp.h)
+target_precompile_headers(tego PRIVATE source/precomp.h)
 
-include (lto)
-include (compiler_opts)
+include(lto)
+include(compiler_opts)
 # enables compiler specific warnings/sanitizers if requested
-setup_compiler (tego)
+setup_compiler(tego)
 
-target_compile_features (tego PRIVATE cxx_std_20)
+target_compile_features(tego PRIVATE cxx_std_20)
 
-target_include_directories (tego PRIVATE source/)
-target_include_directories (tego PUBLIC include/)
+target_include_directories(tego PRIVATE source/)
+target_include_directories(tego PUBLIC include/)
 
-set (EXTERN_DIR "../extern/")
+set(EXTERN_DIR "../extern/")
 
 # protobuf
-target_include_directories (tego PRIVATE ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_BINARY_DIR}/protocol)
-target_link_libraries (tego PRIVATE ${Protobuf_LIBRARIES})
-protobuf_generate_cpp (
+target_include_directories(tego PRIVATE ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_BINARY_DIR}/protocol)
+target_link_libraries(tego PRIVATE ${Protobuf_LIBRARIES})
+protobuf_generate_cpp(
     PROTO_SRC
     PROTO_HDR
     source/protocol/FileChannel.proto
@@ -163,31 +163,31 @@ protobuf_generate_cpp (
     source/protocol/ControlChannel.proto
     source/protocol/ChatChannel.proto
     source/protocol/AuthHiddenService.proto)
-target_sources (tego PRIVATE ${PROTO_SRC} ${PROTO_HDR})
+target_sources(tego PRIVATE ${PROTO_SRC} ${PROTO_HDR})
 
 # tor
-target_include_directories (tego PRIVATE ${EXTERN_DIR}/tor ${EXTERN_DIR}/tor/src ${EXTERN_DIR}/tor/src/ext)
+target_include_directories(tego PRIVATE ${EXTERN_DIR}/tor ${EXTERN_DIR}/tor/src ${EXTERN_DIR}/tor/src/ext)
 
-list (
+list(
     APPEND
     TOR_SRC
     ${EXTERN_DIR}/tor/src/ext/ed25519/donna/ed25519_tor.c
     ${EXTERN_DIR}/tor/src/lib/encoding/binascii.c
     ${EXTERN_DIR}/tor/src/lib/crypt_ops/crypto_digest_openssl.c)
-target_sources (tego PRIVATE ${TOR_SRC})
+target_sources(tego PRIVATE ${TOR_SRC})
 
 # silence warnings on the tor sources
 if (CMAKE_CXX_COMPILER_ID MATCHES ".*Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    set_source_files_properties (${TOR_SRC} PROPERTIES COMPILE_FLAGS "-w")
+    set_source_files_properties(${TOR_SRC} PROPERTIES COMPILE_FLAGS "-w")
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-    set_source_files_properties (${TOR_SRC} PROPERTIES COMPILE_FLAGS "/w")
+    set_source_files_properties(${TOR_SRC} PROPERTIES COMPILE_FLAGS "/w")
 endif ()
 
-target_link_libraries (tego PRIVATE fmt::fmt)
-target_link_libraries (tego PRIVATE OpenSSL::Crypto)
+target_link_libraries(tego PRIVATE fmt::fmt)
+target_link_libraries(tego PRIVATE OpenSSL::Crypto)
 
 # QT
-target_link_libraries (
+target_link_libraries(
     tego
     PRIVATE Qt${QT_VERSION_MAJOR}::Core
             Qt${QT_VERSION_MAJOR}::Widgets
@@ -196,11 +196,11 @@ target_link_libraries (
             Qt${QT_VERSION_MAJOR}::Quick)
 
 if (APPLE)
-    target_link_libraries (tego PRIVATE Qt${QT_VERSION_MAJOR}::MacExtras)
+    target_link_libraries(tego PRIVATE Qt${QT_VERSION_MAJOR}::MacExtras)
 endif ()
 
-target_link_libraries (tego PRIVATE Threads::Threads)
+target_link_libraries(tego PRIVATE Threads::Threads)
 
 if ("${CMAKE_BUILD_TYPE}" MATCHES "Rel.*" OR "${CMAKE_BUILD_TYPE}" STREQUAL "MinSizeRel")
-    target_compile_definitions (tego PRIVATE QT_NO_DEBUG_OUTPUT QT_NO_WARNING_OUTPUT)
+    target_compile_definitions(tego PRIVATE QT_NO_DEBUG_OUTPUT QT_NO_WARNING_OUTPUT)
 endif ()

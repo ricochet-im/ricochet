@@ -1,7 +1,6 @@
 # based off https://github.com/cpp-best-practices/cpp_starter_project/blob/main/cmake/CompilerWarnings.cmake
 
-set (
-    CXX_WARNINGS
+set(CXX_WARNINGS
     -Wall
     -Wextra # reasonable and standard
     -Wshadow # warn the user if a variable declaration shadows one from a parent context
@@ -21,11 +20,10 @@ set (
 )
 
 if (WARNINGS_AS_ERRORS)
-    set (CXX_WARNINGS ${CXX_WARNINGS} -Werror)
+    set(CXX_WARNINGS ${CXX_WARNINGS} -Werror)
 endif ()
 
-set (
-    C_WARNINGS
+set(C_WARNINGS
     -Wall
     -Wextra # reasonable and standard
     -Wshadow # warn the user if a variable declaration shadows one from a parent context
@@ -41,5 +39,5 @@ set (
 )
 
 if (WARNINGS_AS_ERRORS)
-    set (C_WARNINGS ${C_WARNINGS} -Werror)
+    set(C_WARNINGS ${C_WARNINGS} -Werror)
 endif ()
