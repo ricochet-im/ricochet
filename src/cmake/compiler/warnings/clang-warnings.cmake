@@ -1,9 +1,12 @@
-set(CXX_WARNINGS
+# based off https://github.com/cpp-best-practices/cpp_starter_project/blob/main/cmake/CompilerWarnings.cmake
+
+set (
+    CXX_WARNINGS
     -Wall
     -Wextra # reasonable and standard
     -Wshadow # warn the user if a variable declaration shadows one from a parent context
-    -Wnon-virtual-dtor # warn the user if a class with virtual functions has a non-virtual destructor. This helps
-                    # catch hard to track down memory errors
+    -Wnon-virtual-dtor # warn the user if a class with virtual functions has a non-virtual destructor. This helps catch
+                       # hard to track down memory errors
     -Wold-style-cast # warn for c-style casts
     -Wcast-align # warn for potential performance problem casts
     -Wunused # warn on anything being unused
@@ -18,10 +21,11 @@ set(CXX_WARNINGS
 )
 
 if (WARNINGS_AS_ERRORS)
-    set(CXX_WARNINGS ${CXX_WARNINGS} -Werror)
-endif()
+    set (CXX_WARNINGS ${CXX_WARNINGS} -Werror)
+endif ()
 
-set(C_WARNINGS
+set (
+    C_WARNINGS
     -Wall
     -Wextra # reasonable and standard
     -Wshadow # warn the user if a variable declaration shadows one from a parent context
@@ -37,5 +41,5 @@ set(C_WARNINGS
 )
 
 if (WARNINGS_AS_ERRORS)
-    set(C_WARNINGS ${C_WARNINGS} -Werror)
-endif()
+    set (C_WARNINGS ${C_WARNINGS} -Werror)
+endif ()

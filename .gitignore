@@ -1,7 +1,7 @@
 # Build files
 Makefile
 Makefile.*
-CMake*
+CMakeLists.txt.user
 build/
 debug
 release

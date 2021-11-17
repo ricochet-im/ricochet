@@ -1,13 +1,16 @@
-set(CXX_WARNINGS
+# based off https://github.com/cpp-best-practices/cpp_starter_project/blob/main/cmake/CompilerWarnings.cmake
+
+set (
+    CXX_WARNINGS
     /W4 # Baseline reasonable warnings
     /w14242 # 'identifier': conversion from 'type1' to 'type1', possible loss of data
     /w14254 # 'operator': conversion from 'type1:field_bits' to 'type2:field_bits', possible loss of data
     /w14263 # 'function': member function does not override any base class virtual member function
-    /w14265 # 'classname': class has virtual functions, but destructor is not virtual instances of this class may not
-            # be destructed correctly
+    /w14265 # 'classname': class has virtual functions, but destructor is not virtual instances of this class may not be
+            # destructed correctly
     /w14287 # 'operator': unsigned/negative constant mismatch
-    /we4289 # nonstandard extension used: 'variable': loop control variable declared in the for-loop is used outside
-            # the for-loop scope
+    /we4289 # nonstandard extension used: 'variable': loop control variable declared in the for-loop is used outside the
+            # for-loop scope
     /w14296 # 'operator': expression is always 'boolean_value'
     /w14311 # 'variable': pointer truncation from 'type1' to 'type2'
     /w14545 # expression before comma evaluates to a function which is missing an argument list
@@ -24,17 +27,18 @@ set(CXX_WARNINGS
     /permissive- # standards conformance mode for MSVC compiler.
 )
 
-if(WARNINGS_AS_ERRORS)
-    set(CXX_WARNINGS ${CXX_WARNINGS} /WX)
-endif()
+if (WARNINGS_AS_ERRORS)
+    set (CXX_WARNINGS ${CXX_WARNINGS} /WX)
+endif ()
 
-set(C_WARNINGS
+set (
+    C_WARNINGS
     /W4 # Baseline reasonable warnings
     /w14242 # 'identifier': conversion from 'type1' to 'type1', possible loss of data
     /w14254 # 'operator': conversion from 'type1:field_bits' to 'type2:field_bits', possible loss of data
     /w14287 # 'operator': unsigned/negative constant mismatch
-    /we4289 # nonstandard extension used: 'variable': loop control variable declared in the for-loop is used outside
-            # the for-loop scope
+    /we4289 # nonstandard extension used: 'variable': loop control variable declared in the for-loop is used outside the
+            # for-loop scope
     /w14296 # 'operator': expression is always 'boolean_value'
     /w14311 # 'variable': pointer truncation from 'type1' to 'type2'
     /w14545 # expression before comma evaluates to a function which is missing an argument list
@@ -51,6 +55,6 @@ set(C_WARNINGS
     /permissive- # standards conformance mode for MSVC compiler.
 )
 
-if(WARNINGS_AS_ERRORS)
-    set(C_WARNINGS ${C_WARNINGS} /WX)
-endif()
+if (WARNINGS_AS_ERRORS)
+    set (C_WARNINGS ${C_WARNINGS} /WX)
+endif ()
