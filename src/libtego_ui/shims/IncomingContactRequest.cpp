@@ -3,16 +3,16 @@
 
 namespace shims
 {
-    IncomingContactRequest::IncomingContactRequest(const QString& hostname, const QString& message)
+    IncomingContactRequest::IncomingContactRequest(const QString& hostname, const QString& msg)
     : serviceIdString(hostname.chopped(tego::static_strlen(".onion")))
     , nickname()
-    , message(message)
+    , message(msg)
     , userId()
     {
         auto serviceIdRaw = serviceIdString.toUtf8();
 
         std::unique_ptr<tego_v3_onion_service_id_t> serviceId;
-        tego_v3_onion_service_id_from_string(tego::out(serviceId), serviceIdRaw.data(), serviceIdRaw.size(), tego::throw_on_error());
+        tego_v3_onion_service_id_from_string(tego::out(serviceId), serviceIdRaw.data(), static_cast<size_t>(serviceIdRaw.size()), tego::throw_on_error());
         tego_user_id_from_v3_onion_service_id(tego::out(userId), serviceId.get(), tego::throw_on_error());
 
         // save our request to disk
@@ -30,10 +30,10 @@ namespace shims
         return QString("ricochet:") + serviceIdString;
     }
 
-    void IncomingContactRequest::setNickname(const QString& nickname)
+    void IncomingContactRequest::setNickname(const QString& newNickname)
     {
-        logger::println("setNickname : '{}'", nickname);
-        this->nickname = nickname;
+        logger::println("setNickname : '{}'", newNickname);
+        this->nickname = newNickname;
         emit this->nicknameChanged();
     }
 

@@ -99,7 +99,7 @@ QByteArray SecureRNG::randomPrintable(int length)
 {
     QByteArray re(length, 0);
     for (int i = 0; i < re.size(); i++)
-        re[i] = randomInt(95) + 32;
+        re[i] = static_cast<char>(randomInt(95) + 32);
     return re;
 }
 

@@ -78,25 +78,25 @@ namespace tego
             }\
         private:
 
-        TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(tor_error_occurred, tego_tor_error_origin_t, tego_error_t*);
-        TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(update_tor_daemon_config_succeeded, tego_bool_t);
-        TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(tor_control_status_changed, tego_tor_control_status_t);
-        TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(tor_process_status_changed, tego_tor_process_status_t);
-        TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(tor_network_status_changed, tego_tor_network_status_t);
-        TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(tor_bootstrap_status_changed, int32_t, tego_tor_bootstrap_tag_t);
-        TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(tor_log_received, char*, size_t);
-        TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(host_user_state_changed, tego_host_user_state_t);
-        TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(chat_request_received, tego_user_id_t*, char*, size_t);
-        TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(chat_request_response_received, tego_user_id_t*, tego_bool_t);
-        TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(message_received, tego_user_id_t*, tego_time_t, tego_message_id_t, char*, size_t);
-        TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(message_acknowledged, tego_user_id_t*, tego_message_id_t, tego_bool_t);
-        TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(file_transfer_request_received, tego_user_id_t*, tego_file_transfer_id_t, char*, size_t, uint64_t, tego_file_hash_t*);
-        TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(file_transfer_request_acknowledged, tego_user_id_t*, tego_file_transfer_id_t, tego_bool_t);
-        TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(file_transfer_request_response_received, tego_user_id_t*, tego_file_transfer_id_t, tego_file_transfer_response_t);
-        TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(file_transfer_progress, tego_user_id_t*, tego_file_transfer_id_t, tego_file_transfer_direction_t, uint64_t, uint64_t);
-        TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(file_transfer_complete, tego_user_id_t*, tego_file_transfer_id_t, tego_file_transfer_direction_t, tego_file_transfer_result_t);
-        TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(user_status_changed, tego_user_id_t*, tego_user_status_t);
-        TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(new_identity_created, tego_ed25519_private_key_t*);
+        TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(tor_error_occurred, tego_tor_error_origin_t, tego_error_t*)
+        TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(update_tor_daemon_config_succeeded, tego_bool_t)
+        TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(tor_control_status_changed, tego_tor_control_status_t)
+        TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(tor_process_status_changed, tego_tor_process_status_t)
+        TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(tor_network_status_changed, tego_tor_network_status_t)
+        TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(tor_bootstrap_status_changed, int32_t, tego_tor_bootstrap_tag_t)
+        TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(tor_log_received, char*, size_t)
+        TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(host_user_state_changed, tego_host_user_state_t)
+        TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(chat_request_received, tego_user_id_t*, char*, size_t)
+        TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(chat_request_response_received, tego_user_id_t*, tego_bool_t)
+        TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(message_received, tego_user_id_t*, tego_time_t, tego_message_id_t, char*, size_t)
+        TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(message_acknowledged, tego_user_id_t*, tego_message_id_t, tego_bool_t)
+        TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(file_transfer_request_received, tego_user_id_t*, tego_file_transfer_id_t, char*, size_t, uint64_t, tego_file_hash_t*)
+        TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(file_transfer_request_acknowledged, tego_user_id_t*, tego_file_transfer_id_t, tego_bool_t)
+        TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(file_transfer_request_response_received, tego_user_id_t*, tego_file_transfer_id_t, tego_file_transfer_response_t)
+        TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(file_transfer_progress, tego_user_id_t*, tego_file_transfer_id_t, tego_file_transfer_direction_t, uint64_t, uint64_t)
+        TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(file_transfer_complete, tego_user_id_t*, tego_file_transfer_id_t, tego_file_transfer_direction_t, tego_file_transfer_result_t)
+        TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(user_status_changed, tego_user_id_t*, tego_user_status_t)
+        TEGO_IMPLEMENT_CALLBACK_FUNCTIONS(new_identity_created, tego_ed25519_private_key_t*)
 
 
     private:

@@ -144,7 +144,7 @@ std::tuple<tego_file_transfer_id_t, std::unique_ptr<tego_file_hash_t>, tego_file
     }
 
 	// calculate file size
-    const uint64_t fileSize = QFileInfo(file_uri).size();
+    const tego_file_size_t fileSize = static_cast<tego_file_size_t>(QFileInfo(file_uri).size());
 
     if (m_contact->connection())
     {
@@ -208,7 +208,7 @@ tego_message_id_t ConversationModel::sendMessage(const QString &text)
     endInsertRows();
     prune();
 
-    return static_cast<tego_message_id_t>(message.identifier);
+    return message.identifier;
 }
 
 void ConversationModel::acceptFile(tego_file_transfer_id_t id, const std::string& dest)
@@ -354,14 +354,14 @@ void ConversationModel::messageReceived(const QString &text, const QDateTime &ti
     {
         // convert QString to raw utf8
         auto utf8Text = text.toUtf8();
-        auto rawText = std::make_unique<char[]>(utf8Text.size() + 1);
+        auto rawText = std::make_unique<char[]>(static_cast<unsigned int>(utf8Text.size()) + 1u);
         std::copy(utf8Text.begin(), utf8Text.end(), rawText.get());
 
         auto userId = this->m_contact->toTegoUserId();
 
         logger::println("Received Message : {}", rawText.get());
 
-        g_globals.context->callback_registry_.emit_message_received(userId.release(), time.toMSecsSinceEpoch(), static_cast<tego_message_id_t>(id), rawText.release(), utf8Text.size());
+        g_globals.context->callback_registry_.emit_message_received(userId.release(), static_cast<tego_time_t>(time.toMSecsSinceEpoch()), id, rawText.release(), static_cast<size_t>(utf8Text.size()));
     }
 }
 
@@ -376,7 +376,7 @@ void ConversationModel::messageAcknowledged(MessageId id, bool accepted)
     emit dataChanged(index(row, 0), index(row, 0));
 
     auto userId = this->contact()->toTegoUserId();
-    g_globals.context->callback_registry_.emit_message_acknowledged(userId.release(), static_cast<tego_message_id_t>(id), (accepted ? TEGO_TRUE : TEGO_FALSE));
+    g_globals.context->callback_registry_.emit_message_acknowledged(userId.release(), id, (accepted ? TEGO_TRUE : TEGO_FALSE));
 }
 
 void ConversationModel::outboundChannelClosed()
@@ -435,7 +435,7 @@ void ConversationModel::onFileTransferRequestReceived(tego_file_transfer_id_t id
 
     // filename
     auto utf8Filename = filename.toUtf8();
-    const auto rawFilenameLength = utf8Filename.size();
+    const auto rawFilenameLength = static_cast<std::size_t>(utf8Filename.size());
     const auto rawFilenameSize = rawFilenameLength + 1; // for null terminator
     auto rawFilename = std::make_unique<char[]>(rawFilenameSize);
     std::copy(utf8Filename.begin(), utf8Filename.end(), rawFilename.get());

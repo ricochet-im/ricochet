@@ -132,23 +132,23 @@ extern "C"
         }, error);\
     }
 
-    TEGO_DEFINE_CALLBACK_SETTER(tor_error_occurred);
-    TEGO_DEFINE_CALLBACK_SETTER(update_tor_daemon_config_succeeded);
-    TEGO_DEFINE_CALLBACK_SETTER(tor_control_status_changed);
-    TEGO_DEFINE_CALLBACK_SETTER(tor_process_status_changed);
-    TEGO_DEFINE_CALLBACK_SETTER(tor_network_status_changed);
-    TEGO_DEFINE_CALLBACK_SETTER(tor_bootstrap_status_changed);
-    TEGO_DEFINE_CALLBACK_SETTER(tor_log_received);
-    TEGO_DEFINE_CALLBACK_SETTER(host_user_state_changed);
-    TEGO_DEFINE_CALLBACK_SETTER(chat_request_received);
-    TEGO_DEFINE_CALLBACK_SETTER(chat_request_response_received);
-    TEGO_DEFINE_CALLBACK_SETTER(message_received);
-    TEGO_DEFINE_CALLBACK_SETTER(message_acknowledged);
-    TEGO_DEFINE_CALLBACK_SETTER(file_transfer_request_received);
-    TEGO_DEFINE_CALLBACK_SETTER(file_transfer_request_acknowledged);
-    TEGO_DEFINE_CALLBACK_SETTER(file_transfer_request_response_received);
-    TEGO_DEFINE_CALLBACK_SETTER(file_transfer_progress);
-    TEGO_DEFINE_CALLBACK_SETTER(file_transfer_complete);
-    TEGO_DEFINE_CALLBACK_SETTER(user_status_changed);
-    TEGO_DEFINE_CALLBACK_SETTER(new_identity_created);
+    TEGO_DEFINE_CALLBACK_SETTER(tor_error_occurred)
+    TEGO_DEFINE_CALLBACK_SETTER(update_tor_daemon_config_succeeded)
+    TEGO_DEFINE_CALLBACK_SETTER(tor_control_status_changed)
+    TEGO_DEFINE_CALLBACK_SETTER(tor_process_status_changed)
+    TEGO_DEFINE_CALLBACK_SETTER(tor_network_status_changed)
+    TEGO_DEFINE_CALLBACK_SETTER(tor_bootstrap_status_changed)
+    TEGO_DEFINE_CALLBACK_SETTER(tor_log_received)
+    TEGO_DEFINE_CALLBACK_SETTER(host_user_state_changed)
+    TEGO_DEFINE_CALLBACK_SETTER(chat_request_received)
+    TEGO_DEFINE_CALLBACK_SETTER(chat_request_response_received)
+    TEGO_DEFINE_CALLBACK_SETTER(message_received)
+    TEGO_DEFINE_CALLBACK_SETTER(message_acknowledged)
+    TEGO_DEFINE_CALLBACK_SETTER(file_transfer_request_received)
+    TEGO_DEFINE_CALLBACK_SETTER(file_transfer_request_acknowledged)
+    TEGO_DEFINE_CALLBACK_SETTER(file_transfer_request_response_received)
+    TEGO_DEFINE_CALLBACK_SETTER(file_transfer_progress)
+    TEGO_DEFINE_CALLBACK_SETTER(file_transfer_complete)
+    TEGO_DEFINE_CALLBACK_SETTER(user_status_changed)
+    TEGO_DEFINE_CALLBACK_SETTER(new_identity_created)
 }

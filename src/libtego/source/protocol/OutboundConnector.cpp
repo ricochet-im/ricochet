@@ -57,9 +57,9 @@ public:
     QTimer errorRetryTimer;
     int errorRetryCount;
 
-    OutboundConnectorPrivate(OutboundConnector *q)
-        : QObject(q)
-        , q(q)
+    OutboundConnectorPrivate(OutboundConnector *oc)
+        : QObject(oc)
+        , q(oc)
         , socket(0)
         , port(0)
         , status(OutboundConnector::Inactive)

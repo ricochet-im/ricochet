@@ -47,18 +47,18 @@ namespace shims
     shims::ContactUser* ContactIDValidator::matchingContact(const QString &text) const
     {
         logger::trace();
-        logger::println("UserIdentity instance : {}", (void*)UserIdentity::userIdentity);
+        logger::println("UserIdentity instance : {}", static_cast<void*>(UserIdentity::userIdentity));
         auto contactsManager = UserIdentity::userIdentity->getContacts();
-        logger::println("ContactsManager : {}", (void*)contactsManager);
+        logger::println("ContactsManager : {}", static_cast<void*>(contactsManager));
         return contactsManager->getShimContactByContactId(text);
     }
 
     bool ContactIDValidator::matchesIdentity(const QString &text) const
     {
         logger::trace();
-        logger::println("UserIdentity instance : {}", (void*)UserIdentity::userIdentity);
+        logger::println("UserIdentity instance : {}", static_cast<void*>(UserIdentity::userIdentity));
         auto context = UserIdentity::userIdentity->getContext();
-        logger::println("context : {}", (void*)UserIdentity::userIdentity->getContext());
+        logger::println("context : {}", static_cast<void*>(UserIdentity::userIdentity->getContext()));
 
         std::unique_ptr<tego_user_id_t> userId;
         tego_context_get_host_user_id(context, tego::out(userId), tego::throw_on_error());
@@ -80,7 +80,7 @@ namespace shims
         auto strippedID = serviceID.mid(tego::static_strlen("ricochet:"));
         logger::println("strippedID : {}", strippedID.toUtf8().constData(), strippedID.size());
 
-        bool valid = tego_v3_onion_service_id_string_is_valid(strippedID.toUtf8().constData(), strippedID.size(), nullptr) == TEGO_TRUE;
+        bool valid = tego_v3_onion_service_id_string_is_valid(strippedID.toUtf8().constData(), static_cast<size_t>(strippedID.size()), nullptr) == TEGO_TRUE;
         logger::println("valid: {}", valid);
 
         return valid;

@@ -6,9 +6,9 @@ shims::UserIdentity* shims::UserIdentity::userIdentity = nullptr;
 
 namespace shims
 {
-    UserIdentity::UserIdentity(tego_context_t* context)
-    : contacts(context)
-    , context(context)
+    UserIdentity::UserIdentity(tego_context_t* context_)
+    : contacts(context_)
+    , context(context_)
     , online(false)
 
     { }
@@ -79,9 +79,9 @@ namespace shims
         return &contacts;
     }
 
-    void UserIdentity::setOnline(bool online)
+    void UserIdentity::setOnline(bool isOnline)
     {
-        this->online = online;
+        this->online = isOnline;
         emit this->statusChanged();
     }
 }

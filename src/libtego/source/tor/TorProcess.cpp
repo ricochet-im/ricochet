@@ -47,14 +47,13 @@ TorProcess::~TorProcess()
         stop();
 }
 
-TorProcessPrivate::TorProcessPrivate(TorProcess *q)
-    : QObject(q), q(q), state(TorProcess::NotStarted), controlPort(0), controlPortAttempts(0)
+TorProcessPrivate::TorProcessPrivate(TorProcess *tp)
+    : QObject(tp), q(tp), state(TorProcess::NotStarted), controlPort(0), controlPortAttempts(0)
 {
     connect(&process, &QProcess::started, this, &TorProcessPrivate::processStarted);
-    connect(&process, (void (QProcess::*)(int, QProcess::ExitStatus))&QProcess::finished,
-            this, &TorProcessPrivate::processFinished);
-    connect(&process, (void (QProcess::*)(QProcess::ProcessError))&QProcess::errorOccurred,
-            this, &TorProcessPrivate::processError);
+    //XXX: This static cast shouldn't be needed here, but it is. Why?
+    connect(&process, static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished), this, &TorProcessPrivate::processFinished);
+    connect(&process, &QProcess::errorOccurred, this, &TorProcessPrivate::processError);
     connect(&process, &QProcess::readyRead, this, &TorProcessPrivate::processReadable);
 
     controlPortTimer.setInterval(500);

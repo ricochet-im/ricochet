@@ -4,8 +4,8 @@ namespace shims
 {
     TorControl* TorControl::torControl = nullptr;
 
-    TorControl::TorControl(tego_context_t* context)
-    : context(context)
+    TorControl::TorControl(tego_context_t* context_)
+    : context(context_)
     { }
 
     QObject* TorControl::setConfiguration(const QVariantMap &options)
@@ -62,7 +62,7 @@ namespace shims
                 tego_tor_daemon_config_set_proxy_socks4(
                     daemonConfig.get(),
                     proxyAddress.data(),
-                    proxyAddress.size(),
+                    static_cast<size_t>(proxyAddress.size()),
                     static_cast<uint16_t>(proxyPort),
                     tego::throw_on_error());
             }
@@ -80,12 +80,12 @@ namespace shims
                     tego_tor_daemon_config_set_proxy_socks5(
                         daemonConfig.get(),
                         proxyAddress.data(),
-                        proxyAddress.size(),
+                        static_cast<size_t>(proxyAddress.size()),
                         static_cast<uint16_t>(proxyPort),
                         proxyUsername.data(),
-                        proxyUsername.size(),
+                        static_cast<size_t>(proxyUsername.size()),
                         proxyPassword.data(),
-                        proxyPassword.size(),
+                        static_cast<size_t>(proxyPassword.size()),
                         tego::throw_on_error());
                 }
                 else if (proxyType == "https")
@@ -93,12 +93,12 @@ namespace shims
                     tego_tor_daemon_config_set_proxy_https(
                         daemonConfig.get(),
                         proxyAddress.data(),
-                        proxyAddress.size(),
+                        static_cast<size_t>(proxyAddress.size()),
                         static_cast<uint16_t>(proxyPort),
                         proxyUsername.data(),
-                        proxyUsername.size(),
+                        static_cast<size_t>(proxyUsername.size()),
                         proxyPassword.data(),
-                        proxyPassword.size(),
+                        static_cast<size_t>(proxyPassword.size()),
                         tego::throw_on_error());
                 }
             }
@@ -112,7 +112,7 @@ namespace shims
             if (portList.size() > 0)
             {
                 std::vector<uint16_t> ports;
-                ports.reserve(portList.size());
+                ports.reserve(static_cast<size_t>(portList.size()));
 
                 // convert port list
                 for(const auto& v : portList)
@@ -133,36 +133,41 @@ namespace shims
         // bridges
         if (auto it = options.find("bridges"); it != options.end())
         {
+            // get the bridge list
             auto bridgeList = it->toList();
-            std::vector<std::string> bridgeStrings;
-            bridgeStrings.reserve(bridgeList.size());
 
-            for(auto& v : bridgeList)
+            if (bridgeList.size() > 0)
             {
-                auto currentBridge = v.toString();
-                bridgeStrings.push_back(currentBridge.toStdString());
-            }
-            const size_t bridgeCount = bridgeStrings.size();
-            if (bridgeCount > 0)
-            {
+                // convert the bridges to strings
+                std::vector<std::string> bridgeStrings;
+                bridgeStrings.reserve(static_cast<size_t>(bridgeList.size()));
+
+                // create a vector of said strings, so that the raw pointers have a lifetime for the rest of this scope
+                for(auto& v : bridgeList)
+                {
+                    auto currentBridge = v.toString();
+                    bridgeStrings.push_back(currentBridge.toStdString());
+                }
+                const size_t bridgeCount = bridgeStrings.size();
+
                 // copy over raw
-                const char* rawBridges[bridgeCount];
-                size_t rawBridgeLengths[bridgeCount];
+                auto rawBridges = std::make_unique<char* []>(bridgeCount);
+                auto rawBridgeLengths = std::make_unique<size_t[]>(bridgeCount);
 
-                std::fill(rawBridges, rawBridges + bridgeCount, nullptr);
-                std::fill(rawBridgeLengths, rawBridgeLengths + bridgeCount, 0);
+                std::fill(rawBridges.get(), rawBridges.get() + bridgeCount, nullptr);
+                std::fill(rawBridgeLengths.get(), rawBridgeLengths.get()+ bridgeCount, 0);
 
                 for(size_t i = 0; i < bridgeStrings.size(); ++i)
                 {
                     const auto& currentBridgeString = bridgeStrings[i];
-                    rawBridges[i] = currentBridgeString.data();
+                    rawBridges[i] = const_cast<char*>(currentBridgeString.data());
                     rawBridgeLengths[i] = currentBridgeString.size();
                 }
 
                 tego_tor_daemon_config_set_bridges(
                     daemonConfig.get(),
-                    rawBridges,
-                    rawBridgeLengths,
+                    const_cast<const char**>(rawBridges.get()),
+                    rawBridgeLengths.get(),
                     bridgeCount,
                     tego::throw_on_error());
             }

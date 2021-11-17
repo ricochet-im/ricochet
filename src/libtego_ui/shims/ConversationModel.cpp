@@ -116,7 +116,7 @@ namespace shims
                             case InProgress:
                             {
                                 const auto locale = QLocale::system();
-                                return QString("%1 / %2").arg(locale.formattedDataSize(message.bytesTransferred)).arg(locale.formattedDataSize(message.fileSize));
+                                return QString("%1 / %2").arg(locale.formattedDataSize(static_cast<qint64>(message.bytesTransferred)), locale.formattedDataSize(message.fileSize));
                             }
                             case Cancelled: return tr("Cancelled");
                             case Finished: return tr("Complete");
@@ -196,7 +196,7 @@ namespace shims
             context,
             userId.get(),
             utf8Str.data(),
-            utf8Str.size(),
+            static_cast<size_t>(utf8Str.size()),
             &messageId,
             tego::throw_on_error());
 
@@ -239,7 +239,7 @@ namespace shims
                     context,
                     userId.get(),
                     path.data(),
-                    path.size(),
+                    static_cast<size_t>(path.size()),
                     &id,
                     tego::out(fileHash),
                     &fileSize,
@@ -254,7 +254,7 @@ namespace shims
                 md.status = Queued;
 
                 md.fileName = QFileInfo(filePath).fileName();
-                md.fileSize = fileSize;
+                md.fileSize = static_cast<qint64>(fileSize);
                 md.fileHash = QString::fromStdString(tego::to_string(fileHash.get()));
                 md.transferStatus = Pending;
                 md.transferDirection = Uploading;
@@ -274,7 +274,7 @@ namespace shims
 
     void ConversationModel::deserializeTextMessageEventToFile(const EventData &event, std::ofstream &ofile) const
     {
-        auto &md = this->messages[this->messages.size() - event.messageData.reverseIndex];
+        auto &md = this->messages[this->messages.size() - static_cast<int>(event.messageData.reverseIndex)];
         switch (md.status)
         {
             case Received:
@@ -299,7 +299,7 @@ namespace shims
 
     void ConversationModel::deserializeTransferMessageEventToFile(const EventData &event, std::ofstream &ofile) const
     {
-        auto &md = this->messages[this->messages.size() - event.transferData.reverseIndex];
+        auto &md = this->messages[this->messages.size() - static_cast<int>(event.transferData.reverseIndex)];
 
         if (md.transferDirection == InvalidDirection)
             return;
@@ -455,7 +455,7 @@ namespace shims
                     id,
                     tego_file_transfer_response_accept,
                     destination.data(),
-                    destination.size(),
+                    static_cast<size_t>(destination.size()),
                     tego::throw_on_error());
             }
             catch(const std::runtime_error& err)
@@ -550,7 +550,7 @@ namespace shims
 
         md.fileName = std::move(fileName);
         md.fileHash = std::move(fileHash);
-        md.fileSize = fileSize;
+        md.fileSize = static_cast<qint64>(fileSize);
         md.transferDirection = Downloading;
         md.transferStatus = Pending;
 
@@ -699,13 +699,13 @@ namespace shims
         {
             case TextMessage:
                 ed.type = TextMessageEvent;
-                ed.messageData.reverseIndex = this->messages.size() - row;
+                ed.messageData.reverseIndex = static_cast<size_t>(this->messages.size() - row);
                 break;
             case TransferMessage:
                 ed.type = TransferMessageEvent;
-                ed.transferData.reverseIndex = this->messages.size() - row;
+                ed.transferData.reverseIndex = static_cast<size_t>(this->messages.size() - row);
                 ed.transferData.status = md.transferStatus;
-                ed.transferData.bytesTransferred = md.bytesTransferred;
+                ed.transferData.bytesTransferred = static_cast<qint64>(md.bytesTransferred);
                 break;
             default:
                 return;

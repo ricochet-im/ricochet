@@ -45,7 +45,7 @@ std::ostream& operator<<(std::ostream& out, const QString& str)
 std::ostream& operator<<(std::ostream& out, const QByteArray& blob)
 {
     constexpr size_t rowWidth = 32;
-    const size_t rowCount = blob.size() / rowWidth;
+    const size_t rowCount = static_cast<size_t>(blob.size()) / rowWidth;
 
     const char* head = blob.data();
     size_t address = 0;
@@ -61,7 +61,7 @@ std::ostream& operator<<(std::ostream& out, const QByteArray& blob)
             if ((k % octetGrouping) == 0) {
                 fmt::print(out, " ");
             }
-            fmt::print(out, "{:02x}", (uint8_t)head[k]);
+            fmt::print(out, "{:02x}", static_cast<uint8_t>(head[k]));
         }
         for(size_t k = count; k < rowWidth; k++)
         {
@@ -99,7 +99,7 @@ std::ostream& operator<<(std::ostream& out, const QByteArray& blob)
     }
 
     // remainder
-    const size_t remainder = (blob.size() % rowWidth);
+    const size_t remainder = (static_cast<size_t>(blob.size()) % rowWidth);
     if (remainder > 0)
     {
         printRow(remainder);

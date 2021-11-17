@@ -93,7 +93,7 @@ void UserIdentity::setupService(const QString& serviceID)
                 tego_ed25519_private_key_from_ed25519_keyblob(
                     tego::out(privateKey),
                     rawKey.data(),
-                    rawKey.size(),
+                    static_cast<size_t>(rawKey.size()),
                     tego::throw_on_error());
 
                 g_globals.context->callback_registry_.emit_new_identity_created(privateKey.release());
@@ -182,8 +182,8 @@ void UserIdentity::onIncomingConnection()
          */
         connect(connPtr, &Connection::closed, this,
             [this,connPtr]() {
-                QSharedPointer<Connection> conn(takeIncomingConnection(connPtr));
-                if (conn)
+                QSharedPointer<Connection> inconn(takeIncomingConnection(connPtr));
+                if (inconn)
                     qDebug() << "Deleting closed incoming connection that was never claimed by an owner";
             }
         );

@@ -1,8 +1,8 @@
 #include "error.hpp"
 #include "user.hpp"
 
-tego_user_id::tego_user_id(const tego_v3_onion_service_id_t& serviceId)
-: serviceId(serviceId)
+tego_user_id::tego_user_id(const tego_v3_onion_service_id_t& onionServiceId)
+: serviceId(onionServiceId)
 { }
 
 extern "C"

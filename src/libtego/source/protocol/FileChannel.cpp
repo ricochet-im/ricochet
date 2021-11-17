@@ -46,21 +46,21 @@ using namespace Protocol;
 
 static void logTransferStats(qint64 bytes, std::chrono::time_point<std::chrono::system_clock> beginTime)
 {
-    const auto kilobytes = bytes / 1024.0;
+    const auto kilobytes = static_cast<double>(bytes) / 1024.0;
     const auto seconds = std::chrono::duration_cast<std::chrono::duration<double>>( std::chrono::system_clock::now() - beginTime).count();
 
     logger::println("Transfer Complete: {{ size : {} kilobytes, duration : {} seconds, rate : {} kilobytes / second}}", kilobytes, seconds, kilobytes / seconds);
-};
+}
 
 //
 // Outgoing Transfer Record
 //
 
 FileChannel::outgoing_transfer_record::outgoing_transfer_record(
-    tego_file_transfer_id_t id,
+    tego_file_transfer_id_t transferId,
     const std::string& filePath,
     tego_file_size_t fileSize)
-: id(id)
+: id(transferId)
 , size(fileSize)
 , offset(0)
 , stream(filePath, std::ios::in | std::ios::binary)
@@ -71,10 +71,10 @@ FileChannel::outgoing_transfer_record::outgoing_transfer_record(
 //
 
 FileChannel::incoming_transfer_record::incoming_transfer_record(
-    tego_file_transfer_id_t id,
+    tego_file_transfer_id_t transferId,
     tego_file_size_t fileSize,
     const std::string& fileHash)
-: id(id)
+: id(transferId)
 , size(fileSize)
 , hash(fileHash)
 , stream()
@@ -95,12 +95,12 @@ FileChannel::incoming_transfer_record::~incoming_transfer_record()
 
 std::string FileChannel::incoming_transfer_record::partial_dest() const
 {
-    return  dest + ".part";
+    return dest + ".part";
 }
 
-void FileChannel::incoming_transfer_record::open_stream(const std::string& dest)
+void FileChannel::incoming_transfer_record::open_stream(const std::string& destination)
 {
-    this->dest = dest;
+    this->dest = destination;
 
     // attempt to open the destination for reading and writing
     // discard previous contents
@@ -475,7 +475,7 @@ void FileChannel::handleFileChunk(const Data::File::FileChunk &message)
     {
         auto& itr = it->second;
         const auto& chunk_data = message.chunk_data();
-        itr.stream.write(chunk_data.data(), chunk_data.size());
+        itr.stream.write(chunk_data.data(), static_cast<std::streamsize>(chunk_data.size()));
 
         // emit progress callback
         const auto id = message.file_id();
@@ -507,9 +507,9 @@ void FileChannel::handleFileChunk(const Data::File::FileChunk &message)
         response->set_file_id(message.file_id());
         response->set_bytes_received(bytesWritten);
 
-        Data::File::Packet packet;
-        packet.set_allocated_file_chunk_ack(response.release());
-        Channel::sendMessage(packet);
+        Data::File::Packet ackPacket;
+        ackPacket.set_allocated_file_chunk_ack(response.release());
+        Channel::sendMessage(ackPacket);
 
         if (bytesWritten == bytesTotal)
         {
@@ -538,7 +538,7 @@ void FileChannel::handleFileChunk(const Data::File::FileChunk &message)
                 if(QFile::rename(qPartialDest, qDest))
                 {
                     emit this->fileTransferFinished(id, tego_file_transfer_direction_receiving, tego_file_transfer_result_success);
-                    logTransferStats(itr.size, itr.beginTime);
+                    logTransferStats(static_cast<qint64>(itr.size), itr.beginTime);
                 }
                 else
                 {
@@ -552,9 +552,9 @@ void FileChannel::handleFileChunk(const Data::File::FileChunk &message)
             notification->set_file_id(id);
             notification->set_result(Protocol::Data::File::Success);
 
-            Data::File::Packet packet;
-            packet.set_allocated_file_transfer_complete_notification(notification.release());
-            Channel::sendMessage(packet);
+            Data::File::Packet notifPacket;
+            notifPacket.set_allocated_file_transfer_complete_notification(notification.release());
+            Channel::sendMessage(notifPacket);
         }
     }
 }
@@ -636,13 +636,14 @@ void FileChannel::handleFileTransferCompleteNotification(const Data::File::FileT
             const auto& otr = it->second;
             if (message.result() == tego_file_transfer_result_success)
             {
-                logTransferStats(otr.size, otr.beginTime);
+                logTransferStats(static_cast<qint64>(otr.size), otr.beginTime);
             }
 
             outgoingTransfers.erase(it);
             emit fileTransferFinished(id, tego_file_transfer_direction_sending, static_cast<tego_file_transfer_result_t>(message.result()));
             return;
         }
+        break;
     default:
         break;
     }
@@ -833,12 +834,12 @@ void FileChannel::sendNextChunk(tego_file_transfer_id_t id)
         }
         Q_ASSERT(static_cast<tego_file_size_t>(chunkSize) <= FileMaxChunkSize);
 
-        otr.offset += chunkSize;
+        otr.offset += static_cast<unsigned long>(chunkSize);
 
         // build our chunk
         auto chunk = std::make_unique<Data::File::FileChunk>();
         chunk->set_file_id(id);
-        chunk->set_chunk_data(std::begin(chunkBuffer), chunkSize);
+        chunk->set_chunk_data(std::begin(chunkBuffer), static_cast<size_t>(chunkSize));
 
         Data::File::Packet packet;
         packet.set_allocated_file_chunk(chunk.release());

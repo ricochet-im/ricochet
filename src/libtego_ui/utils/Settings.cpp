@@ -330,9 +330,8 @@ bool SettingsFilePrivate::write(const QStringList &path, const QJsonValue &value
     originalValue = current;
     current = value;
 
-    ObjectStack::const_iterator it = stack.end(), begin = stack.begin();
-    while (it != begin) {
-        --it;
+    for (ObjectStack::const_reverse_iterator it = stack.rbegin(); it != stack.rend(); ++it)
+    {
         QJsonObject update = it->second;
         update.insert(currentKey, current);
         current = update;

@@ -46,8 +46,8 @@ namespace
             {
                 exec = [](run_once_task* self) -> void
                 {
-                    auto lambda = reinterpret_cast<void(*)(void)>(self->callable);
-                    lambda();
+                    auto fn = reinterpret_cast<void(*)(void)>(self->callable);
+                    fn();
 
                     self->exec = nullptr;
                     self->callable = nullptr;
@@ -59,9 +59,9 @@ namespace
             {
                 exec = [](run_once_task* self) -> void
                 {
-                    auto lambda = reinterpret_cast<LAMBDA*>(self->callable);
-                    (*lambda)();
-                    delete lambda;
+                    auto fn = reinterpret_cast<LAMBDA*>(self->callable);
+                    (*fn)();
+                    delete fn;
 
                     self->exec = nullptr;
                     self->callable = nullptr;
@@ -270,7 +270,7 @@ namespace
     {
         push_task([=]() -> void
         {
-            logger::println("bootstrap status : {{ progress : {}, tag : {} }}", progress, (int)tag);
+            logger::println("bootstrap status : {{ progress : {}, tag : {} }}", progress, static_cast<int>(tag));
             auto torControl = shims::TorControl::torControl;
             emit torControl->bootstrapStatusChanged();
         });
@@ -281,7 +281,7 @@ namespace
         const char* message,
         size_t messageLength)
     {
-        auto messageString = QString::fromUtf8(message, messageLength);
+        auto messageString = QString::fromUtf8(message, static_cast<int>(messageLength));
         push_task([=]()-> void
         {
             auto torManager = shims::TorManager::torManager;
@@ -321,7 +321,7 @@ namespace
         logger::println("Message : {}", message);
 
         auto hostname = tegoUserIdToServiceId(userId) + ".onion";
-        auto messageString = QString::fromUtf8(message, messageLength);
+        auto messageString = QString::fromUtf8(message, static_cast<int>(messageLength));
 
         push_task([=]() -> void
         {
@@ -368,7 +368,7 @@ namespace
         logger::trace();
         auto serviceId = tegoUserIdToServiceId(userId);
 
-        logger::println("user status changed -> service id : {}, status : {}", serviceId, (int)status);
+        logger::println("user status changed -> service id : {}, status : {}", serviceId, static_cast<int>(status));
 
         push_task([=]() -> void
         {
@@ -407,7 +407,7 @@ namespace
         size_t messageLength)
     {
         auto contactId = tegoUserIdToContactId(sender);
-        auto messageString = QString::fromUtf8(message, messageLength);
+        auto messageString = QString::fromUtf8(message, static_cast<int>(messageLength));
 
         push_task([=]() -> void
         {
@@ -416,7 +416,7 @@ namespace
             auto conversationModel = contactUser->conversation();
             Q_ASSERT(conversationModel != nullptr);
 
-            conversationModel->messageReceived(messageId, QDateTime::fromMSecsSinceEpoch(timestamp), messageString);
+            conversationModel->messageReceived(messageId, QDateTime::fromMSecsSinceEpoch(static_cast<qint64>(timestamp)), messageString);
         });
     }
 
@@ -427,7 +427,7 @@ namespace
         tego_bool_t messageAccepted)
     {
         logger::trace();
-        logger::println(" userId : {}", (void*)userId);
+        logger::println(" userId : {}", static_cast<const void*>(userId));
         logger::println(" messageId : {}", messageId);
         logger::println(" messageAccepted : {}", messageAccepted);
 
@@ -452,7 +452,7 @@ namespace
         tego_file_hash_t const* fileHash)
     {
         auto contactId = tegoUserIdToContactId(sender);
-        QString fileNameCopy = QString::fromUtf8(fileName, fileNameLength);
+        QString fileNameCopy = QString::fromUtf8(fileName, static_cast<int>(fileNameLength));
         auto hashStr = tego::to_string(fileHash);
 
         push_task([=,fileName=std::move(fileNameCopy)]() -> void

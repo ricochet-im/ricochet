@@ -85,7 +85,7 @@ void AddOnionCommand::onReply(int statusCode, const QByteArray &data)
     if(data.startsWith(PRIVATE_KEY_EQUALS))
     {
         CryptoKey key;
-        if(!key.loadFromKeyBlob(data.mid(static_strlen(PRIVATE_KEY_EQUALS))))
+        if(!key.loadFromKeyBlob(data.mid(static_cast<int>(static_strlen(PRIVATE_KEY_EQUALS)))))
         {
             m_errorMessage = QStringLiteral("Key decoding failed");
             return;

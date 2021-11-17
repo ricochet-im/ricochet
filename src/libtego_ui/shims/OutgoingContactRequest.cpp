@@ -8,12 +8,12 @@ namespace shims
         return this->status;
     }
 
-    void OutgoingContactRequest::setStatus(Status status)
+    void OutgoingContactRequest::setStatus(Status newStatus)
     {
-        if (this->status != status)
+        if (this->status != newStatus)
         {
-            emit this->statusChanged(this->status, status);
-            this->status = status;
+            emit this->statusChanged(this->status, newStatus);
+            this->status = newStatus;
         }
     }
 

@@ -136,7 +136,7 @@ QByteArray Connection::serverServiceId() const
 
 int Connection::age() const
 {
-    return qRound(d->ageTimer.elapsed() / 1000.0);
+    return qRound(static_cast<double>(d->ageTimer.elapsed()) / 1000.0);
 }
 
 void ConnectionPrivate::setSocket(QTcpSocket *s, Connection::Direction d)
@@ -181,7 +181,7 @@ void ConnectionPrivate::setSocket(QTcpSocket *s, Connection::Direction d)
 
         // Send the introduction version handshake message
         char intro[] = { 0x49, 0x4D, 0x01, ProtocolVersion };
-        if (socket->write(intro, sizeof(intro)) < (int)sizeof(intro)) {
+        if (socket->write(intro, sizeof(intro)) < static_cast<int>(sizeof(intro))) {
             qDebug() << "Failed writing introduction message to socket";
             q->close();
             return;
@@ -265,7 +265,7 @@ void ConnectionPrivate::socketReadable()
             // Expecting at least 3 bytes
             uchar intro[3] = { 0 };
             qint64 re = socket->peek(reinterpret_cast<char*>(intro), sizeof(intro));
-            if (re < (int)sizeof(intro)) {
+            if (re < static_cast<int>(sizeof(intro))) {
                 qDebug() << "Connection socket error" << socket->error() << "during read:" << socket->errorString();
                 socket->abort();
                 return;
@@ -278,11 +278,12 @@ void ConnectionPrivate::socketReadable()
                 return;
             }
 
-            if (available < (qint64)sizeof(intro) + nVersions)
+            if (available < static_cast<qint64>(sizeof(intro)) + nVersions)
                 return;
 
             // Discard intro header
             re = socket->read(reinterpret_cast<char*>(intro), sizeof(intro));
+            (void)re;
 
             QByteArray versions(nVersions, 0);
             re = socket->read(versions.data(), versions.size());
@@ -293,9 +294,9 @@ void ConnectionPrivate::socketReadable()
             }
 
             quint8 selectedVersion = ProtocolVersionFailed;
-            foreach (quint8 v, versions) {
-                if (v == ProtocolVersion) {
-                    selectedVersion = v;
+            for (auto v : versions) {
+                if (static_cast<quint8>(v) == ProtocolVersion) {
+                    selectedVersion = static_cast<quint8>(v);
                     break;
                 }
             }

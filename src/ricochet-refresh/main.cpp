@@ -110,7 +110,7 @@ int main(int argc, char *argv[]) try
         tego_tor_launch_config_set_data_directory(
             launchConfig.get(),
             rawFilePath.data(),
-            rawFilePath.size(),
+            static_cast<size_t>(rawFilePath.size()),
             tego::throw_on_error());
 
         tego_context_start_tor(tegoContext, launchConfig.get(), tego::throw_on_error());
@@ -142,7 +142,7 @@ int main(int argc, char *argv[]) try
         tego_ed25519_private_key_from_ed25519_keyblob(
             tego::out(privateKey),
             keyBlob.data(),
-            keyBlob.size(),
+            static_cast<size_t>(keyBlob.size()),
             tego::throw_on_error());
 
         // load all of our user objects
@@ -174,7 +174,7 @@ int main(int argc, char *argv[]) try
             tego_v3_onion_service_id_from_string(
                 tego::out(serviceId),
                 serviceIdRaw.data(),
-                serviceIdRaw.size(),
+                static_cast<size_t>(serviceIdRaw.size()),
                 tego::throw_on_error());
 
             std::unique_ptr<tego_user_id_t> userId;
@@ -285,19 +285,19 @@ static bool initSettings(SettingsFile *settings, QLockFile **lockFile, QString &
     } else {
         // TODO: remove this profile migration after sufficient time has passed (EOY 2021)
         auto legacyConfigPath = []() -> QString {
-            QString configPath;
+            QString configPath_;
 #ifdef Q_OS_MAC
             // if the user has installed it to /Applications
             if (qApp->applicationDirPath().contains(QStringLiteral("/Applications"))) {
                 // ~Library/Application Support/Ricochet/Ricochet-Refresh
-                configPath = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QStringLiteral("/Ricochet/Ricochet-Refresh");
+                configPath_ = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QStringLiteral("/Ricochet/Ricochet-Refresh");
             } else {
-                configPath = appBundlePath() + QStringLiteral("/config.ricochet");
+                configPath_ = appBundlePath() + QStringLiteral("/config.ricochet");
             }
 #else
-            configPath = qApp->applicationDirPath() + QStringLiteral("/config");
+            configPath_ = qApp->applicationDirPath() + QStringLiteral("/config");
 #endif
-            return configPath;
+            return configPath_;
         }();
         auto v3_0_10ConfigPath = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
         configPath = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);

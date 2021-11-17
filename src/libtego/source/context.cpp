@@ -65,7 +65,8 @@ const std::vector<std::string>& tego_context::get_tor_logs() const
     {
         for(size_t i = this->torLogs.size(); i < static_cast<size_t>(logMessages.size()); i++)
         {
-            this->torLogs.push_back(std::move(logMessages[i].toStdString()));
+            TEGO_THROW_IF_FALSE(i < std::numeric_limits<int>::max());
+            this->torLogs.push_back(logMessages[static_cast<int>(i)].toStdString());
         }
     }
 
@@ -78,8 +79,8 @@ const char* tego_context::get_tor_version_string() const
     {
         TEGO_THROW_IF_NULL(this->torControl);
 
-        QString torVersion = this->torControl->torVersion();
-        this->torVersion = torVersion.toStdString();
+        QString version = this->torControl->torVersion();
+        this->torVersion = version.toStdString();
     }
 
     return this->torVersion.c_str();
@@ -242,7 +243,7 @@ void tego_context::start_service(
                 rejectedUsers.push_back(userHostname);
                 break;
             default:
-                TEGO_THROW_MSG("passed in userTypeBuffer[{}] : ({}) is invalid", k, (int)userType);
+                TEGO_THROW_MSG("passed in userTypeBuffer[{}] : ({}) is invalid", k, static_cast<int>(userType));
                 break;
         }
     }
@@ -411,9 +412,10 @@ void tego_context::send_chat_request(
     auto userIdentity = this->identityManager->identities().first();
     auto contactsManager = userIdentity->getContacts();
 
+    TEGO_THROW_IF_FALSE(messageLength < std::numeric_limits<int>::max());
     contactsManager->createContactRequest(
         QString::fromStdString(fmt::format("ricochet:{}", user->serviceId.data)),
-        (messageLength == 0) ? QString() : QString::fromUtf8(message, messageLength));
+        (messageLength == 0) ? QString() : QString::fromUtf8(message, static_cast<int>(messageLength)));
 }
 
 void tego_context::acknowledge_chat_request(
@@ -423,7 +425,7 @@ void tego_context::acknowledge_chat_request(
     TEGO_THROW_IF_NULL(user);
 
     logger::println("ack chat request from {}", user->serviceId.data);
-    logger::println("response : {}", (int)response);
+    logger::println("response : {}", static_cast<int>(response));
 
     TEGO_THROW_IF_NULL(this->identityManager);
     auto userIdentity = this->identityManager->identities().first();
@@ -480,7 +482,7 @@ tego_user_type_t tego_context::get_user_type(tego_user_id_t const* user) const
             case ContactUser::RequestRejected:
                 return tego_user_type_rejected;
             default:
-                TEGO_THROW_MSG("Unknown ContactUser::Status : {}", (int)status);
+                TEGO_THROW_MSG("Unknown ContactUser::Status : {}", static_cast<int>(status));
                 break;
         }
     }
@@ -520,7 +522,7 @@ size_t tego_context::get_user_count() const
     auto userIdentity = this->identityManager->identities().first();
     auto contactsManager = userIdentity->getContacts();
 
-    return contactsManager->contacts().size();
+    return static_cast<size_t>(contactsManager->contacts().size());
 }
 
 std::vector<tego_user_id_t*> tego_context::get_users() const
@@ -755,7 +757,7 @@ extern "C"
                 *out_configured = TEGO_TRUE;
             }
         }, error);
-    };
+    }
 
     size_t tego_context_get_tor_logs_size(
         const tego_context_t* context,
@@ -810,7 +812,10 @@ extern "C"
             size_t copyCount = std::min(logBufferSize, logBuffer.size());
             TEGO_THROW_IF_FALSE(copyCount > 0);
 
-            std::copy(logBuffer.begin(), logBuffer.begin() + copyCount, out_logBuffer);
+            // check that we won't overflow
+            TEGO_THROW_IF_FALSE(copyCount < std::numeric_limits<long>::max());
+
+            std::copy(logBuffer.begin(), logBuffer.begin() + static_cast<long>(copyCount), out_logBuffer);
             // always write null terminator at the end
             out_logBuffer[copyCount - 1] = 0;
 

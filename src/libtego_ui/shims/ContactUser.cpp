@@ -9,19 +9,19 @@
 
 namespace shims
 {
-    ContactUser::ContactUser(const QString& serviceId, const QString& nickname)
+    ContactUser::ContactUser(const QString& serviceId_, const QString& nickname_)
     : conversationModel(new shims::ConversationModel(this))
     , outgoingContactRequest(new shims::OutgoingContactRequest())
     , status(ContactUser::Offline)
-    , serviceId(serviceId)
+    , serviceId(serviceId_)
     , nickname()
-    , settings(QString("users.%1").arg(serviceId))
+    , settings(QString("users.%1").arg(serviceId_))
     {
         Q_ASSERT(serviceId.size() == TEGO_V3_ONION_SERVICE_ID_LENGTH);
         conversationModel->setContact(this);
 
 
-        this->setNickname(nickname);
+        this->setNickname(nickname_);
     }
 
     QString ContactUser::getNickname() const
@@ -39,11 +39,11 @@ namespace shims
         return status;
     }
 
-    void ContactUser::setStatus(ContactUser::Status status)
+    void ContactUser::setStatus(ContactUser::Status newStatus)
     {
-        if (this->status != status)
+        if (this->status != newStatus)
         {
-            this->status = status;
+            this->status = newStatus;
             switch(this->status)
             {
                 case ContactUser::Online:
@@ -73,12 +73,12 @@ namespace shims
         return conversationModel;
     }
 
-    void ContactUser::setNickname(const QString& nickname)
+    void ContactUser::setNickname(const QString& newNickname)
     {
-        if (this->nickname != nickname)
+        if (this->nickname != newNickname)
         {
-            this->nickname = nickname;
-            settings.write("nickname", nickname);
+            this->nickname = newNickname;
+            settings.write("nickname", newNickname);
             emit this->nicknameChanged();
         }
     }
@@ -113,14 +113,14 @@ namespace shims
         auto serviceIdRaw = this->serviceId.toUtf8();
 
         // ensure valid service id
-        std::unique_ptr<tego_v3_onion_service_id_t> serviceId;
-        tego_v3_onion_service_id_from_string(tego::out(serviceId), serviceIdRaw.data(), serviceIdRaw.size(), tego::throw_on_error());
+        std::unique_ptr<tego_v3_onion_service_id_t> onionServiceId;
+        tego_v3_onion_service_id_from_string(tego::out(onionServiceId), serviceIdRaw.data(), static_cast<size_t>(serviceIdRaw.size()), tego::throw_on_error());
 
         logger::trace();
 
         // create user id object from service id
         std::unique_ptr<tego_user_id_t> userId;
-        tego_user_id_from_v3_onion_service_id(tego::out(userId), serviceId.get(), tego::throw_on_error());
+        tego_user_id_from_v3_onion_service_id(tego::out(userId), onionServiceId.get(), tego::throw_on_error());
 
         return userId;
     }

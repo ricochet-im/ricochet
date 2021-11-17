@@ -43,7 +43,7 @@ bool CryptoKey::loadFromServiceId(const QByteArray& data)
     tego_v3_onion_service_id_from_string(
         tego::out(serviceId),
         data.data(),
-        data.size(),
+        static_cast<size_t>(data.size()),
         tego::throw_on_error());
 
     // extract public key from service id
@@ -66,7 +66,7 @@ bool CryptoKey::loadFromKeyBlob(const QByteArray& keyBlob)
     tego_ed25519_private_key_from_ed25519_keyblob(
         tego::out(privateKey),
         keyBlob.data(),
-        keyBlob.size(),
+        static_cast<size_t>(keyBlob.size()),
         tego::throw_on_error());
     this->privateKey_ = std::move(privateKey);
 
@@ -129,7 +129,7 @@ QByteArray CryptoKey::signData(const QByteArray &msg) const
     std::unique_ptr<tego_ed25519_signature_t> signature;
     tego_message_ed25519_sign(
         reinterpret_cast<const uint8_t*>(msg.data()),
-        msg.size(),
+        static_cast<size_t>(msg.size()),
         this->privateKey_.get(),
         this->publicKey_.get(),
         tego::out(signature),
@@ -140,7 +140,7 @@ QByteArray CryptoKey::signData(const QByteArray &msg) const
     tego_ed25519_signature_to_bytes(
         signature.get(),
         reinterpret_cast<uint8_t*>(retval.data()),
-        retval.size(),
+        static_cast<size_t>(retval.size()),
         tego::throw_on_error());
 
     return retval;
@@ -153,14 +153,14 @@ bool CryptoKey::verifyData(const QByteArray &msg, QByteArray signatureBytes) con
     tego_ed25519_signature_from_bytes(
         tego::out(signature),
         reinterpret_cast<const uint8_t*>(signatureBytes.data()),
-        signatureBytes.size(),
+        static_cast<size_t>(signatureBytes.size()),
         tego::throw_on_error());
 
     // verify it against msg and our public key
     return tego_ed25519_signature_verify(
         signature.get(),
         reinterpret_cast<const uint8_t*>(msg.data()),
-        msg.size(),
+        static_cast<size_t>(msg.size()),
         this->publicKey_.get(),
         tego::throw_on_error());
 }
@@ -172,7 +172,7 @@ QByteArray torControlHashedPassword(const QByteArray &password)
     if (salt.isNull())
         return QByteArray();
 
-    int count = ((quint32)16 + (96 & 15)) << ((96 >> 4) + 6);
+    int count = (16u + (96 & 15)) << ((96 >> 4) + 6);
 
     SHA_CTX hash;
     SHA1_Init(&hash);
@@ -181,7 +181,7 @@ QByteArray torControlHashedPassword(const QByteArray &password)
     while (count)
     {
         int c = qMin(count, tmp.size());
-        SHA1_Update(&hash, reinterpret_cast<const void*>(tmp.constData()), c);
+        SHA1_Update(&hash, reinterpret_cast<const void*>(tmp.constData()), static_cast<size_t>(c));
         count -= c;
     }
 

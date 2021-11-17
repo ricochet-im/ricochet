@@ -11,7 +11,9 @@ function(setup_compiler_warnings target)
         message(WARNING "No compiler specific warning settings detected for compiler ${CMAKE_CXX_COMPILER_ID}")
     endif()
 
-    target_compile_options(${target} PRIVATE ${WARNINGS})
+    target_compile_options(${target} PRIVATE
+        $<$<COMPILE_LANGUAGE:CXX>:${CXX_WARNINGS}>
+        $<$<COMPILE_LANGUAGE:C>:${C_WARNINGS}>)
 endfunction()
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/compiler/san)

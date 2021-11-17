@@ -216,14 +216,14 @@ extern "C"
             }
 
             // clear out existing bridge strings and append our new ones
-            auto& bridges = config->bridges;
-            bridges.clear();
+            auto& confBridges = config->bridges;
+            confBridges.clear();
 
             // copy bridge strings over
-            bridges.reserve(bridgeCount);
+            confBridges.reserve(bridgeCount);
             for(size_t i = 0; i < bridgeCount; ++i)
             {
-                bridges.emplace_back(bridges[i], bridgeLengths[i]);
+                confBridges.emplace_back(bridges[i], bridgeLengths[i]);
             }
         }, error);
     }

@@ -52,11 +52,11 @@ namespace {
 class Explode
 {
 public:
-    const char *file;
-    int line;
-    Explode(const char *file, int line) : file(file), line(line) { }
+    const char *file_;
+    int line_;
+    Explode(const char *file, int line) : file_(file), line_(line) { }
     ~Explode() {
-        qt_assert("something broke!", file, line);
+        qt_assert("something broke!", file_, line_);
     }
 };
 }

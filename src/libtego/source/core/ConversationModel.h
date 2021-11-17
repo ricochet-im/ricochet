@@ -113,8 +113,8 @@ private:
         MessageStatus status;
         quint8 attemptCount;
 
-        MessageData(MessageType type, const QString &text, const QDateTime &time, MessageId id, MessageStatus status)
-            : type(type), text(text), time(time), identifier(id), status(status), attemptCount(0)
+        MessageData(MessageType m_type, const QString &contents, const QDateTime &t, MessageId id, MessageStatus stat)
+            : type(m_type), text(contents), time(t), identifier(id), status(stat), attemptCount(0)
         {
         }
     };

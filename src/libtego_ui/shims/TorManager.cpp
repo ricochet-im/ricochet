@@ -43,7 +43,8 @@ namespace shims
             bufferSize,
             tego::throw_on_error());
 
-        return QString::fromUtf8(buffer.get(), written).split('\n');
+        // TODO: check that written isn't > std::numeric_limits<int>::max(), and handle if it is
+        return QString::fromUtf8(buffer.get(), static_cast<int>(written)).split('\n');
     }
 
     QString TorManager::running() const

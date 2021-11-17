@@ -65,9 +65,9 @@ Channel::Channel(const QString &type, Direction direction, Connection *connectio
 {
 }
 
-Channel::Channel(ChannelPrivate *d_ptr)
-    : QObject(d_ptr->connection)
-    , d_ptr(d_ptr)
+Channel::Channel(ChannelPrivate *d)
+    : QObject(d->connection)
+    , d_ptr(d)
 {
 }
 
@@ -286,12 +286,12 @@ void Channel::requestInboundApproval()
     emit connection()->channelRequestingInboundApproval(this);
 }
 
-ChannelPrivate::ChannelPrivate(Channel *q, const QString &type, Channel::Direction direction, Connection *conn)
+ChannelPrivate::ChannelPrivate(Channel *q, const QString &c_type, Channel::Direction dir, Connection *conn)
     : q_ptr(q)
     , connection(conn)
-    , type(type)
+    , type(c_type)
     , identifier(-1)
-    , direction(direction)
+    , direction(dir)
     , isOpened(false)
     , hasSentClose(false)
     , isInvalidated(false)

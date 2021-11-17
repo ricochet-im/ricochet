@@ -139,7 +139,7 @@ namespace shims
             qint64 fileSize = 0;
             QString fileHash = {};
             quint64 bytesTransferred = 0;
-            TransferDirection transferDirection = InvalidDirection;;
+            TransferDirection transferDirection = InvalidDirection;
             TransferStatus transferStatus = InvalidTransfer;
         };
 

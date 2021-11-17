@@ -52,8 +52,8 @@ public:
     QByteArray clientCookie, serverCookie;
     bool accepted;
 
-    AuthHiddenServiceChannelPrivate(Channel *q, Channel::Direction direction, Connection *conn)
-        : ChannelPrivate(q, QStringLiteral("im.ricochet.auth.hidden-service"), direction, conn)
+    AuthHiddenServiceChannelPrivate(Channel *q, Channel::Direction dir, Connection *conn)
+        : ChannelPrivate(q, QStringLiteral("im.ricochet.auth.hidden-service"), dir, conn)
         , accepted(false)
     {
     }
@@ -133,7 +133,7 @@ bool AuthHiddenServiceChannel::allowInboundChannelRequest(const Data::Control::O
         result->set_common_error(ChannelResult::BadUsageError);
         return false;
     }
-    d->clientCookie = QByteArray(clientCookie.c_str(), clientCookie.size());
+    d->clientCookie = QByteArray(clientCookie.c_str(), static_cast<int>(clientCookie.size()));
 
     // Generate a random cookie and return result
     d->serverCookie = SecureRNG::random(COOKIE_SIZE);
@@ -142,7 +142,7 @@ bool AuthHiddenServiceChannel::allowInboundChannelRequest(const Data::Control::O
 
     qDebug() << "Accepted inbound AuthHiddenServiceChannel";
 
-    result->SetExtension(Data::AuthHiddenService::server_cookie, std::string(d->serverCookie.constData(), d->serverCookie.size()));
+    result->SetExtension(Data::AuthHiddenService::server_cookie, std::string(d->serverCookie.constData(), static_cast<size_t>(d->serverCookie.size())));
     return true;
 }
 
@@ -158,7 +158,7 @@ bool AuthHiddenServiceChannel::allowOutboundChannelRequest(Data::Control::OpenCh
     d->clientCookie = SecureRNG::random(COOKIE_SIZE);
     if (d->clientCookie.isEmpty())
         return false;
-    request->SetExtension(Data::AuthHiddenService::client_cookie, std::string(d->clientCookie.constData(), d->clientCookie.size()));
+    request->SetExtension(Data::AuthHiddenService::client_cookie, std::string(d->clientCookie.constData(), static_cast<size_t>(d->clientCookie.size())));
     return true;
 }
 
@@ -173,7 +173,7 @@ bool AuthHiddenServiceChannel::processChannelOpenResult(const Data::Control::Cha
             return false;
         }
 
-        d->serverCookie = QByteArray(cookie.c_str(), cookie.size());
+        d->serverCookie = QByteArray(cookie.c_str(), static_cast<int>(cookie.size()));
         return true;
     }
 
@@ -202,7 +202,7 @@ void AuthHiddenServiceChannel::sendAuthMessage()
     auto signature = d->privateKey.signData(proofData);
 
     QScopedPointer<Data::AuthHiddenService::Proof> proof(new Data::AuthHiddenService::Proof);
-    proof->set_signature(std::string(signature.constData(), signature.size()));
+    proof->set_signature(std::string(signature.constData(), static_cast<size_t>(signature.size())));
 
     proof->set_service_id(d->privateKey.torServiceID().toStdString());
 
@@ -287,8 +287,8 @@ void AuthHiddenServiceChannel::handleProof(const Data::AuthHiddenService::Proof 
         return;
     }
 
-    QByteArray signature(message.signature().c_str(), message.signature().size());
-    QByteArray serviceId(message.service_id().c_str(), message.service_id().size());
+    QByteArray signature(message.signature().c_str(), static_cast<int>(message.signature().size()));
+    QByteArray serviceId(message.service_id().c_str(), static_cast<int>(message.service_id().size()));
 
     QScopedPointer<Data::AuthHiddenService::Result> result(new Data::AuthHiddenService::Result);
 

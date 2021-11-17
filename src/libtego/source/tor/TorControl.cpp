@@ -443,7 +443,7 @@ void TorControlPrivate::getTorInfoReply()
         QByteArray value = unquotedString(*it);
         int sepp = value.indexOf(':');
         QHostAddress address(QString::fromLatin1(value.mid(0, sepp)));
-        quint16 port = (quint16)value.mid(sepp+1).toUInt();
+        quint16 port = static_cast<quint16>(value.mid(sepp+1).toUInt());
 
         /* Use the first address that matches the one used for this control connection. If none do,
          * just use the first address and rely on the user to reconfigure if necessary (not a problem;

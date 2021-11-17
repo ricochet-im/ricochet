@@ -29,7 +29,7 @@ tego_file_hash::tego_file_hash(uint8_t const* begin, uint8_t const* end)
     EVP_DigestInit_ex(ctx.get(), EVP_sha3_512(), nullptr);
 
     // calc hash
-    EVP_DigestUpdate(ctx.get(), begin, end - begin);
+    EVP_DigestUpdate(ctx.get(), begin, static_cast<size_t>(end - begin));
 
     // copy hash to our local buffer
     uint32_t hashSize = 0;

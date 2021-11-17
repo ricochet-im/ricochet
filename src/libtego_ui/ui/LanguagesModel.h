@@ -58,8 +58,8 @@ private:
         QString nativeName;
         QString localeID;
 
-        LanguageEntry(const QString& name, const QString& localeID)
-            : nativeName(name), localeID(localeID) {}
+        LanguageEntry(const QString& name, const QString& locale)
+            : nativeName(name), localeID(locale) {}
     };
 
     QList<LanguageEntry> languages;

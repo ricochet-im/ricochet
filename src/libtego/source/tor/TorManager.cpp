@@ -231,10 +231,10 @@ void TorManagerPrivate::processStateChanged(int state)
     emit q->runningChanged();
 }
 
-void TorManagerPrivate::processErrorChanged(const QString &errorMessage)
+void TorManagerPrivate::processErrorChanged(const QString &message)
 {
-    qDebug() << "tor error:" << errorMessage;
-    setError(errorMessage);
+    qDebug() << "tor error:" << message;
+    setError(message);
 }
 
 void TorManagerPrivate::processLogMessage(const QString &message)
@@ -251,15 +251,15 @@ void TorManagerPrivate::processLogMessage(const QString &message)
 
     const auto msgLength = utf8.size();
     const auto msgSize = msgLength + 1;
-    auto msg = std::make_unique<char[]>(msgSize);
+    auto msg = std::make_unique<char[]>(static_cast<size_t>(msgSize));
 
     // copy utf8 string to our own buffer
     std::copy(utf8.begin(), utf8.end(), msg.get());
-    Q_ASSERT(msg[msgLength] == 0);
+    Q_ASSERT(msg[static_cast<size_t>(msgLength)] == 0);
 
     g_globals.context->callback_registry_.emit_tor_log_received(
         msg.release(),
-        msgLength);
+        static_cast<size_t>(msgLength));
 }
 
 void TorManagerPrivate::controlStatusChanged(int status)
