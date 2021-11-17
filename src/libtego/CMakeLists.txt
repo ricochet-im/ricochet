@@ -204,3 +204,5 @@ target_link_libraries(tego PRIVATE Threads::Threads)
 if ("${CMAKE_BUILD_TYPE}" MATCHES "Rel.*" OR "${CMAKE_BUILD_TYPE}" STREQUAL "MinSizeRel")
     target_compile_definitions(tego PRIVATE QT_NO_DEBUG_OUTPUT QT_NO_WARNING_OUTPUT)
 endif ()
+
+add_subdirectory(test)
