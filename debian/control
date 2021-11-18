@@ -1,0 +1,15 @@
+Source: ricochet-refresh
+Section: unknown
+Priority: optional
+Maintainer: Marco Simonelli <ricochet@blueprintforfreespeech.net>
+Build-Depends: debhelper-compat (= 12)
+Standards-Version: 4.4.1
+Homepage: <insert the upstream URL, if relevant>
+#Vcs-Browser: https://salsa.debian.org/debian/ricochet-refresh
+#Vcs-Git: https://salsa.debian.org/debian/ricochet-refresh.git
+
+Package: ricochet-refresh
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: <insert up to 60 chars description>
+ <insert long description, indented with spaces>

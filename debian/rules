@@ -1,0 +1,9 @@
+#!/usr/bin/make -f
+export DH_VERBOSE = 1
+
+%:
+	dh $@
+
+
+override_dh_auto_configure:
+        dh_auto_configure -- -DDCMAKE_BUILD_TYPE=MinSizeRel
