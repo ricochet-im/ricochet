@@ -1,5 +1,20 @@
 ## New Building
 
+Cloning must be done with `--recurse-submodules`:
+
+```sh
+git clone --recurse-submodules https://github.com/blueprint-freespeech/ricochet-refresh.git
+```
+In the event that you cloned the repo without fetching the submodules, you can still get them with:
+```sh
+git submodule --init --update
+```
+
+Later, you should update your local repository with:
+```sh
+git pull --recurse-submodules
+```
+
 ### Linux
 
 Clone
