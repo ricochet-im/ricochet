@@ -134,8 +134,7 @@ bool AuthHiddenServiceChannel::allowInboundChannelRequest(const Data::Control::O
         result->set_common_error(ChannelResult::BadUsageError);
         return false;
     }
-    TEGO_THROW_IF_FALSE(clientCookie.size() <= std::numeric_limits<int>::max());
-    d->clientCookie = QByteArray(clientCookie.c_str(), static_cast<int>(clientCookie.size()));
+    d->clientCookie = QByteArray(clientCookie.c_str(), safe_cast<int>(clientCookie.size()));
 
     // Generate a random cookie and return result
     d->serverCookie = SecureRNG::random(COOKIE_SIZE);

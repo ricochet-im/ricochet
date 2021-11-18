@@ -1,4 +1,5 @@
 #include "utils/Settings.h"
+#include "utils/Useful.h"
 #include "shims/TorControl.h"
 #include "shims/TorManager.h"
 #include "shims/UserIdentity.h"
@@ -281,8 +282,7 @@ namespace
         const char* message,
         size_t messageLength)
     {
-        Q_ASSERT(messageLength < std::numeric_limits<int>::max());
-        auto messageString = QString::fromUtf8(message, static_cast<int>(messageLength));
+        auto messageString = QString::fromUtf8(message, safe_cast<int>(messageLength));
         push_task([=]()-> void
         {
             auto torManager = shims::TorManager::torManager;
@@ -322,9 +322,7 @@ namespace
         logger::println("Message : {}", message);
 
         auto hostname = tegoUserIdToServiceId(userId) + ".onion";
-
-        Q_ASSERT(messageLength < std::numeric_limits<int>::max());
-        auto messageString = QString::fromUtf8(message, static_cast<int>(messageLength));
+        auto messageString = QString::fromUtf8(message, safe_cast<int>(messageLength));
 
         push_task([=]() -> void
         {
@@ -410,9 +408,7 @@ namespace
         size_t messageLength)
     {
         auto contactId = tegoUserIdToContactId(sender);
-
-        Q_ASSERT(messageLength < std::numeric_limits<int>::max());
-        auto messageString = QString::fromUtf8(message, static_cast<int>(messageLength));
+        auto messageString = QString::fromUtf8(message, safe_cast<int>(messageLength));
 
         push_task([=]() -> void
         {
@@ -421,8 +417,7 @@ namespace
             auto conversationModel = contactUser->conversation();
             Q_ASSERT(conversationModel != nullptr);
 
-            Q_ASSERT(timestamp < std::numeric_limits<qint64>::max());
-            conversationModel->messageReceived(messageId, QDateTime::fromMSecsSinceEpoch(static_cast<qint64>(timestamp)), messageString);
+            conversationModel->messageReceived(messageId, QDateTime::fromMSecsSinceEpoch(safe_cast<qint64>(timestamp)), messageString);
         });
     }
 
@@ -458,10 +453,7 @@ namespace
         tego_file_hash_t const* fileHash)
     {
         auto contactId = tegoUserIdToContactId(sender);
-
-        Q_ASSERT(fileNameLength < std::numeric_limits<int>::max());
-        QString fileNameCopy = QString::fromUtf8(fileName, static_cast<int>(fileNameLength));
-
+        QString fileNameCopy = QString::fromUtf8(fileName, safe_cast<int>(fileNameLength));
         auto hashStr = tego::to_string(fileHash);
 
         push_task([=,fileName=std::move(fileNameCopy)]() -> void
