@@ -2,6 +2,12 @@ cmake_minimum_required(VERSION 3.15)
 
 project(tego)
 
+if (ENABLE_LIBTEGO_TESTS)
+    # this needs to go in the root source folder because CTest expects the
+    # config in the root build folder
+    enable_testing()
+endif ()
+
 get_filename_component(srcdir "${CMAKE_SOURCE_DIR}" REALPATH)
 get_filename_component(outdir "${CMAKE_BINARY_DIR}" REALPATH)
 

@@ -1,15 +1,23 @@
 Source: ricochet-refresh
-Section: unknown
+Maintainer: Marco Simonelli <marco@blueprintforfreespeech.net>
+Section: contrib/comm
 Priority: optional
-Maintainer: Marco Simonelli <ricochet@blueprintforfreespeech.net>
-Build-Depends: debhelper-compat (= 12)
+Build-Depends: debhelper-compat (= 12), cmake (>= 3.15), qtbase5-dev (>= 5.15),
+ qtdeclarative5-dev (>= 5.15), libfmt-dev (>= 6), libssl-dev (>= 1.1),
+ protobuf-compiler, libprotobuf-dev (>= 3)
 Standards-Version: 4.4.1
-Homepage: <insert the upstream URL, if relevant>
-#Vcs-Browser: https://salsa.debian.org/debian/ricochet-refresh
-#Vcs-Git: https://salsa.debian.org/debian/ricochet-refresh.git
+Homepage: https://github.com/blueprint-freespeech/ricochet-refresh.git
 
 Package: ricochet-refresh
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: <insert up to 60 chars description>
- <insert long description, indented with spaces>
+Section: contrib/comm
+Priority: optional
+Depends: ${shlibs:Depends}, ${misc:Depends},
+ qml-module-qtquick-layouts,
+ qml-module-qtquick-controls,
+ qml-module-qtquick-dialogs,
+ tor
+Description: Anonymous metadata-resistant instant messaging over tor
+ Ricochet refresh is an open source project to allow private and anonymous 
+ instant messaging. It is metadata-resistant, anonymous, decentralised and 
+ easy to use.

@@ -4,8 +4,6 @@
 <dict>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
-	<key>CFBundleIconFile</key>
-	<string>ricochet_refresh.icns</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleSignature</key>
@@ -17,6 +15,8 @@
 	<key>CFBundleName</key>
 	<string>Ricochet-Refresh</string>
 	<key>NSSupportsAutomaticGraphicsSwitching</key>
+	<true/>
+	<key>NSHighResolutionCapable</key>
 	<true/>
 </dict>
 </plist>

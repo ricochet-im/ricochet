@@ -2,8 +2,24 @@
 export DH_VERBOSE = 1
 
 %:
-	dh $@
-
+	dh $@ --buildsystem=cmake
 
 override_dh_auto_configure:
-        dh_auto_configure -- -DDCMAKE_BUILD_TYPE=MinSizeRel
+	mkdir -p build
+	echo "$(shell pwd)"
+	CMAKE_PREFIX_PATH="$(shell qmake -query QT_INSTALL_LIBS)/cmake/Qt5" \
+		cmake -S ./src -B ./build -G"Unix Makefiles" \
+		-DCMAKE_BUILD_TYPE=MinSizeRel \
+		-DCMAKE_INSTALL_PREFIX="$(shell pwd)/debian/ricochet-refresh/" \
+		-DRICOCHET_REFRESH_INSTALL_DESKTOP=ON
+
+override_dh_auto_build:
+	cmake --build ./build \
+		-j$(subst parallel=,,$(filter parallel=%,$(subst $(COMMA), ,$(DEB_BUILD_OPTIONS))))
+
+override_dh_auto_test:
+	# Testing requires catch2, which can't be installed via apt. Tests can be
+	# run prior to packaging regardless
+
+override_dh_auto_install:
+	cmake --build ./build --target install

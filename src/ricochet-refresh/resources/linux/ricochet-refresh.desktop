@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Ricochet Refresh
+GenericName=Messenger
+Comment=Anonymous instant messaging
+Categories=Network;InstantMessaging;Chat;P2P
+Icon=ricochet-refresh
+Exec=ricochet-refresh

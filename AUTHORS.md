@@ -2,7 +2,8 @@
 * John Brooks (@special) `<john.brooks@dereferenced.net>`
 * Derwent Mcelhinney (@derwentx)
 * Peter Tonoli (@petertonoli)
-
+* Richard Pospesel (richard on #tor-dev @OFTC) `<richard@blueprintforfreespeech.net>`
+* Marco Simonelli (msim on #tor-dev @OFTC) `<marco@blueprintforfreespeech.net>`
 ### Sponsors
 * Blueprint for Free Speech - https://blueprintforfreespeech.net/
 

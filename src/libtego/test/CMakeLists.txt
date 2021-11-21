@@ -1,12 +1,10 @@
-option(ENABLE_LIBTEGO_TESTS "Build tests for libtego" ON)
+option(ENABLE_LIBTEGO_TESTS "Build tests for libtego" OFF)
 
 include(lto)
 include(compiler_opts)
 
 if (ENABLE_LIBTEGO_TESTS)
     find_package(Catch2 REQUIRED)
-
-    enable_testing()
 
     include(CTest)
     include(Catch)
@@ -19,6 +17,8 @@ if (ENABLE_LIBTEGO_TESTS)
     # add test sources here
     add_executable(libtego_tests test_init.cpp)
     setup_compiler(libtego_tests)
+
+    add_test(NAME test_libtego COMMAND libtego_tests)
 
     target_link_libraries(libtego_tests PRIVATE catch_tests)
 

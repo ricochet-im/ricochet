@@ -9,17 +9,31 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(
-    QT
-    NAMES
-    Qt6
-    Qt5
-    COMPONENTS Core
-               Gui
-               Network
-               Quick
-               Widgets
-    REQUIRED)
+if (FORCE_QT5)
+    find_package(
+        QT
+        NAMES
+        Qt5
+        COMPONENTS Core
+                Gui
+                Network
+                Quick
+                Widgets
+        REQUIRED)
+else ()
+    find_package(
+        QT
+        NAMES
+        Qt6
+        Qt5
+        COMPONENTS Core
+                Gui
+                Network
+                Quick
+                Widgets
+        REQUIRED)
+endif ()
+
 find_package(
     Qt${QT_VERSION_MAJOR}
     COMPONENTS Core
@@ -28,6 +42,13 @@ find_package(
                Qml
                Quick
     REQUIRED)
+
+# Require Qt >5.15
+if (${QT_VERSION_MAJOR} EQUAL 5)
+    if (${QT_VERSION_MINOR} LESS 15)
+        message(FATAL_ERROR "Qt >5.15 is required to build this project!")
+    endif ()
+endif ()
 
 if (APPLE)
     find_package(
