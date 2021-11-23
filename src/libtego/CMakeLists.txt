@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.13)
 
 project(libtego LANGUAGES CXX)
 
@@ -57,11 +57,25 @@ if (APPLE)
         REQUIRED)
 endif ()
 
+# protobuf configuration
+set(Protobuf_USE_STATIC_LIBS OFF CACHE BOOL "Use statically-linked protobuf")
+set(Protobuf_ROOT_DIR "" CACHE STRING "Path to custom Protobuf installation")
+if (NOT ${Protobuf_ROOT_DIR} STREQUAL "")
+    # CMake doesn't allow us to specify a protobuf installation like with
+    # openssl. Instead, use CMAKE_PREFIX_PATH to tell CMake to check that dir
+    # first for a protobuf install
+    list(APPEND CMAKE_PREFIX_PATH ${Protobuf_ROOT_DIR})
+endif ()
+include(FindProtobuf)
+
+# openssl configuration
+set(OPENSSL_USE_STATIC_LIBS OFF CACHE BOOL "Use statically-linked OpenSSL")
+set(OPENSSL_ROOT_DIR "" CACHE STRING "Path to custom OpenSSL installation")
+include(FindOpenSSL)
+
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 find_package(fmt REQUIRED)
-find_package(OpenSSL REQUIRED)
-find_package(Protobuf REQUIRED)
 
 add_library(
     tego STATIC
