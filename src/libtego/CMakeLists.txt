@@ -230,6 +230,7 @@ endif ()
 
 target_link_libraries(tego PRIVATE fmt::fmt)
 target_link_libraries(tego PRIVATE OpenSSL::Crypto)
+target_link_libraries(tego PRIVATE protobuf::libprotobuf)
 
 # QT
 target_link_libraries(
