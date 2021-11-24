@@ -19,6 +19,7 @@ if (FORCE_QT5)
                 Network
                 Quick
                 Widgets
+                LinguistTools
         REQUIRED)
 else ()
     find_package(
@@ -31,6 +32,7 @@ else ()
                 Network
                 Quick
                 Widgets
+                LinguistTools
         REQUIRED)
 endif ()
 
@@ -41,6 +43,7 @@ find_package(
                Network
                Quick
                Widgets
+               LinguistTools
     REQUIRED)
 
 # Require Qt >5.15
@@ -58,13 +61,6 @@ if (APPLE)
 endif ()
 
 find_package(fmt REQUIRED)
-
-qt_add_resources(
-    RICOCHET_QML_RES
-    translation/embedded.qrc
-    sounds/sounds.qrc
-    icons/icons.qrc
-    ui/qml.qrc)
 
 if (APPLE)
     add_executable(ricochet-refresh MACOSX_BUNDLE)
@@ -90,7 +86,49 @@ elseif (UNIX)
     add_executable(ricochet-refresh)
 endif ()
 
-target_sources(ricochet-refresh PRIVATE main.cpp ${RICOCHET_QML_RES})
+# Add the translations
+qt_add_translation(RICOCHET_QM_RES
+    translation/ricochet_cs.ts
+    translation/ricochet_ru.ts
+    translation/ricochet_ja.ts
+    translation/ricochet_tr.ts
+    translation/ricochet_zh.ts
+    translation/ricochet_uk.ts
+    translation/ricochet_sv.ts
+    translation/ricochet_sl.ts
+    translation/ricochet_es.ts
+    translation/ricochet_pt_BR.ts
+    translation/ricochet_it.ts
+    translation/ricochet_bg.ts
+    translation/ricochet_da.ts
+    translation/ricochet_et_EE.ts
+    translation/ricochet_sq.ts
+    translation/ricochet_he.ts
+    translation/ricochet_de.ts
+    translation/ricochet_fi.ts
+    translation/ricochet_nb.ts
+    translation/ricochet_it_IT.ts
+    translation/ricochet_fil_PH.ts
+    translation/ricochet_fr.ts
+    translation/ricochet_pt_PT.ts
+    translation/ricochet_en.ts
+    translation/ricochet_pl.ts
+    translation/ricochet_zh_HK.ts
+    translation/ricochet_nl_NL.ts
+)
+# The QM files are generated in the build dir, but the qrc file expects the
+# QM files to be relative paths. Work around this by copying the qrc file to
+# the build dir
+configure_file(translation/embedded.qrc ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
+
+qt_add_resources(
+    RICOCHET_QML_RES
+    ${CMAKE_CURRENT_BINARY_DIR}/embedded.qrc
+    sounds/sounds.qrc
+    icons/icons.qrc
+    ui/qml.qrc)
+
+target_sources(ricochet-refresh PRIVATE main.cpp ${RICOCHET_QML_RES} ${RICOCHET_QM_RES})
 target_precompile_headers(ricochet-refresh PRIVATE precomp.hpp)
 
 include(lto)
