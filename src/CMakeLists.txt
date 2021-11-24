@@ -39,6 +39,10 @@ else ()
     message(WARNING "Could not determine compiler, this may not build on non debug builds!")
 endif ()
 
+# openssl configuration. this propogates to all subprojects
+set(OPENSSL_USE_STATIC_LIBS OFF CACHE BOOL "Use statically-linked OpenSSL")
+set(OPENSSL_ROOT_DIR "" CACHE STRING "Path to custom OpenSSL installation")
+
 add_subdirectory(libtego)
 add_subdirectory(libtego_ui)
 add_subdirectory(ricochet-refresh)

@@ -68,19 +68,6 @@ if (NOT ${Protobuf_ROOT_DIR} STREQUAL "")
 endif ()
 
 include(FindProtobuf)
-if ( Protobuf_FOUND )
-    message( STATUS "Protobuf version : ${Protobuf_VERSION}" )
-    message( STATUS "Protobuf include path : ${Protobuf_INCLUDE_DIRS}" )
-    message( STATUS "Protobuf libraries : ${Protobuf_LIBRARIES}" )
-    message( STATUS "Protobuf compiler libraries : ${Protobuf_PROTOC_LIBRARIES}")
-    message( STATUS "Protobuf lite libraries : ${Protobuf_LITE_LIBRARIES}")
-else()
-    message( WARNING "Protobuf package not found -> specify search path via PROTOBUF_ROOT variable")
-endif()
-    
-# openssl configuration
-set(OPENSSL_USE_STATIC_LIBS OFF CACHE BOOL "Use statically-linked OpenSSL")
-set(OPENSSL_ROOT_DIR "" CACHE STRING "Path to custom OpenSSL installation")
 include(FindOpenSSL)
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)

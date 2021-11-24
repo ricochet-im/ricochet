@@ -61,6 +61,7 @@ if (APPLE)
 endif ()
 
 find_package(fmt REQUIRED)
+include(FindOpenSSL)
 
 if (APPLE)
     add_executable(ricochet-refresh MACOSX_BUNDLE)
@@ -141,6 +142,7 @@ target_compile_features(ricochet-refresh PRIVATE cxx_std_20)
 target_link_libraries(ricochet-refresh PUBLIC tego tego_ui)
 
 target_link_libraries(ricochet-refresh PRIVATE fmt::fmt)
+target_link_libraries(ricochet-refresh PRIVATE OpenSSL::Crypto)
 
 target_link_libraries(
     ricochet-refresh
