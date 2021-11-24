@@ -64,7 +64,16 @@ if (NOT ${Protobuf_ROOT_DIR} STREQUAL "")
     # CMake doesn't allow us to specify a protobuf installation like with
     # openssl. Instead, use CMAKE_PREFIX_PATH to tell CMake to check that dir
     # first for a protobuf install
-    list(APPEND CMAKE_PREFIX_PATH ${Protobuf_ROOT_DIR}/lib/cmake)
+    list(APPEND CMAKE_PREFIX_PATH ${Protobuf_ROOT_DIR})
+    if ( Protobuf_FOUND )
+        message( STATUS "Protobuf version : ${Protobuf_VERSION}" )
+        message( STATUS "Protobuf include path : ${Protobuf_INCLUDE_DIRS}" )
+        message( STATUS "Protobuf libraries : ${Protobuf_LIBRARIES}" )
+        message( STATUS "Protobuf compiler libraries : ${Protobuf_PROTOC_LIBRARIES}")
+        message( STATUS "Protobuf lite libraries : ${Protobuf_LITE_LIBRARIES}")
+    else()
+        message( WARNING "Protobuf package not found -> specify search path via PROTOBUF_ROOT variable")
+    endif()
 endif ()
 include(FindProtobuf)
 
