@@ -111,7 +111,7 @@ target_link_libraries(tego_ui PUBLIC tego)
 if (NOT USE_SUBMODULE_FMT)
     find_package(fmt REQUIRED)
 endif ()
-target_link_libraries(tego PRIVATE fmt::fmt)
+target_link_libraries(tego_ui PRIVATE fmt::fmt-header-only)
 
 # QT
 target_link_libraries(
@@ -122,9 +122,9 @@ target_link_libraries(
             Qt${QT_VERSION_MAJOR}::Qml
             Qt${QT_VERSION_MAJOR}::Quick)
 if (APPLE)
-    target_link_libraries(tego PRIVATE Qt${QT_VERSION_MAJOR}::MacExtras)
+    target_link_libraries(tego_ui PRIVATE Qt${QT_VERSION_MAJOR}::MacExtras)
 endif ()
 
 if ("${CMAKE_BUILD_TYPE}" MATCHES "Rel.*" OR "${CMAKE_BUILD_TYPE}" STREQUAL "MinSizeRel")
-    target_compile_definitions(tego PRIVATE QT_NO_DEBUG_OUTPUT QT_NO_WARNING_OUTPUT)
+    target_compile_definitions(tego_ui PRIVATE QT_NO_DEBUG_OUTPUT QT_NO_WARNING_OUTPUT)
 endif ()

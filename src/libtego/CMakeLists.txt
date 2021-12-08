@@ -217,7 +217,7 @@ endif ()
 if (NOT USE_SUBMODULE_FMT)
     find_package(fmt REQUIRED)
 endif ()
-target_link_libraries(tego PRIVATE fmt::fmt)
+target_link_libraries(tego PRIVATE fmt::fmt-header-only)
 target_link_libraries(tego PRIVATE OpenSSL::Crypto)
 target_link_libraries(tego PRIVATE protobuf::libprotobuf)
 
