@@ -72,7 +72,6 @@ include(FindOpenSSL)
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
-find_package(fmt REQUIRED)
 
 add_library(
     tego STATIC
@@ -215,6 +214,9 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     set_source_files_properties(${TOR_SRC} PROPERTIES COMPILE_FLAGS "/w")
 endif ()
 
+if (NOT USE_SUBMODULE_FMT)
+    find_package(fmt REQUIRED)
+endif ()
 target_link_libraries(tego PRIVATE fmt::fmt)
 target_link_libraries(tego PRIVATE OpenSSL::Crypto)
 target_link_libraries(tego PRIVATE protobuf::libprotobuf)

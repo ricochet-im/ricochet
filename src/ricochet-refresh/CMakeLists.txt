@@ -60,7 +60,6 @@ if (APPLE)
         REQUIRED)
 endif ()
 
-find_package(fmt REQUIRED)
 include(FindOpenSSL)
 
 if (APPLE)
@@ -141,6 +140,9 @@ target_compile_features(ricochet-refresh PRIVATE cxx_std_20)
 
 target_link_libraries(ricochet-refresh PUBLIC tego tego_ui)
 
+if (NOT USE_SUBMODULE_FMT)
+    find_package(fmt REQUIRED)
+endif ()
 target_link_libraries(ricochet-refresh PRIVATE fmt::fmt)
 target_link_libraries(ricochet-refresh PRIVATE OpenSSL::Crypto)
 

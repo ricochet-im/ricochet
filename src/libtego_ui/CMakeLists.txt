@@ -57,8 +57,6 @@ if (APPLE)
         REQUIRED)
 endif ()
 
-find_package(fmt REQUIRED)
-
 add_library(
     tego_ui STATIC
     ui/LanguagesModel.h
@@ -110,6 +108,9 @@ target_include_directories(tego_ui SYSTEM PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_link_libraries(tego_ui PUBLIC tego)
 
+if (NOT USE_SUBMODULE_FMT)
+    find_package(fmt REQUIRED)
+endif ()
 target_link_libraries(tego PRIVATE fmt::fmt)
 
 # QT

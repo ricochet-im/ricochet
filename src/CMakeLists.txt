@@ -43,6 +43,11 @@ endif ()
 set(OPENSSL_USE_STATIC_LIBS OFF CACHE BOOL "Use statically-linked OpenSSL")
 set(OPENSSL_ROOT_DIR "" CACHE STRING "Path to custom OpenSSL installation")
 
+option(USE_SUBMODULE_FMT "Use the version of fmt included as a submodule instead of one potentially installed to the system" ON)
+if (USE_SUBMODULE_FMT)
+    add_subdirectory(extern/fmt)
+endif ()
+
 add_subdirectory(libtego)
 add_subdirectory(libtego_ui)
 add_subdirectory(ricochet-refresh)
