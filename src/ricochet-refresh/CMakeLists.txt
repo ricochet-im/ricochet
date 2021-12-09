@@ -177,3 +177,7 @@ if (UNIX AND NOT WIN32)
         install(FILES resources/linux/icons/scalable/ricochet-refresh.svg DESTINATION usr/share/icons/hicolor/scalable/apps/)
     endif ()
 endif ()
+
+# Move our final binary to a bin dir inside the output dir. This makes it
+# easier for integration with ricochet-build
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/ricochet-refresh/)
