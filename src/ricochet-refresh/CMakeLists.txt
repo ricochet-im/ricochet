@@ -180,4 +180,7 @@ endif ()
 
 # Move our final binary to a bin dir inside the output dir. This makes it
 # easier for integration with ricochet-build
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/ricochet-refresh/)
+set_target_properties(ricochet-refresh
+    PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/ricochet-refresh/"
+)
