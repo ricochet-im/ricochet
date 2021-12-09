@@ -1,0 +1,11 @@
+# We need some fixups to get QT working properly on i[3-6]86 platforms
+
+set(CMAKE_SYSTEM_NAME Linux CACHE STRING "" FORCE)
+set(CMAKE_SYSTEM_PROCESSOR i386 CACHE STRING "" FORCE)
+
+set(CMAKE_C_FLAGS "-m32" CACHE STRING "" FORCE)
+set(CMAKE_CXX_FLAGS "-m32" CACHE STRING "" FORCE)
+
+set(CMAKE_EXE_LINKER_FLAGS "-m32" CACHE STRING "" FORCE)
+
+set(CMAKE_PREFIX_PATH "/usr/lib/i386-linux-gnu" CACHE STRING "" FORCE)
