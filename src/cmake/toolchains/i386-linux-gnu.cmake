@@ -1,5 +1,3 @@
-# We need some fixups to get QT working properly on i[3-6]86 platforms
-
 set(CMAKE_SYSTEM_NAME Linux CACHE STRING "" FORCE)
 set(CMAKE_SYSTEM_PROCESSOR i386 CACHE STRING "" FORCE)
 
