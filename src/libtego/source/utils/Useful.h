@@ -72,7 +72,11 @@ public:
 template<typename T, typename F>
 T safe_cast(F from)
 {
-    assert(from < std::numeric_limits<T>::max());
+    if (from >= std::numeric_limits<T>::max())
+    {
+        TEGO_BUG() << "Invalid safe_cast. Value: " << from
+                    << "; Max value of target type: " << std::numeric_limits<T>::max();
+    }
     return static_cast<T>(from);
 }
 
