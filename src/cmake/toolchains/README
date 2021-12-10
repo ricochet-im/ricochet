@@ -1,0 +1,10 @@
+# Toolchain files
+
+These files provide some early configuration during cmake configuration + some
+compile time flags. These toolchain files have been written to work for our
+`ricochet-build` repository, for cross compiling on a linux-(x86_64|i386) host.
+
+If you are trying to cross compile for another platform (or one which we
+provide a toolchain file for), you may have to manually specify the
+`CMAKE_PREFIX_PATH` on the command line (or in a cmake GUI) in order to
+successfully build.
