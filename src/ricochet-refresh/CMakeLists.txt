@@ -1,3 +1,34 @@
+# Ricochet Refresh - https://ricochetrefresh.net/
+# Copyright (C) 2021, Blueprint For Free Speech <ricochet@blueprintforfreespeech.net>
+# 
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are
+# met:
+# 
+#    * Redistributions of source code must retain the above copyright
+#      notice, this list of conditions and the following disclaimer.
+# 
+#    * Redistributions in binary form must reproduce the above
+#      copyright notice, this list of conditions and the following disclaimer
+#      in the documentation and/or other materials provided with the
+#      distribution.
+# 
+#    * Neither the names of the copyright owners nor the names of its
+#      contributors may be used to endorse or promote products derived from
+#      this software without specific prior written permission.
+# 
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+# A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+# OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+# SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+# LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+# THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
 cmake_minimum_required(VERSION 3.16)
 
 project(ricochet-refresh LANGUAGES CXX)
@@ -20,6 +51,9 @@ if (FORCE_QT5)
                 Quick
                 Widgets
                 LinguistTools
+                QmlWorkerScript
+                Multimedia
+                MultimediaQuick
         REQUIRED)
 else ()
     find_package(
@@ -33,6 +67,9 @@ else ()
                 Quick
                 Widgets
                 LinguistTools
+                QmlWorkerScript
+                Multimedia
+                MultimediaQuick
         REQUIRED)
 endif ()
 
@@ -44,6 +81,9 @@ find_package(
                Quick
                Widgets
                LinguistTools
+               QmlWorkerScript
+               Multimedia
+               MultimediaQuick
     REQUIRED)
 
 # Require Qt >5.15
@@ -129,6 +169,12 @@ qt_add_resources(
     ui/qml.qrc)
 
 target_sources(ricochet-refresh PRIVATE main.cpp ${RICOCHET_QML_RES} ${RICOCHET_QM_RES})
+if (STATIC_QT)
+    include(qmake_static)
+    target_generate_static_qml_plugins(ricochet-refresh)
+    target_generate_static_qt_plugins(ricochet-refresh)
+endif ()
+
 target_precompile_headers(ricochet-refresh PRIVATE precomp.hpp)
 
 include(lto)
@@ -152,7 +198,10 @@ target_link_libraries(
             Qt${QT_VERSION_MAJOR}::Widgets
             Qt${QT_VERSION_MAJOR}::Network
             Qt${QT_VERSION_MAJOR}::Qml
-            Qt${QT_VERSION_MAJOR}::Quick)
+            Qt${QT_VERSION_MAJOR}::Quick
+            Qt${QT_VERSION_MAJOR}::QmlWorkerScript
+            Qt${QT_VERSION_MAJOR}::Multimedia
+            Qt${QT_VERSION_MAJOR}::MultimediaQuick)
 if (APPLE)
     target_link_libraries(ricochet-refresh PRIVATE Qt${QT_VERSION_MAJOR}::MacExtras)
 endif ()
