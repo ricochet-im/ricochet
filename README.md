@@ -6,7 +6,7 @@ Ricochet Refresh is the new updated version of Ricochet, supported by Blueprint 
 Ricochet Refresh is currently available for OS X (10.12 or later), Linux, and Windows. Visit the [releases page](https://github.com/blueprint-freespeech/ricochet-refresh/releases) for the latest version and changelog.
 
 ### What is Ricochet Refresh?
-Ricochet Refresh is an instant messanger where no one knows your identity, who you're talking to, or what you're talking about.
+Ricochet Refresh is an instant messenger where no one knows your identity, who you're talking to, or what you're talking about.
   * You can talk to whoever you want, without them knowing your identity (or IP address)
   * No one can know who you're talking to, or when you're talking to them<sup>*</sup> (no metadata)
   * You talk *directly* to your contact - there's no middleman server that could be compromised, putting you at risk.
