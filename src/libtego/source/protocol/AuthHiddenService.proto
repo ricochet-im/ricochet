@@ -1,0 +1,27 @@
+syntax = "proto2";
+
+package Protocol.Data.AuthHiddenService;
+import "ControlChannel.proto";
+
+extend Control.OpenChannel {
+    optional bytes client_cookie = 7200;    // 16 random bytes
+}
+
+extend Control.ChannelResult {
+    optional bytes server_cookie = 7200;      // 16 random bytes
+}
+
+message Packet {
+    optional Proof proof = 1;
+    optional Result result = 2;
+}
+
+message Proof {
+    optional bytes signature = 1;       // ED25519-V3 signature
+    optional string service_id = 2;      // sans .onion prefix
+}
+
+message Result {
+    required bool accepted = 1;
+    optional bool is_known_contact = 2;
+}

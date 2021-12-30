@@ -1,16 +1,45 @@
-## Building Ricochet
+## New Building
 
-These instructions are intended for people who wish to build or modify Ricochet from source. Most users should [download releases](https://github.com/ricochet-im/ricochet/releases) instead.
+Cloning must be done with `--recurse-submodules`:
 
-Clone with git from `https://github.com/ricochet-im/ricochet.git`, or download source packages [on github](https://github.com/ricochet-im/ricochet/releases). Then proceed to instructions for your platform.
+```sh
+git clone --recurse-submodules https://github.com/blueprint-freespeech/ricochet-refresh.git
+```
+In the event that you cloned the repo without fetching the submodules, you can still get them with:
+```sh
+git submodule --init --update
+```
 
-If you're interested in helping to package Ricochet for common Linux platforms, please get in touch!
+Later, you should update your local repository with:
+```sh
+git pull --recurse-submodules
+```
 
-## Hints
+### Linux
+
+Clone
+
+Download and install the prebuilt Qt 5.15 ( https://www.qt.io/download-qt-installer ) and add bin directory containing 'qmake' to your PATH environment variable.
+
+#### Debian
+
+Install the following development packages:
+
+```sh
+apt-get install build-essential libssl-dev pkg-config libprotobuf-dev protobuf-compiler libgl-dev
+```
+
+## Building Ricochet Refresh
+
+These instructions are intended for people who wish to build or modify Ricochet Refresh from source. Most users should [download releases](https://github.com/blueprint-freespeech/ricochet-refresh/releases) instead.
+
+Clone with git from `https://github.com/blueprint-freespeech/ricochet-refresh.git`, or download source packages [on github](https://github.com/blueprint-freespeech/ricochet-refresh/releases). Then proceed to instructions for your platform.
+
+If you're interested in helping to package Ricochet Refresh for common Linux platforms, please get in touch!
+
+## Debug vs Release build
 
 Add `CONFIG+=debug` or `CONFIG+=release` to the qmake command for a debug or release build. Debug builds enable logging to standard output, and shouldn't be used in sensitive environments.
-
-By default, Ricochet will be portable, and configuration is stored in a folder named `config` next to the binary. Add `DEFINES+=RICOCHET_NO_PORTABLE` to the qmake command for a system-wide installation using platform configuration paths instead.
 
 ## Linux
 
@@ -39,6 +68,7 @@ If the `qml-module-qtquick` packages aren't available, try `qtdeclarative5-contr
 #### Qt SDK
 The [Qt SDK](https://www.qt.io/download/) is available for most Linux systems and includes an IDE as well as all Qt dependencies.
 
+### Building and Installing
 To build, simply run:
 ```sh
 qmake # qmake-qt5 for some platforms
@@ -47,19 +77,17 @@ make
 
 For a system-wide installation, use:
 ```sh
-qmake DEFINES+=RICOCHET_NO_PORTABLE
-make
 make install # as root
 ```
 
-You must have a `tor` binary installed on the system (in $PATH), or placed next to the `ricochet` binary.
+You must have a `tor` binary installed on the system (in `$PATH`), or placed next to the `ricochet-refresh` binary.
 
-In portable mode (default), all configuration is stored in a folder called `config` with the binary. When installed, the platform's user configuration path is used instead.
+By default Ricochet Refresh will load and save configuration files to `~/.local/share/ricochet-refresh/`. First argument to command-line overrides this and allows you to specificy the config directory.
 
-The [buildscripts](https://github.com/ricochet-im/buildscripts) repository contains a set of scripts to build a fully static Ricochet on a clean Debian system. These are used to create the generic linux binary packages.
+The [buildscripts](https://github.com/blueprint-freespeech/ricochet-refresh/tree/master/buildscripts) directory contains a set of scripts to build a fully static Ricochet Refresh on a clean Debian system. These are used to create the generic linux binary packages.
 
 #### Hardening
-Ricochet will use aggressive compiler hardening flags if available. `qmake` will print the results of these tests on first run, or when run with `CONFIG+=recheck`.
+Ricochet Refresh will use aggressive compiler hardening flags if available. `qmake` will print the results of these tests on first run, or when run with `CONFIG+=recheck`.
 
 To take full advantage of the sanitizer options, you may need to install `libasan` and `libubsan`.
 
@@ -77,9 +105,9 @@ You can either load `ricochet.pro` in Qt Creator and build normally, or build co
 make
 ```
 
-You also need a `tor` binary in $PATH or inside the build's `ricochet.app/Contents/MacOS` folder. The easiest solution is to use `brew install tor`. If you copy the `tor` binary, you will need to keep it up to date.
+You also need a `tor` binary in $PATH or inside the build's `ricochet refresh.app/Contents/MacOS` folder. The easiest solution is to use `brew install tor`. If you copy the `tor` binary, you will need to keep it up to date.
 
-Normally, configuration will be stored in a `config.ricochet` folder, in the same location as `ricochet.app`. However, if the bundle is installed to `/Applications`, the system location `~/Library/Application Support/Ricochet` is used instead. You can force that behavior by adding `DEFINES+=RICOCHET_NO_PORTABLE` to the qmake command.
+By default, configuration will be stored at `~/Library/Application Support/ricochet-refresh/` folder. This can be overriden by supplying a directory as first argument to the command-line.
 
 The `packaging/osx/release_osx.sh` script demonstrates how to build a redistributable app bundle.
 
@@ -94,7 +122,7 @@ make
 
 ## Windows
 
-Building for Windows is difficult. The process and scripts used for release builds are documented in the [buildscripts repository](https://github.com/ricochet-im/buildscripts/tree/master/mingw).
+Building for Windows is difficult. The process and scripts used for release builds are documented in the [buildscripts directory](https://github.com/blueprint-freespeech/ricochet-refresh/tree/master/buildscripts).
 
 For development builds, you will want:
  * Visual Studio C++ or MinGW

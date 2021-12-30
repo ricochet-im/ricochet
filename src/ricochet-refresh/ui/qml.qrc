@@ -1,0 +1,41 @@
+<RCC>
+    <qresource prefix="/ui">
+        <file>main.qml</file>
+        <file>AddContactDialog.qml</file>
+        <file>ChatMessageArea.qml</file>
+        <file>ChatWindow.qml</file>
+        <file>ContactActions.qml</file>
+        <file>ContactList.qml</file>
+        <file>ContactListDelegate.qml</file>
+        <file>MessageDelegate.qml</file>
+        <file>PreferencesDialog.qml</file>
+        <file>PresenceIcon.qml</file>
+        <file>ContactRequestDialog.qml</file>
+        <file>ContactRequestFields.qml</file>
+        <file>TorStateWidget.qml</file>
+        <file>ContactWindow.js</file>
+        <file>NetworkSetupWizard.qml</file>
+        <file>TorConfigurationPage.qml</file>
+        <file>TorBootstrapStatus.qml</file>
+        <file>TorLogDisplay.qml</file>
+        <file>TorPreferences.qml</file>
+        <file>ContactPreferences.qml</file>
+        <file>ContactIDField.qml</file>
+        <file>AboutPreferences.qml</file>
+        <file>MessageDialogWrapper.qml</file>
+        <file>StartupStatusPage.qml</file>
+        <file>OfflineStateItem.qml</file>
+        <file>MainWindow.qml</file>
+        <file>Bubble.qml</file>
+        <file>PageView.qml</file>
+        <file>ChatPage.qml</file>
+        <file>MainToolBar.qml</file>
+        <file>UnreadCountBadge.qml</file>
+        <file>GeneralPreferences.qml</file>
+        <file>AudioNotifications.qml</file>
+        <file>utils.js</file>
+    </qresource>
+    <qresource prefix="/text">
+        <file>../../LICENSE</file>
+    </qresource>
+</RCC>

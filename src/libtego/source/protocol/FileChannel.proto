@@ -1,0 +1,81 @@
+/* Ricochet Refresh - https://ricochetrefresh.net/
+ * Copyright (C) 2020, Blueprint For Free Speech <ricochet@blueprintforfreespeech.net>
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ *
+ *    * Redistributions of source code must retain the above copyright
+ *      notice, this list of conditions and the following disclaimer.
+ *
+ *    * Redistributions in binary form must reproduce the above
+ *      copyright notice, this list of conditions and the following disclaimer
+ *      in the documentation and/or other materials provided with the
+ *      distribution.
+ *
+ *    * Neither the names of the copyright owners nor the names of its
+ *      contributors may be used to endorse or promote products derived from
+ *      this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+syntax = "proto2";
+
+package Protocol.Data.File;
+
+message Packet {
+    optional FileHeader file_header = 1;
+    optional FileHeaderAck file_header_ack = 2;
+    optional FileHeaderResponse file_header_response = 3;
+    optional FileChunk file_chunk = 4;
+    optional FileChunkAck file_chunk_ack = 5;
+    optional FileTransferCompleteNotification file_transfer_complete_notification = 6;
+}
+
+message FileHeader {
+    optional uint32 file_id = 1;
+    optional uint64 file_size = 2;
+    optional string name = 3;
+    optional bytes file_hash = 4;
+}
+
+message FileHeaderAck {
+    optional uint32 file_id = 1;
+    optional bool accepted = 2 [default = false];
+}
+
+message FileHeaderResponse {
+    optional uint32 file_id = 1;
+    optional int32 response = 2;
+}
+
+message FileChunk {
+    optional uint32 file_id = 1;
+    optional bytes chunk_data = 2;
+}
+message FileChunkAck {
+    optional uint32 file_id = 1;
+    optional uint64 bytes_received = 2;
+}
+
+enum FileTransferResult {
+    Success = 0;
+    Failure = 1;
+    Cancelled = 2;
+}
+
+message FileTransferCompleteNotification {
+    optional uint32 file_id = 1;
+    optional FileTransferResult result = 2;
+}

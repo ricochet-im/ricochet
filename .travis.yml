@@ -1,31 +1,102 @@
 language: cpp
-dist: trusty
+dist: bionic
 sudo: required
-
-os:
-  - linux
-  - osx
-
+git:
+  submodules: false
 env:
-  - CONFIG=Debug
-    #  - CONFIG=Release
+  global:
+  - HEADLESS=True
+  - SKIP_CODESIGN=1
+  - CONFIG=Release
+matrix:
+  include:
+  - os: osx
+    env:
+    - BUILD_TARGET=osx
+    - USE_LOCAL_QT=YES
+    - USE_LOCAL_PROTOBUF=YES
+  - os: linux
+    env:
+    - BUILD_TARGET=linux-static
+    # - USE_LOCAL_QT=YES
+addons:
+  homebrew:
+    packages:
+    - qt5
+    - protobuf
+    - pkg-config
+    update: true
+  apt:
+    packages:
+    - automake
+    - autotools-dev
+    - build-essential
+    - ca-certificates
+    - curl
+    - git
+    - libasound2-dev
+    - libevent-dev
+    - libfontconfig1
+    - libfontconfig1-dev
+    - libfreetype6
+    - libfreetype6-dev
+    - libglu1-mesa-dev
+    - libprotobuf-dev
+    - libprotobuf-dev
+    - libqt5gui5
+    - libqt5opengl5
+    - libqt5opengl5-dev
+    - libqt5svg5
+    - libssl-dev
+    - libtool
+    - libx11-xcb-dev
+    - '^libxcb.*'
+    - '^libxkb.*'
+    - libxrender-dev
+    - libxrender1
+    - pkg-config
+    - protobuf-compiler
+    - python
+    - qt5-default
+    - qt5-qmake
+    - qtbase5-dev
+    - qtdeclarative5-dev
+    - qttools5-dev-tools
+    - tor
+    - unzip
+    - vim
+    - xkb-data
+    - xvfb
+    - zip
 
 install:
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-         sudo apt-get update
-      && sudo apt-get install -qq libssl-dev libprotobuf-dev protobuf-compiler
-      && sudo apt-get install -qq qt5-qmake qt5-default qtbase5-dev qttools5-dev-tools qtdeclarative5-dev
-      ;
-    fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-         brew update
-      && brew install qt5
-      && brew install protobuf
-      && brew install openssl
-      ;
-    fi
-
+- (cd buildscripts && "${BUILD_TARGET}/build-deps.sh")
 script:
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then qmake -qt=qt5 CONFIG+=$CONFIG; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]];   then /usr/local/opt/qt5/bin/qmake CONFIG+=$CONFIG OPENSSLDIR=/usr/local/opt/openssl PROTOBUFDIR=/usr/local/opt/protobuf; fi
-  - make
+- (cd buildscripts && "${BUILD_TARGET}/test.sh")
+- (cd buildscripts && "${BUILD_TARGET}/build.sh")
+- export BUILD_NAME=$(cd buildscripts && "./get_build_name.sh")
+deploy:
+  - provider: releases
+    name: DRAFT ${BUILD_NAME}
+    api_key:
+      secure: lIHMpIYSRcQAzFnbKeucjndUCzCVH78CZ7JpgB7BpUSO/F61ngdW9oWy8oJWdMb1JU0efSRRYNXbX4lTVBOS/iueqfoL6jNojT7t8yVgM31ZfnzJipqdtUHBDHHUHDEQez7MXudUpa9Zo6yCoHF8IT30NiKErbi7jG5YIEaxYzMR2ICWSkechFbGwe6nFgVW8iceNBW8GyyeBpkII7arTpJbZZlrcWDh+Ej5r6fHivV7oifuhSZ6VUYT3dB0tOqcHPU8OtnFpq1sQOtNwr+KNBEfBGLd+gyCXTdjmUebBXnSI6nR3hKEEQR87znlqFrzYKq2OwXqtYkTtc7MpSbmzH9bfxqC4WUa/8QL77cgLJWzhAaOe6+nqeadEJFEFB31KLOlt2SbsMyBy2xWi+NS43VOVz6FecbhgODq7QpXBN5kvN6kjc5kc7xY8joQW5k939/kN5P4DfpePd//bvmUzCVdYaak2pPKLzsyY5dXGqk7z3lGVE3h5Q+8EOnbsEvSrbhNF+Svm/FAEbjUMnaAx20o66MxPxvbb+I0iNT72+jqJypZLv5mjkw2ItMJR1G5zD95qxgZakzJ3liSSpGROBzpLSGQb8GQpOktY9UzocIM0pqyawg2Hfn6y1D9Ptp1SfOZ8rFJvqI+Mxv3FFp+lD3tOV6MvFj1+EJ8PiHyIQc=
+    skip_cleanup: true
+    file_glob: true
+    file:
+    - 'buildscripts/output/Ricochet-Refresh-*.dmg'
+    - 'buildscripts/output/ricochet-refresh-*-static.tar.bz2'
+    overwrite: true
+    draft: true
+  - provider: releases
+    name: PRERELEASE ${BUILD_NAME}
+    api_key:
+      secure: lIHMpIYSRcQAzFnbKeucjndUCzCVH78CZ7JpgB7BpUSO/F61ngdW9oWy8oJWdMb1JU0efSRRYNXbX4lTVBOS/iueqfoL6jNojT7t8yVgM31ZfnzJipqdtUHBDHHUHDEQez7MXudUpa9Zo6yCoHF8IT30NiKErbi7jG5YIEaxYzMR2ICWSkechFbGwe6nFgVW8iceNBW8GyyeBpkII7arTpJbZZlrcWDh+Ej5r6fHivV7oifuhSZ6VUYT3dB0tOqcHPU8OtnFpq1sQOtNwr+KNBEfBGLd+gyCXTdjmUebBXnSI6nR3hKEEQR87znlqFrzYKq2OwXqtYkTtc7MpSbmzH9bfxqC4WUa/8QL77cgLJWzhAaOe6+nqeadEJFEFB31KLOlt2SbsMyBy2xWi+NS43VOVz6FecbhgODq7QpXBN5kvN6kjc5kc7xY8joQW5k939/kN5P4DfpePd//bvmUzCVdYaak2pPKLzsyY5dXGqk7z3lGVE3h5Q+8EOnbsEvSrbhNF+Svm/FAEbjUMnaAx20o66MxPxvbb+I0iNT72+jqJypZLv5mjkw2ItMJR1G5zD95qxgZakzJ3liSSpGROBzpLSGQb8GQpOktY9UzocIM0pqyawg2Hfn6y1D9Ptp1SfOZ8rFJvqI+Mxv3FFp+lD3tOV6MvFj1+EJ8PiHyIQc=
+    skip_cleanup: true
+    file_glob: true
+    file:
+    - 'buildscripts/output/Ricochet-Refresh-*.dmg'
+    - 'buildscripts/output/ricochet-refresh-*-static.tar.bz2'
+    on:
+      tags: true
+    overwrite: true
+    prerelease: true

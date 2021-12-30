@@ -1,6 +1,0 @@
-<RCC>
-    <qresource prefix="/icons">
-        <file>ricochet.svg</file>
-        <file>ricochet_icons.ttf</file>
-    </qresource>
-</RCC>
